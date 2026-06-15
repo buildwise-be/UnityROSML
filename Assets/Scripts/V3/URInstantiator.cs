@@ -9,9 +9,18 @@ public class URInstantiator : MonoBehaviour
     [SerializeField]
     private GameObject _URPrefab;
 
-    public UnityEvent<Pose> OnURInstantiated;
+    /// <summary>
+    /// Event triggered when the UR is instantiated. Arguments are the UR instance and the pose of the QR location.
+    /// </summary>
+    public UnityEvent<GameObject, Pose> OnURInstantiated;
 
     private Pose _stabilizedPose = Pose.identity;
+    private bool _hadURBeenInstantiated = false;
+
+    private void Awake()
+    {
+        OnURInstantiated = new UnityEvent<GameObject, Pose>();
+    }
 
     void Start()
     {
@@ -21,11 +30,23 @@ public class URInstantiator : MonoBehaviour
     
     public void InstantiateUR()
     {
-        if (_stabilizedPose != Pose.identity)
+        if ((_stabilizedPose != Pose.identity) && !_hadURBeenInstantiated)
         {
             Debug.Log($"Now instantiating UR with pose {_stabilizedPose.position}, {_stabilizedPose.rotation}");
-            GameObject.Instantiate(_URPrefab, _stabilizedPose.position, _stabilizedPose.rotation);
-            OnURInstantiated?.Invoke( _stabilizedPose );
+            GameObject UR16eInstance = GameObject.Instantiate(_URPrefab, _stabilizedPose.position, _stabilizedPose.rotation);
+            /*
+            foreach (ArticulationBody articulationBody in UR16eInstance.GetComponentsInChildren<ArticulationBody>())
+            {
+                if (articulationBody.gameObject.name == "base_link")
+                {
+                    articulationBody.TeleportRoot(markerPose.position + markerOffset, finalRotation);
+                    break;
+                }
+            }
+            */
+            _hadURBeenInstantiated = true;
+            OnURInstantiated?.Invoke(UR16eInstance, _stabilizedPose );
+            RobotStateService.Instance.InitializeRobot(_stabilizedPose, UR16eInstance);
         }
     }
 }

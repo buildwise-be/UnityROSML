@@ -91,9 +91,9 @@ public class ConnectionChecker : MonoBehaviour
         }
     }
 
-    void PlaceAndShowPanel(Pose p)
+    void PlaceAndShowPanel(GameObject go, Pose p)
     {
-        Transform panelRoot = transform.parent != null ? transform.parent : transform;
+        Transform panelRoot = transform.parent.parent != null ? transform.parent.parent : transform;
         panelRoot.position = p.position + Vector3.up * 0.3f;
 
         if (_image != null)

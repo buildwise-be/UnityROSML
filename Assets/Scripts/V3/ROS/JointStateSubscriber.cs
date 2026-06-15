@@ -6,8 +6,6 @@ using System.Collections.Generic;
 public class JointStateSubscriber : MonoBehaviour
 {
     public ArticulationBody[] jointArticulations;
-
-    GameObject m_UR16e;
     
     [SerializeField]
     [Tooltip("The prefix used ROS-side for the UR16e URDF links.")]
@@ -39,17 +37,21 @@ public class JointStateSubscriber : MonoBehaviour
 
         // Listen to RobotStateService instead of MarkerUnderstander directly
         //RobotStateService.Instance.OnRobotInstantiatedAndPlaced.AddListener(RecordInstantiatedUR16e);
-
-        _URInstantiator.OnURInstantiated.AddListener(StoreArticulationsBodies);
+        if (_URInstantiator.OnURInstantiated != null)
+        {
+            _URInstantiator.OnURInstantiated.AddListener(StoreArticulationsBodies);
+            Debug.Log("StoreArticulationBodies added as listener.");
+        }
     }
 
-    private void StoreArticulationsBodies(Pose p)
+    private void StoreArticulationsBodies(GameObject go, Pose p)
     {
+        Debug.Log("StoreArticulationBodies called");
         var linkName = string.Empty;
         for (var i = 0; i < k_NumRobotJoints; i++)
         {
             linkName += LinkNames[i];
-            Transform child = m_UR16e.transform.Find(linkName);
+            Transform child = go.transform.Find(linkName);
             m_JointArticulationBodies[i] = child.GetComponent<UrdfJointRevolute>();
         }
         _hasUR16eBeenInstantiated = true;
@@ -68,6 +70,7 @@ public class JointStateSubscriber : MonoBehaviour
         };
     }
 
+    /*
     private void RecordInstantiatedUR16e(Pose p, GameObject instantiatedUR16e)
     {
         m_UR16e = instantiatedUR16e;
@@ -81,6 +84,7 @@ public class JointStateSubscriber : MonoBehaviour
         _hasUR16eBeenInstantiated = true;
         Debug.Log("JointStateSubscriber: Robot instance recorded and ready for joint updates");
     }
+    */
 
     void OnJointStateReceived(JointStateMsg msg)
     {

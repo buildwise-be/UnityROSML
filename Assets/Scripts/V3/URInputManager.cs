@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,6 +6,9 @@ public class URInputManager : MonoBehaviour
 {
     [SerializeField]
     private URInstantiator _URInstantiator;
+
+    [SerializeField]
+    private PickPlaceController _pickPlaceController;
 
     private MagicLeapOpenXRInput _magicLeapInputs;
 
@@ -26,12 +30,8 @@ public class URInputManager : MonoBehaviour
         _controllerActions.IsTracked.performed += IsTrackedOnPerformed;
         _controllerActions.Trigger.performed += HandleOnTrigger;
         _controllerActions.Bumper.performed += HandleOnBumper;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        _controllerActions.DoubleBumper.performed += HandleOnDoubleBumper;
+        _controllerActions.HoldBumper.performed += HandleOnHoldBumper;
     }
 
     // Handles the event to determine if the controller is tracking.
@@ -54,6 +54,18 @@ public class URInputManager : MonoBehaviour
         bool bumperDown = obj.ReadValueAsButton();
         Debug.Log("The Bumper is pressed down " + bumperDown);
         Debug.Log("The Bumper was released this frame: " + obj.action.WasReleasedThisFrame());
+    }
+
+    private void HandleOnDoubleBumper(InputAction.CallbackContext context)
+    {
+        Debug.Log("The Bumper was double pressed");
+        _pickPlaceController.SetPlacePlace(_controllerActions.PointerPosition.ReadValue<Vector3>(), _controllerActions.PointerRotation.ReadValue<Quaternion>());
+    }
+
+    private void HandleOnHoldBumper(InputAction.CallbackContext context)
+    {
+        Debug.Log("The Bumper was held");
+        _pickPlaceController.SetPickPlace(_controllerActions.PointerPosition.ReadValue<Vector3>(), _controllerActions.PointerRotation.ReadValue<Quaternion>());
     }
 
     // Handles the disposing all of the input events.
