@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Samples/Magic Leap SDK/2.6.0/Marker Understanding sample/MarkerUnderstandingSample.unity
     guid: 9cde533f07cffca40959a5f5483f8ee0
   m_configObjects:
-    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: bb4daeceea261404d9e9069323220d1b, type: 3}
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 16c7b1ee74f218742a86da34712e51fb, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 37425449709dd0f4284f65fb64f4ac23, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 61b30d4bacd956b4eb5b098cadfd5c89, type: 2}

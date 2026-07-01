@@ -212,7 +212,7 @@
                     "name": "IsTracked",
                     "type": "Value",
                     "id": "b4aa4314-d7d0-4266-b667-25e31fd39dff",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -225,6 +225,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "DoubleBumper",
+                    "type": "Button",
+                    "id": "a9a7438d-089c-451f-aa6f-74fa731b7ca8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "MultiTap",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HoldBumper",
+                    "type": "Button",
+                    "id": "c0d16cf4-0456-4858-919b-04a5e4284b8f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Hold(duration=0.8)",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -555,6 +573,50 @@
                     "processors": "",
                     "groups": "",
                     "action": "Status",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e7835480-f5f9-48d5-8136-e2dd2d1a4af7",
+                    "path": "<MagicLeapController>{LeftHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Magic Leap 2",
+                    "action": "DoubleBumper",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c75df4f2-fa28-46f9-a3e0-058650c98c03",
+                    "path": "<MagicLeapController>{RightHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Magic Leap 2",
+                    "action": "DoubleBumper",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ec8c16ea-9ac3-4671-9be8-00400959c9c9",
+                    "path": "<MagicLeapController>{LeftHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HoldBumper",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ab1e4648-48b8-4b08-b6a0-320278753e97",
+                    "path": "<MagicLeapController>{RightHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HoldBumper",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

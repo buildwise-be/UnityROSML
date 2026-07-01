@@ -298,7 +298,7 @@ public partial class @MagicLeapOpenXRInput: IInputActionCollection2, IDisposable
                     ""name"": ""IsTracked"",
                     ""type"": ""Value"",
                     ""id"": ""b4aa4314-d7d0-4266-b667-25e31fd39dff"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -311,6 +311,24 @@ public partial class @MagicLeapOpenXRInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""DoubleBumper"",
+                    ""type"": ""Button"",
+                    ""id"": ""a9a7438d-089c-451f-aa6f-74fa731b7ca8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""MultiTap"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HoldBumper"",
+                    ""type"": ""Button"",
+                    ""id"": ""c0d16cf4-0456-4858-919b-04a5e4284b8f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Hold(duration=0.8)"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -641,6 +659,50 @@ public partial class @MagicLeapOpenXRInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Status"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e7835480-f5f9-48d5-8136-e2dd2d1a4af7"",
+                    ""path"": ""<MagicLeapController>{LeftHand}/gripPressed"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Magic Leap 2"",
+                    ""action"": ""DoubleBumper"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c75df4f2-fa28-46f9-a3e0-058650c98c03"",
+                    ""path"": ""<MagicLeapController>{RightHand}/gripPressed"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Magic Leap 2"",
+                    ""action"": ""DoubleBumper"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ec8c16ea-9ac3-4671-9be8-00400959c9c9"",
+                    ""path"": ""<MagicLeapController>{LeftHand}/gripPressed"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HoldBumper"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ab1e4648-48b8-4b08-b6a0-320278753e97"",
+                    ""path"": ""<MagicLeapController>{RightHand}/gripPressed"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HoldBumper"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1354,6 +1416,8 @@ public partial class @MagicLeapOpenXRInput: IInputActionCollection2, IDisposable
         m_Controller_Rotation = m_Controller.FindAction("Rotation", throwIfNotFound: true);
         m_Controller_IsTracked = m_Controller.FindAction("IsTracked", throwIfNotFound: true);
         m_Controller_Status = m_Controller.FindAction("Status", throwIfNotFound: true);
+        m_Controller_DoubleBumper = m_Controller.FindAction("DoubleBumper", throwIfNotFound: true);
+        m_Controller_HoldBumper = m_Controller.FindAction("HoldBumper", throwIfNotFound: true);
         // Eyes
         m_Eyes = asset.FindActionMap("Eyes", throwIfNotFound: true);
         m_Eyes_GazePosition = m_Eyes.FindAction("GazePosition", throwIfNotFound: true);
@@ -1611,6 +1675,8 @@ public partial class @MagicLeapOpenXRInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Controller_Rotation;
     private readonly InputAction m_Controller_IsTracked;
     private readonly InputAction m_Controller_Status;
+    private readonly InputAction m_Controller_DoubleBumper;
+    private readonly InputAction m_Controller_HoldBumper;
     /// <summary>
     /// Provides access to input actions defined in input action map "Controller".
     /// </summary>
@@ -1691,6 +1757,14 @@ public partial class @MagicLeapOpenXRInput: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Status => m_Wrapper.m_Controller_Status;
         /// <summary>
+        /// Provides access to the underlying input action "Controller/DoubleBumper".
+        /// </summary>
+        public InputAction @DoubleBumper => m_Wrapper.m_Controller_DoubleBumper;
+        /// <summary>
+        /// Provides access to the underlying input action "Controller/HoldBumper".
+        /// </summary>
+        public InputAction @HoldBumper => m_Wrapper.m_Controller_HoldBumper;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Controller; }
@@ -1767,6 +1841,12 @@ public partial class @MagicLeapOpenXRInput: IInputActionCollection2, IDisposable
             @Status.started += instance.OnStatus;
             @Status.performed += instance.OnStatus;
             @Status.canceled += instance.OnStatus;
+            @DoubleBumper.started += instance.OnDoubleBumper;
+            @DoubleBumper.performed += instance.OnDoubleBumper;
+            @DoubleBumper.canceled += instance.OnDoubleBumper;
+            @HoldBumper.started += instance.OnHoldBumper;
+            @HoldBumper.performed += instance.OnHoldBumper;
+            @HoldBumper.canceled += instance.OnHoldBumper;
         }
 
         /// <summary>
@@ -1829,6 +1909,12 @@ public partial class @MagicLeapOpenXRInput: IInputActionCollection2, IDisposable
             @Status.started -= instance.OnStatus;
             @Status.performed -= instance.OnStatus;
             @Status.canceled -= instance.OnStatus;
+            @DoubleBumper.started -= instance.OnDoubleBumper;
+            @DoubleBumper.performed -= instance.OnDoubleBumper;
+            @DoubleBumper.canceled -= instance.OnDoubleBumper;
+            @HoldBumper.started -= instance.OnHoldBumper;
+            @HoldBumper.performed -= instance.OnHoldBumper;
+            @HoldBumper.canceled -= instance.OnHoldBumper;
         }
 
         /// <summary>
@@ -2637,6 +2723,20 @@ public partial class @MagicLeapOpenXRInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnStatus(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DoubleBumper" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDoubleBumper(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "HoldBumper" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHoldBumper(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Eyes" which allows adding and removing callbacks.

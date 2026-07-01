@@ -197,11 +197,13 @@ public class PickAndPlaceManager : MonoBehaviour
     /// </summary>
     public void ExecutePickAndPlace()
     {
+        /* // DEBUGGING
         if (!_hasPlanningRequestBeenSent)
         {
             Debug.LogWarning("ExecutePickAndPlace: Cannot execute task. SendPickAndPlacePlanningRequest must be called first.");
             return;
         }
+        */
 
         BoolMsg executeMsg = new BoolMsg(true);
         _ros.Publish("execute_task", executeMsg);

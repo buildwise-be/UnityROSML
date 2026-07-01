@@ -100,6 +100,17 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.industry.toolkit": {
+      "version": "3.3.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.pixyz.unity-sdk": "6.0.0",
+        "com.unity.settings-manager": "2.0.0",
+        "com.unity.modules.unityanalytics": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.inputsystem": {
       "version": "1.14.0",
       "depth": 0,
@@ -129,6 +140,23 @@
       "depth": 2,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.pixyz.sdk-plus": {
+      "version": "8.0.0",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.pixyz.unity-sdk": {
+      "version": "6.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.pixyz.sdk-plus": "8.0.0",
+        "com.unity.modules.animation": "1.0.0"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.render-pipelines.core": {
@@ -182,17 +210,23 @@
       "hash": "c27f00c6cf750d2d0564349b3039d19aa3925e7c"
     },
     "com.unity.robotics.urdf-importer": {
-      "version": "https://github.com/buildwise-be/URDF-Importer.git?path=/com.unity.robotics.urdf-importer#MLAdaptation",
+      "version": "file:C:/Users/aca/Documents/UnityProjects/URDF-Importer/com.unity.robotics.urdf-importer",
       "depth": 0,
-      "source": "git",
+      "source": "local",
       "dependencies": {
         "com.unity.editorcoroutines": "1.0.0"
-      },
-      "hash": "b1f4768896c356322e5cac2a9bf8bd6d874664ce"
+      }
     },
     "com.unity.searcher": {
       "version": "4.9.3",
       "depth": 2,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.settings-manager": {
+      "version": "2.1.0",
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"

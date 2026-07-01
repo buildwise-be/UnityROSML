@@ -1378,7 +1378,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76e604d0f300da444a630b6eb461c707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  virtualUr16ePrefab: {fileID: 532673572956234232, guid: e037430b6b1082f429095de20142ecf9, type: 3}
+  virtualUr16ePrefab: {fileID: 5024125048813689379, guid: d6c41b0526862c54bac1dcdbf2940d1a, type: 3}
   _URInstantiator: {fileID: 821121195}
   trajectoryLineRenderer: {fileID: 511627982}
   resolution: 10
@@ -2066,7 +2066,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _QRDetector: {fileID: 680038686}
-  _URPrefab: {fileID: 532673572956234232, guid: 749c231a8e23259468f49b2a85eb1213, type: 3}
+  _URPrefab: {fileID: 5024125048813689379, guid: db1cecedcfb0e9f4bad6e88212900454, type: 3}
   OnURInstantiated:
     m_PersistentCalls:
       m_Calls: []

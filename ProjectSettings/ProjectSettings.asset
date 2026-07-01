@@ -140,12 +140,9 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 0.2.0
+  bundleVersion: 0.3.0
   preloadedAssets:
   - {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  - {fileID: -7710778807906346842, guid: 37425449709dd0f4284f65fb64f4ac23, type: 2}
-  - {fileID: -7930340195302765445, guid: 61b30d4bacd956b4eb5b098cadfd5c89, type: 2}
-  - {fileID: 11400000, guid: 16c7b1ee74f218742a86da34712e51fb, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -167,7 +164,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.4
   androidMinAspectRatio: 1
   applicationIdentifier:
-    Android: com.buildwise.be.testml2
+    Android: com.buildwise.be.testml2v3
     Standalone: com.Unity-Technologies.com.unity.template.urp-blank
     iPhone: com.Unity-Technologies.com.unity.template.urp-blank
   buildNumber:

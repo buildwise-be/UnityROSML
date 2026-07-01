@@ -1,0 +1,36 @@
+{
+    "m_Dictionary": {
+        "m_DictionaryValues": [
+            {
+                "type": "System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "ShowStatistics",
+                "value": "{\"m_Value\":true}"
+            },
+            {
+                "type": "System.Int32[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "ActionIds",
+                "value": "{\"m_Value\":[693670397,835978012,213915347,456440045,156420455,523752222,783075375,545105221,749128909,87441512,273604424,1526631,0,11954093,925546315,887416576,925546316,848484845,888851100,86594984,235363992,561784150,566782151,386939700,11954092,643180522,57241105,57248795,157968489,16549960,10191513,264601941,899643020,230347333,99541656,572564654,57243405,219151513,14249905,1651980,219151512,451666,277054868,91540003,57241106,511763496,483983548,79878745,1455705145,283247540,1455705,58476964,57249905,298950553,9841002,142499879,235363998,415461000,154316520,1697425464,155767537,645120725,994562210,647578605,16465110,505047536,142405631,315214542,899553388]}"
+            },
+            {
+                "type": "System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "ImportModeSelected",
+                "value": "{\"m_Value\":0}"
+            },
+            {
+                "type": "System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "SelectedDrawModeIndex",
+                "value": "{\"m_Value\":-1}"
+            },
+            {
+                "type": "System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "ToolboxActionOpened",
+                "value": "{\"m_Value\":-1}"
+            },
+            {
+                "type": "System.Collections.Generic.List`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "ToolboxActionsSelected",
+                "value": "{\"m_Value\":[219151513,277054868,57249905,91540003,99541656,451666,14249905]}"
+            }
+        ]
+    }
+}
