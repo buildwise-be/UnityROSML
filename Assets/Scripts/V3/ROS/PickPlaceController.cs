@@ -199,7 +199,12 @@ public class PickPlaceController : MonoBehaviour
         DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         TimeSpan timeSinceEpoch = DateTime.UtcNow - epochStart;
         double totalSeconds = timeSinceEpoch.TotalSeconds;
+        // TimeMsg.sec is int in ROS2 mode and uint in ROS1 mode
+#if ROS2
         int sec = (int)totalSeconds;
+#else
+        uint sec = (uint)totalSeconds;
+#endif
         uint nanosec = (uint)((totalSeconds - sec) * 1e9);
         headerMsg.stamp = new TimeMsg(sec, nanosec);
 
@@ -228,7 +233,12 @@ public class PickPlaceController : MonoBehaviour
         DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         TimeSpan timeSinceEpoch = DateTime.UtcNow - epochStart;
         double totalSeconds = timeSinceEpoch.TotalSeconds;
+        // TimeMsg.sec is int in ROS2 mode and uint in ROS1 mode
+#if ROS2
         int sec = (int)totalSeconds;
+#else
+        uint sec = (uint)totalSeconds;
+#endif
         uint nanosec = (uint)((totalSeconds - sec) * 1e9);
         headerMsg.stamp = new TimeMsg(sec, nanosec);
         

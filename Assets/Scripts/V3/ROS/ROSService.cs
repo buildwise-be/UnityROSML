@@ -34,6 +34,7 @@ public class ROSService : MonoBehaviour
     private bool _isInitialized = false;
 
     private void Awake()
+
     {
         if (_instance == null)
         {
