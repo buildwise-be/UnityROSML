@@ -25,6 +25,10 @@ public class PickPlaceController : MonoBehaviour
     private GameObject _placePointPrefab;
     private GameObject _placePointInstance;
 
+    [SerializeField]
+    [Tooltip("Optional. If assigned, its pose sources are kept in sync with the pick/place markers (pick first, place second).")]
+    private RemoteExecutionController _remoteExecutionController;
+
     private bool _hasPlanningRequestBeenSent = false;
 
     private void Start()
@@ -44,6 +48,24 @@ public class PickPlaceController : MonoBehaviour
         {
             RobotStateService.Instance.IsReadyForPlanning = false;
         }
+
+        UpdateRemoteExecutionPoseSources();
+    }
+
+    /// <summary>
+    /// Keep the RemoteExecutionController's pose sources in sync with the
+    /// pick/place marker instances (pick first, place second).
+    /// </summary>
+    private void UpdateRemoteExecutionPoseSources()
+    {
+        if (_remoteExecutionController == null)
+        {
+            return;
+        }
+
+        _remoteExecutionController.SetPoseSources(
+            _pickPointInstance != null ? _pickPointInstance.transform : null,
+            _placePointInstance != null ? _placePointInstance.transform : null);
     }
 
     public void SetPickPlace(Vector3 position, Quaternion rotation)

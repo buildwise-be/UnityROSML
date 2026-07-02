@@ -43,6 +43,27 @@ public class RemoteExecutionController : MonoBehaviour
     public UnityEvent<string> OnRemoteExecutionFailed;
 
     /// <summary>
+    /// Replace the pose sources at runtime (e.g. called by PickPlaceController when
+    /// the pick/place markers are created or moved). Null entries are ignored.
+    /// </summary>
+    public void SetPoseSources(params Transform[] sources)
+    {
+        _poseSources.Clear();
+        if (sources == null)
+        {
+            return;
+        }
+
+        foreach (Transform source in sources)
+        {
+            if (source != null)
+            {
+                _poseSources.Add(source);
+            }
+        }
+    }
+
+    /// <summary>
     /// Entry point for UI buttons. Collects poses from _poseSources and sends them.
     /// </summary>
     public void TriggerRemoteExecution()
