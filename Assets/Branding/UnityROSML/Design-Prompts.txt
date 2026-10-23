@@ -1,0 +1,34 @@
+UnityROSML app icon design prompts
+
+Mode: built-in image_gen; user-supplied UR16e photograph was a subject reference.
+
+
+
+Final general transparent logo:
+
+Use case: logo-brand.
+Edit the supplied robot illustration into an extremely simple, neat FLAT TWO-DIMENSIONAL APP LOGO for UnityROSML on Magic Leap 2.
+Keep the UR16e robot identity and Z-shaped side pose: blue circular shoulder near lower left, blue circular elbow on right, short wrist at upper left, compact pedestal.
+Radically simplify the supplied artwork: only flat solid silver-white arm links, solid cyan-blue circular joints, and solid dark slate connectors/base. Remove every bolt, screw, glint, bevel, gradient, shadow, shading band, hole detail, and 3D extrusion. This must feel like a polished geometric software app symbol with approximately 12 bold shapes, NOT a robot rendering. Use crisp antialiased edges.
+Square canvas, genuine transparent background. VERY GENEROUS TRANSPARENT PADDING: the entire robot including its base and all edges MUST fit inside a centered circle that is just 58 percent of the full canvas diameter. This is crucial for Android adaptive icon masks. Make the robot noticeably smaller than the reference image; include at least 21 percent transparent padding at top, bottom, left and right. Center it optically. All visible artwork must be inside that central circle.
+No text, no company wordmark, no badge, no tile, no border, no extra symbols. Transparent pixels beyond the robot.
+
+
+
+Final opaque launcher:
+
+Use case: logo-brand.
+Create the finished square launcher icon for the UnityROSML Magic Leap 2 app using the supplied simplified UR16e robot logo.
+Use the SAME white-and-cyan robot mark, SAME Z pose, SAME geometry, SAME flat styling. Preserve its connected shoulder, elbow, wrist, and base. Keep the existing clean simplified design and omit all screws and tiny details.
+Change only the background and scale: put it on an entirely opaque, perfectly uniform deep navy background color #102638. Full-bleed square background right into every corner, NO rounded corners, NO badge, NO border. Enlarge and optically center the robot so its full height is 74 percent of the canvas; keep generous balanced margins. Make sure the whole silhouette remains inside a central 82 percent diameter circle to survive a round launcher mask.
+Remove any stray white fringes or pixels around the robot; all edges should be immaculate and clean against navy. Plain flat solid colors, no texture, glow, cast shadow or extra symbols. No text.
+Deliver one crisp square PNG icon, ideally 1024x1024.
+
+
+
+Final Android adaptive foreground:
+
+Precisely prepare this existing robot icon as an Android adaptive FOREGROUND. Use case logo-brand. Preserve the exact same simplified white, dark-slate, and cyan-blue UR16e robot identity, pose and connected geometry.
+Only change layout and edge cleanup. The background must be truly transparent, completely alpha=0.
+The robot must be MUCH SMALLER and perfectly centered on the full square canvas. ROBOT HEIGHT ONLY 42 percent of the full canvas height, centered horizontally AND vertically. There must be 29 percent completely empty transparent padding above the highest part and below the lowest part. All artwork, including every antialiased edge, must stay inside a circle centered at the exact canvas center with radius ONLY 25 percent of the full canvas width. This large empty outer margin is required for an Android adaptive layer. Make the full image square.
+Very important cleanup: eliminate ALL stray pixels, ghost shapes, fringe halos, noise or speckles, especially outside the robot. Every pixel outside the central 50 percent diameter circle MUST be fully transparent with zero alpha. Clean crisp edges. No background, no tile, no border, no text. Keep flat clean bold simple white-and-cyan icon.
