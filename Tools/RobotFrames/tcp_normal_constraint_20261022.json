@@ -1,0 +1,126 @@
+{
+  "scope": "Same original TCP position and +Z normal, any tool twist. Entirely offline.",
+  "proof": "Triangle/circle bounds derived from the actual calibrated URDF. Shoulder-to-wrist1 upper bound maximizes the elbow circle exactly, then adds the small shoulder-lift offset. Wrist1 lower bound includes arbitrary q5,q6 and tool twist plus full calibrated residual error balls. Positive lower-minus-upper proves infeasibility independently of numerical IK.",
+  "upper_arm_forearm_max_m": 0.8561913474924724,
+  "shoulder_to_wrist1_max_m": 0.8563369568897244,
+  "wrist_circle_radius_m": 0.11986622287011955,
+  "wrist_residual_radius_m": 5.140462482699873e-05,
+  "combined_axial_offset_m": 0.26561237494120576,
+  "cases": [
+    {
+      "name": "current_tcp_positive_control",
+      "tcp_position_global_m": [
+        0.40740421031862994,
+        0.6502535805867455,
+        1.2524313883483316
+      ],
+      "normal_global": [
+        0.09995460568831707,
+        0.9944272321295292,
+        -0.03351949881630967
+      ],
+      "clocking": "fully unconstrained",
+      "minimum_required_shoulder_to_wrist1_m": 0.7428064740010141,
+      "maximum_possible_shoulder_to_wrist1_m": 0.8563369568897244,
+      "excess_m": -0.11353048288871037,
+      "violates_necessary_reach_constraint": false
+    },
+    {
+      "name": "recovered_failed_tcp_target_frame",
+      "tcp_position_global_m": [
+        0.3034586242560518,
+        0.8551557319911716,
+        1.2685164947509766
+      ],
+      "normal_global": [
+        0.13756455525067335,
+        0.9874351921321758,
+        -0.0777671812371894
+      ],
+      "clocking": "fully unconstrained",
+      "minimum_required_shoulder_to_wrist1_m": 0.873829671209746,
+      "maximum_possible_shoulder_to_wrist1_m": 0.8563369568897244,
+      "excess_m": 0.01749271432002153,
+      "violates_necessary_reach_constraint": true
+    },
+    {
+      "name": "tcp_target_y_minus_0.1",
+      "tcp_position_global_m": [
+        0.3034586242560518,
+        0.7551557319911716,
+        1.2685164947509766
+      ],
+      "normal_global": [
+        0.13756455525067335,
+        0.9874351921321758,
+        -0.0777671812371894
+      ],
+      "clocking": "fully unconstrained",
+      "minimum_required_shoulder_to_wrist1_m": 0.8109519507121189,
+      "maximum_possible_shoulder_to_wrist1_m": 0.8563369568897244,
+      "excess_m": -0.04538500617760555,
+      "violates_necessary_reach_constraint": false
+    },
+    {
+      "name": "tcp_target_y_minus_0.2",
+      "tcp_position_global_m": [
+        0.3034586242560518,
+        0.6551557319911716,
+        1.2685164947509766
+      ],
+      "normal_global": [
+        0.13756455525067335,
+        0.9874351921321758,
+        -0.0777671812371894
+      ],
+      "clocking": "fully unconstrained",
+      "minimum_required_shoulder_to_wrist1_m": 0.7560700965137108,
+      "maximum_possible_shoulder_to_wrist1_m": 0.8563369568897244,
+      "excess_m": -0.10026686037601362,
+      "violates_necessary_reach_constraint": false
+    },
+    {
+      "name": "tcp_target_y_minus_0.3",
+      "tcp_position_global_m": [
+        0.3034586242560518,
+        0.5551557319911715,
+        1.2685164947509766
+      ],
+      "normal_global": [
+        0.13756455525067335,
+        0.9874351921321758,
+        -0.0777671812371894
+      ],
+      "clocking": "fully unconstrained",
+      "minimum_required_shoulder_to_wrist1_m": 0.7110365022662453,
+      "maximum_possible_shoulder_to_wrist1_m": 0.8563369568897244,
+      "excess_m": -0.14530045462347918,
+      "violates_necessary_reach_constraint": false
+    }
+  ],
+  "numerical_check": {
+    "seeds": 100,
+    "normal_weight_m": 0.3,
+    "best": {
+      "weighted_residual": 0.016538822317166784,
+      "position_error_m": 0.01551759959185453,
+      "normal_error_degrees": 1.0927623364552705,
+      "joint_positions_rad": {
+        "ur_shoulder_pan_joint": 0.2644888836607641,
+        "ur_shoulder_lift_joint": 4.0034122329233535,
+        "ur_elbow_joint": -0.0010181216086539852,
+        "ur_wrist_1_joint": -0.9254114301432091,
+        "ur_wrist_2_joint": -5.109440286952612,
+        "ur_wrist_3_joint": -0.04993620235752829
+      },
+      "iterations": 124
+    }
+  },
+  "limitation": "This proves a necessary constraint for this captured URDF. Physical tool mounting and model parity are not established by offline calculations.",
+  "forward_sample_bound_checks": {
+    "random_joint_samples": 1000,
+    "failures": 0,
+    "maximum_actual_shoulder_to_wrist1_m": 0.8562869674795608,
+    "smallest_actual_minus_lower_bound_m": 1.9507552252884253e-05
+  }
+}

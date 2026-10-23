@@ -1,0 +1,692 @@
+{
+  "time_unix": 1792681911.2864957,
+  "queries": [
+    {
+      "name": "current_control",
+      "pose": {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830300774
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.4073661410095679,
+            "y": 0.6502475126541414,
+            "z": 1.252440896842414
+          },
+          "orientation": {
+            "x": 0.0565365647277669,
+            "y": 0.716650285919907,
+            "z": 0.6949787295896521,
+            "w": 0.01485092447128513
+          }
+        }
+      },
+      "kinematic_only": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      },
+      "collision_checked": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      }
+    },
+    {
+      "name": "retained_A",
+      "pose": {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830300774
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.303459,
+            "y": 0.855156,
+            "z": 1.268516
+          },
+          "orientation": {
+            "x": -0.4440968831461615,
+            "y": 0.5845182195607416,
+            "z": 0.4788435565704329,
+            "w": 0.48148235451819416
+          }
+        }
+      },
+      "kinematic_only": {
+        "error": {
+          "val": -31,
+          "message": "",
+          "source": ""
+        }
+      },
+      "collision_checked": {
+        "error": {
+          "val": -31,
+          "message": "",
+          "source": ""
+        }
+      }
+    },
+    {
+      "name": "A_position_current_rotation",
+      "pose": {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830300774
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.303459,
+            "y": 0.855156,
+            "z": 1.268516
+          },
+          "orientation": {
+            "x": 0.0565365647277669,
+            "y": 0.716650285919907,
+            "z": 0.6949787295896521,
+            "w": 0.01485092447128513
+          }
+        }
+      },
+      "kinematic_only": {
+        "error": {
+          "val": -31,
+          "message": "",
+          "source": ""
+        }
+      },
+      "collision_checked": {
+        "error": {
+          "val": -31,
+          "message": "",
+          "source": ""
+        }
+      }
+    },
+    {
+      "name": "current_position_A_rotation",
+      "pose": {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830300774
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.4073661410095679,
+            "y": 0.6502475126541414,
+            "z": 1.252440896842414
+          },
+          "orientation": {
+            "x": -0.4440968831461615,
+            "y": 0.5845182195607416,
+            "z": 0.4788435565704329,
+            "w": 0.48148235451819416
+          }
+        }
+      },
+      "kinematic_only": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      },
+      "collision_checked": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      }
+    },
+    {
+      "name": "current_x_minus_2cm",
+      "pose": {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830300774
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.3873661410095679,
+            "y": 0.6502475126541414,
+            "z": 1.252440896842414
+          },
+          "orientation": {
+            "x": 0.0565365647277669,
+            "y": 0.716650285919907,
+            "z": 0.6949787295896521,
+            "w": 0.01485092447128513
+          }
+        }
+      },
+      "kinematic_only": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      },
+      "collision_checked": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      }
+    },
+    {
+      "name": "current_x_plus_2cm",
+      "pose": {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830300774
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.42736614100956793,
+            "y": 0.6502475126541414,
+            "z": 1.252440896842414
+          },
+          "orientation": {
+            "x": 0.0565365647277669,
+            "y": 0.716650285919907,
+            "z": 0.6949787295896521,
+            "w": 0.01485092447128513
+          }
+        }
+      },
+      "kinematic_only": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      },
+      "collision_checked": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      }
+    },
+    {
+      "name": "current_y_minus_2cm",
+      "pose": {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830300774
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.4073661410095679,
+            "y": 0.6302475126541414,
+            "z": 1.252440896842414
+          },
+          "orientation": {
+            "x": 0.0565365647277669,
+            "y": 0.716650285919907,
+            "z": 0.6949787295896521,
+            "w": 0.01485092447128513
+          }
+        }
+      },
+      "kinematic_only": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      },
+      "collision_checked": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      }
+    },
+    {
+      "name": "current_y_plus_2cm",
+      "pose": {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830300774
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.4073661410095679,
+            "y": 0.6702475126541414,
+            "z": 1.252440896842414
+          },
+          "orientation": {
+            "x": 0.0565365647277669,
+            "y": 0.716650285919907,
+            "z": 0.6949787295896521,
+            "w": 0.01485092447128513
+          }
+        }
+      },
+      "kinematic_only": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      },
+      "collision_checked": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      }
+    },
+    {
+      "name": "current_z_minus_2cm",
+      "pose": {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830300774
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.4073661410095679,
+            "y": 0.6502475126541414,
+            "z": 1.232440896842414
+          },
+          "orientation": {
+            "x": 0.0565365647277669,
+            "y": 0.716650285919907,
+            "z": 0.6949787295896521,
+            "w": 0.01485092447128513
+          }
+        }
+      },
+      "kinematic_only": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      },
+      "collision_checked": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      }
+    },
+    {
+      "name": "current_z_plus_2cm",
+      "pose": {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830300774
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.4073661410095679,
+            "y": 0.6502475126541414,
+            "z": 1.2724408968424141
+          },
+          "orientation": {
+            "x": 0.0565365647277669,
+            "y": 0.716650285919907,
+            "z": 0.6949787295896521,
+            "w": 0.01485092447128513
+          }
+        }
+      },
+      "kinematic_only": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      },
+      "collision_checked": {
+        "error": {
+          "val": 1,
+          "message": "",
+          "source": ""
+        },
+        "validity": {
+          "valid": true,
+          "contacts": [],
+          "cost_sources": [],
+          "constraint_result": []
+        }
+      }
+    }
+  ],
+  "measured_controller_tcp": {
+    "header": {
+      "stamp": {
+        "sec": 1792681916,
+        "nanosec": 871773290
+      },
+      "frame_id": "ur_base"
+    },
+    "pose": {
+      "position": {
+        "x": 0.49759632458993625,
+        "y": -0.180638378163074,
+        "z": 0.953540854662596
+      },
+      "orientation": {
+        "x": 0.716618916667132,
+        "y": -0.056532419636574,
+        "z": 0.6950113576402797,
+        "w": 0.014853503151646116
+      }
+    }
+  },
+  "fk": {
+    "pose_stamped": [
+      {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830293557
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.245515,
+            "y": 0.0,
+            "z": 0.302
+          },
+          "orientation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": -0.7071080798594739,
+            "w": 0.7071054825112362
+          }
+        }
+      },
+      {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830296500
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.245515,
+            "y": 0.0,
+            "z": 0.302
+          },
+          "orientation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.7071054825112363,
+            "w": 0.7071080798594738
+          }
+        }
+      },
+      {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830297718
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.4261534007986484,
+            "y": 0.4976254016601723,
+            "z": 1.2555279837155333
+          },
+          "orientation": {
+            "x": 0.531401560777251,
+            "y": 0.4962470875127095,
+            "z": 0.45144678416925904,
+            "w": 0.5172494663137792
+          }
+        }
+      },
+      {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830298574
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.4261534007986484,
+            "y": 0.4976254016601723,
+            "z": 1.2555279837155333
+          },
+          "orientation": {
+            "x": 0.5467256652172406,
+            "y": 0.4667708886092481,
+            "z": 0.5019253618737898,
+            "w": -0.4809229830727201
+          }
+        }
+      },
+      {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830300038
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.4261534007986484,
+            "y": 0.4976254016601723,
+            "z": 1.2555279837155333
+          },
+          "orientation": {
+            "x": 0.5467256652172405,
+            "y": 0.4667708886092482,
+            "z": 0.5019253618737899,
+            "w": -0.48092298307272013
+          }
+        }
+      },
+      {
+        "header": {
+          "stamp": {
+            "sec": 1792681911,
+            "nanosec": 830300774
+          },
+          "frame_id": "mir_base_footprint"
+        },
+        "pose": {
+          "position": {
+            "x": 0.4073661410095679,
+            "y": 0.6502475126541414,
+            "z": 1.252440896842414
+          },
+          "orientation": {
+            "x": 0.0565365647277669,
+            "y": 0.716650285919907,
+            "z": 0.6949787295896521,
+            "w": 0.01485092447128513
+          }
+        }
+      }
+    ],
+    "fk_link_names": [
+      "ur_base_link",
+      "ur_base",
+      "ur_flange",
+      "ur_tool0",
+      "ur_wrist_3_link",
+      "tcp"
+    ],
+    "error_code": {
+      "val": 1,
+      "message": "",
+      "source": ""
+    }
+  },
+  "joint_state": {
+    "header": {
+      "stamp": {
+        "sec": 0,
+        "nanosec": 0
+      },
+      "frame_id": "mir_base_footprint"
+    },
+    "name": [
+      "ur_shoulder_pan_joint",
+      "ur_shoulder_lift_joint",
+      "ur_elbow_joint",
+      "ur_wrist_1_joint",
+      "ur_wrist_2_joint",
+      "ur_wrist_3_joint"
+    ],
+    "position": [
+      0.013548851013183594,
+      -2.472199102441305,
+      0.8971822897540491,
+      -1.6003385982909144,
+      1.4604827165603638,
+      -1.5088380018817347
+    ],
+    "velocity": [],
+    "effort": []
+  },
+  "rsp_movegroup_joint_transforms": "All 29 joint names, types, parent/child links, origins and axes are identical.",
+  "user_observation": "A/B marker balls placed near real suction face, virtual pad visibly aligned.",
+  "revised_conclusion": "Original rejection is at target position, not its rotation: A-position/current-rotation fails, current-position/A-rotation succeeds; all +/-2cm current-position probes succeed. Saved A is 23cm from current modeled TCP. The mismatch between observed placement and recorded target remains unexplained pending a synchronized fresh request; previous reachability finding did not establish underlying cause."
+}

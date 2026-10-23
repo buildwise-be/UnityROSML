@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-10-22T15:56:05.6404452Z",
+  "unityVersion": "6000.0.84f1",
+  "nativeTests": {
+    "result": "Passed",
+    "total": 93,
+    "passed": 93,
+    "failed": 0,
+    "results": "ToolContactValidation/unity-results.xml",
+    "isolatedProject": "Library/RosRigValidation",
+    "rosTransport": "stub rejects access",
+    "hardware": false,
+    "inputSystemSetting": 1
+  },
+  "runtimeCompile": "runtime_compile_summary.json",
+  "visualCheck": {
+    "image": "ToolContactValidation/tool-contact-context.png",
+    "renderer": "Unity graphics-enabled batch camera",
+    "status": "inspected; tool geometry, rotation handles, menu text and depth controls visible",
+    "headsetTested": false
+  },
+  "backendIntegration": "BackendWorkflowBuild/contact_smoke.json",
+  "backendDeployment": "not deployed to Nordbo",
+  "unityAppBuild": "not rebuilt or installed",
+  "sources": [
+    {
+      "path": "Assets/Scripts/V3/ToolPoseVisual.cs",
+      "sha256": "d4277f022d074474b631107822933eed15fddf4621319c516f1c62d16c4cdad7",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TcpTargetPreview.cs",
+      "sha256": "e03c5662372d653274236df3c84eb04184709f6a017f540f2a85e283833d120c",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetPoseContextMenu.cs",
+      "sha256": "221e8257fa8781a9457b12ff012bd806af8a0a9cdb2326f6c9619529ce4c9640",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetRotationHandles.cs",
+      "sha256": "dfaf4bdef3cb72d760fa695e041e6af87fe0179cef40449803072ac19e24575e",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/URInputManager.cs",
+      "sha256": "f4e2ab2a35f79b5be67cb8f61531ff91ba8c3d30c8a44fb9e60096d5dcf1786f",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/PickPlaceController.cs",
+      "sha256": "3e33cb4d708a4fde166f920e47784377b19fbd65d6a1cc0106de765e7f19f53e",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/TcpPlanningController.cs",
+      "sha256": "49265fae5e2c1f1f375529d5851906094afdb4a973ab13891b93d7f665bf7194",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/MTCPlansManager.cs",
+      "sha256": "16c06396c3247e83c9684a8ed8faf42b65129667cb737eecae63580029327fb5",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "d0ddad99a10dffb0f615d2374816ccdfa1d400a529d0bcd308bc37109f244e6b",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TargetPoseContextTests.cs",
+      "sha256": "1ac8a02638431c16508413e2d6db333827bbff19b651098ddf020b5cb40a538c",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolPoseVisualTests.cs",
+      "sha256": "338a0f3a6e58840806817e5e51dd5198aaae9f3aca164364b33cbf69a3bb2c51",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/PickPlaceToolContactTests.cs",
+      "sha256": "c043b784f259932ed52c6decad824c0c944981b53422a6f0170acc1b6b885721",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TaskModeSwitchTests.cs",
+      "sha256": "a618fde27502edee9a4e2ebb3bfc92b10ffeb41c49087adad2510f167d180007",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpPlanningControllerTests.cs",
+      "sha256": "e5193c11b6790117d42ea3f8babd7f63af2958e4b43e43bf59c6f9173fa89511",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpTargetRotationMathTests.cs",
+      "sha256": "5d76d1b060b32965c41cdfc194388fe856bf0aa4246326329f0f2e845b499560",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/MenuFollowTests.cs",
+      "sha256": "f22c1767b4e70d623324b487ca28a1cf36bdcceafeb3275e948b177cf473076c",
+      "isolatedCopyMatches": true
+    }
+  ]
+}

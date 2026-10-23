@@ -1,0 +1,674 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="93" result="Passed" total="93" passed="93" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:35Z" duration="1,0202216">
+  <test-suite type="TestSuite" id="1000" name="RosRigValidation" fullname="RosRigValidation" runstate="Runnable" testcasecount="260" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:35Z" duration="1.020222" total="93" passed="93" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1307" name="UnityROSML.RobotFrames.EditorTests.dll" fullname="C:/Users/aca/unity-source/UnityROSML/Library/RosRigValidation/Library/ScriptAssemblies/UnityROSML.RobotFrames.EditorTests.dll" runstate="Runnable" testcasecount="260" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:35Z" duration="1.014161" total="93" passed="93" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="58676" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestFixture" id="1022" name="MenuFollowTests" fullname="MenuFollowTests" classname="MenuFollowTests" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.334102" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1025" name="ABriefExcursionDoesNotStartPositionFollowing" fullname="MenuFollowTests.ABriefExcursionDoesNotStartPositionFollowing" methodname="ABriefExcursionDoesNotStartPositionFollowing" classname="MenuFollowTests" runstate="Runnable" seed="1881582142" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.104529" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1032" name="AHiddenMenuStaysStillAndReenablingDoesNotSnapIt" fullname="MenuFollowTests.AHiddenMenuStaysStillAndReenablingDoesNotSnapIt" methodname="AHiddenMenuStaysStillAndReenablingDoesNotSnapIt" classname="MenuFollowTests" runstate="Runnable" seed="481254765" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.014738" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1041" name="ApplicationSuspensionClearsAnUnreleasedButtonAndResumesGently" fullname="MenuFollowTests.ApplicationSuspensionClearsAnUnreleasedButtonAndResumesGently" classname="MenuFollowTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.027085" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1039" name="ApplicationSuspensionClearsAnUnreleasedButtonAndResumesGently(&quot;focus&quot;)" fullname="MenuFollowTests.ApplicationSuspensionClearsAnUnreleasedButtonAndResumesGently(&quot;focus&quot;)" methodname="ApplicationSuspensionClearsAnUnreleasedButtonAndResumesGently" classname="MenuFollowTests" runstate="Runnable" seed="1221321404" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.014430" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1040" name="ApplicationSuspensionClearsAnUnreleasedButtonAndResumesGently(&quot;pause&quot;)" fullname="MenuFollowTests.ApplicationSuspensionClearsAnUnreleasedButtonAndResumesGently(&quot;pause&quot;)" methodname="ApplicationSuspensionClearsAnUnreleasedButtonAndResumesGently" classname="MenuFollowTests" runstate="Runnable" seed="1345948155" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.009631" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1044" name="DisablingFollowingKeepsTheWorldMenuStationary" fullname="MenuFollowTests.DisablingFollowingKeepsTheWorldMenuStationary" methodname="DisablingFollowingKeepsTheWorldMenuStationary" classname="MenuFollowTests" runstate="Runnable" seed="165173218" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.008722" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1034" name="ExplicitRecenterMovesImmediatelyWhileAutomaticFollowingDoesNotSnap" fullname="MenuFollowTests.ExplicitRecenterMovesImmediatelyWhileAutomaticFollowingDoesNotSnap" methodname="ExplicitRecenterMovesImmediatelyWhileAutomaticFollowingDoesNotSnap" classname="MenuFollowTests" runstate="Runnable" seed="499764343" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.008305" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1026" name="FarFollowingAndFacingAreGradualAndBoundedEveryFrame" fullname="MenuFollowTests.FarFollowingAndFacingAreGradualAndBoundedEveryFrame" methodname="FarFollowingAndFacingAreGradualAndBoundedEveryFrame" classname="MenuFollowTests" runstate="Runnable" seed="1175551846" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.012369" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1036" name="FollowingAtThirtyAndOneHundredTwentyFramesPerSecondEndsInTheSameComfortZone" fullname="MenuFollowTests.FollowingAtThirtyAndOneHundredTwentyFramesPerSecondEndsInTheSameComfortZone" methodname="FollowingAtThirtyAndOneHundredTwentyFramesPerSecondEndsInTheSameComfortZone" classname="MenuFollowTests" runstate="Runnable" seed="1426447003" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.024354" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MenuFollowValidation: frame-rate-position-difference-metres=0.00309157674
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1031" name="InteractionFreezesPositionAndFacingThenResumesGently" fullname="MenuFollowTests.InteractionFreezesPositionAndFacingThenResumesGently" classname="MenuFollowTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.045445" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1027" name="InteractionFreezesPositionAndFacingThenResumesGently(&quot;hover&quot;)" fullname="MenuFollowTests.InteractionFreezesPositionAndFacingThenResumesGently(&quot;hover&quot;)" methodname="InteractionFreezesPositionAndFacingThenResumesGently" classname="MenuFollowTests" runstate="Runnable" seed="729870179" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.009909" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1028" name="InteractionFreezesPositionAndFacingThenResumesGently(&quot;pressed&quot;)" fullname="MenuFollowTests.InteractionFreezesPositionAndFacingThenResumesGently(&quot;pressed&quot;)" methodname="InteractionFreezesPositionAndFacingThenResumesGently" classname="MenuFollowTests" runstate="Runnable" seed="595228697" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.011460" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1029" name="InteractionFreezesPositionAndFacingThenResumesGently(&quot;alignment&quot;)" fullname="MenuFollowTests.InteractionFreezesPositionAndFacingThenResumesGently(&quot;alignment&quot;)" methodname="InteractionFreezesPositionAndFacingThenResumesGently" classname="MenuFollowTests" runstate="Runnable" seed="1461891024" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.009602" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1030" name="InteractionFreezesPositionAndFacingThenResumesGently(&quot;target drag&quot;)" fullname="MenuFollowTests.InteractionFreezesPositionAndFacingThenResumesGently(&quot;target drag&quot;)" methodname="InteractionFreezesPositionAndFacingThenResumesGently" classname="MenuFollowTests" runstate="Runnable" seed="346101493" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.013288" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1042" name="InvalidDurationsAreIgnoredAndLongFrameHitchesCannotSnapTheMenu" fullname="MenuFollowTests.InvalidDurationsAreIgnoredAndLongFrameHitchesCannotSnapTheMenu" methodname="InvalidDurationsAreIgnoredAndLongFrameHitchesCannotSnapTheMenu" classname="MenuFollowTests" runstate="Runnable" seed="2109237899" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.007353" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1033" name="LookingStraightUpOrDownKeepsAValidHorizontalPlacement" fullname="MenuFollowTests.LookingStraightUpOrDownKeepsAValidHorizontalPlacement" methodname="LookingStraightUpOrDownKeepsAValidHorizontalPlacement" classname="MenuFollowTests" runstate="Runnable" seed="1496082429" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.010708" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1043" name="MissingCameraLeavesTheWorldMenuUntouched" fullname="MenuFollowTests.MissingCameraLeavesTheWorldMenuUntouched" methodname="MissingCameraLeavesTheWorldMenuUntouched" classname="MenuFollowTests" runstate="Runnable" seed="1341164760" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.009736" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1023" name="RecenterPlacesAnUprightMenuOneMetreAwayAndTwentyDegreesToTheRight" fullname="MenuFollowTests.RecenterPlacesAnUprightMenuOneMetreAwayAndTwentyDegreesToTheRight" methodname="RecenterPlacesAnUprightMenuOneMetreAwayAndTwentyDegreesToTheRight" classname="MenuFollowTests" runstate="Runnable" seed="833626573" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.008058" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1035" name="RobotPlacementDoesNotMoveAnAlreadyPositionedViewerMenu" fullname="MenuFollowTests.RobotPlacementDoesNotMoveAnAlreadyPositionedViewerMenu" methodname="RobotPlacementDoesNotMoveAnAlreadyPositionedViewerMenu" classname="MenuFollowTests" runstate="Runnable" seed="375738557" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.007707" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1024" name="SmallHeadMotionInsideTheComfortZoneLeavesTheMenuStationary" fullname="MenuFollowTests.SmallHeadMotionInsideTheComfortZoneLeavesTheMenuStationary" methodname="SmallHeadMotionInsideTheComfortZoneLeavesTheMenuStationary" classname="MenuFollowTests" runstate="Runnable" seed="88075005" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.009511" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1038" name="TurningAroundMovesTheMenuAroundTheViewerAndKeepsClearOfTheirFace" fullname="MenuFollowTests.TurningAroundMovesTheMenuAroundTheViewerAndKeepsClearOfTheirFace" methodname="TurningAroundMovesTheMenuAroundTheViewerAndKeepsClearOfTheirFace" classname="MenuFollowTests" runstate="Runnable" seed="652223912" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.013320" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MenuFollowValidation: turn-clearance-minimum-metres=0.990922451
+]]></output>
+        </test-case>
+        <test-case id="1037" name="TurningToLookAtTheMenuStopsThePositionChase" fullname="MenuFollowTests.TurningToLookAtTheMenuStopsThePositionChase" methodname="TurningToLookAtTheMenuStopsThePositionChase" classname="MenuFollowTests" runstate="Runnable" seed="194566423" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.010707" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1045" name="PickPlaceToolContactTests" fullname="PickPlaceToolContactTests" classname="PickPlaceToolContactTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.240117" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1051" name="DelayedCapabilityResponseCannotRearmAfterAContactChanges" fullname="PickPlaceToolContactTests.DelayedCapabilityResponseCannotRearmAfterAContactChanges" methodname="DelayedCapabilityResponseCannotRearmAfterAContactChanges" classname="PickPlaceToolContactTests" runstate="Runnable" seed="713411734" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.087990" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1048" name="DepthClickMovesExportedContactFiveMillimetresAlongToolZAndRevokesReview" fullname="PickPlaceToolContactTests.DepthClickMovesExportedContactFiveMillimetresAlongToolZAndRevokesReview" methodname="DepthClickMovesExportedContactFiveMillimetresAlongToolZAndRevokesReview" classname="PickPlaceToolContactTests" runstate="Runnable" seed="902424976" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.013828" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1046" name="DisplayedToolContactIsExportedExactlyWithoutSurfaceOrFlangeOffsets" fullname="PickPlaceToolContactTests.DisplayedToolContactIsExportedExactlyWithoutSurfaceOrFlangeOffsets" methodname="DisplayedToolContactIsExportedExactlyWithoutSurfaceOrFlangeOffsets" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1599356955" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.013113" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1050" name="InactiveModeHidesToolAimAndRejectsCaptureAndExportWhileKeepingPreviousPoints" fullname="PickPlaceToolContactTests.InactiveModeHidesToolAimAndRejectsCaptureAndExportWhileKeepingPreviousPoints" methodname="InactiveModeHidesToolAimAndRejectsCaptureAndExportWhileKeepingPreviousPoints" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1590394141" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.011240" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1056" name="InterruptedContextBumperDoesNotBlockTheNextCapture" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.093565" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1052" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;focus&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;focus&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="41307839" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.018208" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+          <test-case id="1053" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;pause&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;pause&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="474546077" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.011609" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+          <test-case id="1054" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;tracking&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;tracking&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="626808071" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.016700" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+          <test-case id="1055" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;disabled&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;disabled&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="124004665" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.010102" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1047" name="LegacyPlanePrefabsAreNeverInstantiatedForContactTargets" fullname="PickPlaceToolContactTests.LegacyPlanePrefabsAreNeverInstantiatedForContactTargets" methodname="LegacyPlanePrefabsAreNeverInstantiatedForContactTargets" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1376948101" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.008775" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1049" name="RecapturingResetsDepthBaselineWithoutKeepingTheOldOffset" fullname="PickPlaceToolContactTests.RecapturingResetsDepthBaselineWithoutKeepingTheOldOffset" methodname="RecapturingResetsDepthBaselineWithoutKeepingTheOldOffset" classname="PickPlaceToolContactTests" runstate="Runnable" seed="889263702" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.009856" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1210" name="TargetPoseContextTests" fullname="TargetPoseContextTests" classname="TargetPoseContextTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.024169" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1211" name="DepthStepMovesExactlyFiveMillimetresAlongPhysicalToolZ" fullname="TargetPoseContextTests.DepthStepMovesExactlyFiveMillimetresAlongPhysicalToolZ" methodname="DepthStepMovesExactlyFiveMillimetresAlongPhysicalToolZ" classname="TargetPoseContextTests" runstate="Runnable" seed="239876334" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.003000" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1216" name="ExactTcpContextDisallowsContactDepthAdjustments" fullname="TargetPoseContextTests.ExactTcpContextDisallowsContactDepthAdjustments" methodname="ExactTcpContextDisallowsContactDepthAdjustments" classname="TargetPoseContextTests" runstate="Runnable" seed="1703122805" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.002368" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1217" name="HiddenTargetsAndCalibrationEditsRejectPositionChanges" fullname="TargetPoseContextTests.HiddenTargetsAndCalibrationEditsRejectPositionChanges" methodname="HiddenTargetsAndCalibrationEditsRejectPositionChanges" classname="TargetPoseContextTests" runstate="Runnable" seed="1523107834" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.000980" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1218" name="MenuStaysStillWhenItsButtonsMoveTheToolAndClosesOnDisable" fullname="TargetPoseContextTests.MenuStaysStillWhenItsButtonsMoveTheToolAndClosesOnDisable" methodname="MenuStaysStillWhenItsButtonsMoveTheToolAndClosesOnDisable" classname="TargetPoseContextTests" runstate="Runnable" seed="623604041" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.002907" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1212" name="NegativeStepRetractsAndOppositeStepsCancel" fullname="TargetPoseContextTests.NegativeStepRetractsAndOppositeStepsCancel" methodname="NegativeStepRetractsAndOppositeStepsCancel" classname="TargetPoseContextTests" runstate="Runnable" seed="1343065831" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.000890" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1219" name="OnlyOneTargetContextCanBeOpenAtOnce" fullname="TargetPoseContextTests.OnlyOneTargetContextCanBeOpenAtOnce" methodname="OnlyOneTargetContextCanBeOpenAtOnce" classname="TargetPoseContextTests" runstate="Runnable" seed="1016796590" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.003329" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1214" name="RecaptureRebasesWithoutMovingTheNewContactPoint" fullname="TargetPoseContextTests.RecaptureRebasesWithoutMovingTheNewContactPoint" methodname="RecaptureRebasesWithoutMovingTheNewContactPoint" classname="TargetPoseContextTests" runstate="Runnable" seed="1550784936" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.000895" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1213" name="ResetUndoesActualTranslationsWhenOrientationChangesBetweenSteps" fullname="TargetPoseContextTests.ResetUndoesActualTranslationsWhenOrientationChangesBetweenSteps" methodname="ResetUndoesActualTranslationsWhenOrientationChangesBetweenSteps" classname="TargetPoseContextTests" runstate="Runnable" seed="942288592" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.001007" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1220" name="ToolHandleCoversActualGeometryWithoutRenderingTheOldBall" fullname="TargetPoseContextTests.ToolHandleCoversActualGeometryWithoutRenderingTheOldBall" methodname="ToolHandleCoversActualGeometryWithoutRenderingTheOldBall" classname="TargetPoseContextTests" runstate="Runnable" seed="647241154" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.005315" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1215" name="TrackingOriginMovementPreservesThePhysicalDepthOffset" fullname="TargetPoseContextTests.TrackingOriginMovementPreservesThePhysicalDepthOffset" methodname="TrackingOriginMovementPreservesThePhysicalDepthOffset" classname="TargetPoseContextTests" runstate="Runnable" seed="652897870" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.000955" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1221" name="TaskModeSwitchTests" fullname="TaskModeSwitchTests" classname="TaskModeSwitchTests" runstate="Runnable" testcasecount="19" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:35Z" duration="0.260964" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1241" name="AlignmentBlocksBothModesBeforeAnyPlanningOrExecutionConnection" fullname="TaskModeSwitchTests.AlignmentBlocksBothModesBeforeAnyPlanningOrExecutionConnection" methodname="AlignmentBlocksBothModesBeforeAnyPlanningOrExecutionConnection" classname="TaskModeSwitchTests" runstate="Runnable" seed="641262055" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.013013" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+TCP planning: Finish or cancel robot alignment before planning or executing.
+]]></output>
+        </test-case>
+        <test-case id="1236" name="EmptyFalseFollowedByPlanningFailedTerminatesAndRejectsLateSuccess" fullname="TaskModeSwitchTests.EmptyFalseFollowedByPlanningFailedTerminatesAndRejectsLateSuccess" methodname="EmptyFalseFollowedByPlanningFailedTerminatesAndRejectsLateSuccess" classname="TaskModeSwitchTests" runstate="Runnable" seed="920884538" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.009368" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1229" name="FailedOfflineMtcPublishCannotLeaveAnArmedRequest" fullname="TaskModeSwitchTests.FailedOfflineMtcPublishCannotLeaveAnArmedRequest" methodname="FailedOfflineMtcPublishCannotLeaveAnArmedRequest" classname="TaskModeSwitchTests" runstate="Runnable" seed="1047916957" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.007440" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1226" name="HiddenTcpTargetsRejectCaptureAndExportUntilTheirModeIsRestored" fullname="TaskModeSwitchTests.HiddenTcpTargetsRejectCaptureAndExportUntilTheirModeIsRestored" methodname="HiddenTcpTargetsRejectCaptureAndExportUntilTheirModeIsRestored" classname="TaskModeSwitchTests" runstate="Runnable" seed="634118784" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.009617" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+        <test-case id="1239" name="HistoricalResetListenerPreservesTheMtcBlockedReason" fullname="TaskModeSwitchTests.HistoricalResetListenerPreservesTheMtcBlockedReason" methodname="HistoricalResetListenerPreservesTheMtcBlockedReason" classname="TaskModeSwitchTests" runstate="Runnable" seed="412206529" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:34Z" duration="0.008467" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1235" name="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder" fullname="TaskModeSwitchTests.InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder" classname="TaskModeSwitchTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:35Z" duration="0.089779" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1233" name="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder(True)" fullname="TaskModeSwitchTests.InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder(True)" methodname="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder" classname="TaskModeSwitchTests" runstate="Runnable" seed="928857770" result="Passed" start-time="2026-10-22 15:55:34Z" end-time="2026-10-22 15:55:35Z" duration="0.072027" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1234" name="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder(False)" fullname="TaskModeSwitchTests.InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder(False)" methodname="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder" classname="TaskModeSwitchTests" runstate="Runnable" seed="855708999" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.017056" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1230" name="LateMtcResultsCannotRestoreAPlanAfterSwitchingAwayAndBack" fullname="TaskModeSwitchTests.LateMtcResultsCannotRestoreAPlanAfterSwitchingAwayAndBack" methodname="LateMtcResultsCannotRestoreAPlanAfterSwitchingAwayAndBack" classname="TaskModeSwitchTests" runstate="Runnable" seed="1280684578" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.009391" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+        <test-case id="1227" name="LiveToolAimUsesTheSameTcpPoseInBothTaskModes" fullname="TaskModeSwitchTests.LiveToolAimUsesTheSameTcpPoseInBothTaskModes" methodname="LiveToolAimUsesTheSameTcpPoseInBothTaskModes" classname="TaskModeSwitchTests" runstate="Runnable" seed="1741273475" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.008945" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+        <test-case id="1225" name="ModeSwitchEndsAnActiveTargetRotation" fullname="TaskModeSwitchTests.ModeSwitchEndsAnActiveTargetRotation" methodname="ModeSwitchEndsAnActiveTargetRotation" classname="TaskModeSwitchTests" runstate="Runnable" seed="1053352518" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.006632" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+        <test-case id="1223" name="ModeSwitchRevokesBothPlansAndClearsTheSharedGhostPath" fullname="TaskModeSwitchTests.ModeSwitchRevokesBothPlansAndClearsTheSharedGhostPath" methodname="ModeSwitchRevokesBothPlansAndClearsTheSharedGhostPath" classname="TaskModeSwitchTests" runstate="Runnable" seed="2134375012" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.009448" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+        <test-case id="1238" name="MtcPreviewTimeoutDisarmsTheRequestAndRejectsLateCallbacks" fullname="TaskModeSwitchTests.MtcPreviewTimeoutDisarmsTheRequestAndRejectsLateCallbacks" methodname="MtcPreviewTimeoutDisarmsTheRequestAndRejectsLateCallbacks" classname="TaskModeSwitchTests" runstate="Runnable" seed="1976973127" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.009579" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1231" name="MtcSuccessWaitsForPreviewAndRejectsAnUndisplayableTrajectory" fullname="TaskModeSwitchTests.MtcSuccessWaitsForPreviewAndRejectsAnUndisplayableTrajectory" methodname="MtcSuccessWaitsForPreviewAndRejectsAnUndisplayableTrajectory" classname="TaskModeSwitchTests" runstate="Runnable" seed="1150182910" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.009609" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1228" name="PlanAndExecuteUseOnlyTheSelectedPlanner" fullname="TaskModeSwitchTests.PlanAndExecuteUseOnlyTheSelectedPlanner" methodname="PlanAndExecuteUseOnlyTheSelectedPlanner" classname="TaskModeSwitchTests" runstate="Runnable" seed="660260734" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.007559" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+        </test-case>
+        <test-case id="1232" name="ReadyMtcReviewRequiresTheSameDisplayedTrajectoryAndConsumesOnce" fullname="TaskModeSwitchTests.ReadyMtcReviewRequiresTheSameDisplayedTrajectoryAndConsumesOnce" methodname="ReadyMtcReviewRequiresTheSameDisplayedTrajectoryAndConsumesOnce" classname="TaskModeSwitchTests" runstate="Runnable" seed="853792939" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.014538" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1237" name="ReplacementNoticeRevokesAnAlreadyReviewedMtcPlan" fullname="TaskModeSwitchTests.ReplacementNoticeRevokesAnAlreadyReviewedMtcPlan" methodname="ReplacementNoticeRevokesAnAlreadyReviewedMtcPlan" classname="TaskModeSwitchTests" runstate="Runnable" seed="787405340" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.016355" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1224" name="SelectingTheCurrentModePreservesItsPendingReview" fullname="TaskModeSwitchTests.SelectingTheCurrentModePreservesItsPendingReview" methodname="SelectingTheCurrentModePreservesItsPendingReview" classname="TaskModeSwitchTests" runstate="Runnable" seed="1048818376" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.009753" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+        <test-case id="1240" name="SurfaceRotationRevokesThePreviousMtcRequestAndPreview" fullname="TaskModeSwitchTests.SurfaceRotationRevokesThePreviousMtcRequestAndPreview" methodname="SurfaceRotationRevokesThePreviousMtcRequestAndPreview" classname="TaskModeSwitchTests" runstate="Runnable" seed="918588908" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.008921" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1222" name="SwitchingModesRetainsPosesAndShowsOnlyTheSelectedTargets" fullname="TaskModeSwitchTests.SwitchingModesRetainsPosesAndShowsOnlyTheSelectedTargets" methodname="SwitchingModesRetainsPosesAndShowsOnlyTheSelectedTargets" classname="TaskModeSwitchTests" runstate="Runnable" seed="1813193157" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.009690" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1248" name="TcpPlanningControllerTests" fullname="TcpPlanningControllerTests" classname="TcpPlanningControllerTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.010105" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1260" name="HistoricalResetListenerCannotOverwriteVisibleTcpBlockedReason" fullname="TcpPlanningControllerTests.HistoricalResetListenerCannotOverwriteVisibleTcpBlockedReason" methodname="HistoricalResetListenerCannotOverwriteVisibleTcpBlockedReason" classname="TcpPlanningControllerTests" runstate="Runnable" seed="2027272776" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.002163" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1252" name="MatchingFailureConsumesTokenAndAbsorbsLateSuccess" fullname="TcpPlanningControllerTests.MatchingFailureConsumesTokenAndAbsorbsLateSuccess" classname="TcpPlanningControllerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.002412" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1250" name="MatchingFailureConsumesTokenAndAbsorbsLateSuccess(&quot;failed&quot;)" fullname="TcpPlanningControllerTests.MatchingFailureConsumesTokenAndAbsorbsLateSuccess(&quot;failed&quot;)" methodname="MatchingFailureConsumesTokenAndAbsorbsLateSuccess" classname="TcpPlanningControllerTests" runstate="Runnable" seed="1452361836" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.001235" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[TCP planning: Planning exact TCP A → B. No motion requested.
+TCP planning: TCP planning failed or invalidated. Changed or failed
+]]></output>
+          </test-case>
+          <test-case id="1251" name="MatchingFailureConsumesTokenAndAbsorbsLateSuccess(&quot;invalidated&quot;)" fullname="TcpPlanningControllerTests.MatchingFailureConsumesTokenAndAbsorbsLateSuccess(&quot;invalidated&quot;)" methodname="MatchingFailureConsumesTokenAndAbsorbsLateSuccess" classname="TcpPlanningControllerTests" runstate="Runnable" seed="324871413" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000715" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[TCP planning: Planning exact TCP A → B. No motion requested.
+TCP planning: TCP planning failed or invalidated. Changed or failed
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1253" name="OtherClientsStatusCannotChangePendingReview" fullname="TcpPlanningControllerTests.OtherClientsStatusCannotChangePendingReview" methodname="OtherClientsStatusCannotChangePendingReview" classname="TcpPlanningControllerTests" runstate="Runnable" seed="416029536" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000307" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1249" name="PlanningProgressRetainsTokenAndReadyResultWaitsForMatchingPreview" fullname="TcpPlanningControllerTests.PlanningProgressRetainsTokenAndReadyResultWaitsForMatchingPreview" methodname="PlanningProgressRetainsTokenAndReadyResultWaitsForMatchingPreview" classname="TcpPlanningControllerTests" runstate="Runnable" seed="123590082" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.001130" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Planning exact TCP A → B. No motion requested.
+TCP planning: TCP plan succeeded. Waiting for its matching trajectory preview...
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1259" name="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets" fullname="TcpPlanningControllerTests.PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets" classname="TcpPlanningControllerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.001388" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1257" name="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets(1.0d)" fullname="TcpPlanningControllerTests.PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets(1.0d)" methodname="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets" classname="TcpPlanningControllerTests" runstate="Runnable" seed="1916774629" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000838" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1258" name="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets(-1.0d)" fullname="TcpPlanningControllerTests.PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets(-1.0d)" methodname="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets" classname="TcpPlanningControllerTests" runstate="Runnable" seed="1003310875" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000195" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1256" name="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus" fullname="TcpPlanningControllerTests.UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus" classname="TcpPlanningControllerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000825" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1254" name="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus(null)" fullname="TcpPlanningControllerTests.UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus(null)" methodname="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus" classname="TcpPlanningControllerTests" runstate="Runnable" seed="1588308979" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000350" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1255" name="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus(&quot;&quot;)" fullname="TcpPlanningControllerTests.UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus(&quot;&quot;)" methodname="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus" classname="TcpPlanningControllerTests" runstate="Runnable" seed="892476055" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000188" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+      </test-suite>
+      <test-suite type="TestFixture" id="1261" name="TcpTargetRotationMathTests" fullname="TcpTargetRotationMathTests" classname="TcpTargetRotationMathTests" runstate="Runnable" testcasecount="17" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.007185" total="17" passed="17" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1269" name="AWorldAxisDeltaIsAppliedBeforeTheInitialRotation" fullname="TcpTargetRotationMathTests.AWorldAxisDeltaIsAppliedBeforeTheInitialRotation" methodname="AWorldAxisDeltaIsAppliedBeforeTheInitialRotation" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="1001907909" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.001260" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1277" name="ControllerDeltaIsRelativeToTheCapturedControllerPose" fullname="TcpTargetRotationMathTests.ControllerDeltaIsRelativeToTheCapturedControllerPose" methodname="ControllerDeltaIsRelativeToTheCapturedControllerPose" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="1034463938" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000375" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1280" name="InvalidRotationRequestsAreRejected" fullname="TcpTargetRotationMathTests.InvalidRotationRequestsAreRejected" methodname="InvalidRotationRequestsAreRejected" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="870970425" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.001069" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1278" name="NoControllerRotationMeansNoTargetRotation" fullname="TcpTargetRotationMathTests.NoControllerRotationMeansNoTargetRotation" methodname="NoControllerRotationMeansNoTargetRotation" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="131658612" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000200" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1268" name="NonfiniteRayPlaneInputsAreRejected" fullname="TcpTargetRotationMathTests.NonfiniteRayPlaneInputsAreRejected" methodname="NonfiniteRayPlaneInputsAreRejected" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="361909864" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000428" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1264" name="OppositePlaneDirectionsProduceAHalfTurn" fullname="TcpTargetRotationMathTests.OppositePlaneDirectionsProduceAHalfTurn" methodname="OppositePlaneDirectionsProduceAHalfTurn" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="1878924157" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000356" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1267" name="ParallelAndBackwardIntersectionsAreRejected" fullname="TcpTargetRotationMathTests.ParallelAndBackwardIntersectionsAreRejected" methodname="ParallelAndBackwardIntersectionsAreRejected" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="1377778390" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000274" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1262" name="PlaneAngleKeepsItsSignAndIgnoresMotionAlongTheAxis" fullname="TcpTargetRotationMathTests.PlaneAngleKeepsItsSignAndIgnoresMotionAlongTheAxis" methodname="PlaneAngleKeepsItsSignAndIgnoresMotionAlongTheAxis" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="437818902" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000143" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1266" name="RayPlaneIntersectionUsesTheRayOriginAndPlaneOffset" fullname="TcpTargetRotationMathTests.RayPlaneIntersectionUsesTheRayOriginAndPlaneOffset" methodname="RayPlaneIntersectionUsesTheRayOriginAndPlaneOffset" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="1358582674" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000164" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1263" name="ReversingThePlaneNormalReversesTheRotation" fullname="TcpTargetRotationMathTests.ReversingThePlaneNormalReversesTheRotation" methodname="ReversingThePlaneNormalReversesTheRotation" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="1433157790" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000090" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1276" name="TiltUsesTheTargetsCapturedLocalXAxisInWorldSpace" fullname="TcpTargetRotationMathTests.TiltUsesTheTargetsCapturedLocalXAxisInWorldSpace" classname="TcpTargetRotationMathTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000606" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1274" name="TiltUsesTheTargetsCapturedLocalXAxisInWorldSpace(0.0f,0.0f,0.0f)" fullname="TcpTargetRotationMathTests.TiltUsesTheTargetsCapturedLocalXAxisInWorldSpace(0.0f,0.0f,0.0f)" methodname="TiltUsesTheTargetsCapturedLocalXAxisInWorldSpace" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="1068027600" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000250" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1275" name="TiltUsesTheTargetsCapturedLocalXAxisInWorldSpace(30.0f,-45.0f,70.0f)" fullname="TcpTargetRotationMathTests.TiltUsesTheTargetsCapturedLocalXAxisInWorldSpace(30.0f,-45.0f,70.0f)" methodname="TiltUsesTheTargetsCapturedLocalXAxisInWorldSpace" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="2009592390" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000134" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1273" name="TwistingAroundTheTcpNormalPreservesItsDirection" fullname="TcpTargetRotationMathTests.TwistingAroundTheTcpNormalPreservesItsDirection" classname="TcpTargetRotationMathTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000572" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1270" name="TwistingAroundTheTcpNormalPreservesItsDirection(0.0f,0.0f,0.0f)" fullname="TcpTargetRotationMathTests.TwistingAroundTheTcpNormalPreservesItsDirection(0.0f,0.0f,0.0f)" methodname="TwistingAroundTheTcpNormalPreservesItsDirection" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="2111361057" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000260" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1271" name="TwistingAroundTheTcpNormalPreservesItsDirection(30.0f,-45.0f,70.0f)" fullname="TcpTargetRotationMathTests.TwistingAroundTheTcpNormalPreservesItsDirection(30.0f,-45.0f,70.0f)" methodname="TwistingAroundTheTcpNormalPreservesItsDirection" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="2113127131" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000038" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1272" name="TwistingAroundTheTcpNormalPreservesItsDirection(-65.0f,120.0f,25.0f)" fullname="TcpTargetRotationMathTests.TwistingAroundTheTcpNormalPreservesItsDirection(-65.0f,120.0f,25.0f)" methodname="TwistingAroundTheTcpNormalPreservesItsDirection" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="1245366726" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000025" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1265" name="UndefinedPlaneAnglesAreRejected" fullname="TcpTargetRotationMathTests.UndefinedPlaneAnglesAreRejected" methodname="UndefinedPlaneAnglesAreRejected" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="333961325" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000153" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1279" name="ValidNonunitControllerQuaternionsAreNormalized" fullname="TcpTargetRotationMathTests.ValidNonunitControllerQuaternionsAreNormalized" methodname="ValidNonunitControllerQuaternionsAreNormalized" classname="TcpTargetRotationMathTests" runstate="Runnable" seed="764125874" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.000288" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1286" name="ToolPoseVisualTests" fullname="ToolPoseVisualTests" classname="ToolPoseVisualTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.131660" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="ParameterizedMethod" id="1290" name="LiveToolCopiesOnlyGeometryAtTheIdenticalTcpPose" fullname="ToolPoseVisualTests.LiveToolCopiesOnlyGeometryAtTheIdenticalTcpPose" classname="ToolPoseVisualTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.071200" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1287" name="LiveToolCopiesOnlyGeometryAtTheIdenticalTcpPose(&quot;none&quot;)" fullname="ToolPoseVisualTests.LiveToolCopiesOnlyGeometryAtTheIdenticalTcpPose(&quot;none&quot;)" methodname="LiveToolCopiesOnlyGeometryAtTheIdenticalTcpPose" classname="ToolPoseVisualTests" runstate="Runnable" seed="908585830" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.056061" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1288" name="LiveToolCopiesOnlyGeometryAtTheIdenticalTcpPose(&quot;kenos&quot;)" fullname="ToolPoseVisualTests.LiveToolCopiesOnlyGeometryAtTheIdenticalTcpPose(&quot;kenos&quot;)" methodname="LiveToolCopiesOnlyGeometryAtTheIdenticalTcpPose" classname="ToolPoseVisualTests" runstate="Runnable" seed="549210204" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.005703" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1289" name="LiveToolCopiesOnlyGeometryAtTheIdenticalTcpPose(&quot;kenos_sl&quot;)" fullname="ToolPoseVisualTests.LiveToolCopiesOnlyGeometryAtTheIdenticalTcpPose(&quot;kenos_sl&quot;)" methodname="LiveToolCopiesOnlyGeometryAtTheIdenticalTcpPose" classname="ToolPoseVisualTests" runstate="Runnable" seed="601313369" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.009078" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1295" name="ModelChangesRebuildGhostWithoutMovingItsTarget" fullname="ToolPoseVisualTests.ModelChangesRebuildGhostWithoutMovingItsTarget" methodname="ModelChangesRebuildGhostWithoutMovingItsTarget" classname="ToolPoseVisualTests" runstate="Runnable" seed="810899142" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.014633" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1294" name="PrefabAndCadFallbackMatchesLiveToolBoundsBeforeQrPlacement" fullname="ToolPoseVisualTests.PrefabAndCadFallbackMatchesLiveToolBoundsBeforeQrPlacement" classname="ToolPoseVisualTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.040679" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1291" name="PrefabAndCadFallbackMatchesLiveToolBoundsBeforeQrPlacement(&quot;none&quot;)" fullname="ToolPoseVisualTests.PrefabAndCadFallbackMatchesLiveToolBoundsBeforeQrPlacement(&quot;none&quot;)" methodname="PrefabAndCadFallbackMatchesLiveToolBoundsBeforeQrPlacement" classname="ToolPoseVisualTests" runstate="Runnable" seed="1905210642" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.019738" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1292" name="PrefabAndCadFallbackMatchesLiveToolBoundsBeforeQrPlacement(&quot;kenos&quot;)" fullname="ToolPoseVisualTests.PrefabAndCadFallbackMatchesLiveToolBoundsBeforeQrPlacement(&quot;kenos&quot;)" methodname="PrefabAndCadFallbackMatchesLiveToolBoundsBeforeQrPlacement" classname="ToolPoseVisualTests" runstate="Runnable" seed="1264740144" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.010049" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1293" name="PrefabAndCadFallbackMatchesLiveToolBoundsBeforeQrPlacement(&quot;kenos_sl&quot;)" fullname="ToolPoseVisualTests.PrefabAndCadFallbackMatchesLiveToolBoundsBeforeQrPlacement(&quot;kenos_sl&quot;)" methodname="PrefabAndCadFallbackMatchesLiveToolBoundsBeforeQrPlacement" classname="ToolPoseVisualTests" runstate="Runnable" seed="1585854387" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.009881" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1296" name="PrefabFallbackRejectsAnUnsupportedToolMeshInsteadOfSubstitutingTheReferenceMesh" fullname="ToolPoseVisualTests.PrefabFallbackRejectsAnUnsupportedToolMeshInsteadOfSubstitutingTheReferenceMesh" methodname="PrefabFallbackRejectsAnUnsupportedToolMeshInsteadOfSubstitutingTheReferenceMesh" classname="ToolPoseVisualTests" runstate="Runnable" seed="687740401" result="Passed" start-time="2026-10-22 15:55:35Z" end-time="2026-10-22 15:55:35Z" duration="0.004514" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[ToolPoseVisual: Tool preview unavailable: Unsupported tool visual mesh for kenos_base.
+Saving results to: C:/Users/aca/unity-source/UnityROSML/Library/RosRigValidation/tool-contact-results.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

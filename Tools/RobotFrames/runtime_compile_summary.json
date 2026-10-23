@@ -1,0 +1,341 @@
+﻿{
+    "schemaVersion":  1,
+    "completedUtc":  "2026-10-22T15:53:24.1016343Z",
+    "unityVersion":  "6000.0.84f1",
+    "command":  "powershell -NoProfile -File Tools/RobotFrames/compile_runtime.ps1",
+    "compiler":  "C:\\Program Files\\Unity 6000.0.84f1\\Editor\\Data\\DotNetSdkRoslyn\\csc.dll",
+    "compilerInvocation":  "dotnet exec csc.dll /noconfig /nostdlib @response.rsp",
+    "settingsResponseFile":  "Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.rsp",
+    "responseSha256":  "9c2e3b9483a0b732212ed8c3291306800e2fdae77069e602ad1c1d19ce9b6cb3",
+    "helperSourceCount":  6,
+    "mainSourceCount":  73,
+    "exitCode":  0,
+    "errorCount":  0,
+    "warnings":  [
+                     "Assets\\Scripts\\PickAndPlaceScriptableObject.cs(29,26): warning CS0618: \u0027CoordinatesConverter\u0027 is obsolete: \u0027Use RobotCoordinateService instead\u0027",
+                     "Assets\\Samples\\Magic Leap SDK\\2.6.0\\ML Rig \u0026 OpenXR Input\\MagicLeapController.cs(45,27): warning CS0618: \u0027Object.FindObjectOfType\u003cT\u003e()\u0027 is obsolete: \u0027Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType\u0027",
+                     "Assets\\Scripts\\UR16eServiceCaller.cs(55,18): warning CS0414: The field \u0027Ur16EServiceCaller.debugEnabled\u0027 is assigned but its value is never used"
+                 ],
+    "ros2":  true,
+    "validatedSources":  [
+                             {
+                                 "sha256":  "6459a8271681b0d5db6d7ba1c4955349f278d9f8dfda43200fe83cb27aa3bbde",
+                                 "path":  "Assets/RosMessages/Moveit/msg/RobotTrajectoryMsg.cs"
+                             },
+                             {
+                                 "sha256":  "bedcac3c807c9000a79b6d95acf2084f54fd317b36a32d1b2b6a0676bbd708de",
+                                 "path":  "Assets/RosMessages/Ur16eInterfaces/msg/BoxMsg.cs"
+                             },
+                             {
+                                 "sha256":  "0ceaef005b1d7027733289e8862c7bcd924d54031913ea203ada5471ad19b105",
+                                 "path":  "Assets/RosMessages/Ur16eInterfaces/msg/PickPlacePosesMsg.cs"
+                             },
+                             {
+                                 "sha256":  "455bcf3c1ab15086b6f56a2689fdc5cbb6111a777e9f2407059576160da8f702",
+                                 "path":  "Assets/RosMessages/Ur16eUnityInterfaces/srv/AddPrimitiveRequest.cs"
+                             },
+                             {
+                                 "sha256":  "11211fe1018df9c85f27aecfe6eb174512c0dd5b39d97cf04de29e4278c274e6",
+                                 "path":  "Assets/RosMessages/Ur16eUnityInterfaces/srv/AddPrimitiveResponse.cs"
+                             },
+                             {
+                                 "sha256":  "d62870df53a72c21449b8ebdc4b6a63cfeaa2ef7c1e866cbebe6b85535e1e884",
+                                 "path":  "Assets/RosMessages/Ur16eUnityInterfaces/srv/UpdatePlanningSceneRequest.cs"
+                             },
+                             {
+                                 "sha256":  "c22bcdcf91113e500ef6bc29ff1e7f1a93ae54f1a9ca8e9c665f928d4bf7699a",
+                                 "path":  "Assets/RosMessages/Ur16eUnityInterfaces/srv/UpdatePlanningSceneResponse.cs"
+                             },
+                             {
+                                 "sha256":  "3c54a5cd340b267ec35d9aecc0c6bfcc4bb2b594bb8186f8faac9254e5f70fff",
+                                 "path":  "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16eMoverServiceRequest.cs"
+                             },
+                             {
+                                 "sha256":  "4ef43838e21b822a77e7d0b1ddd45a2189df6c14841201bfd877e5207d3ad2be",
+                                 "path":  "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16eMoverServiceResponse.cs"
+                             },
+                             {
+                                 "sha256":  "1a7827b3938407cf82bcaddfadb81f9b871a49e9dbc98aaca62df33c4775c263",
+                                 "path":  "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16ePathPlanRequest.cs"
+                             },
+                             {
+                                 "sha256":  "8a08465f9a66bccb30ee37055d69a1a3f4eae24d06971ed119fe75198c1c4eac",
+                                 "path":  "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16ePathPlanResponse.cs"
+                             },
+                             {
+                                 "sha256":  "14d0aec8e5f14ea7d2d50c2a76cfd0d6c9f9011d3b76d03e6fefca5519730928",
+                                 "path":  "Assets/Samples/Magic Leap SDK/2.6.0/Eye Gaze sample/GazeSample.cs"
+                             },
+                             {
+                                 "sha256":  "9aaabf39fa6a03361d8a87b7093b8fdbcdeba2d3c5a045bcaf9359748adf4d82",
+                                 "path":  "Assets/Samples/Magic Leap SDK/2.6.0/Eye Gaze sample/GazeVisualizer.cs"
+                             },
+                             {
+                                 "sha256":  "a58c59ce03da2124e5aa1e516a43de81d4b6df47e0a5e0f4d5c8fe0526ff9830",
+                                 "path":  "Assets/Samples/Magic Leap SDK/2.6.0/Marker Understanding sample/MarkerUnderstandingSample.cs"
+                             },
+                             {
+                                 "sha256":  "52ed16dad385ff06376e5aee11fcab6f4352a6b29706a0c7264f4080a7515eaf",
+                                 "path":  "Assets/Samples/Magic Leap SDK/2.6.0/ML Rig \u0026 OpenXR Input/MagicLeapController.cs"
+                             },
+                             {
+                                 "sha256":  "4cb8b2271414f22bd1c7145214cfb53f5d64541e6ac2a9747d0a5382a8579507",
+                                 "path":  "Assets/Samples/Magic Leap SDK/2.6.0/ML Rig \u0026 OpenXR Input/MagicLeapOpenXRInput.cs"
+                             },
+                             {
+                                 "sha256":  "a71c07c4c6e7b2d89216da5e306f08adc483a9e22ebcd490dcba52279d01d863",
+                                 "path":  "Assets/Scripts/AddBoxToScene.cs"
+                             },
+                             {
+                                 "sha256":  "ca1469e55c8eb9e5721269564d780355460a2edd537f0d8d8543cd3da8d6cd8c",
+                                 "path":  "Assets/Scripts/Controllers/FaceSelectionController.cs"
+                             },
+                             {
+                                 "sha256":  "bc485be02e24d9be8621cacbc1a35aa2c1b5e9ffb57b3b8e3664671b3cdba478",
+                                 "path":  "Assets/Scripts/CoordinatesConverter.cs"
+                             },
+                             {
+                                 "sha256":  "27d27d19b0264d8acfd66bb9348e952dcffdb50a4c994c4812a92bc422092fb1",
+                                 "path":  "Assets/Scripts/Managers/MeshFaceColorer.cs"
+                             },
+                             {
+                                 "sha256":  "e2d0cb21ec805c8c107f470a7d50bc47d8dd01fed1bd66682f6f4f235924a8ad",
+                                 "path":  "Assets/Scripts/Managers/TileManager.cs"
+                             },
+                             {
+                                 "sha256":  "3c4bf8df448400034a7171a1c8fafb7947249df89f74d789eecfce996fff3dd0",
+                                 "path":  "Assets/Scripts/Managers/UIManager.cs"
+                             },
+                             {
+                                 "sha256":  "31b1496b27ab2028a639dd4d92ef2f2a6167b76f2f955d29915de45ac5e87f86",
+                                 "path":  "Assets/Scripts/MarkerUnderstander.cs"
+                             },
+                             {
+                                 "sha256":  "63f642520b419ad27e7a4f2dd7bd5baa7b07dfa72527a7fc23bd45d3dd525dbe",
+                                 "path":  "Assets/Scripts/Models/PickPlaceTask.cs"
+                             },
+                             {
+                                 "sha256":  "88f273afe5ea46da50f37453cfb498825d3c96ed1196ac613eb8fe96ec3eaf89",
+                                 "path":  "Assets/Scripts/Models/Tile.cs"
+                             },
+                             {
+                                 "sha256":  "891e50856403889d7951381e2c6690580d5f5e7521f2aa84c1df8ed59a63954d",
+                                 "path":  "Assets/Scripts/PickAndPlaceScriptableObject.cs"
+                             },
+                             {
+                                 "sha256":  "a308b3136340f535d99fbf90ceeebc7577cd12c4b06d2691e8aea1faa5e6c9d5",
+                                 "path":  "Assets/Scripts/PlanningSceneUpdater.cs"
+                             },
+                             {
+                                 "sha256":  "bc9fc0e30cab145965d72fc4f6f9607606645194ff1aaccb457f4514ec7a2dd3",
+                                 "path":  "Assets/Scripts/PoseType.cs"
+                             },
+                             {
+                                 "sha256":  "a55e5e3864671530ec41cbd20860e00bb8b2a83bafbf5bac657c1803120402b5",
+                                 "path":  "Assets/Scripts/PrimitiveROSObstacle.cs"
+                             },
+                             {
+                                 "sha256":  "7ee1559d40af7e718cff91025c2a164d96ef9ceda9cceb101f6e1d88793837a9",
+                                 "path":  "Assets/Scripts/RosConnectionChecker.cs"
+                             },
+                             {
+                                 "sha256":  "dab93bb0edb6c5dbff0b466d2c72a569b62ad585f89d1e1206cd7cb0b1ec088e",
+                                 "path":  "Assets/Scripts/ROSInfoUpdater.cs"
+                             },
+                             {
+                                 "sha256":  "57403b9ade392e8fe004825874ee008a557c5f52630a1ce4526f0de33703ab2c",
+                                 "path":  "Assets/Scripts/ROSObstacle.cs"
+                             },
+                             {
+                                 "sha256":  "e848e6a83c7e0f50b8fa369039c50d94423ca0045ad3e4f845738511fa00f268",
+                                 "path":  "Assets/Scripts/Target.cs"
+                             },
+                             {
+                                 "sha256":  "ba91f8952a37f5ef5b55a83d91acad2c65761298769027d44fadbda659903224",
+                                 "path":  "Assets/Scripts/TargetsManager.cs"
+                             },
+                             {
+                                 "sha256":  "75890c9374112ffd817dd93a1e2c1b5393d717c88ab6690fd9541aeb6b6456da",
+                                 "path":  "Assets/Scripts/TrajectoryLineEnabler.cs"
+                             },
+                             {
+                                 "sha256":  "9491d6f84ebf68f01b072b33be37e3973e0a833b7b7f68b386a9da463cd7836b",
+                                 "path":  "Assets/Scripts/UI/LookAtCamera.cs"
+                             },
+                             {
+                                 "sha256":  "72dd43482a979800fe34b0e5ed1a499979f6eb1854744363852b25a57b6c1eef",
+                                 "path":  "Assets/Scripts/UI/TileUI.cs"
+                             },
+                             {
+                                 "sha256":  "882ae2e2750cf4793343747d9b620d1ed2a4d7b27994126964af57cdcd10d64e",
+                                 "path":  "Assets/Scripts/UR16eEndPoseVisualizer.cs"
+                             },
+                             {
+                                 "sha256":  "2cf04e9db036e4bcb14de85f00264422a3b1b3b84e94cdb658b9dcdf94e5a2ac",
+                                 "path":  "Assets/Scripts/UR16eServiceCaller.cs"
+                             },
+                             {
+                                 "sha256":  "c081e3eece4def9b19be6a8b38cd3894886ebea213f2e16179327561c0d3609f",
+                                 "path":  "Assets/Scripts/UR16eTriggerListener.cs"
+                             },
+                             {
+                                 "sha256":  "e1ffcc93e79d7c38d7208922cfff3524f003fd1327ac061c4935594cd6046d98",
+                                 "path":  "Assets/Scripts/V2/LocationType.cs"
+                             },
+                             {
+                                 "sha256":  "9fd53e742389774ec54e439d0d02efd76223b1ba4da4de4c6ba7eebca60fa73b",
+                                 "path":  "Assets/Scripts/V2/PickOrPlaceLocationInstance.cs"
+                             },
+                             {
+                                 "sha256":  "b7f589e680bd0234618bf1e2ccb5a7648fdc19c6b127e7c28453256384bcc873",
+                                 "path":  "Assets/Scripts/V2/PrimitivesSpawner.cs"
+                             },
+                             {
+                                 "sha256":  "3172a723f9a4423c5f8c9d175d868785a3458ba7645a67881f3f3021bfbd7ffd",
+                                 "path":  "Assets/Scripts/V2/RobotCoordinatesConverter.cs"
+                             },
+                             {
+                                 "sha256":  "4dae0680f0667e376da638b1851b0a58c9c530c623c1fca2c9420d8e4a811883",
+                                 "path":  "Assets/Scripts/V3/Frames/RobotCalibrationStore.cs"
+                             },
+                             {
+                                 "sha256":  "bd3747dba7ce7ec741afb01dfccf04faa0495afeba17be5d8a7c8e6de2037254",
+                                 "path":  "Assets/Scripts/V3/Frames/RobotFrameMath.cs"
+                             },
+                             {
+                                 "sha256":  "0a8dea5ff75a18c950d06eda2eb51fb5a48582715a8bdc79d0c32cdde233b097",
+                                 "path":  "Assets/Scripts/V3/Frames/RosRobotDescription.cs"
+                             },
+                             {
+                                 "sha256":  "1b9aa2bdda6c48b6e17a063dc6665ff2a68e518246800528b68fbce7a7a1659b",
+                                 "path":  "Assets/Scripts/V3/Frames/RosRobotModel.cs"
+                             },
+                             {
+                                 "sha256":  "cab22403f52de63b37362ff20fd870a31f759e98d80c27961a7458064efb0dba",
+                                 "path":  "Assets/Scripts/V3/Frames/TcpPlanReview.cs"
+                             },
+                             {
+                                 "sha256":  "67b1090e38d9f0a4dafa1d099192c21ebda1a68deb9535045a481687b95a79c8",
+                                 "path":  "Assets/Scripts/V3/Frames/TcpTargetRotationMath.cs"
+                             },
+                             {
+                                 "sha256":  "4f31a06963dfb56f6925f72b407689e00c1891052090ab5dee49407e1a1fb3f8",
+                                 "path":  "Assets/Scripts/V3/QR/IQRPoseStabilizer.cs"
+                             },
+                             {
+                                 "sha256":  "3798e8899be59d0ff19c951df411c2a7377244d1229f6298ab60865bf59df72b",
+                                 "path":  "Assets/Scripts/V3/QR/QRDetector.cs"
+                             },
+                             {
+                                 "sha256":  "8357ae954f1d181b6307c2dfa67cc7c34a7a2920891a793f81ffff368a66c642",
+                                 "path":  "Assets/Scripts/V3/QR/QRMarkerAxes.cs"
+                             },
+                             {
+                                 "sha256":  "dec907ea617b2601e163d26346927b2bfc71fdb54a047cde547557d79c5fa4b7",
+                                 "path":  "Assets/Scripts/V3/QR/SimpleQRPoseStabilizer.cs"
+                             },
+                             {
+                                 "sha256":  "9569d476f3dac28dded46bda07eb960e147ffd525a82afe662466b99a80f6595",
+                                 "path":  "Assets/Scripts/V3/RemoteExecution/RemoteExecutionController.cs"
+                             },
+                             {
+                                 "sha256":  "1209562c3f74062bda6565d1acfea6c027e17ead18b4dd3eb1221a552e1f08c0",
+                                 "path":  "Assets/Scripts/V3/RemoteExecution/RemoteExecutorClient.cs"
+                             },
+                             {
+                                 "sha256":  "93ea87094410b9d739083b3545e0fc034e2b6e972d3b4bd7ff182821395248f3",
+                                 "path":  "Assets/Scripts/V3/RemoteExecution/RemotePoseMessages.cs"
+                             },
+                             {
+                                 "sha256":  "f197ab7cf6bca783d40511483f15c11586e3c3123ebb8157d7e8b895eea5f6a6",
+                                 "path":  "Assets/Scripts/V3/ROS/JointStateSubscriber.cs"
+                             },
+                             {
+                                 "sha256":  "16c06396c3247e83c9684a8ed8faf42b65129667cb737eecae63580029327fb5",
+                                 "path":  "Assets/Scripts/V3/ROS/MTCPlansManager.cs"
+                             },
+                             {
+                                 "sha256":  "3e33cb4d708a4fde166f920e47784377b19fbd65d6a1cc0106de765e7f19f53e",
+                                 "path":  "Assets/Scripts/V3/ROS/PickPlaceController.cs"
+                             },
+                             {
+                                 "sha256":  "bb32afe25c3da91131027ac663e65b0b6b1bbab698cc6e20276fc004011face7",
+                                 "path":  "Assets/Scripts/V3/ROS/RobotCoordinateService.cs"
+                             },
+                             {
+                                 "sha256":  "57544bbee3380640e9cb068f7d4ed8e7f5e513ed74dd8b78d7ed7b2dd0a9dce0",
+                                 "path":  "Assets/Scripts/V3/ROS/RobotDescriptionMessages.cs"
+                             },
+                             {
+                                 "sha256":  "66340d3293f2a8339a62908979ea5d71543d3dfd66fd7d5d81a28c5d2b0cceb7",
+                                 "path":  "Assets/Scripts/V3/ROS/RobotStateService.cs"
+                             },
+                             {
+                                 "sha256":  "a2cbdee49c64024c16963a83460852a099e78a11f63f527c8cd7fd781656b835",
+                                 "path":  "Assets/Scripts/V3/ROS/RosRobotRig.cs"
+                             },
+                             {
+                                 "sha256":  "53f18cbb0f946130f61133c1115c4eadfbcb2db8e1152ecafd80bd980d124792",
+                                 "path":  "Assets/Scripts/V3/ROS/ROSService.cs"
+                             },
+                             {
+                                 "sha256":  "49265fae5e2c1f1f375529d5851906094afdb4a973ab13891b93d7f665bf7194",
+                                 "path":  "Assets/Scripts/V3/ROS/TcpPlanningController.cs"
+                             },
+                             {
+                                 "sha256":  "d91fdb5ef8ba5befca11f9fbcbbd980dbf7fe29f71e69c6bd012aa98512ce442",
+                                 "path":  "Assets/Scripts/V3/ROS/ToolSelectionController.cs"
+                             },
+                             {
+                                 "sha256":  "ff492fc1507277e401d427772680b512dcae3d17dd0849653d4855379e78929c",
+                                 "path":  "Assets/Scripts/V3/ROS/UR16eTrajectoryVisualizer.cs"
+                             },
+                             {
+                                 "sha256":  "221e8257fa8781a9457b12ff012bd806af8a0a9cdb2326f6c9619529ce4c9640",
+                                 "path":  "Assets/Scripts/V3/TargetPoseContextMenu.cs"
+                             },
+                             {
+                                 "sha256":  "dfaf4bdef3cb72d760fa695e041e6af87fe0179cef40449803072ac19e24575e",
+                                 "path":  "Assets/Scripts/V3/TargetRotationHandles.cs"
+                             },
+                             {
+                                 "sha256":  "e03c5662372d653274236df3c84eb04184709f6a017f540f2a85e283833d120c",
+                                 "path":  "Assets/Scripts/V3/TcpTargetPreview.cs"
+                             },
+                             {
+                                 "sha256":  "d4277f022d074474b631107822933eed15fddf4621319c516f1c62d16c4cdad7",
+                                 "path":  "Assets/Scripts/V3/ToolPoseVisual.cs"
+                             },
+                             {
+                                 "sha256":  "2a2f1f7379951fee0d5493aa73d4d43b56a734ed49b1c6ec9a5cf6935dfb995f",
+                                 "path":  "Assets/Scripts/V3/UI/ConnectionChecker.cs"
+                             },
+                             {
+                                 "sha256":  "f068f018a5858166f4b057c5a7e5d73f2380a0183b3d16b0ec609910fb908213",
+                                 "path":  "Assets/Scripts/V3/UI/MTCPlanUIManager.cs"
+                             },
+                             {
+                                 "sha256":  "d0ddad99a10dffb0f615d2374816ccdfa1d400a529d0bcd308bc37109f244e6b",
+                                 "path":  "Assets/Scripts/V3/UI/ToolSelectionMenu.cs"
+                             },
+                             {
+                                 "sha256":  "f4e2ab2a35f79b5be67cb8f61531ff91ba8c3d30c8a44fb9e60096d5dcf1786f",
+                                 "path":  "Assets/Scripts/V3/URInputManager.cs"
+                             },
+                             {
+                                 "sha256":  "ecc0a342377d07b1f165f0b0c7e70cfe85b5477f977e0cacb701e2f1d094ffb7",
+                                 "path":  "Assets/Scripts/V3/URInstantiator.cs"
+                             },
+                             {
+                                 "sha256":  "9ab0e8cc9b9c65488059e4259cf92ba2cb7503f28872f60f62a960077c0858bc",
+                                 "path":  "Assets/Scripts/V3/XRTrackingSpaceResolver.cs"
+                             },
+                             {
+                                 "sha256":  "c09c93844f93eb252a6fb39c222d169c63a63e96008fd040b9e7628c3e7ccc2e",
+                                 "path":  "Assets/TutorialInfo/Scripts/Readme.cs"
+                             }
+                         ],
+    "scope":  "Current project runtime sources compiled against installed Unity/Bee package references; outputs only in temporary storage.",
+    "hardwareExercised":  false,
+    "networkExercised":  false
+}

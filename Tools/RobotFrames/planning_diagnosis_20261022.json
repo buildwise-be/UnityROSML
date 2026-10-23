@@ -1,0 +1,663 @@
+{
+  "investigated_at_utc": "2026-10-22T15:07:26.2003664Z",
+  "host": "nordbo@10.200.101.144 (hostname mimic)",
+  "container": "urmir-jazzy",
+  "operations": "Read-only logs, retained task status/introspection, GetParameters, GetPlanningScene, GetSolution, GetPositionFK, GetPositionIK, GetStateValidity. No plan requests, scene changes, IO, execution, deployment, or restarts.",
+  "mounted_tool": "kenos_sl",
+  "ik_frame": "tcp",
+  "current_state": {
+    "valid": true,
+    "contacts": [],
+    "cost_sources": [],
+    "constraint_result": []
+  },
+  "model_descriptions_equal_between_mtc_and_move_group": true,
+  "semantic_descriptions_equal_between_mtc_and_move_group": true,
+  "tcp": {
+    "retained_result": {
+      "overall_success": false,
+      "stages": [
+        {
+          "name": "Exact TCP A then B",
+          "depth": 0,
+          "solved": 0,
+          "failed": 0
+        },
+        {
+          "name": "current",
+          "depth": 1,
+          "solved": 1,
+          "failed": 0
+        },
+        {
+          "name": "TCP A",
+          "depth": 1,
+          "solved": 0,
+          "failed": 1
+        },
+        {
+          "name": "TCP B",
+          "depth": 1,
+          "solved": 0,
+          "failed": 0
+        }
+      ],
+      "message": "Task planning produced no successful solution",
+      "request_id": "1792680714:235898000",
+      "phase": "failed"
+    },
+    "observed_duration_seconds": 10.1,
+    "log_error": "RRTConnect: Unable to sample any valid states for goal tree; GOAL_STATE_INVALID",
+    "recovered_target_global": {
+      "header": {
+        "stamp": {
+          "sec": 0,
+          "nanosec": 0
+        },
+        "frame_id": "mir_base_footprint"
+      },
+      "pose": {
+        "position": {
+          "x": 0.3034586242560518,
+          "y": 0.8551557319911716,
+          "z": 1.2685164947509766
+        },
+        "orientation": {
+          "x": -0.4440968831461615,
+          "y": 0.5845182195607416,
+          "z": 0.4788435565704329,
+          "w": 0.48148235451819416
+        }
+      }
+    },
+    "recovered_target_ur_base_link_position_m": {
+      "y": 0.05794048309326198,
+      "x": -0.8551559448242188,
+      "z": 0.9665164947509766
+    },
+    "ik_controls": [
+      {
+        "name": "current_tcp_positive_control",
+        "pose": {
+          "header": {
+            "stamp": {
+              "sec": 1792681528,
+              "nanosec": 169210802
+            },
+            "frame_id": "mir_base_footprint"
+          },
+          "pose": {
+            "position": {
+              "x": 0.40740421031862994,
+              "y": 0.6502535805867455,
+              "z": 1.2524313883483316
+            },
+            "orientation": {
+              "x": 0.056561470046009164,
+              "y": 0.7166313902658669,
+              "z": 0.6949954501463034,
+              "w": 0.014885391085978259
+            }
+          }
+        },
+        "kinematic_only": {
+          "error": {
+            "val": 1,
+            "message": "",
+            "source": ""
+          },
+          "joint_state": {
+            "header": {
+              "stamp": {
+                "sec": 0,
+                "nanosec": 0
+              },
+              "frame_id": "mir_base_footprint"
+            },
+            "name": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "position": [
+              0.013508784584701061,
+              -2.472258230248922,
+              0.8972409407245081,
+              -1.6002894840636195,
+              1.4604369401931763,
+              -1.5088542143451136
+            ],
+            "velocity": [],
+            "effort": []
+          },
+          "validity": {
+            "valid": true,
+            "contacts": [],
+            "cost_sources": [],
+            "constraint_result": []
+          }
+        },
+        "collision_checked": {
+          "error": {
+            "val": 1,
+            "message": "",
+            "source": ""
+          },
+          "joint_state": {
+            "header": {
+              "stamp": {
+                "sec": 0,
+                "nanosec": 0
+              },
+              "frame_id": "mir_base_footprint"
+            },
+            "name": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "position": [
+              0.013508784584701061,
+              -2.472258230248922,
+              0.8972409407245081,
+              -1.6002894840636195,
+              1.4604369401931763,
+              -1.5088542143451136
+            ],
+            "velocity": [],
+            "effort": []
+          },
+          "validity": {
+            "valid": true,
+            "contacts": [],
+            "cost_sources": [],
+            "constraint_result": []
+          }
+        }
+      },
+      {
+        "name": "recovered_failed_tcp_target_frame",
+        "pose": {
+          "header": {
+            "stamp": {
+              "sec": 0,
+              "nanosec": 0
+            },
+            "frame_id": "mir_base_footprint"
+          },
+          "pose": {
+            "position": {
+              "x": 0.3034586242560518,
+              "y": 0.8551557319911716,
+              "z": 1.2685164947509766
+            },
+            "orientation": {
+              "x": -0.4440968831461615,
+              "y": 0.5845182195607416,
+              "z": 0.4788435565704329,
+              "w": 0.48148235451819416
+            }
+          }
+        },
+        "kinematic_only": {
+          "error": {
+            "val": -31,
+            "message": "",
+            "source": ""
+          }
+        },
+        "collision_checked": {
+          "error": {
+            "val": -31,
+            "message": "",
+            "source": ""
+          }
+        }
+      },
+      {
+        "name": "tcp_target_y_minus_0.1",
+        "pose": {
+          "header": {
+            "stamp": {
+              "sec": 0,
+              "nanosec": 0
+            },
+            "frame_id": "mir_base_footprint"
+          },
+          "pose": {
+            "position": {
+              "x": 0.3034586242560518,
+              "y": 0.7551557319911716,
+              "z": 1.2685164947509766
+            },
+            "orientation": {
+              "x": -0.4440968831461615,
+              "y": 0.5845182195607416,
+              "z": 0.4788435565704329,
+              "w": 0.48148235451819416
+            }
+          }
+        },
+        "kinematic_only": {
+          "error": {
+            "val": -31,
+            "message": "",
+            "source": ""
+          }
+        },
+        "collision_checked": {
+          "error": {
+            "val": -31,
+            "message": "",
+            "source": ""
+          }
+        }
+      },
+      {
+        "name": "tcp_target_y_minus_0.2",
+        "pose": {
+          "header": {
+            "stamp": {
+              "sec": 0,
+              "nanosec": 0
+            },
+            "frame_id": "mir_base_footprint"
+          },
+          "pose": {
+            "position": {
+              "x": 0.3034586242560518,
+              "y": 0.6551557319911716,
+              "z": 1.2685164947509766
+            },
+            "orientation": {
+              "x": -0.4440968831461615,
+              "y": 0.5845182195607416,
+              "z": 0.4788435565704329,
+              "w": 0.48148235451819416
+            }
+          }
+        },
+        "kinematic_only": {
+          "error": {
+            "val": 1,
+            "message": "",
+            "source": ""
+          },
+          "joint_state": {
+            "header": {
+              "stamp": {
+                "sec": 0,
+                "nanosec": 0
+              },
+              "frame_id": "mir_base_footprint"
+            },
+            "name": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "position": [
+              0.3899368387980959,
+              -2.283152008847946,
+              0.6229058246989647,
+              -1.5716051662013923,
+              1.0474778364850665,
+              -2.962735758852009
+            ],
+            "velocity": [],
+            "effort": []
+          },
+          "validity": {
+            "valid": true,
+            "contacts": [],
+            "cost_sources": [],
+            "constraint_result": []
+          }
+        },
+        "collision_checked": {
+          "error": {
+            "val": 1,
+            "message": "",
+            "source": ""
+          },
+          "joint_state": {
+            "header": {
+              "stamp": {
+                "sec": 0,
+                "nanosec": 0
+              },
+              "frame_id": "mir_base_footprint"
+            },
+            "name": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "position": [
+              0.3899368387980959,
+              -2.283152008847946,
+              0.6229058246989647,
+              -1.5716051662013923,
+              1.0474778364850665,
+              -2.962735758852009
+            ],
+            "velocity": [],
+            "effort": []
+          },
+          "validity": {
+            "valid": true,
+            "contacts": [],
+            "cost_sources": [],
+            "constraint_result": []
+          }
+        }
+      },
+      {
+        "name": "tcp_target_y_minus_0.3",
+        "pose": {
+          "header": {
+            "stamp": {
+              "sec": 0,
+              "nanosec": 0
+            },
+            "frame_id": "mir_base_footprint"
+          },
+          "pose": {
+            "position": {
+              "x": 0.3034586242560518,
+              "y": 0.5551557319911715,
+              "z": 1.2685164947509766
+            },
+            "orientation": {
+              "x": -0.4440968831461615,
+              "y": 0.5845182195607416,
+              "z": 0.4788435565704329,
+              "w": 0.48148235451819416
+            }
+          }
+        },
+        "kinematic_only": {
+          "error": {
+            "val": 1,
+            "message": "",
+            "source": ""
+          },
+          "joint_state": {
+            "header": {
+              "stamp": {
+                "sec": 0,
+                "nanosec": 0
+              },
+              "frame_id": "mir_base_footprint"
+            },
+            "name": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "position": [
+              0.5409631517288896,
+              -2.2603254766201664,
+              0.9042477622294982,
+              -1.8852069969593406,
+              0.8969412011895687,
+              -2.9461793955812112
+            ],
+            "velocity": [],
+            "effort": []
+          },
+          "validity": {
+            "valid": true,
+            "contacts": [],
+            "cost_sources": [],
+            "constraint_result": []
+          }
+        },
+        "collision_checked": {
+          "error": {
+            "val": 1,
+            "message": "",
+            "source": ""
+          },
+          "joint_state": {
+            "header": {
+              "stamp": {
+                "sec": 0,
+                "nanosec": 0
+              },
+              "frame_id": "mir_base_footprint"
+            },
+            "name": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "position": [
+              0.5409631517288896,
+              -2.2603254766201664,
+              0.9042477622294982,
+              -1.8852069969593406,
+              0.8969412011895687,
+              -2.9461793955812112
+            ],
+            "velocity": [],
+            "effort": []
+          },
+          "validity": {
+            "valid": true,
+            "contacts": [],
+            "cost_sources": [],
+            "constraint_result": []
+          }
+        }
+      }
+    ]
+  },
+  "mtc": {
+    "observed_duration_seconds": [
+      0.178,
+      0.2
+    ],
+    "current_stage_solved": 1,
+    "grasp_generators_solved": 12,
+    "grasp_ik_branches_failed": 12,
+    "later_stages_attempted": false,
+    "retained_object_pose": {
+      "position": {
+        "x": 0.6474001363711599,
+        "y": 0.8071255227002784,
+        "z": 1.352621364498511
+      },
+      "orientation": {
+        "x": -0.13746209722415217,
+        "y": 0.0922030690725686,
+        "z": 0.28155528328890594,
+        "w": 0.9451610383064046
+      }
+    },
+    "retained_object_frame": "mir_base_footprint",
+    "retained_object_normal": [
+      0.09688713754846558,
+      0.3117681595459785,
+      0.9452055317606738
+    ],
+    "independent_ik_query_budget_seconds": 0.3,
+    "independent_ik_results": [
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 0,
+        "variant": "actual",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 30,
+        "variant": "actual",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 60,
+        "variant": "actual",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 90,
+        "variant": "actual",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 120,
+        "variant": "actual",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 150,
+        "variant": "actual",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 180,
+        "variant": "actual",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 210,
+        "variant": "actual",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 240,
+        "variant": "actual",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 270,
+        "variant": "actual",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 300,
+        "variant": "actual",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 330,
+        "variant": "actual",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 0,
+        "variant": "normal_flipped_for_comparison",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 30,
+        "variant": "normal_flipped_for_comparison",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 60,
+        "variant": "normal_flipped_for_comparison",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 90,
+        "variant": "normal_flipped_for_comparison",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 120,
+        "variant": "normal_flipped_for_comparison",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 150,
+        "variant": "normal_flipped_for_comparison",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 180,
+        "variant": "normal_flipped_for_comparison",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 210,
+        "variant": "normal_flipped_for_comparison",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 240,
+        "variant": "normal_flipped_for_comparison",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 270,
+        "variant": "normal_flipped_for_comparison",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 300,
+        "variant": "normal_flipped_for_comparison",
+        "kinematic_only_code": -31
+      },
+      {
+        "collision_checked_code": -31,
+        "yaw_degrees": 330,
+        "variant": "normal_flipped_for_comparison",
+        "kinematic_only_code": -31
+      }
+    ],
+    "convention_issue": "Stored object +Z points mostly up. Existing legacy MTC pregrasp is object centre - 0.102*objectZ, and tool +Z follows objectZ: this approaches from below. Yaw alternatives cannot change the normal."
+  },
+  "conclusion": "Goal IK infeasibility in the configured model is the demonstrated failure path. Current state is collision-free. Original goals also fail with collision avoidance disabled; an otherwise identical TCP goal moved 20/30 cm inward has collision-free IK. No evidence supports disabling collision checks.",
+  "limitations": [
+    "Finite KDL searches do not prove mathematical impossibility.",
+    "Physical QR alignment, target placement, and measured flange-to-TCP dimensions cannot be established from remote logs alone.",
+    "No full trajectory planning was requested during diagnosis.",
+    "Persisted MTC object remains in the scene, but the original goals fail even when collision avoidance is disabled."
+  ],
+  "evidence_files": [
+    "planning_scene_diagnostic_20261022.json",
+    "planning_task_diagnostic_20261022.json",
+    "planning_ik_diagnostic_20261022.json"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "completed_utc": "2026-10-22T15:31:42.8913758Z",
+  "user_confirmation": "Virtual flange/wrist and pad align real parts; suction face is parallel to mounting flange.",
+  "mapping": "CAD outward foam normal -> Unity +Y -> ROS TCP +Z -> UR flange +X -> UR tool0/wrist3 +Z. No sign or 90-degree tilt error found. TCP frame has a -90-degree twist relative to tool0.",
+  "original_requested_normal_delta_from_current_degrees": 3.3518,
+  "position_only_solution": {
+    "verified_by_ros_fk": true,
+    "verified_by_ros_ik_without_collisions": true,
+    "requested_position_error_m": 2.946115439708657E-14,
+    "alternative_normal_delta_degrees": 17.473775778289305,
+    "full_rotation_delta_degrees": 161.04,
+    "elbow_angle_degrees": -0.09565138356465863,
+    "current_scene_collision_valid": false,
+    "collision_pairs": [
+      "object / kenos_sl_base",
+      "object / kenos_sl_mount",
+      "ur_wrist_3_link / object"
+    ],
+    "limitation": "Kinematic witness only. Current MTC world object blocks this candidate; no path plan or motion was requested."
+  },
+  "same_position_same_normal_twist_sweep": {
+    "twist_increment_degrees": 1,
+    "twist_attempts": 360,
+    "ik_successes": 0,
+    "current_pose_positive_control_success": true,
+    "collision_avoidance_disabled_during_search": true
+  },
+  "conclusion": "The original point is kinematically reachable with a different full tool orientation. The original exact TCP orientation is infeasible in the configured model; no normal conversion sign/axis error was found. The arrow constrains the direction plus the short tick constrains twist in exact TCP mode. Physical tool assumptions remain separate from ROS/Unity consistency.",
+  "application_files_changed": false,
+  "no_motion_or_io_published": true,
+  "evidence": [
+    "tcp_alternate_orientation_verified_20261022.json",
+    "tcp_position_optimization_20261022.json",
+    "tcp_geometric_reach_20261022.json",
+    "tcp_fixed_normal_free_twist_20261022.json"
+  ],
+  "all_twist_proof": {
+    "maximum_possible_shoulder_to_wrist1_m": 0.8563369569,
+    "scope": "Same original TCP position and normal, any twist or wrist angles, in the captured calibrated URDF.",
+    "excess_m": 0.0174927143,
+    "proof": "tcp_normal_constraint_20261022.json",
+    "minimum_required_shoulder_to_wrist1_m": 0.8738296712
+  }
+}

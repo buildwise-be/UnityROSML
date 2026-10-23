@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-22",
+  "unityVersion": "6000.0.84f1",
+  "magicLeapSdkVersion": "2.6.0",
+  "editModeTests": {
+    "result": "Passed",
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "nativePlacement": {
+    "cases": 3,
+    "originAndMarkerYawDegrees": [
+      [
+        0,
+        0
+      ],
+      [
+        48,
+        -25
+      ],
+      [
+        -70,
+        110
+      ]
+    ],
+    "physicsSteps": 2,
+    "stepSeconds": 0.02,
+    "assertionPositionToleranceMetres": 2e-05,
+    "assertionBasisVectorTolerance": 2e-05,
+    "path": "Active Instantiate(prefab, world QR), parent to nonidentity tracking frame, ApplyModel(kenos_sl), PhysX"
+  },
+  "testedPolicy": [
+    "unambiguous payload selection and exact optional pin",
+    "duplicate physical copies blocked",
+    "selected payload retained despite changing observation order",
+    "lost or invalid selected marker resets window",
+    "translation and rotation discontinuities reset against first sample",
+    "quaternion sign equivalence and valid identity accepted",
+    "tracking-local to world conversion",
+    "rescan invalidates coordinate calibration immediately",
+    "reanchor reuses one robot and preserves joint feedback",
+    "three labelled QR axes without colliders, disposed by rescan"
+  ],
+  "calibration": {
+    "source": "Prefab, unchanged by default",
+    "basePositionInQrUnityMetres": [
+      -0.419,
+      0.23,
+      0.505
+    ],
+    "baseEulerInQrDegrees": [
+      -90,
+      0,
+      0
+    ],
+    "markerSideMetres": 0.087,
+    "expectedPayloadDefault": "",
+    "historicalQr1NameIsNotPayloadIdentity": true,
+    "legacyMarkerUnderstanderHasDifferentExtrinsic": true
+  },
+  "conclusions": {
+    "nativeDoubleApplicationObserved": false,
+    "photographedPhysicalOffsetResolved": false,
+    "noUnmeasuredSignFlipApplied": true
+  },
+  "limitations": [
+    "No headset, OpenXR tracking session, ROS network or robot commands exercised.",
+    "Offline workflow stubs replace ToolSelectionController, ToolSelectionMenu and ROSService only; tested QR/coordinate/instantiation/rig sources are actual components.",
+    "Magic Leap SDK GetUnityPose can return identity or a partial pose when native location is invalid. Public QR MarkerData has no location-validity flags; QR reprojection error is set to zero. Persistent invalid native poses remain indistinguishable from a legitimate identity pose through this API.",
+    "An in-plane 180 degree QR axis difference can preserve base height while shifting it horizontally by about 0.956 m; this is a hypothesis, not a measured cause."
+  ],
+  "sources": [
+    {
+      "path": "Assets/Scripts/V3/QR/QRDetector.cs",
+      "sha256": "3798e8899be59d0ff19c951df411c2a7377244d1229f6298ab60865bf59df72b"
+    },
+    {
+      "path": "Assets/Scripts/V3/QR/SimpleQRPoseStabilizer.cs",
+      "sha256": "dec907ea617b2601e163d26346927b2bfc71fdb54a047cde547557d79c5fa4b7"
+    },
+    {
+      "path": "Assets/Scripts/V3/QR/QRMarkerAxes.cs",
+      "sha256": "8357ae954f1d181b6307c2dfa67cc7c34a7a2920891a793f81ffff368a66c642"
+    },
+    {
+      "path": "Assets/Scripts/V3/QR/IQRPoseStabilizer.cs",
+      "sha256": "4f31a06963dfb56f6925f72b407689e00c1891052090ab5dee49407e1a1fb3f8"
+    },
+    {
+      "path": "Assets/Scripts/V3/URInstantiator.cs",
+      "sha256": "ecab66626d0010818a6656536df6b7da5003c29a88fb59d8d4aecdd7959eccfa"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotCoordinateService.cs",
+      "sha256": "a7e4959ec73e9ca8d5075561586503a8492851b5047b010a6bf75d639a3c439c"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotStateService.cs",
+      "sha256": "66340d3293f2a8339a62908979ea5d71543d3dfd66fd7d5d81a28c5d2b0cceb7"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RosRobotRig.cs",
+      "sha256": "a2cbdee49c64024c16963a83460852a099e78a11f63f527c8cd7fd781656b835"
+    },
+    {
+      "path": "Assets/Scripts/V3/XRTrackingSpaceResolver.cs",
+      "sha256": "9ab0e8cc9b9c65488059e4259cf92ba2cb7503f28872f60f62a960077c0858bc"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotFrameMath.cs",
+      "sha256": "bd3747dba7ce7ec741afb01dfccf04faa0495afeba17be5d8a7c8e6de2037254"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/QrCalibrationTests.cs",
+      "sha256": "011c5ac5e5a42521370e8f92ab979e31ebb2df8b9289708b41610edb5366889d"
+    },
+    {
+      "path": "Assets/Prefabs/ur16e_kenos/ur16e_kenos.prefab",
+      "sha256": "78427e1fbd1d84f807d06937df1b7f265963ba867c3a1c7e0ee8bd3d7e19c2f3"
+    },
+    {
+      "path": "Assets/Prefabs/ControllerBox.prefab",
+      "sha256": "4f3b94e19d451e30d715b6d800b4042e015793b7026c29e9bc97a5064499743f"
+    },
+    {
+      "path": "Library/PackageCache/com.magicleap.unitysdk@06a1d9d08990/Runtime/OpenXR/Common/Spaces.cs",
+      "sha256": "57ec8367572f55300500a4a9ada768bd0e31fda56a0f8cc4cdfc822705ce7e32"
+    },
+    {
+      "path": "Library/PackageCache/com.magicleap.unitysdk@06a1d9d08990/Runtime/OpenXR/MarkerUnderstanding/MagicLeapMarkerUnderstandingMarkerDetector.cs",
+      "sha256": "38c75db03cd5ee5f365addeed3da5e2743ce6830452c6be5bf3beb75f906f6c4"
+    }
+  ],
+  "evidence": {
+    "testResultsXml": "C:\\Users\\aca\\.codex\\visualizations\\2026\\10\\21\\01a15eb0-f294-75b2-9e48-6539d4129eea\\qr-placement-validation\\qr-results.xml",
+    "editorLog": "C:\\Users\\aca\\.codex\\visualizations\\2026\\10\\21\\01a15eb0-f294-75b2-9e48-6539d4129eea\\qr-placement-validation\\qr-editor.log"
+  }
+}

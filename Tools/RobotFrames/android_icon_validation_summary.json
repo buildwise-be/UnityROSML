@@ -1,0 +1,345 @@
+{
+  "success": true,
+  "recordedUtc": "2026-10-22T13:57:48.893940+00:00",
+  "purpose": "Verify corrected Unity Android adaptive icon layer order using a fresh isolated export, preserving original build artifacts.",
+  "conclusion": "All six densities now export transparent robot artwork as foreground and opaque navy as background. The previous build exported exactly the same images under opposite layer names.",
+  "unityNativeExport": {
+    "success": true,
+    "completedUtc": "2026-10-22T13:56:13.1714210Z",
+    "unityVersion": "6000.0.84f1",
+    "exportResult": "Succeeded",
+    "error": "",
+    "adaptiveSlots": [
+      {
+        "width": 432,
+        "height": 432,
+        "layer0Background": "UnityROSML-Adaptive-Background",
+        "layer1Foreground": "UnityROSML-Adaptive-Foreground"
+      },
+      {
+        "width": 324,
+        "height": 324,
+        "layer0Background": "UnityROSML-Adaptive-Background",
+        "layer1Foreground": "UnityROSML-Adaptive-Foreground"
+      },
+      {
+        "width": 216,
+        "height": 216,
+        "layer0Background": "UnityROSML-Adaptive-Background",
+        "layer1Foreground": "UnityROSML-Adaptive-Foreground"
+      },
+      {
+        "width": 162,
+        "height": 162,
+        "layer0Background": "UnityROSML-Adaptive-Background",
+        "layer1Foreground": "UnityROSML-Adaptive-Foreground"
+      },
+      {
+        "width": 108,
+        "height": 108,
+        "layer0Background": "UnityROSML-Adaptive-Background",
+        "layer1Foreground": "UnityROSML-Adaptive-Foreground"
+      },
+      {
+        "width": 81,
+        "height": 81,
+        "layer0Background": "UnityROSML-Adaptive-Background",
+        "layer1Foreground": "UnityROSML-Adaptive-Foreground"
+      }
+    ],
+    "foreground": {
+      "path": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\AndroidIconValidation\\icon-export\\launcher/src/main/res/mipmap-xxxhdpi\\ic_launcher_foreground.png",
+      "width": 432,
+      "height": 432,
+      "uniqueColors": 4575,
+      "minAlpha": 0,
+      "maxAlpha": 255,
+      "firstR": 0,
+      "firstG": 0,
+      "firstB": 0,
+      "firstA": 0,
+      "sha256": "4107a5e7b5747ef42e1c6facf20754f419e92ee218d1547826339cee9c1df090"
+    },
+    "background": {
+      "path": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\AndroidIconValidation\\icon-export\\launcher/src/main/res/mipmap-xxxhdpi\\ic_launcher_background.png",
+      "width": 432,
+      "height": 432,
+      "uniqueColors": 1,
+      "minAlpha": 255,
+      "maxAlpha": 255,
+      "firstR": 16,
+      "firstG": 38,
+      "firstB": 56,
+      "firstA": 255,
+      "sha256": "2c4ba339669ec41451709550d928f3fb43aa25f42aa7f4bb3b5222ed58318d55"
+    },
+    "adaptiveXml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<adaptive-icon xmlns:android=\"http://schemas.android.com/apk/res/android\">\n    <background android:drawable=\"@mipmap/ic_launcher_background\"/>\n    <foreground android:drawable=\"@mipmap/ic_launcher_foreground\"/>\n</adaptive-icon>",
+    "adaptiveXmlPath": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\AndroidIconValidation\\icon-export\\launcher/src/main/res/mipmap-anydpi-v26/app_icon.xml",
+    "gradleInvoked": false,
+    "deviceDeployed": false
+  },
+  "sourcePreparation": {
+    "sourceProject": "C:\\Users\\aca\\unity-source\\UnityROSML",
+    "sourceSettingsSha256": "a9fafd0746d26033ef1a1eae8ce65cb7289b05b9ba1299813f0a20996c8af018",
+    "sourceIconTextures": [
+      {
+        "path": "Assets/Branding/UnityROSML/UnityROSML-Adaptive-Background.png",
+        "sha256": "bf3370a10f88ca10889cf99024c6ae488708597ebb836546fedd002c811f385a"
+      },
+      {
+        "path": "Assets/Branding/UnityROSML/UnityROSML-Adaptive-Foreground.png",
+        "sha256": "cf32d296127169ce54ca3e17f00d0c9ebc01bd7fd7bad8075c63b76fd6172699"
+      },
+      {
+        "path": "Assets/Branding/UnityROSML/UnityROSML-Launcher.png",
+        "sha256": "fafd5463a1c9d74243136ff9cf261cc3d91834120e6edc94221fc85d60a838f3"
+      },
+      {
+        "path": "Assets/Branding/UnityROSML/UnityROSML-Logo-Transparent.png",
+        "sha256": "092fef93e5004fbf830b3b1210605be449609268813ef09e00f0ec614b0332ee"
+      }
+    ],
+    "changesInIsolatedCopyOnly": [
+      "custom Android manifest disabled",
+      "legacy input",
+      "Mono ARMv7 Gradle export"
+    ],
+    "gradleBuildRequested": false,
+    "deviceDeploymentRequested": false
+  },
+  "sourceSettingsUnchangedSinceExportPreparation": true,
+  "editorLog": {
+    "path": "Library/AndroidIconValidation/icon-export-editor.log",
+    "sha256": "e36c91d6a8a9bf431f653767fa121ccf38eedda83876081adeaa0f88e0736a14",
+    "sizeBytes": 121679,
+    "lastWriteUtc": "2026-10-22T13:56:13.524249+00:00"
+  },
+  "reproduction": {
+    "prepare": "python Tools/RobotFrames/prepare_android_icon_validation.py",
+    "unityArguments": [
+      "-batchmode",
+      "-nographics",
+      "-buildTarget",
+      "Android",
+      "-projectPath",
+      "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\AndroidIconValidation",
+      "-executeMethod",
+      "AndroidIconExportValidation.Export",
+      "-quit",
+      "-logFile",
+      "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\AndroidIconValidation\\icon-export-editor.log"
+    ]
+  },
+  "allDensityResourceComparisons": [
+    {
+      "density": "ldpi",
+      "freshForeground": {
+        "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-ldpi/ic_launcher_foreground.png",
+        "sha256": "2d78789673dd979934457c71f7d82a44aff2db6f413963dd7179f45428e1219b",
+        "sizeBytes": 2508,
+        "lastWriteUtc": "2026-10-22T13:55:55.868744+00:00"
+      },
+      "freshBackground": {
+        "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-ldpi/ic_launcher_background.png",
+        "sha256": "363ed70e37d04bb1b9f37beef11dba04a73078cc16a84fabe87cdbfc8efb758d",
+        "sizeBytes": 200,
+        "lastWriteUtc": "2026-10-22T13:55:55.842397+00:00"
+      },
+      "originalReversedForeground": {
+        "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-ldpi/ic_launcher_foreground.png",
+        "sha256": "363ed70e37d04bb1b9f37beef11dba04a73078cc16a84fabe87cdbfc8efb758d",
+        "sizeBytes": 200,
+        "lastWriteUtc": "2026-10-22T13:43:35.304637+00:00"
+      },
+      "originalReversedBackground": {
+        "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-ldpi/ic_launcher_background.png",
+        "sha256": "2d78789673dd979934457c71f7d82a44aff2db6f413963dd7179f45428e1219b",
+        "sizeBytes": 2508,
+        "lastWriteUtc": "2026-10-22T13:43:35.328566+00:00"
+      },
+      "freshForegroundMatchesPreviousBackground": true,
+      "freshBackgroundMatchesPreviousForeground": true
+    },
+    {
+      "density": "mdpi",
+      "freshForeground": {
+        "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-mdpi/ic_launcher_foreground.png",
+        "sha256": "64ce8832294797aac571ece951d667f05c475cbd24a938a7005f531ec9e0d8fe",
+        "sizeBytes": 3856,
+        "lastWriteUtc": "2026-10-22T13:55:55.845937+00:00"
+      },
+      "freshBackground": {
+        "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-mdpi/ic_launcher_background.png",
+        "sha256": "25fc9e1c4c75727aabe48676a07241abc539f97b86dc55ff1035559fa136197d",
+        "sizeBytes": 344,
+        "lastWriteUtc": "2026-10-22T13:55:55.846943+00:00"
+      },
+      "originalReversedForeground": {
+        "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-mdpi/ic_launcher_foreground.png",
+        "sha256": "25fc9e1c4c75727aabe48676a07241abc539f97b86dc55ff1035559fa136197d",
+        "sizeBytes": 344,
+        "lastWriteUtc": "2026-10-22T13:43:35.368168+00:00"
+      },
+      "originalReversedBackground": {
+        "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-mdpi/ic_launcher_background.png",
+        "sha256": "64ce8832294797aac571ece951d667f05c475cbd24a938a7005f531ec9e0d8fe",
+        "sizeBytes": 3856,
+        "lastWriteUtc": "2026-10-22T13:43:35.359635+00:00"
+      },
+      "freshForegroundMatchesPreviousBackground": true,
+      "freshBackgroundMatchesPreviousForeground": true
+    },
+    {
+      "density": "hdpi",
+      "freshForeground": {
+        "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-hdpi/ic_launcher_foreground.png",
+        "sha256": "35a79bc81c78b04590b8a8b9b6f125ba186fb762a25c9334c9931da209ce4a7f",
+        "sizeBytes": 6851,
+        "lastWriteUtc": "2026-10-22T13:55:55.866723+00:00"
+      },
+      "freshBackground": {
+        "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-hdpi/ic_launcher_background.png",
+        "sha256": "9a3fd91ef9913e6969c619e23b123498d880f0f0927b8b649396228bed2bd22a",
+        "sizeBytes": 478,
+        "lastWriteUtc": "2026-10-22T13:55:55.865039+00:00"
+      },
+      "originalReversedForeground": {
+        "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-hdpi/ic_launcher_foreground.png",
+        "sha256": "9a3fd91ef9913e6969c619e23b123498d880f0f0927b8b649396228bed2bd22a",
+        "sizeBytes": 478,
+        "lastWriteUtc": "2026-10-22T13:43:35.303636+00:00"
+      },
+      "originalReversedBackground": {
+        "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-hdpi/ic_launcher_background.png",
+        "sha256": "35a79bc81c78b04590b8a8b9b6f125ba186fb762a25c9334c9931da209ce4a7f",
+        "sizeBytes": 6851,
+        "lastWriteUtc": "2026-10-22T13:43:35.319218+00:00"
+      },
+      "freshForegroundMatchesPreviousBackground": true,
+      "freshBackgroundMatchesPreviousForeground": true
+    },
+    {
+      "density": "xhdpi",
+      "freshForeground": {
+        "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png",
+        "sha256": "7df5a827a4e0187681e6d18871987de3d64e5060872323c0c60d0119f6769015",
+        "sizeBytes": 10386,
+        "lastWriteUtc": "2026-10-22T13:55:55.865557+00:00"
+      },
+      "freshBackground": {
+        "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-xhdpi/ic_launcher_background.png",
+        "sha256": "985474bad9846305d369ad1fab46a095e1380e73573b98ffa8e66a2d2292759d",
+        "sizeBytes": 680,
+        "lastWriteUtc": "2026-10-22T13:55:55.852491+00:00"
+      },
+      "originalReversedForeground": {
+        "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png",
+        "sha256": "985474bad9846305d369ad1fab46a095e1380e73573b98ffa8e66a2d2292759d",
+        "sizeBytes": 680,
+        "lastWriteUtc": "2026-10-22T13:43:35.314706+00:00"
+      },
+      "originalReversedBackground": {
+        "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-xhdpi/ic_launcher_background.png",
+        "sha256": "7df5a827a4e0187681e6d18871987de3d64e5060872323c0c60d0119f6769015",
+        "sizeBytes": 10386,
+        "lastWriteUtc": "2026-10-22T13:43:35.351142+00:00"
+      },
+      "freshForegroundMatchesPreviousBackground": true,
+      "freshBackgroundMatchesPreviousForeground": true
+    },
+    {
+      "density": "xxhdpi",
+      "freshForeground": {
+        "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png",
+        "sha256": "26f42940abd00a2790b85c7b03bb127727d10c2f3f8bd7b0a906283e0e4c6a09",
+        "sizeBytes": 18562,
+        "lastWriteUtc": "2026-10-22T13:55:55.865557+00:00"
+      },
+      "freshBackground": {
+        "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-xxhdpi/ic_launcher_background.png",
+        "sha256": "6521654217e84987f53d96a729822ee694f92a13b263a22f5bbe32757d07805c",
+        "sizeBytes": 1046,
+        "lastWriteUtc": "2026-10-22T13:55:55.854095+00:00"
+      },
+      "originalReversedForeground": {
+        "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png",
+        "sha256": "6521654217e84987f53d96a729822ee694f92a13b263a22f5bbe32757d07805c",
+        "sizeBytes": 1046,
+        "lastWriteUtc": "2026-10-22T13:43:35.313200+00:00"
+      },
+      "originalReversedBackground": {
+        "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-xxhdpi/ic_launcher_background.png",
+        "sha256": "26f42940abd00a2790b85c7b03bb127727d10c2f3f8bd7b0a906283e0e4c6a09",
+        "sizeBytes": 18562,
+        "lastWriteUtc": "2026-10-22T13:43:35.303636+00:00"
+      },
+      "freshForegroundMatchesPreviousBackground": true,
+      "freshBackgroundMatchesPreviousForeground": true
+    },
+    {
+      "density": "xxxhdpi",
+      "freshForeground": {
+        "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+        "sha256": "4107a5e7b5747ef42e1c6facf20754f419e92ee218d1547826339cee9c1df090",
+        "sizeBytes": 29063,
+        "lastWriteUtc": "2026-10-22T13:55:55.861677+00:00"
+      },
+      "freshBackground": {
+        "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-xxxhdpi/ic_launcher_background.png",
+        "sha256": "2c4ba339669ec41451709550d928f3fb43aa25f42aa7f4bb3b5222ed58318d55",
+        "sizeBytes": 1358,
+        "lastWriteUtc": "2026-10-22T13:55:55.868744+00:00"
+      },
+      "originalReversedForeground": {
+        "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+        "sha256": "2c4ba339669ec41451709550d928f3fb43aa25f42aa7f4bb3b5222ed58318d55",
+        "sizeBytes": 1358,
+        "lastWriteUtc": "2026-10-22T13:43:35.303636+00:00"
+      },
+      "originalReversedBackground": {
+        "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-xxxhdpi/ic_launcher_background.png",
+        "sha256": "4107a5e7b5747ef42e1c6facf20754f419e92ee218d1547826339cee9c1df090",
+        "sizeBytes": 29063,
+        "lastWriteUtc": "2026-10-22T13:43:35.337096+00:00"
+      },
+      "freshForegroundMatchesPreviousBackground": true,
+      "freshBackgroundMatchesPreviousForeground": true
+    }
+  ],
+  "originalApkArtifacts": [
+    {
+      "path": "builds/test.apk",
+      "sha256": "3be60d76ce3f7a95bf916c6826f3360ae81363b4b09ac60e2268a35f741decde",
+      "sizeBytes": 201154247,
+      "lastWriteUtc": "2026-10-22T13:44:55.167067+00:00"
+    },
+    {
+      "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/build/outputs/apk/release/launcher-release.apk",
+      "sha256": "3be60d76ce3f7a95bf916c6826f3360ae81363b4b09ac60e2268a35f741decde",
+      "sizeBytes": 201154247,
+      "lastWriteUtc": "2026-10-22T13:44:55.167067+00:00"
+    }
+  ],
+  "originalAdaptiveXml": {
+    "path": "Library/Bee/Android/Prj/IL2CPP/Gradle/launcher/src/main/res/mipmap-anydpi-v26/app_icon.xml",
+    "sha256": "44cc3246d167bd718fb61feaba493850ff95255c1ddbb8854c0e4c0534832f96",
+    "sizeBytes": 266,
+    "lastWriteUtc": "2026-10-22T09:38:58.666293+00:00"
+  },
+  "freshAdaptiveXml": {
+    "path": "Library/AndroidIconValidation/icon-export/launcher/src/main/res/mipmap-anydpi-v26/app_icon.xml",
+    "sha256": "44cc3246d167bd718fb61feaba493850ff95255c1ddbb8854c0e4c0534832f96",
+    "sizeBytes": 266,
+    "lastWriteUtc": "2026-10-22T13:55:55.853498+00:00"
+  },
+  "limits": [
+    "Only an isolated empty-scene Android export was built. The active Unity project was not opened by the validation instance.",
+    "No Gradle compilation, APK installation or device deployment was requested. A new real-app APK still needs to be built and installed to use the corrected launcher resources."
+  ],
+  "validationScript": {
+    "path": "Tools/RobotFrames/prepare_android_icon_validation.py",
+    "sha256": "983be0ebc1a05234acdcdd1a8189350cc14a05e57e2963f1ddc046a88c9f14d5",
+    "sizeBytes": 10471,
+    "lastWriteUtc": "2026-10-22T13:55:27.401432+00:00"
+  }
+}

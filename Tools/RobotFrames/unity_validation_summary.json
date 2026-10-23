@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-10-22 09:18:12Z",
+  "unityVersion": "6000.0.84f1",
+  "unityTests": {
+    "total": 160,
+    "passed": 160,
+    "failed": 0,
+    "scope": "Actual unchanged serialized main/transparent prefabs, native articulation physics, model/parser math, CAD geometry/materials, disabled tool controller and actual world menu, installed ROS2 CDR bytes"
+  },
+  "postPhysicsGoldenLinkPoses": 1806,
+  "maximumPositionErrorMetres": 2.026558e-06,
+  "maximumBasisVectorError": 2.58035448e-06,
+  "physicsPositionToleranceMetres": 2e-05,
+  "physicsBasisVectorTolerance": 2e-05,
+  "measurements": [
+    {
+      "prefab": "main",
+      "tool": "none",
+      "maximumPositionErrorMetres": 1.69008342e-06,
+      "maximumBasisVectorError": 2.045371e-06
+    },
+    {
+      "prefab": "main",
+      "tool": "kenos",
+      "maximumPositionErrorMetres": 1.69008342e-06,
+      "maximumBasisVectorError": 2.144525e-06
+    },
+    {
+      "prefab": "main",
+      "tool": "kenos_sl",
+      "maximumPositionErrorMetres": 1.69008342e-06,
+      "maximumBasisVectorError": 2.045371e-06
+    },
+    {
+      "prefab": "transparent",
+      "tool": "none",
+      "maximumPositionErrorMetres": 2.026558e-06,
+      "maximumBasisVectorError": 2.58035448e-06
+    },
+    {
+      "prefab": "transparent",
+      "tool": "kenos",
+      "maximumPositionErrorMetres": 2.026558e-06,
+      "maximumBasisVectorError": 2.58035448e-06
+    },
+    {
+      "prefab": "transparent",
+      "tool": "kenos_sl",
+      "maximumPositionErrorMetres": 2.026558e-06,
+      "maximumBasisVectorError": 2.58035448e-06
+    }
+  ],
+  "portablePythonChecks": {
+    "passed": 20,
+    "command": "python -B -m unittest discover -s Tools/RobotFrames -p test_*.py",
+    "runtimes": [
+      "Windows bundled Python",
+      "WSL Python 3.12.3"
+    ]
+  },
+  "rosMessageFixtures": "Actual installed rcl_interfaces + rclpy serialization, without rclpy.init; unspecified CDR alignment padding masked using schema-derived offsets",
+  "isolatedWorkflowStubs": [
+    "ROSService (throws if requested)",
+    "PickPlaceController plan invalidation",
+    "MTCPlansManager plan invalidation",
+    "UR16eTrajectoryVisualizer trajectory reset"
+  ],
+  "hardwareExercised": false,
+  "networkExercised": false,
+  "activeUnityEditorModified": false,
+  "limitations": [
+    "ROS planning, service transport, hardware tracking, physical tool calibration and robot operation are not exercised.",
+    "Read-only GetParameters metadata handling is tested offline; the actual ROS service callback transport is not exercised.",
+    "Matching calibrated ROS/Unity model definitions does not prove that provisional tool dimensions match the physical installation."
+  ],
+  "resultXmlSha256": "24061c8d2991d34ce3e7b7c6d547082699a4fcd8a2c08c20f5c6d100eab842ef",
+  "editorLogSha256": "000700536d5ec69a2b6c43c3ee8bd8db1f7b95b061ebc612cce9c01b6d6b49f5",
+  "validatedSources": [
+    {
+      "path": "Assets/Prefabs/ur16e_kenos/ur16e_kenos.prefab",
+      "sha256": "78427e1fbd1d84f807d06937df1b7f265963ba867c3a1c7e0ee8bd3d7e19c2f3",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Prefabs/ur16e_kenos/ur16e_kenos_transparent.prefab",
+      "sha256": "7644c2dba1b4128019f731dfa014bc0c0d3e870d874c3245ff444c96c276b474",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Resources/RobotModels/kenos.urdf.txt",
+      "sha256": "a91ec30152e2960bb3919f6e225b920eaad88b14dda765b326878250b2e4cae0",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Resources/RobotModels/kenos_sl.urdf.txt",
+      "sha256": "802c45dffe3c072034ece1ef65c271a1eb7e586444cbd00974d6b97b03fdeb15",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Resources/RobotModels/KenosSLVisual.bytes",
+      "sha256": "aa8514e96c2639128bbd581b2a08f7c04625656506cd280748043f0f71360e32",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Resources/RobotModels/KenosSLVisualProvenance.json",
+      "sha256": "49e3db77de5c664b7dfd9c975e896181c10a6e157d103814b8ac423c90d7f5da",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Resources/RobotModels/Models.json",
+      "sha256": "5223b71fbc0f54dae9f82c1f67a47fabc883032fdc73595fd8eac485903c34e5",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Resources/RobotModels/none.urdf.txt",
+      "sha256": "56415af69b93f127bc5dc619870aec9deee9eecff684119b26e65fff2d04e28c",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotFrameMath.cs",
+      "sha256": "bd3747dba7ce7ec741afb01dfccf04faa0495afeba17be5d8a7c8e6de2037254",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotDescription.cs",
+      "sha256": "0a8dea5ff75a18c950d06eda2eb51fb5a48582715a8bdc79d0c32cdde233b097",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotModel.cs",
+      "sha256": "1b9aa2bdda6c48b6e17a063dc6665ff2a68e518246800528b68fbce7a7a1659b",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpTargetRotationMath.cs",
+      "sha256": "67b1090e38d9f0a4dafa1d099192c21ebda1a68deb9535045a481687b95a79c8",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotDescriptionMessages.cs",
+      "sha256": "57544bbee3380640e9cb068f7d4ed8e7f5e513ed74dd8b78d7ed7b2dd0a9dce0",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RosRobotRig.cs",
+      "sha256": "9321f268f06a28ee140ae1ab563360e3dff0baf149b9ac749a099b13be605e87",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/ToolSelectionController.cs",
+      "sha256": "458047ed8a79654801823c5819bb567f49844a35a37cb5e7d2d019574dbae214",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "13ecebbf3abd38b46dcc3935fc92b3bcb0e4dfd6bab895bda521caaa634c6638",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/Fixtures/GetParametersCdr.json",
+      "sha256": "e078c28e4ce110e4c33ac66d03c055852b90e1b54f1006252dcb4fedc47f964b",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotDescriptionMessageTests.cs",
+      "sha256": "7d9d93df74ff36489a3a800ac69a7ebc308f3faef954f791ae9b33918d9bcd41",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotFrameMathTests.cs",
+      "sha256": "b7da8619080f1fa791b6462a049086ab1b1f098eb2dcc7e81f03dda70372381e",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotModelTests.cs",
+      "sha256": "3cd965e085449c47ece1a7c1ec24eb7613d40ff5ea4d502d9956fd20406fc7f2",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotRigPrefabTests.cs",
+      "sha256": "f108ecaec799237e831350f340401920a29255953bb82b11a35205fefd2e6fe2",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpTargetRotationMathTests.cs",
+      "sha256": "5d76d1b060b32965c41cdfc194388fe856bf0aa4246326329f0f2e845b499560",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolSelectionControllerTests.cs",
+      "sha256": "27a18258c3bae79e82516b9d9b6ab1ebee1713cfc430e4084ad878fb59fadaac",
+      "matchesValidatedCopy": true
+    }
+  ]
+}

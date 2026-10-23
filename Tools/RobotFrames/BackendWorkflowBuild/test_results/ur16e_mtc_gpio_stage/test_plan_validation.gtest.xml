@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="9" failures="0" disabled="0" errors="0" time="0." timestamp="2026-10-22T15:47:52.927" name="AllTests">
+  <testsuite name="PlanValidation" tests="9" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-10-22T15:47:52.927">
+    <testcase name="JointComparisonUsesNamesToleranceAndBoundedAngles" file="/tmp/source/test/test_plan_validation.cpp" line="88" status="run" result="completed" time="0." timestamp="2026-10-22T15:47:52.927" classname="ur16e_mtc_gpio_stage.PlanValidation" />
+    <testcase name="JointComparisonRejectsIncompleteAmbiguousAndNonfiniteFeedback" file="/tmp/source/test/test_plan_validation.cpp" line="104" status="run" result="completed" time="0." timestamp="2026-10-22T15:47:52.927" classname="ur16e_mtc_gpio_stage.PlanValidation" />
+    <testcase name="EquivalentOrderingAndVolatileMetadataDoNotInvalidatePlan" file="/tmp/source/test/test_plan_validation.cpp" line="130" status="run" result="completed" time="0." timestamp="2026-10-22T15:47:52.927" classname="ur16e_mtc_gpio_stage.PlanValidation" />
+    <testcase name="MoveItTransformsShareTargetAndUseUniqueSources" file="/tmp/source/test/test_plan_validation.cpp" line="180" status="run" result="completed" time="0." timestamp="2026-10-22T15:47:52.927" classname="ur16e_mtc_gpio_stage.PlanValidation" />
+    <testcase name="UnreferencedControllerFeedbackDoesNotChangeCollisionScene" file="/tmp/source/test/test_plan_validation.cpp" line="195" status="run" result="completed" time="0." timestamp="2026-10-22T15:47:52.927" classname="ur16e_mtc_gpio_stage.PlanValidation" />
+    <testcase name="ReferencedTransformNamesTargetAndRotationRemainProtected" file="/tmp/source/test/test_plan_validation.cpp" line="213" status="run" result="completed" time="0." timestamp="2026-10-22T15:47:52.927" classname="ur16e_mtc_gpio_stage.PlanValidation" />
+    <testcase name="AttachmentAndNonemptyOctomapFramesRemainProtected" file="/tmp/source/test/test_plan_validation.cpp" line="228" status="run" result="completed" time="0." timestamp="2026-10-22T15:47:52.927" classname="ur16e_mtc_gpio_stage.PlanValidation" />
+    <testcase name="CollisionRelevantChangesRejectThePlan" file="/tmp/source/test/test_plan_validation.cpp" line="257" status="run" result="completed" time="0." timestamp="2026-10-22T15:47:52.927" classname="ur16e_mtc_gpio_stage.PlanValidation" />
+    <testcase name="PartialMalformedOrUnsupportedScenesRejectThePlan" file="/tmp/source/test/test_plan_validation.cpp" line="294" status="run" result="completed" time="0." timestamp="2026-10-22T15:47:52.927" classname="ur16e_mtc_gpio_stage.PlanValidation" />
+  </testsuite>
+</testsuites>

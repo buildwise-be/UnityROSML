@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-10-22 13:26:36Z",
+  "unityVersion": "6000.0.84f1",
+  "scope": "Focused branding-only verification of the actual XR task/alignment menu and real transparent logo asset. Previous broader behavior suites remain recorded separately.",
+  "unityTests": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "filter": "ToolCalibrationMenuTests"
+  },
+  "command": "Unity.exe -batchmode -force-d3d11 -projectPath <isolated project> -runTests -testPlatform EditMode -testFilter ToolCalibrationMenuTests -executeMethod ToolCalibrationMenuTests.RenderCalibrationMenuPreviews",
+  "rendering": {
+    "method": "Actual world-space Unity Canvas rendered with Direct3D11 Camera.Render to 880x1160 images",
+    "state": "Representative offline UI text; no live headset or ROS state",
+    "images": [
+      {
+        "path": "C:\\Users\\aca\\.codex\\visualizations\\2026\\10\\21\\01a15eb0-f294-75b2-9e48-6539d4129eea\\xr-task-menu-branded.png",
+        "sha256": "48772d12a557649142fade4486e80b3557a49bb4d1c781b03090b0b0f8a6ddfb"
+      },
+      {
+        "path": "C:\\Users\\aca\\.codex\\visualizations\\2026\\10\\21\\01a15eb0-f294-75b2-9e48-6539d4129eea\\xr-calibration-menu-branded.png",
+        "sha256": "ad56c32c04c8241eaecc3365498d2494d4db25b52f91935b7c91abf824fbcbd8"
+      }
+    ],
+    "visuallyReviewed": [
+      "Logo clearly visible in both headers",
+      "Titles and controls fit without overlap",
+      "Calibration status and three-line instructions remain fully visible"
+    ]
+  },
+  "sceneLogoReferenceVerified": true,
+  "scenePath": "Assets/Scenes/UR16eInteraction.unity",
+  "sceneSha256": "a80860d2b9b6171ae3ff03301fc73a893896e3d99e7928b0b63885cc78d84e70",
+  "startupSettingsChanged": false,
+  "hardwareExercised": false,
+  "networkExercised": false,
+  "limitations": [
+    "No Android APK build or Magic Leap 2 launch was performed.",
+    "Android launcher icon slots are configured separately; these focused tests cover menu branding.",
+    "Unity/ML2 startup branding remains unchanged."
+  ],
+  "validatedSources": [
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "e92b959d57821618597559aa4851e47ededa752e74e6aa4d7be094fef12515f7",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolCalibrationMenuTests.cs",
+      "sha256": "683e56aef176e63b65cfa1ecbe512084d6f3e4697098adf663e94cdb4537c5ec",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Branding/UnityROSML/UnityROSML-Logo-Transparent.png",
+      "sha256": "092fef93e5004fbf830b3b1210605be449609268813ef09e00f0ec614b0332ee",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Branding/UnityROSML/UnityROSML-Logo-Transparent.png.meta",
+      "sha256": "54d8d1823c12e1a273fc728278a8033a4dae513f723630fb0d9aa446b0cf2406",
+      "matchesValidatedCopy": true
+    }
+  ],
+  "evidence": {
+    "results": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\RosRigValidation\\branding-menu-results.xml",
+    "log": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\RosRigValidation\\branding-menu-editor.log",
+    "resultSha256": "c576dfcb5a1bfb21c3e7d4fbea193491901293567d8478bb5b52ac3501c76b3c",
+    "logSha256": "f332b69ec6580317b2845f780a885b94651d79d1309fe932c579f500b7389e9e"
+  }
+}

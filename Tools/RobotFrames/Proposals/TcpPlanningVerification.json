@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-22",
+  "patchSha256": "23240b9fd77ae899cf1d5758d04bb96aff61703a176fac54c94f95de134eda4f",
+  "fullPackageBuild": "passed",
+  "testResults": {
+    "test_plan_validation.gtest.xml": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0
+    },
+    "test_scene_effects.gtest.xml": {
+      "tests": 4,
+      "failures": 1,
+      "errors": 0
+    },
+    "test_startup_parameter.gtest.xml": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0
+    },
+    "test_tcp_waypoints.gtest.xml": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0
+    },
+    "test_tool_model_validation.gtest.xml": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0
+    }
+  },
+  "baselineFailureReproduced": "SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder:test_scene_effects.cpp:166",
+  "noApplicationOrHardwareStarted": true,
+  "sourceBranch": "codex/architecture-review",
+  "sourceHead": "000daa900dc444dee1e08af582fc91d2fa7927c4",
+  "ctestTargets": {
+    "total": 8,
+    "passed": 7,
+    "failed": 1
+  },
+  "validationImage": "urmir-jazzy:latest",
+  "validationImageId": "sha256:752aa09527488fce5baaa35ebbff1aad52c6e82e72a302db4f14ded79f2f615b",
+  "compiler": "GNU C++ 13.3.0",
+  "rosDistro": "Jazzy",
+  "mtcVersion": "0.1.4",
+  "patchFiles": 7,
+  "patchInsertions": 402,
+  "patchDeletions": 29,
+  "applicationLaunchesRun": [],
+  "appliedTo": "C:/Users/aca/source/UR16UnityControl",
+  "appliedDate": "2026-10-22",
+  "humanApproval": "Apply the patch and build/test it",
+  "appliedSourceHashes": {
+    "ros_ws/src/ur16e_mtc_gpio_stage/CMakeLists.txt": "708e87ba79ece87c5908ea774fe2779c9d408fea0dd1e7567f3a865a09777f31",
+    "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/custom_executor.hpp": "6bdee9b7d8a4a83da919d88e93ed0e67d6018c8a312799e5fe51fdfbcf027982",
+    "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/startup_parameter.hpp": "4d88228dbfdf4c3ffcde94d4b05da842d309f2258db71e25cd7821105e4b5664",
+    "ros_ws/src/ur16e_mtc_gpio_stage/src/test_task.cpp": "a3bc490450d09b447b4a7a459f0dd4f406c1fde28b241b60641fb2dde16e0a35",
+    "ros_ws/src/ur16e_mtc_gpio_stage/test/test_startup_parameter.cpp": "76dbe49766b847f41eb779714c9346f24ad595ca4080782890a83d57b28a79f6",
+    "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/tcp_waypoints.hpp": "a25b9764ea6ddd6879d815338bc05d203521c1d5368a306f79f5e8df1b8f4c4e",
+    "ros_ws/src/ur16e_mtc_gpio_stage/test/test_tcp_waypoints.cpp": "75e502b18b5861f0a9a6060ade3749dceb183c2b8a5ae4cb6857afd1998fce22"
+  },
+  "appliedSourceBuild": "passed",
+  "documentationUpdated": [
+    "README.md",
+    "docs/wiki/API.md",
+    "docs/wiki/TASK_EXECUTION.md",
+    "docs/wiki/BUILD_AND_TESTING.md",
+    "docs/wiki/INDEX.md",
+    "docs/ai-context/CURRENT_STATE.md",
+    "docs/ai-context/DECISIONS.md",
+    "docs/ai-context/KNOWN_ISSUES.md",
+    "docs/ai-context/CHANGELOG_AI.md",
+    "docs/ai-context/ROADMAP.md"
+  ],
+  "documentationRelativeLinksChecked": 129,
+  "appliedSourceMountedReadOnly": true,
+  "appliedSourceHashesStillMatch": true,
+  "appliedTestResults": {
+    "test_plan_validation.gtest.xml": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0
+    },
+    "test_scene_effects.gtest.xml": {
+      "tests": 4,
+      "failures": 1,
+      "errors": 0
+    },
+    "test_startup_parameter.gtest.xml": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0
+    },
+    "test_tcp_waypoints.gtest.xml": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0
+    },
+    "test_tool_model_validation.gtest.xml": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0
+    }
+  },
+  "appliedCtestTargets": {
+    "total": 8,
+    "passed": 7,
+    "failed": 1
+  },
+  "gitWhitespaceCheck": "passed",
+  "requiredWorkflowFilesCheck": "passed",
+  "deployed": false,
+  "builtExecutableSha256": "7b6b5e94700933b2427196632b129739e063ed09fa599b33ad03477066420b84",
+  "baselineSourceHashesVerifiedBeforeApply": true
+}

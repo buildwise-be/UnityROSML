@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-10-22 13:16:57Z",
+  "unityVersion": "6000.0.84f1",
+  "magicLeapSdkVersion": "2.6.0",
+  "unityTests": {
+    "total": 36,
+    "passed": 36,
+    "failed": 0,
+    "skipped": 0
+  },
+  "testGroups": {
+    "CalibrationProfileTests": {
+      "passed": 11,
+      "failed": 0
+    },
+    "QrCalibrationTests": {
+      "passed": 15,
+      "failed": 0
+    },
+    "XrAlignmentIntegrationTests": {
+      "passed": 10,
+      "failed": 0
+    }
+  },
+  "scope": "Actual QR, URInstantiator, native articulation, coordinate service and app-local calibration persistence components.",
+  "testedBehavior": [
+    "Draft world-space translations and full base-pivot rotations preserve live joint values.",
+    "Calibration editing immediately blocks coordinate conversion and survives concurrent initialization attempts.",
+    "Save writes QR-relative pose, which reloads under different XR origins and marker poses after component restart.",
+    "A distinct QR payload cannot inherit another marker's saved calibration.",
+    "Reset remains an unsaved draft; Cancel restores the previous saved pose.",
+    "Rescan discards an edit and leaves commands blocked until confirmed placement.",
+    "Saved alignment changes real TCP pose conversion to the corrected base frame and advances calibration revision.",
+    "Draft and cancel remain QR-relative when the XR tracking origin moves during editing.",
+    "Failed storage writes retain the visible draft and keep commands blocked for retry or cancel.",
+    "Beginning immediately after XR origin relocation uses authoritative calibration instead of stale native physics position."
+  ],
+  "positionToleranceMetres": 2e-05,
+  "basisVectorTolerance": 2e-05,
+  "profileTestsAlsoRunInWorkflowSuite": true,
+  "isolatedWorkflowStubs": [
+    "ROSService throws if requested",
+    "ToolSelectionController",
+    "ToolSelectionMenu",
+    "command/preview invalidation surfaces",
+    "TargetRotationHandles cancellation"
+  ],
+  "profileStorage": "Only test-owned GUID temporary directories; the real application's persistent calibration store is not modified.",
+  "hardwareExercised": false,
+  "networkExercised": false,
+  "limitations": [
+    "Headset interaction, marker tracking, physical overlay accuracy and real robot operation are not exercised.",
+    "The actual menu and command-gate regressions are verified separately by the workflow suite.",
+    "File replacement is exercised on Windows; Android profile replacement is compiled but not run on an ML2 device."
+  ],
+  "evidence": {
+    "results": "C:\\Users\\aca\\.codex\\visualizations\\2026\\10\\21\\01a15eb0-f294-75b2-9e48-6539d4129eea\\qr-placement-validation\\alignment-results.xml",
+    "log": "C:\\Users\\aca\\.codex\\visualizations\\2026\\10\\21\\01a15eb0-f294-75b2-9e48-6539d4129eea\\qr-placement-validation\\alignment-editor.log",
+    "resultSha256": "42c5a1c3505b9bc079edec1e05aeff307ba4145fb99ecc3d546146ac0d5d0773",
+    "logSha256": "05566f5b813f6f5ed1b29eb7e86c7a18e82252c8fdbfc8a0e4ecc28875fe690f"
+  },
+  "validatedSources": [
+    {
+      "path": "Assets/Prefabs/ur16e_kenos/ur16e_kenos.prefab",
+      "sha256": "78427e1fbd1d84f807d06937df1b7f265963ba867c3a1c7e0ee8bd3d7e19c2f3",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotCalibrationStore.cs",
+      "sha256": "4dae0680f0667e376da638b1851b0a58c9c530c623c1fca2c9420d8e4a811883",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotFrameMath.cs",
+      "sha256": "bd3747dba7ce7ec741afb01dfccf04faa0495afeba17be5d8a7c8e6de2037254",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotDescription.cs",
+      "sha256": "0a8dea5ff75a18c950d06eda2eb51fb5a48582715a8bdc79d0c32cdde233b097",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotModel.cs",
+      "sha256": "1b9aa2bdda6c48b6e17a063dc6665ff2a68e518246800528b68fbce7a7a1659b",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpPlanReview.cs",
+      "sha256": "cab22403f52de63b37362ff20fd870a31f759e98d80c27961a7458064efb0dba",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpTargetRotationMath.cs",
+      "sha256": "67b1090e38d9f0a4dafa1d099192c21ebda1a68deb9535045a481687b95a79c8",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/QR/IQRPoseStabilizer.cs",
+      "sha256": "4f31a06963dfb56f6925f72b407689e00c1891052090ab5dee49407e1a1fb3f8",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/QR/QRDetector.cs",
+      "sha256": "3798e8899be59d0ff19c951df411c2a7377244d1229f6298ab60865bf59df72b",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/QR/QRMarkerAxes.cs",
+      "sha256": "8357ae954f1d181b6307c2dfa67cc7c34a7a2920891a793f81ffff368a66c642",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/QR/SimpleQRPoseStabilizer.cs",
+      "sha256": "dec907ea617b2601e163d26346927b2bfc71fdb54a047cde547557d79c5fa4b7",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotCoordinateService.cs",
+      "sha256": "bb32afe25c3da91131027ac663e65b0b6b1bbab698cc6e20276fc004011face7",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotStateService.cs",
+      "sha256": "66340d3293f2a8339a62908979ea5d71543d3dfd66fd7d5d81a28c5d2b0cceb7",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RosRobotRig.cs",
+      "sha256": "a2cbdee49c64024c16963a83460852a099e78a11f63f527c8cd7fd781656b835",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/URInstantiator.cs",
+      "sha256": "f12bc2926f84404e717deb29376f8d0945e1126e450131d3b2e7643269a0cff0",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/XRTrackingSpaceResolver.cs",
+      "sha256": "9ab0e8cc9b9c65488059e4259cf92ba2cb7503f28872f60f62a960077c0858bc",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/CalibrationProfileTests.cs",
+      "sha256": "0cce4c5ab8b4cecab0604bc26245844eddf93b38a8cd59ca571996f7ba61aa39",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/QrCalibrationTests.cs",
+      "sha256": "011c5ac5e5a42521370e8f92ab979e31ebb2df8b9289708b41610edb5366889d",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/XrAlignmentIntegrationTests.cs",
+      "sha256": "14444f76a071616be5c6cabbe6376e7c4dcae4eef1e916cc6c996c08ae8ccf43",
+      "matchesValidatedCopy": true
+    }
+  ]
+}

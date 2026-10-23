@@ -1,0 +1,11 @@
+{
+  "status": "not_run",
+  "completedUtc": "2026-10-22T15:19:21.5570545Z",
+  "reason": "Unity licensing initialization failed after 74.81 seconds; LicenseClient-aca channel refused. No NUnit test results were produced. Hidden diagnostic editor stopped after bounded wait.",
+  "evidenceLog": "Library/RosRigValidation/live-ros-tcp-editor.log",
+  "preparedFixture": "Tools/RobotFrames/live_ros_tcp_fixture_20261022.json",
+  "preparedTest": "Tools/RobotFrames/LiveRosTcpDiagnosticTests.cs",
+  "scope": "Actual saved RSP URDF/current six joints against six MoveIt FK poses; prepared isolated offline native PhysX check, not completed.",
+  "applicationFilesChanged": false,
+  "noRobotActions": true
+}

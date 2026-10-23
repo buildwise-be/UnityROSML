@@ -1,0 +1,312 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-10-22 14:19:44Z",
+  "unityVersion": "6000.0.84f1",
+  "success": true,
+  "unityTests": {
+    "total": 47,
+    "passed": 47,
+    "failed": 0,
+    "byFixture": {
+      "CalibrationCommandGateTests": 4,
+      "TaskModeSwitchTests": 18,
+      "TcpPlanReviewTests": 4,
+      "TcpPlanningControllerTests": 9,
+      "ToolCalibrationMenuTests": 4,
+      "ToolSelectionControllerTests": 8
+    }
+  },
+  "scope": [
+    "Actual URInputManager, PickPlaceController, MTCPlansManager, TcpPlanningController, TcpTargetPreview and shared trajectory visualizer",
+    "Retained targets, inactive marker visibility/capture/export, interaction cancellation, task selection and planner routing",
+    "TCP/MTC review invalidation, legacy initial-progress/failure messages, late-result rejection, preview timeout and single-use execution authorization",
+    "Actual unchanged robot prefab and ROS model produce native trajectory clones for successful MTC preview tests",
+    "Tool matching, calibration command gates, legacy feedback and graphics-enabled shared menu previews"
+  ],
+  "isolatedWorkflowStubs": [
+    "ROSService factory throws on access",
+    "RemoteExecutionController pose-source binding is inert",
+    "QRDetector/URInstantiator hardware APIs are inert; independently validated previously"
+  ],
+  "fixtureNotes": [
+    "Marker roots are seeded to test mode visibility and pose retention without requiring live XR tracking.",
+    "No controller Start method that opens ROS transport is invoked. Offline publish failures exercise the real legacy controller catch path.",
+    "Preview screenshots show the actual runtime world canvas with representative offline status text."
+  ],
+  "hardwareExercised": false,
+  "networkExercised": false,
+  "activeUnityEditorModified": false,
+  "limitations": [
+    "This does not exercise ROS service/topic transport, real MTC planning, headset controller tracking or robot motion.",
+    "Legacy MTC status/trajectory messages have no request identifier; external concurrent clients cannot be uniquely correlated."
+  ],
+  "resultXml": {
+    "path": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\RosRigValidation\\task-mode-results.xml",
+    "sha256": "f26d0b1623ee25996bd2db04a5467b4cf017b964e5a5006afb1df216fa59790e"
+  },
+  "editorLog": {
+    "path": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\RosRigValidation\\task-mode-editor.log",
+    "sha256": "9384aa2bb89934e20f6a591a8876e31801c031836d9140ade00de46e88e6f172"
+  },
+  "previewEditorLog": {
+    "path": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\RosRigValidation\\task-mode-preview-editor.log",
+    "sha256": "d610de0e972d8fb27bafd317393fedd13e7535ef9d333dc6749f92d33f42e094"
+  },
+  "previews": [
+    {
+      "mode": "Exact TCP",
+      "path": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\RosRigValidation\\calibration-menu-task.png",
+      "sha256": "4a595dd413ac1aef83e41ebbcf13ebaac94bf9632b1123ea27f57c21cbb34b50",
+      "sizeBytes": 144871
+    },
+    {
+      "mode": "MTC object-surface pick/place",
+      "path": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\RosRigValidation\\calibration-menu-pick-place.png",
+      "sha256": "70f9e47e2399a732f42d1b6cfe2e4a86f862c3923de3dde5bff68eba819e9ee2",
+      "sizeBytes": 157490
+    },
+    {
+      "mode": "XR alignment",
+      "path": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\RosRigValidation\\calibration-menu-alignment.png",
+      "sha256": "ad56c32c04c8241eaecc3365498d2494d4db25b52f91935b7c91abf824fbcbd8",
+      "sizeBytes": 181216
+    }
+  ],
+  "validatedSources": [
+    {
+      "path": "Assets/RosMessages/Moveit/msg/RobotTrajectoryMsg.cs",
+      "sha256": "6459a8271681b0d5db6d7ba1c4955349f278d9f8dfda43200fe83cb27aa3bbde",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eInterfaces/msg/BoxMsg.cs",
+      "sha256": "bedcac3c807c9000a79b6d95acf2084f54fd317b36a32d1b2b6a0676bbd708de",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eInterfaces/msg/PickPlacePosesMsg.cs",
+      "sha256": "0ceaef005b1d7027733289e8862c7bcd924d54031913ea203ada5471ad19b105",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/AddPrimitiveRequest.cs",
+      "sha256": "455bcf3c1ab15086b6f56a2689fdc5cbb6111a777e9f2407059576160da8f702",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/AddPrimitiveResponse.cs",
+      "sha256": "11211fe1018df9c85f27aecfe6eb174512c0dd5b39d97cf04de29e4278c274e6",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16eMoverServiceRequest.cs",
+      "sha256": "3c54a5cd340b267ec35d9aecc0c6bfcc4bb2b594bb8186f8faac9254e5f70fff",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16eMoverServiceResponse.cs",
+      "sha256": "4ef43838e21b822a77e7d0b1ddd45a2189df6c14841201bfd877e5207d3ad2be",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16ePathPlanRequest.cs",
+      "sha256": "1a7827b3938407cf82bcaddfadb81f9b871a49e9dbc98aaca62df33c4775c263",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16ePathPlanResponse.cs",
+      "sha256": "8a08465f9a66bccb30ee37055d69a1a3f4eae24d06971ed119fe75198c1c4eac",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UpdatePlanningSceneRequest.cs",
+      "sha256": "d62870df53a72c21449b8ebdc4b6a63cfeaa2ef7c1e866cbebe6b85535e1e884",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UpdatePlanningSceneResponse.cs",
+      "sha256": "c22bcdcf91113e500ef6bc29ff1e7f1a93ae54f1a9ca8e9c665f928d4bf7699a",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Samples/Magic Leap SDK/2.6.0/ML Rig & OpenXR Input/MagicLeapOpenXRInput.cs",
+      "sha256": "4cb8b2271414f22bd1c7145214cfb53f5d64541e6ac2a9747d0a5382a8579507",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotCalibrationStore.cs",
+      "sha256": "4dae0680f0667e376da638b1851b0a58c9c530c623c1fca2c9420d8e4a811883",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotFrameMath.cs",
+      "sha256": "bd3747dba7ce7ec741afb01dfccf04faa0495afeba17be5d8a7c8e6de2037254",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotDescription.cs",
+      "sha256": "0a8dea5ff75a18c950d06eda2eb51fb5a48582715a8bdc79d0c32cdde233b097",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotModel.cs",
+      "sha256": "1b9aa2bdda6c48b6e17a063dc6665ff2a68e518246800528b68fbce7a7a1659b",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpPlanReview.cs",
+      "sha256": "cab22403f52de63b37362ff20fd870a31f759e98d80c27961a7458064efb0dba",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpTargetRotationMath.cs",
+      "sha256": "67b1090e38d9f0a4dafa1d099192c21ebda1a68deb9535045a481687b95a79c8",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/MTCPlansManager.cs",
+      "sha256": "2e2ddcfefe60fb2f88fb0b689a2544c9cf82b2dd2c42fc5b7261cb5fae36421a",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/PickPlaceController.cs",
+      "sha256": "ea372a2c27771ba953726864286afc6538effddbf60047f5e750cdd11365f8d1",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotCoordinateService.cs",
+      "sha256": "bb32afe25c3da91131027ac663e65b0b6b1bbab698cc6e20276fc004011face7",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotDescriptionMessages.cs",
+      "sha256": "57544bbee3380640e9cb068f7d4ed8e7f5e513ed74dd8b78d7ed7b2dd0a9dce0",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotStateService.cs",
+      "sha256": "66340d3293f2a8339a62908979ea5d71543d3dfd66fd7d5d81a28c5d2b0cceb7",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RosRobotRig.cs",
+      "sha256": "a2cbdee49c64024c16963a83460852a099e78a11f63f527c8cd7fd781656b835",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/TcpPlanningController.cs",
+      "sha256": "f851880c8e4996f69a6741f6a5c2725a299cebf28fb359c969c4648566bab461",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/ToolSelectionController.cs",
+      "sha256": "d91fdb5ef8ba5befca11f9fbcbbd980dbf7fe29f71e69c6bd012aa98512ce442",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/UR16eTrajectoryVisualizer.cs",
+      "sha256": "ff492fc1507277e401d427772680b512dcae3d17dd0849653d4855379e78929c",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetRotationHandles.cs",
+      "sha256": "428d6d42c7e7275f0cee0cf95122d0b5b6f1bbc433788a57f69e97d41eb01641",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TcpTargetPreview.cs",
+      "sha256": "f7c2cfeaa46ae5839b257ffce47331fd24f77ff0a1c824c6c91af58b85645805",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/MTCPlanUIManager.cs",
+      "sha256": "f068f018a5858166f4b057c5a7e5d73f2380a0183b3d16b0ec609910fb908213",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "cce7c67133e15fb233803853af4d4a2f14a08197e8d34daa1439412fa2530640",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/URInputManager.cs",
+      "sha256": "fc4ec205bd6a429b19519478bdf721234b5ed5ce5f764e0d2f4f8a799d903648",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/XRTrackingSpaceResolver.cs",
+      "sha256": "9ab0e8cc9b9c65488059e4259cf92ba2cb7503f28872f60f62a960077c0858bc",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/CalibrationCommandGateTests.cs",
+      "sha256": "7bb501c4fd4d9bbe1aeff339c0e7edbf7dab28d637ff60e8e9ff7d5e2dc931ec",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/CalibrationProfileTests.cs",
+      "sha256": "0cce4c5ab8b4cecab0604bc26245844eddf93b38a8cd59ca571996f7ba61aa39",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotDescriptionMessageTests.cs",
+      "sha256": "7d9d93df74ff36489a3a800ac69a7ebc308f3faef954f791ae9b33918d9bcd41",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotFrameMathTests.cs",
+      "sha256": "b7da8619080f1fa791b6462a049086ab1b1f098eb2dcc7e81f03dda70372381e",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotModelTests.cs",
+      "sha256": "3cd965e085449c47ece1a7c1ec24eb7613d40ff5ea4d502d9956fd20406fc7f2",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotRigPrefabTests.cs",
+      "sha256": "6112ac6eb32c006269b29c9b96c811156fe8e29e9cc1c82bb276f6fb62418deb",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TaskModeSwitchTests.cs",
+      "sha256": "c3bdcb8863cc3e619dbe3b789ca48b8df0f9784cff0c7deb2239ad277242d18d",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpPlanReviewTests.cs",
+      "sha256": "3f70f215b8b9eca00dd617a1f74633a65286ea0aace55818ef724be18358c93f",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpPlanningControllerTests.cs",
+      "sha256": "e5193c11b6790117d42ea3f8babd7f63af2958e4b43e43bf59c6f9173fa89511",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpTargetRotationMathTests.cs",
+      "sha256": "5d76d1b060b32965c41cdfc194388fe856bf0aa4246326329f0f2e845b499560",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolCalibrationMenuTests.cs",
+      "sha256": "193e7ef3b41a3e7baa85de1fd7288c75ec9ab375309b2dd20b8fe8600f0ccdc3",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolSelectionControllerTests.cs",
+      "sha256": "27a18258c3bae79e82516b9d9b6ab1ebee1713cfc430e4084ad878fb59fadaac",
+      "matchesValidatedCopy": true
+    }
+  ],
+  "validationWorkflowSources": [
+    {
+      "path": "Tools/RobotFrames/prepare_unity_validation.py",
+      "sha256": "43123b9c9be1ffaf5b0900ee82040837793361691523e965a84723f0c57659e4"
+    },
+    {
+      "path": "Tools/RobotFrames/record_task_mode_validation.py",
+      "sha256": "c0ac241abfc4c7d87f5d33d4c2cb1aec9656704e5726949bf553a851fc47beac"
+    }
+  ]
+}

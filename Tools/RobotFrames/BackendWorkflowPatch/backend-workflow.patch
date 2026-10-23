@@ -1,0 +1,744 @@
+--- a/ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp
+@@ -6,6 +6,7 @@
+ #include <algorithm>
+ #include <cmath>
+ #include <map>
++#include <set>
+ #include <string>
+ #include <utility>
+ 
+@@ -161,10 +162,35 @@
+ 
+   scene.world.octomap.header.stamp = {};
+   scene.world.octomap.octomap.header.stamp = {};
++  // MoveIt serializes source in header.frame_id and the common planning
++  // target in child_frame_id (unlike a normal TF tree's unique children).
+   for (auto &transform : scene.fixed_frame_transforms)
++  {
+     transform.header.stamp = {};
+-  if (!sortUnique(scene.fixed_frame_transforms, [](const auto &entry) { return entry.child_frame_id; }))
++    if (transform.child_frame_id.empty())
++      return "invalid fixed frame names";
++  }
++  if (!sortUnique(scene.fixed_frame_transforms, [](const auto &entry) { return entry.header.frame_id; }))
+     return "invalid fixed frame names";
++
++  // World/attached geometry is already frozen in its serialized frame. An
++  // unrelated live TF, e.g. the controller's measured TCP, can jitter with
++  // encoders without changing collision geometry. Compare only transforms
++  // that these actual scene components reference; keep their values exact.
++  std::set<std::string> collision_frames;
++  for (const auto &object : objects)
++    collision_frames.insert(object.header.frame_id);
++  for (const auto &attachment : attachments)
++    collision_frames.insert(attachment.object.header.frame_id);
++  if (!scene.world.octomap.octomap.data.empty())
++  {
++    collision_frames.insert(scene.world.octomap.header.frame_id);
++    collision_frames.insert(scene.world.octomap.octomap.header.frame_id);
++  }
++  auto &transforms = scene.fixed_frame_transforms;
++  transforms.erase(std::remove_if(transforms.begin(), transforms.end(), [&](const auto &transform) {
++    return collision_frames.count(transform.header.frame_id) == 0;
++  }), transforms.end());
+   if (!sortUnique(scene.link_padding, [](const auto &entry) { return entry.link_name; }) ||
+       !sortUnique(scene.link_scale, [](const auto &entry) { return entry.link_name; }))
+     return "invalid collision padding or scaling names";
+--- a/ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp
+@@ -42,7 +42,7 @@
+   scene.robot_model_name = "ur16e";
+   scene.robot_state.joint_state.name = {"shoulder", "elbow"};
+   scene.robot_state.joint_state.position = {0.1, -0.2};
+-  scene.world.collision_objects = {box("tile", "base"), box("fixture", "base")};
++  scene.world.collision_objects = {box("tile", "fixture"), box("fixture", "base")};
+   for (const auto &id : {"held_a", "held_b"})
+   {
+     moveit_msgs::msg::AttachedCollisionObject attached;
+@@ -62,8 +62,8 @@
+   for (const auto &name : {"fixture", "camera"})
+   {
+     geometry_msgs::msg::TransformStamped transform;
+-    transform.header.frame_id = "base";
+-    transform.child_frame_id = name;
++    transform.header.frame_id = name;
++    transform.child_frame_id = "base";
+     transform.transform.rotation.w = 1.0;
+     scene.fixed_frame_transforms.push_back(transform);
+     moveit_msgs::msg::LinkPadding padding;
+@@ -175,6 +175,81 @@
+   EXPECT_TRUE(validatePlanStart(expected, current, TOLERANCE).empty());
+   EXPECT_EQ(current, before);
+   EXPECT_EQ(expected, snapshot());
++}
++
++TEST(PlanValidation, MoveItTransformsShareTargetAndUseUniqueSources)
++{
++  auto planned = snapshot();
++  geometry_msgs::msg::TransformStamped identity;
++  identity.header.frame_id = identity.child_frame_id = "base";
++  identity.transform.rotation.w = 1.0;
++  planned.fixed_frame_transforms.push_back(identity);
++  auto measured = planned;
++  std::reverse(measured.fixed_frame_transforms.begin(), measured.fixed_frame_transforms.end());
++  for (auto &entry : measured.fixed_frame_transforms) entry.header.stamp.sec = 9;
++  EXPECT_TRUE(validatePlanStart(planned, measured, TOLERANCE).empty());
++  measured.fixed_frame_transforms[0].child_frame_id.clear();
++  EXPECT_FALSE(validatePlanStart(planned, measured, TOLERANCE).empty());
++}
++
++TEST(PlanValidation, UnreferencedControllerFeedbackDoesNotChangeCollisionScene)
++{
++  auto planned = snapshot();
++  geometry_msgs::msg::TransformStamped controller;
++  controller.header.frame_id = "ur_tool0_controller";
++  controller.child_frame_id = "base";
++  controller.transform.rotation.w = 1.0;
++  planned.fixed_frame_transforms.push_back(controller);
++  auto measured = planned;
++  measured.fixed_frame_transforms.back().transform.translation.x = 0.00001;
++  measured.fixed_frame_transforms.back().transform.rotation.z = 0.00001;
++  EXPECT_TRUE(validatePlanStart(planned, measured, TOLERANCE).empty());
++  // Once geometry references that frame, the exact transform is relevant.
++  planned.world.collision_objects[0].header.frame_id = "ur_tool0_controller";
++  measured.world.collision_objects[0].header.frame_id = "ur_tool0_controller";
++  EXPECT_FALSE(validatePlanStart(planned, measured, TOLERANCE).empty());
++}
++
++TEST(PlanValidation, ReferencedTransformNamesTargetAndRotationRemainProtected)
++{
++  const auto planned = snapshot();
++  for (int change = 0; change < 4; ++change)
++  {
++    auto measured = planned;
++    auto &transform = measured.fixed_frame_transforms[0]; // referenced fixture
++    if (change == 0) transform.header.frame_id = "another_source";
++    if (change == 1) transform.child_frame_id = "another_target";
++    if (change == 2) transform.transform.rotation.x = 0.1;
++    if (change == 3) measured.fixed_frame_transforms.erase(measured.fixed_frame_transforms.begin());
++    EXPECT_FALSE(validatePlanStart(planned, measured, TOLERANCE).empty());
++  }
++}
++
++TEST(PlanValidation, AttachmentAndNonemptyOctomapFramesRemainProtected)
++{
++  for (bool attachment_frame : {false, true})
++  {
++    auto planned = snapshot();
++    geometry_msgs::msg::TransformStamped external;
++    external.header.frame_id = "external_collision_frame";
++    external.child_frame_id = "base";
++    external.transform.rotation.w = 1.0;
++    planned.fixed_frame_transforms.push_back(external);
++    if (attachment_frame)
++      planned.robot_state.attached_collision_objects[0].object.header.frame_id = external.header.frame_id;
++    else
++      planned.world.octomap.header.frame_id = external.header.frame_id;
++    auto measured = planned;
++    measured.fixed_frame_transforms.back().transform.translation.y += 0.01;
++    EXPECT_FALSE(validatePlanStart(planned, measured, TOLERANCE).empty());
++    if (!attachment_frame)
++    {
++      // An empty map's metadata alone must not make an unused live TF relevant.
++      planned.world.octomap.octomap.data.clear();
++      measured.world.octomap.octomap.data.clear();
++      EXPECT_TRUE(validatePlanStart(planned, measured, TOLERANCE).empty());
++    }
++  }
+ }
+ 
+ using Mutation = std::pair<std::string, std::function<void(Scene &)>>;
+@@ -235,6 +310,8 @@
+          s.robot_state.attached_collision_objects.push_back(s.robot_state.attached_collision_objects[0]);
+        }},
+       {"duplicate transform", [](auto &s) { s.fixed_frame_transforms.push_back(s.fixed_frame_transforms[0]); }},
++      {"empty transform source", [](auto &s) { s.fixed_frame_transforms[0].header.frame_id.clear(); }},
++      {"empty transform target", [](auto &s) { s.fixed_frame_transforms[0].child_frame_id.clear(); }},
+       {"missing matrix row", [](auto &s) { s.allowed_collision_matrix.entry_values.pop_back(); }},
+       {"short matrix row", [](auto &s) { s.allowed_collision_matrix.entry_values[1].enabled.pop_back(); }},
+       {"asymmetric matrix", [](auto &s) { s.allowed_collision_matrix.entry_values[0].enabled[1] = false; }},
+--- /dev/null
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/pick_place_targets.hpp
+@@ -0,0 +1,57 @@
++#pragma once
++
++#include <ur16e_interfaces/msg/pick_place_poses.hpp>
++#include <cmath>
++#include <stdexcept>
++
++namespace ur16e_mtc_gpio_stage
++{
++inline ur16e_interfaces::msg::PickPlacePoses validatedContactTargets(
++    ur16e_interfaces::msg::PickPlacePoses targets)
++{
++  for (auto *target : {&targets.pick_pose, &targets.place_pose})
++  {
++    if (target->header.frame_id != "ur_base_link")
++      throw std::invalid_argument("Pick/place TCP contacts must be expressed in ur_base_link");
++    const auto &p = target->pose.position;
++    auto &q = target->pose.orientation;
++    if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z) ||
++        !std::isfinite(q.x) || !std::isfinite(q.y) || !std::isfinite(q.z) || !std::isfinite(q.w))
++      throw std::invalid_argument("Pick/place TCP contacts require finite poses");
++    const double length = std::hypot(std::hypot(q.x, q.y), std::hypot(q.z, q.w));
++    if (!std::isfinite(length) || length < 1e-12)
++      throw std::invalid_argument("Pick/place TCP contacts require nonzero quaternions");
++    q.x /= length; q.y /= length; q.z /= length; q.w /= length;
++    target->header.stamp = {}; // static base-relative contact, never historical TF
++  }
++  return targets;
++}
++
++// The virtual object's centre lies beyond the foam contact along outward tool
++// +Z. This rotates the offset with the tool, including tilted/vertical picks.
++inline geometry_msgs::msg::PoseStamped contactObjectCentre(
++    geometry_msgs::msg::PoseStamped contact, double height)
++{
++  if (!std::isfinite(height) || height <= 0.0)
++    throw std::invalid_argument("Object thickness must be finite and positive");
++  const auto &q = contact.pose.orientation;
++  contact.pose.position.x += height * (q.x*q.z + q.w*q.y);
++  contact.pose.position.y += height * (q.y*q.z - q.w*q.x);
++  contact.pose.position.z += height * (0.5 - q.x*q.x - q.y*q.y);
++  return contact;
++}
++
++// Changing this local twist preserves TCP position and the requested +Z normal.
++inline geometry_msgs::msg::PoseStamped contactYawSample(
++    geometry_msgs::msg::PoseStamped contact, double yaw)
++{
++  auto &q = contact.pose.orientation;
++  const auto original = q;
++  const double s = std::sin(yaw/2), c = std::cos(yaw/2);
++  q.x = original.x*c + original.y*s;
++  q.y = original.y*c - original.x*s;
++  q.z = original.z*c + original.w*s;
++  q.w = original.w*c - original.z*s;
++  return contact;
++}
++} // namespace ur16e_mtc_gpio_stage
+--- a/ros_ws/src/ur16e_mtc_gpio_stage/src/test_task.cpp
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/src/test_task.cpp
+@@ -23,6 +23,7 @@
+ #include "ur16e_mtc_gpio_stage/tool_model_validation.hpp"
+ #include "ur16e_mtc_gpio_stage/startup_parameter.hpp"
+ #include "ur16e_mtc_gpio_stage/tcp_waypoints.hpp"
++#include "ur16e_mtc_gpio_stage/pick_place_targets.hpp"
+ #include "ur16e_interfaces/msg/pick_place_poses.hpp"
+ #include "ur16e_interfaces/msg/box.hpp"
+ 
+@@ -51,6 +52,7 @@
+ #include <future>
+ #include <memory>
+ #include <stdexcept>
++#include <optional>
+ 
+ static const rclcpp::Logger LOGGER = rclcpp::get_logger("mtc_test_task");
+ namespace mtc = moveit::task_constructor;
+@@ -64,7 +66,7 @@
+ class MTCTestTask
+ {
+ public:
+-    MTCTestTask(const rclcpp::Node::SharedPtr &node, const std::string &tool, std::string ik_frame, bool tcp_pose_planning_enabled)
++    MTCTestTask(const rclcpp::Node::SharedPtr &node, const std::string &tool, std::string ik_frame, bool tcp_pose_planning_enabled, bool pick_place_tcp_planning_enabled)
+         : node_(node), tool_(ur16e_mtc_gpio_stage::resolveToolDefinition(tool)), ik_frame_(std::move(ik_frame)), tcp_pose_planning_enabled_(tcp_pose_planning_enabled)
+     {
+         start_joint_tolerance_ = node_->get_parameter_or<double>("execution_start_tolerance", 0.01);
+@@ -102,6 +104,9 @@
+ 
+         pick_place_sub_ = node_->create_subscription<ur16e_interfaces::msg::PickPlacePoses>(
+             "pick_place_poses_target", 10, std::bind(&MTCTestTask::createTask, this, _1), command_options);
++        if (pick_place_tcp_planning_enabled)
++            pick_place_tcp_sub_ = node_->create_subscription<ur16e_interfaces::msg::PickPlacePoses>(
++                "pick_place_tcp_target", 10, std::bind(&MTCTestTask::createContactTask, this, _1), command_options);
+ 
+         if (tcp_pose_planning_enabled_)
+         {
+@@ -192,6 +197,8 @@
+     std::string startup_robot_description_;
+     std::string startup_robot_description_semantic_;
+     rclcpp::Subscription<ur16e_interfaces::msg::PickPlacePoses>::SharedPtr pick_place_sub_;
++    rclcpp::Subscription<ur16e_interfaces::msg::PickPlacePoses>::SharedPtr pick_place_tcp_sub_;
++    std::optional<moveit_msgs::msg::CollisionObject> owned_preview_object_;
+     rclcpp::Subscription<ur16e_interfaces::msg::Box>::SharedPtr scene_setup_sub_;
+     rclcpp::Subscription<geometry_msgs::msg::PoseArray>::SharedPtr tcp_poses_plan_sub_;
+     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr execute_tcp_plan_sub_;
+@@ -409,8 +416,9 @@
+         }
+     }
+ 
+-    void applyBox(const ur16e_interfaces::msg::Box &box_msg)
+-    {
++    void applyBox(const ur16e_interfaces::msg::Box &box_msg, bool task_preview = false)
++    {
++        owned_preview_object_.reset(); // a failed/unknown scene write revokes prior ownership too
+         RCLCPP_INFO(LOGGER, "Setting up planning scene with box dimensions: x=%f, y=%f, z=%f", box_msg.boxx, box_msg.boxy, box_msg.boxz);
+ 
+         moveit_msgs::msg::CollisionObject object;
+@@ -420,6 +428,8 @@
+         object.primitives[0].type = shape_msgs::msg::SolidPrimitive::BOX;
+         object.primitives[0].dimensions = {box_msg.boxx, box_msg.boxy, box_msg.boxz}; 
+         object.pose = box_msg.position.pose;
++        object.primitive_poses.resize(1);
++        object.primitive_poses[0].orientation.w = 1.0;
+         object.operation = object.ADD;
+ 
+         auto request = std::make_shared<ApplyPlanningScene::Request>();
+@@ -428,6 +438,46 @@
+         request->scene.world.collision_objects.push_back(std::move(object));
+         if (!callSceneService<ApplyPlanningScene>(scene_apply_client_, request)->success)
+             throw std::runtime_error("MoveIt rejected the planning-scene box update");
++        owned_preview_object_.reset();
++        if (task_preview)
++        {
++            auto query = std::make_shared<GetPlanningScene::Request>();
++            query->components.components = moveit_msgs::msg::PlanningSceneComponents::WORLD_OBJECT_GEOMETRY;
++            const auto response = callSceneService<GetPlanningScene>(scene_query_client_, query);
++            for (const auto &entry : response->scene.world.collision_objects)
++                if (entry.id == "object") owned_preview_object_ = entry;
++        }
++    }
++
++    void removeUnexecutedPreviewObject()
++    {
++        if (!owned_preview_object_) return;
++        auto query = std::make_shared<GetPlanningScene::Request>();
++        query->components.components = moveit_msgs::msg::PlanningSceneComponents::WORLD_OBJECT_GEOMETRY |
++            moveit_msgs::msg::PlanningSceneComponents::ROBOT_STATE_ATTACHED_OBJECTS;
++        const auto response = callSceneService<GetPlanningScene>(scene_query_client_, query);
++        for (const auto &attached : response->scene.robot_state.attached_collision_objects)
++            if (attached.object.id == "object") return; // held physical objects stay attached
++        for (const auto &entry : response->scene.world.collision_objects)
++        {
++            if (entry.id != "object") continue;
++            auto previous = *owned_preview_object_;
++            auto current = entry;
++            if (!ur16e_mtc_gpio_stage::plan_validation_detail::normalizeObject(previous) ||
++                !ur16e_mtc_gpio_stage::plan_validation_detail::normalizeObject(current) || previous != current)
++                throw std::runtime_error("Previous task preview object changed externally; inspect the scene before TCP planning");
++            auto removal = std::make_shared<ApplyPlanningScene::Request>();
++            removal->scene.is_diff = true;
++            removal->scene.robot_state.is_diff = true;
++            moveit_msgs::msg::CollisionObject object;
++            object.id = "object";
++            object.operation = object.REMOVE;
++            removal->scene.world.collision_objects.push_back(object);
++            if (!callSceneService<ApplyPlanningScene>(scene_apply_client_, removal)->success)
++                throw std::runtime_error("MoveIt rejected removal of the unexecuted task preview");
++            break;
++        }
++        owned_preview_object_.reset();
+     }
+ 
+     void doTask(std_msgs::msg::Bool execute_msg)
+@@ -490,6 +540,9 @@
+         {
+             discardPreparedPlan();
+             const bool vacuum_task = plan->mode == TaskMode::VacuumPickPlace;
++            // After any vacuum execution attempt, the object may be physical or
++            // moved/attached. Never automatically remove it as a preview again.
++            if (vacuum_task) owned_preview_object_.reset();
+             const std::string io_service = vacuum_task
+                 ? ur16e_mtc_gpio_stage::requireVacuumCapability(tool_).io_service
+                 : "/io_and_status_controller/set_io";
+@@ -688,6 +741,16 @@
+ 
+     void createTask(ur16e_interfaces::msg::PickPlacePoses poses)
+     {
++        createTaskImpl(std::move(poses), false);
++    }
++
++    void createContactTask(ur16e_interfaces::msg::PickPlacePoses poses)
++    {
++        createTaskImpl(std::move(poses), true);
++    }
++
++    void createTaskImpl(ur16e_interfaces::msg::PickPlacePoses poses, bool tool_contacts)
++    {
+         std::unique_lock<std::mutex> lock(task_mutex_, std::try_to_lock);
+         if (!lock.owns_lock())
+         {
+@@ -721,7 +784,9 @@
+             if (robot_description != startup_robot_description_ ||
+                 robot_description_semantic != startup_robot_description_semantic_)
+                 throw std::runtime_error("Robot/tool descriptions changed since startup; restart the task node");
+-            buildTask(poses);
++            if (tool_contacts)
++                poses = ur16e_mtc_gpio_stage::validatedContactTargets(std::move(poses));
++            buildTask(poses, tool_contacts);
+             task_.init();
+             planTask(robot_description, robot_description_semantic);
+         }
+@@ -777,6 +842,7 @@
+             const auto semantic = node_->get_parameter_or<std::string>("robot_description_semantic", "");
+             if (description != startup_robot_description_ || semantic != startup_robot_description_semantic_)
+                 throw std::runtime_error("Robot/tool descriptions changed since startup; restart the task node");
++            removeUnexecutedPreviewObject();
+             task_.stages()->setName("Exact TCP A then B");
+             task_.setProperty("group", "ur_arm");
+             task_.setProperty("ik_frame", ik_frame_);
+@@ -833,7 +899,7 @@
+         }
+     }
+ 
+-    void buildTask(const ur16e_interfaces::msg::PickPlacePoses &poses)
++    void buildTask(const ur16e_interfaces::msg::PickPlacePoses &poses, bool tool_contacts)
+     {
+         // This prerequisite is checked before even the first scene update. The
+         // startup model and tool definition remain fixed throughout the session.
+@@ -841,11 +907,14 @@
+         printPickPlacePoses(poses);
+ 
+         PoseStamped tile_pose = poses.pick_pose;
+-        tile_pose.pose.position.z -= tile_height / 2; // only valid if reference frame has same +z as tile 
++        if (tool_contacts)
++            tile_pose = ur16e_mtc_gpio_stage::contactObjectCentre(tile_pose, tile_height);
++        else
++            tile_pose.pose.position.z -= tile_height / 2; // legacy horizontal surface convention
+         ur16e_interfaces::msg::Box b = createBoxMessage(tile_pose);
+-        applyBox(b);
+-
+-        task_.stages()->setName("UR GPIO + Motion");
++        applyBox(b, true);
++
++        task_.stages()->setName(tool_contacts ? "Tool contact pick/place" : "UR GPIO + Motion");
+ 
+         const auto &arm_group_name = "ur_arm";
+ 
+@@ -1093,6 +1162,30 @@
+                 }
+ 
+                 {
++                    if (tool_contacts)
++                    {
++                        auto alternatives = std::make_unique<mtc::Alternatives>("place tool twist alternatives");
++                        task_.properties().exposeTo(alternatives->properties(), {"group", "ik_frame"});
++                        alternatives->properties().configureInitFrom(mtc::Stage::PARENT, {"group", "ik_frame"});
++                        for (int index = 0; index < 12; ++index)
++                        {
++                            auto generator = std::make_unique<mtc::stages::GeneratePose>("place contact " + std::to_string(index));
++                            generator->properties().configureInitFrom(mtc::Stage::PARENT);
++                            generator->setPose(ur16e_mtc_gpio_stage::contactYawSample(
++                                poses.place_pose, 2.0 * M_PI * index / 12));
++                            generator->setMonitoredStage(attach_object_stage);
++                            auto ik = std::make_unique<mtc::stages::ComputeIK>("place contact IK " + std::to_string(index), std::move(generator));
++                            ik->setMaxIKSolutions(2);
++                            ik->setMinSolutionDistance(0.2);
++                            ik->setIKFrame(ik_frame_);
++                            ik->properties().configureInitFrom(mtc::Stage::PARENT, {"group"});
++                            ik->properties().configureInitFrom(mtc::Stage::INTERFACE, {"target_pose"});
++                            alternatives->insert(std::move(ik));
++                        }
++                        place->insert(std::move(alternatives));
++                    }
++                    else
++                    {
+                     RCLCPP_DEBUG(LOGGER, "Creating GeneratePlacePose stage 'generate place pose'");
+                     // Sample place pose
+                     auto stage = std::make_unique<mtc::stages::GeneratePlacePose>("generate place pose");
+@@ -1139,6 +1232,7 @@
+                     wrapper->properties().configureInitFrom(mtc::Stage::INTERFACE, {"target_pose"});
+                     place->insert(std::move(wrapper));
+                     RCLCPP_DEBUG(LOGGER, "ComputeIK wrapper added to place container");
++                    }
+                 }
+ 
+                 {
+@@ -1298,7 +1392,9 @@
+         const auto tool = ur16e_mtc_gpio_stage::readOnlyStartupString(node, "tool", "none");
+         const auto ik_frame = ur16e_mtc_gpio_stage::readOnlyStartupString(node, "ik_frame", "tcp");
+         const bool tcp_planning = ur16e_mtc_gpio_stage::readOnlyStartupBool(node, "tcp_pose_planning_enabled", true);
+-        MTCTestTask testTask(node, tool, ik_frame, tcp_planning);
++        const bool contact_planning = ur16e_mtc_gpio_stage::readOnlyStartupBool(
++            node, "pick_place_tcp_planning_enabled", true);
++        MTCTestTask testTask(node, tool, ik_frame, tcp_planning, contact_planning);
+ 
+         // Service responses and joint feedback remain responsive during commands.
+         rclcpp::executors::MultiThreadedExecutor executor;
+--- /dev/null
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/test/test_pick_place_targets.cpp
+@@ -0,0 +1,66 @@
++#include <gtest/gtest.h>
++#include "ur16e_mtc_gpio_stage/pick_place_targets.hpp"
++#include <limits>
++using namespace ur16e_mtc_gpio_stage;
++namespace {
++ur16e_interfaces::msg::PickPlacePoses contacts()
++{
++  ur16e_interfaces::msg::PickPlacePoses targets;
++  for (auto *p : {&targets.pick_pose, &targets.place_pose})
++  {
++    p->header.frame_id = "ur_base_link";
++    p->pose.position.x = 0.4;
++    p->pose.position.z = 0.3;
++    p->pose.orientation.y = std::sqrt(0.5); // +Z points +baseX
++    p->pose.orientation.w = std::sqrt(0.5);
++  }
++  return targets;
++}
++TEST(PickPlaceContacts, ObjectCentreFollowsToolNormalNotBaseVertical)
++{
++  auto target = validatedContactTargets(contacts()).pick_pose;
++  auto object = contactObjectCentre(target, 0.004);
++  EXPECT_NEAR(object.pose.position.x, 0.402, 1e-12);
++  EXPECT_NEAR(object.pose.position.z, 0.3, 1e-12);
++  // Existing grasp offset -(approach+h/2) then +approach ends at target.
++  EXPECT_NEAR(object.pose.position.x - 0.102 + 0.1, target.pose.position.x, 1e-12);
++  target.pose.orientation = {};
++  target.pose.orientation.x = 1; target.pose.orientation.w = 0; // downward tool
++  object = contactObjectCentre(target, 0.004);
++  EXPECT_NEAR(object.pose.position.z, target.pose.position.z - 0.002, 1e-12);
++}
++TEST(PickPlaceContacts, FreeTwistPreservesContactAndNormal)
++{
++  auto target = validatedContactTargets(contacts()).place_pose;
++  const auto centre = contactObjectCentre(target, 0.004);
++  for (int i = 0; i < 12; ++i)
++  {
++    const auto sample = contactYawSample(target, i*2*3.141592653589793/12);
++    EXPECT_EQ(sample.pose.position, target.pose.position);
++    const auto sample_centre = contactObjectCentre(sample, 0.004);
++    EXPECT_NEAR(sample_centre.pose.position.x, centre.pose.position.x, 1e-12);
++    EXPECT_NEAR(sample_centre.pose.position.y, centre.pose.position.y, 1e-12);
++    EXPECT_NEAR(sample_centre.pose.position.z, centre.pose.position.z, 1e-12);
++  }
++}
++TEST(PickPlaceContacts, BothTargetsValidateBeforeAnySceneMutation)
++{
++  auto target = contacts();
++  target.place_pose.header.frame_id = "world";
++  EXPECT_THROW(validatedContactTargets(target), std::invalid_argument);
++  target = contacts(); target.place_pose.pose.orientation = {}; target.place_pose.pose.orientation.w = 0;
++  EXPECT_THROW(validatedContactTargets(target), std::invalid_argument);
++  target = contacts(); target.place_pose.pose.position.x = std::numeric_limits<double>::quiet_NaN();
++  EXPECT_THROW(validatedContactTargets(target), std::invalid_argument);
++  EXPECT_THROW(contactObjectCentre(contacts().pick_pose, -0.004), std::invalid_argument);
++}
++TEST(PickPlaceContacts, NormalizeWithoutMovingContact)
++{
++  auto target = contacts(); target.pick_pose.header.stamp.sec = 42;
++  target.pick_pose.pose.orientation.y *= 2; target.pick_pose.pose.orientation.w *= 2;
++  const auto result = validatedContactTargets(target);
++  EXPECT_EQ(result.pick_pose.pose.position, target.pick_pose.pose.position);
++  EXPECT_EQ(result.pick_pose.header.stamp.sec, 0);
++  EXPECT_NEAR(result.pick_pose.pose.orientation.y, std::sqrt(0.5), 1e-12);
++}
++} // namespace
+--- a/ros_ws/src/ur16e_mtc_gpio_stage/CMakeLists.txt
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/CMakeLists.txt
+@@ -111,6 +111,11 @@
+   target_include_directories(test_tcp_waypoints PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+   ament_target_dependencies(test_tcp_waypoints geometry_msgs)
+ 
++  ament_add_gtest(test_pick_place_targets test/test_pick_place_targets.cpp)
++  target_compile_features(test_pick_place_targets PRIVATE cxx_std_17)
++  target_include_directories(test_pick_place_targets PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
++  ament_target_dependencies(test_pick_place_targets geometry_msgs ur16e_interfaces)
++
+   ament_add_gtest(test_startup_parameter test/test_startup_parameter.cpp)
+   target_compile_features(test_startup_parameter PRIVATE cxx_std_17)
+   target_include_directories(test_startup_parameter PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+--- a/docs/wiki/API.md
++++ b/docs/wiki/API.md
+@@ -12,6 +12,7 @@
+ | `/pose_array_target` | `geometry_msgs/PoseArray` | Basic commander, legacy opt-in | Disabled by default. Interprets poses as wrist goals in `ur_base_link`, ignores the header and converts goals to `tcp`. |
+ | `/scene_setup_box` | `ur16e_interfaces/Box` | MTC node | Invalidates the prepared plan/preview, then applies the world collision object named `object` with acknowledgement. |
+ | `/pick_place_poses_target` | `ur16e_interfaces/PickPlacePoses` | MTC node | Requires vacuum capability, then invalidates the previous plan/preview, adds the tile, and builds a plan. `tool=none` rejects before a scene change. |
++| `/pick_place_tcp_target` | `ur16e_interfaces/PickPlacePoses` | MTC node | Plan-only desired pick/place TCP contacts; position and outward tool +Z are fixed, twist is sampled at both ends. Requires vacuum capability. |
+ | `/execute_task` | `std_msgs/Bool` | MTC node | Tile-only: `true` requires vacuum capability and one prepared tile plan; rejects TCP plans. `false` does nothing and does not cancel. |
+ | `/tcp_poses_plan_target` | `geometry_msgs/PoseArray` | MTC node | Plan-only exact TCP A then B with a nonzero request token; returns a correlated preview without motion or IO. |
+ | `/execute_tcp_plan` | `std_msgs/String` | MTC node | Execute the exact reviewed TCP request ID once, after frozen-plan preflight; wrong mode/ID is rejected without consuming another plan. |
+@@ -137,6 +138,35 @@
+ 
+ The standalone `Rpy`, `PoseRpy` and `PoseArrayRpy` types are generated, but the main command subscriptions use standard quaternion messages. The separate `test_moveit` demonstration includes commented joint and named targets; these are not public commander subscriptions.
+ 
++## Tool-contact pick/place targets
++
++`/pick_place_tcp_target` is an additive replacement for XR clients that place
++tool references. The read-only startup bool `pick_place_tcp_planning_enabled`
++defaults to `true`; clients must check it before publishing. Both fields of
++`PickPlacePoses` must name `ur_base_link`, contain finite positions and nonzero
++finite quaternions. The backend normalizes rotations and treats the contacts as
++static base-relative poses, clearing their timestamps.
++
++Each position is the desired tool TCP contact point, including any deliberate
++client depth adjustment. Tool +Z points outward through the suction foam toward
++the object. Pick and place keep that normal while independently sampling twelve
++tool twists at 30-degree intervals. The returned trajectory shows the chosen
++clocking. These samples are finite alternatives, not continuous yaw optimization.
++
++The planning tile remains 100 x 100 x 4 mm. Its centre is contact position plus
++half its thickness along tool +Z; the offset rotates with the supplied tool
++orientation. The pick pregrasp is 100 mm behind the contact along tool -Z, and
++the contact approach advances along +Z. Place candidates directly address TCP,
++so an attached object's arbitrary grasp twist does not change the requested
++place point/normal. Client +5/-5 mm depth steps shift the desired TCP itself;
++the backend adds no unrequested compression, force control or compliance.
++
++This endpoint uses the existing `/mtc/planning_status`,
++`/mtc/planned_trajectory`, `/mtc/execution_status` and separate
++`/execute_task=true` vacuum execution flow. These legacy outputs have no request
++ID. `/pick_place_poses_target` retains its original surface/object convention;
++renaming that topic without changing pose meaning is incorrect.
++
+ ## Refresh
+ 
+ - Last refreshed: 2026-10-22 for exact TCP A/B planning and Safe&Light TCP model selection; 2026-10-21 for the TCP shell examples; other interface descriptions retain their 2026-09-14 source review.
+--- a/docs/wiki/TASK_EXECUTION.md
++++ b/docs/wiki/TASK_EXECUTION.md
+@@ -330,6 +330,34 @@
+ of the physical tool. Basic TCP/frame semantics are described in [the API](API.md);
+ the tool capability gate controls this node's vacuum tasks only.
+ 
++## TCP contact targets and execution-frame correction (2026-10-22)
++
++The additive `pick_place_tcp_target` callback enters the same vacuum planning
++gate with a different, validated input contract: desired TCP contact positions
++and outward +Z normals. It derives the planning object's centre along the tool
++normal rather than reference-frame vertical. Grasp and place each sample twelve
++local-Z twists; place uses monitored `GeneratePose`/`ComputeIK` alternatives
++directly for TCP, leaving the attached object to follow its rigid grasp transform.
++The original surface callback and its historical object placement remain intact.
++See [the contact wire contract](API.md#tool-contact-pickplace-targets).
++
++Execution validation now uses MoveIt's actual transform serialization: source
++is `header.frame_id`, while multiple entries legitimately share planning-target
++`child_frame_id`. Empty names and duplicate sources still reject execution.
++After structural validation, only transform sources referenced by actual world
++objects, attachments or nonempty octomap geometry participate in exact scene
++comparison. Unused measured-controller TCP transforms can vary with encoder
++feedback without invalidating unchanged collision geometry. Referenced frame,
++geometry, permissions, padding, scaling and joint checks remain protected.
++
++Before a TCP-only plan, the node can remove its own unchanged, unexecuted
++synthetic task-preview object. It records the acknowledged object's serialized
++world geometry after creating it; changed external geometry rejects cleanup.
++Manual scene objects, attached objects, objects from a previous node session and
++objects after any vacuum execution attempt are retained. No shared scene lock
++or external ownership protocol is added; external writers can still race a
++point-in-time check.
++
+ ## Refresh
+ 
+ - Last refreshed: 2026-10-22 for exact TCP A/B planning and Safe&Light selection/arguments; 2026-09-14 for startup tool/model validation and vacuum
+--- a/docs/ai-context/DECISIONS.md
++++ b/docs/ai-context/DECISIONS.md
+@@ -1,4 +1,19 @@
+ # Decisions
++
++## 2026-10-22: Tool previews and TCP-contact pick/place
++
++- Owner requested fixing `invalid fixed frame names`, replacing XR point/surface
++  references with the selected tool, and defining pick/place as tool contact
++  points with twist freedom and optional 5 mm local-Z depth adjustments.
++- Add a distinct contact topic/capability instead of reinterpreting the existing
++  surface topic. Preserve separate preview and Execute; sample tool +Z twist at
++  pick and place without changing their specified positions or normals.
++- Correct MoveIt's source/target transform convention in preflight and ignore
++  only transforms unused by collision scene components. Preserve relevant
++  scene/start-state checks. Remove only unchanged, unexecuted task-preview
++  geometry created by the current process when returning to TCP-only planning.
++- This covers source/docs and offline validation. No deployment, real-stack
++  restart, motion, vacuum IO or physical calibration is authorized by this change.
+ 
+ ## 2026-10-22: Plan exact TCP A/B poses before execution
+ 
+--- a/docs/ai-context/CURRENT_STATE.md
++++ b/docs/ai-context/CURRENT_STATE.md
+@@ -1,4 +1,14 @@
+ # Current State
++
++- Owner-requested contact workflow and execution-validator correction are
++  implemented locally (2026-10-22): `pick_place_tcp_target` has an explicit
++  tool-contact/+Z contract and independent twist samples at pick/place. The
++  scene validator accepts MoveIt's shared target frame and excludes unused
++  controller-feedback transforms from collision-scene comparison. Offline
++  verification is recorded in [build/testing](../wiki/BUILD_AND_TESTING.md):
++  the actual new node produced contact and exact-TCP preview plans against
++  local mocked scene services in a network-disabled container.
++  No Nordbo deployment, real-stack restart or hardware command was performed.
+ 
+ - Owner approved applying the exact TCP A/B plan/review patch, updating API/project notes and offline build/test on 2026-10-22. The MTC node now has separate plan-only/correlated preview and reviewed-ID execution interfaces; tile behavior remains separate. Applied-source full package compilation and focused tests passed, with one unchanged scene-effect assertion reproduced on the baseline. No deployment, application launch or hardware operation was authorized or performed. See [API](../wiki/API.md#plan-and-review-exact-tcp-ab-targets) and [verification](../wiki/BUILD_AND_TESTING.md#2026-10-22-exact-tcp-ab-plan-and-review).
+ 
+--- a/docs/ai-context/KNOWN_ISSUES.md
++++ b/docs/ai-context/KNOWN_ISSUES.md
+@@ -1,6 +1,14 @@
+ # Known Issues
+ 
+-- Exact TCP A/B source and offline package validation are complete, but ROS-TCP transport, physical planning/alignment and execution remain unverified; no deployment or application launch was performed. One existing scene-effect test fails at `test_scene_effects.cpp:166` because the expected tile/hand ACM entry is absent. The same assertion fails on the untouched baseline in the current MoveIt image. The new TCP path has request matching and no IO, but adds no cancellation or shared execution ownership; external clients can still move the robot or change the scene.
++- Contact-target and execution-frame fixes are local source changes until
++  deployed by an authorized operator. Pick/place yaw uses twelve 30-degree
++  alternatives, and legacy vacuum result/execution messages still have no
++  request IDs. Depth offsets are positional contact commands, not force control
++  or proof of actual foam compression. Synthetic preview ownership is tracked
++  only within one task-node process; unknown/manual/attached/executed scene
++  objects are intentionally preserved. Hardware behavior remains unverified.
++
++- Exact TCP A/B source and offline package validation are complete, but ROS-TCP transport, physical planning/alignment and execution remain unverified; no deployment or real-stack application launch was performed. The later network-isolated mock-scene smoke produced contact and exact-TCP preview plans. One existing scene-effect test fails at `test_scene_effects.cpp:166` because the expected tile/hand ACM entry is absent. The same assertion fails on the untouched baseline in the current MoveIt image. The new TCP path has request matching and no IO, but adds no cancellation or shared execution ownership; external clients can still move the robot or change the scene.
+ 
+ - `kenos_sl` is registered in startup choices, driver routing, SRDF and MTC definitions. Its changer/adapter cylinder still uses the owner's approximate axial reach and unmeasured radius/clocking; physical adapter centring, working foam compression and payload require installation-specific verification. The owner confirmed the same DO3 vacuum settings as Kenos; wiring and physical IO behavior have not been exercised. Source/model checks do not validate a mounted tool or runtime planning; full ROS build/launch/model tests remain unrun locally.
+ - The owner raised inconsistent tool integration; static review confirmed separate model inputs and hardcoded task behavior. Evidence and proposed corrections are in the [architecture review](ARCHITECTURE_REVIEW.md).
+--- a/docs/ai-context/CHANGELOG_AI.md
++++ b/docs/ai-context/CHANGELOG_AI.md
+@@ -1,6 +1,15 @@
+ # AI-assisted Changelog
+ 
+ ## 2026-10-22
++
++- Corrected execution transform validation to use MoveIt source frame keys
++  and compare only collision-referenced transforms. Added the separately
++  advertised tool-contact pick/place endpoint with rotated object offsets and
++  independent pick/place twist sampling; preserved the old surface API. Added
++  source/target and encoder-jitter regressions plus contact geometry tests.
++  Offline package build/test and actual-node mock-scene smoke results are
++  in build/testing: contact and subsequent exact-TCP plans produced previews,
++  with no Execute request, deployment or hardware operation.
+ 
+ - Applied the owner-approved exact TCP A/B MTC plan/review change with separate correlated outputs and reviewed-ID single-use execution. Preserved tile vacuum behavior and prohibited IO for TCP plans. Updated API/task/build notes and project memory. Full applied-source package compilation and focused tests passed; the sole legacy scene-effect assertion also fails on the untouched baseline. No deployment, application launch or hardware operation was performed.
+ 
+--- a/docs/wiki/BUILD_AND_TESTING.md
++++ b/docs/wiki/BUILD_AND_TESTING.md
+@@ -609,6 +609,42 @@
+ TCP topics continue to plan and execute immediately; the new plan-only interface
+ has separate topics and requires an explicit reviewed-ID execution request.
+ 
++### 2026-10-22 tool-contact targets and execution-frame validation
++
++The changed MTC package, including the application executable, compiled in the
++existing local ROS Jazzy/MTC 0.1.4 image with GCC 13.3.0. The dedicated validation
++container used `--network none` and a read-only source mount; writable build
++outputs were isolated from the repository. No controller, real-stack launch,
++robot connection, hardware motion or IO was run.
++
++All nine plan-validation cases pass, including four new regressions for
++MoveIt's repeated target frame with distinct source keys, unused controller-TCP
++encoder variation, and preservation of referenced frame/geometry checks. All
++four new contact-target cases pass: rotated object-centre offsets, preservation
++of contact/normal under twist, validation of both poses before scene mutation,
++and quaternion normalization without moving the contact point. Existing TCP,
++startup-parameter, model, gate, execution-order and tool-definition suites pass.
++Eight of nine CTest targets pass. The sole failure remains the unchanged
++`SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder` assertion
++at `test_scene_effects.cpp:166`, already reproduced on the previous baseline
++against this image. These changes do not alter its scene-effect implementation
++or test fixture.
++
++A subsequent isolated integration smoke started the new application executable
++with the captured live URDF/SRDF and joint snapshot, installed KDL/OMPL and joint
++limits, in-memory Get/ApplyPlanningScene services and static joint feedback.
++The separately advertised contact endpoint produced a full MTC solution and a
++74-point preview, including the new independent place-twist alternatives.
++Switching to exact TCP A/B then removed only the same node's unchanged,
++unexecuted preview object and produced an 11-point preview; the ground object
++remained. Both requests were plan-only inside `--network none`, with no Execute
++request, driver or real ROS stack. Logs and JSON proof are stored in the Unity
++project's `Tools/RobotFrames/BackendWorkflowBuild/` directory.
++
++These checks do not establish ROS-TCP delivery, physical compression, payload,
++collision-model fidelity or hardware execution. The Nordbo deployment is
++unchanged. No lint target is registered in the package.
++
+ ## Refresh
+ 
+ - Last refreshed: 2026-10-22 for exact TCP A/B planning, Safe&Light integration and the merged WSL compatibility fixes.

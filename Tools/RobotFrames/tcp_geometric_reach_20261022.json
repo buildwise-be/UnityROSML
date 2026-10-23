@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "method": "Necessary bound using triangle inequality for shoulder-to-wrist2 joint-origin chain. For a fixed TCP pose, wrist2 lies on the q6 circle derived exactly from wrist3 joint origin; compare its minimum shoulder distance to maximum chain length. A positive excess proves infeasibility in this URDF without relying on IK search.",
+  "shoulder_global_m": [
+    0.245515,
+    0.0,
+    0.4828196895579835
+  ],
+  "prefix_translation_lengths_m": {
+    "ur_shoulder_lift_joint": 0.0001456093972520112,
+    "ur_elbow_joint": 0.4784765317083214,
+    "ur_wrist_1_joint": 0.40002680723092926,
+    "ur_wrist_2_joint": 0.11986622988146334
+  },
+  "wrist3_to_tcp": [
+    [
+      6.123233995736766e-17,
+      1.0,
+      -1.5040389444259048e-49,
+      2.0818995585505005e-18
+    ],
+    [
+      -1.0,
+      6.123233995736766e-17,
+      0.0,
+      -0.034
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.15
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "joint6_vector_in_rotated_frame": [
+    -3.404830181940762e-05,
+    -4.927224535496155e-16,
+    0.1156264354591378
+  ],
+  "current_wrist2_reconstruction_error_m": 5.551115123125783e-17,
+  "cases": [
+    {
+      "name": "current_tcp_positive_control",
+      "tcp_position_global_m": [
+        0.40740421031862994,
+        0.6502535805867455,
+        1.2524313883483316
+      ],
+      "tcp_plus_z_global": [
+        0.09995460568831707,
+        0.9944272321295292,
+        -0.03351949881630967
+      ],
+      "required_wrist3_global_m": [
+        0.42617840678159713,
+        0.49762972349579515,
+        1.2555116146145442
+      ],
+      "possible_wrist2_circle_centre_global_m": [
+        0.4146210120181334,
+        0.3826476473211611,
+        1.2593873547810508
+      ],
+      "possible_wrist2_circle_radius_m": 3.404830181940762e-05,
+      "minimum_possible_shoulder_to_wrist2_m": 0.8820538088484895,
+      "maximum_possible_shoulder_to_wrist2_m": 0.998515178217966,
+      "excess_over_conservative_bound_m": -0.11646136936947649,
+      "violates_necessary_reach_bound": false
+    },
+    {
+      "name": "recovered_failed_tcp_target_frame",
+      "tcp_position_global_m": [
+        0.3034586242560518,
+        0.8551557319911716,
+        1.2685164947509766
+      ],
+      "tcp_plus_z_global": [
+        0.13756455525067335,
+        0.9874351921321758,
+        -0.0777671812371894
+      ],
+      "required_wrist3_global_m": [
+        0.2876487246138395,
+        0.7090143569255708,
+        1.313779565429385
+      ],
+      "possible_wrist2_circle_centre_global_m": [
+        0.27174262544468253,
+        0.5948407454124185,
+        1.3227715073915458
+      ],
+      "possible_wrist2_circle_radius_m": 3.404830181940762e-05,
+      "minimum_possible_shoulder_to_wrist2_m": 1.0295543566260577,
+      "maximum_possible_shoulder_to_wrist2_m": 0.998515178217966,
+      "excess_over_conservative_bound_m": 0.031039178408091672,
+      "violates_necessary_reach_bound": true
+    },
+    {
+      "name": "tcp_target_y_minus_0.1",
+      "tcp_position_global_m": [
+        0.3034586242560518,
+        0.7551557319911716,
+        1.2685164947509766
+      ],
+      "tcp_plus_z_global": [
+        0.13756455525067335,
+        0.9874351921321758,
+        -0.0777671812371894
+      ],
+      "required_wrist3_global_m": [
+        0.2876487246138395,
+        0.6090143569255708,
+        1.313779565429385
+      ],
+      "possible_wrist2_circle_centre_global_m": [
+        0.27174262544468253,
+        0.49484074541241846,
+        1.3227715073915458
+      ],
+      "possible_wrist2_circle_radius_m": 3.404830181940762e-05,
+      "minimum_possible_shoulder_to_wrist2_m": 0.9751997745621636,
+      "maximum_possible_shoulder_to_wrist2_m": 0.998515178217966,
+      "excess_over_conservative_bound_m": -0.023315403655802425,
+      "violates_necessary_reach_bound": false
+    },
+    {
+      "name": "tcp_target_y_minus_0.2",
+      "tcp_position_global_m": [
+        0.3034586242560518,
+        0.6551557319911716,
+        1.2685164947509766
+      ],
+      "tcp_plus_z_global": [
+        0.13756455525067335,
+        0.9874351921321758,
+        -0.0777671812371894
+      ],
+      "required_wrist3_global_m": [
+        0.2876487246138395,
+        0.5090143569255708,
+        1.313779565429385
+      ],
+      "possible_wrist2_circle_centre_global_m": [
+        0.27174262544468253,
+        0.3948407454124185,
+        1.3227715073915458
+      ],
+      "possible_wrist2_circle_radius_m": 3.404830181940762e-05,
+      "minimum_possible_shoulder_to_wrist2_m": 0.9284648692314129,
+      "maximum_possible_shoulder_to_wrist2_m": 0.998515178217966,
+      "excess_over_conservative_bound_m": -0.07005030898655307,
+      "violates_necessary_reach_bound": false
+    },
+    {
+      "name": "tcp_target_y_minus_0.3",
+      "tcp_position_global_m": [
+        0.3034586242560518,
+        0.5551557319911715,
+        1.2685164947509766
+      ],
+      "tcp_plus_z_global": [
+        0.13756455525067335,
+        0.9874351921321758,
+        -0.0777671812371894
+      ],
+      "required_wrist3_global_m": [
+        0.2876487246138395,
+        0.40901435692557075,
+        1.313779565429385
+      ],
+      "possible_wrist2_circle_centre_global_m": [
+        0.27174262544468253,
+        0.2948407454124184,
+        1.3227715073915458
+      ],
+      "possible_wrist2_circle_radius_m": 3.404830181940762e-05,
+      "minimum_possible_shoulder_to_wrist2_m": 0.8905500615451808,
+      "maximum_possible_shoulder_to_wrist2_m": 0.998515178217966,
+      "excess_over_conservative_bound_m": -0.10796511667278519,
+      "violates_necessary_reach_bound": false
+    }
+  ],
+  "limitation": "This proves a necessary reach constraint for the configured URDF, not the physical robot/tool. A physical mounting, model, capture or alignment mismatch can still explain a disagreement with observation."
+}

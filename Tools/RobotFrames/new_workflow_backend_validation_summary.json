@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-22",
+  "repository": "C:\\Users\\aca\\source\\UR16UnityControl",
+  "branch": "codex/architecture-review",
+  "source_sha256": {
+    "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp": "f301530268a84578af0494d8a5f6ece06499770cbc690a670e0eacb78f0c72c8",
+    "ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp": "dec6f19637341a6e2595df4c0a6bae7eec1814e6d29fe3c58cb65b5ac1b897a2",
+    "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/pick_place_targets.hpp": "af1d52afc8d68fa796aa731d9d0d820cc2c56594e99c80654a71cb02fffc35b8",
+    "ros_ws/src/ur16e_mtc_gpio_stage/src/test_task.cpp": "c0768a0722c0a49acc0929073c720fc02c5c2b25c870a8fc7d42f436fb094c0e",
+    "ros_ws/src/ur16e_mtc_gpio_stage/test/test_pick_place_targets.cpp": "17644b69fd2336051f3055bb83e5cc911c1b9530eae64a6b1056fc9ca7d22dbc",
+    "ros_ws/src/ur16e_mtc_gpio_stage/CMakeLists.txt": "dae1755657d5e35b51c3b02ab1b81f1b3dbed2ff682e7e32823fb8f24aeb1ad2",
+    "docs/wiki/API.md": "de032e3d3e953d216915cf5582739d4741e39edfd65e4ee24ac0f81c2378b0b7",
+    "docs/wiki/TASK_EXECUTION.md": "2e2b812a919dca5fa103c045a7ffbd73285b72b6ebb785a9c3a692a6da870b90",
+    "docs/ai-context/DECISIONS.md": "40d93c5fe78b251ee3ac18e7e74b82696ade3ff6876440db73992c9d07ab9ee5",
+    "docs/ai-context/CURRENT_STATE.md": "ed52af4436d6712b29b89ca8558910749aefecc0ea2481993a3ffd429ffd91f2",
+    "docs/ai-context/KNOWN_ISSUES.md": "dee2aad023d432dece21d1e7c1c4ca8f04c40d3153629b1b4977972f11a6ef11",
+    "docs/ai-context/CHANGELOG_AI.md": "97622ee621d1f4de11fde89c1ebf8a8879eb79dc3d63bc6f97c7b828dd2a0d9b",
+    "docs/wiki/BUILD_AND_TESTING.md": "95b99ae8b899cc620fb2aafb4990c4ecb394c869526488b8b19398729275350d"
+  },
+  "configure_exit": 0,
+  "build_exit": 0,
+  "ctest_targets_passed": 8,
+  "ctest_targets_total": 9,
+  "plan_validation_cases_passed": 9,
+  "contact_cases_passed": 4,
+  "known_baseline_failure": "SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder at test_scene_effects.cpp:166",
+  "offline_contact_full_solution": true,
+  "offline_contact_preview_points": 74,
+  "offline_tcp_after_contact_full_solution": true,
+  "offline_tcp_preview_points": 11,
+  "offline_cleanup_preserved": [
+    "ground"
+  ],
+  "hardware": false,
+  "deployment": false,
+  "container_network": "none",
+  "execute_request_published": false,
+  "committed": false,
+  "pushed": false,
+  "tested_executable_sha256": "3566afd99c7a5588e7c295cf5d0642147770b9449404fb2aeafcdffa8925799a",
+  "temporary_containers_removed": true
+}

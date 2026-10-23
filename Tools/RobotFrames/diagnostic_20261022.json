@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-22",
+  "scene": "Assets/Scenes/UR16eInteraction.unity",
+  "userContract": "A and B are desired TCP poses, including full orientation. Plan previews only; execution is a separate explicit action.",
+  "planButton": {
+    "confirmedCause": "Scene captures TcpPreview targets but the serialized button calls the tile-surface planner, which returns locally. A second persistent listener resets feedback to Waiting.",
+    "backendConstraint": "The deployed direct TCP single/array topics plan and immediately execute. The MTC tile planner applies object geometry and yaw sampling, so neither existing route implements exact TCP preview.",
+    "unityChange": "Use a dedicated TCP plan-only controller, correlated status/preview, a token-specific single-use Execute request, and visible blocked reasons.",
+    "rosChange": "Applied with explicit human approval to UR16UnityControl on codex/architecture-review. Actual applied package compiled and tested offline. Nordbo deployment remains pending."
+  },
+  "nordboReadOnlyAudit": {
+    "host": "10.200.101.144",
+    "container": "urmir-jazzy",
+    "toolDuringTest": "kenos_sl",
+    "rosStartedUtc": "2026-10-22T12:14:59Z",
+    "endpointStartedUtc": "2026-10-22T12:15:10Z",
+    "mlClient": "10.200.100.236",
+    "clientConnectedUtc": [
+      "2026-10-22T12:16:49Z",
+      "2026-10-22T12:19:19Z"
+    ],
+    "clientDisconnectedUtc": [
+      "2026-10-22T12:18:48Z",
+      "2026-10-22T12:22:11Z"
+    ],
+    "rosStoppedByCtrlCUtc": "2026-10-22T12:22:26Z",
+    "mtcPlanningRequestsInPersistedLogs": 0,
+    "deployedSourcesMatchLocalRosRepositoryIgnoringLineEndings": true,
+    "runningStateAtAudit": "Docker container running, only shells, no ROS nodes. This is after the headset test, not evidence the backend was absent during it.",
+    "remoteChangesOrRobotCommands": false
+  },
+  "qrAlignment": {
+    "physicalMarkerSizeConfirmedByUserMetres": 0.087,
+    "userSaysMarkerHasNotChangedForAWhile": true,
+    "physicalPayloadAndPrintedAxes": "Unknown. QR1 and QR2 are old project aliases, not confirmed physical payloads.",
+    "currentMarkerToBaseUnityMetres": [
+      -0.419,
+      0.23,
+      0.505
+    ],
+    "currentMarkerToBaseUnityEulerDegrees": [
+      -90,
+      0,
+      0
+    ],
+    "storedControllerBoxBaseToQr1UnityMetres": [
+      0.4194,
+      0.5,
+      -0.2305
+    ],
+    "compositionFinding": "Current prefab calibration is the inverse of stored ControllerBox QR1 geometry to within about 5 mm; there is no basis to flip signs from the photo alone.",
+    "confirmedDetectorDefects": [
+      "The old detector unconditionally selects data[0] without marker identity filtering.",
+      "The old averaging window can mix poses from different markers or discontinuous observations."
+    ],
+    "unityChanges": [
+      "Require one unambiguous marker or an exact expected payload, and pin the selected identity during stabilization.",
+      "Reset averaging on missing/ambiguous identity or pose discontinuity.",
+      "Expose accepted payload, marker size and calibration diagnostics.",
+      "Rescan invalidates calibration and plans; trigger confirms reanchoring of the existing robot.",
+      "Show a labelled QR triad (red +X, green +Y, blue +Z into the printed face).",
+      "Log accepted payload, configured/reported size, tracking/world poses, calibration and final base pose once per placement."
+    ],
+    "physicalOffsetResolved": false,
+    "remainingVerification": "Inspect accepted payload and QR axes in a new ML2 build, then compare the actual marker-to-base mounting against the stored calibration.",
+    "adbDeviceConnectedAtAudit": false,
+    "nativePlacementAudit": {
+      "passed": 3,
+      "scope": "Actual active prefab, Instantiate at QR pose, nonidentity tracking origin, Kenos SL model application and two PhysX steps",
+      "positionToleranceMetres": 2e-05,
+      "basisVectorTolerance": 2e-05,
+      "finding": "Exactly one serialized marker-to-base extrinsic is retained; no doubled native articulation transform.",
+      "priorV3CommitUsesSamePrefabPlacement": "5c68841"
+    },
+    "hypothesesNotProven": [
+      "A printed-plane half-turn reverses horizontal calibration offsets while preserving vertical alignment. The actual accepted QR orientation needs a headset retest.",
+      "An unintended visible tag may have been selected by the old unconditional data[0] path."
+    ],
+    "actualSdkPolicyTests": {
+      "passed": 15,
+      "failed": 0,
+      "proof": "qr_validation_summary.json"
+    }
+  },
+  "hardwareTestedByAgent": false,
+  "validation": {
+    "unityRuntimeCompile": "passed, 5 helper and 71 main source files",
+    "portablePythonTestsPassed": 20,
+    "rosActualSourceBuild": "passed",
+    "rosCtestTargets": {
+      "total": 8,
+      "passed": 7,
+      "failed": 1
+    },
+    "rosKnownBaselineFailure": "SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder:test_scene_effects.cpp:166",
+    "unityWorkflowAndModelTests": {
+      "passed": 173,
+      "failed": 0,
+      "proof": "tcp_validation_summary.json"
+    },
+    "unityQrAndPlacementTests": {
+      "passed": 15,
+      "failed": 0,
+      "proof": "qr_validation_summary.json"
+    },
+    "unityTestsTotalPassed": 188
+  }
+}

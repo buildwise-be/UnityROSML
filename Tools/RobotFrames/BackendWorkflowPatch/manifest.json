@@ -1,0 +1,15 @@
+[
+  "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp",
+  "ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp",
+  "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/pick_place_targets.hpp",
+  "ros_ws/src/ur16e_mtc_gpio_stage/src/test_task.cpp",
+  "ros_ws/src/ur16e_mtc_gpio_stage/test/test_pick_place_targets.cpp",
+  "ros_ws/src/ur16e_mtc_gpio_stage/CMakeLists.txt",
+  "docs/wiki/API.md",
+  "docs/wiki/TASK_EXECUTION.md",
+  "docs/ai-context/DECISIONS.md",
+  "docs/ai-context/CURRENT_STATE.md",
+  "docs/ai-context/KNOWN_ISSUES.md",
+  "docs/ai-context/CHANGELOG_AI.md",
+  "docs/wiki/BUILD_AND_TESTING.md"
+]

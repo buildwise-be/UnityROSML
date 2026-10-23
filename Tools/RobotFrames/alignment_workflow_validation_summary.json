@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-10-22 13:20:03Z",
+  "unityVersion": "6000.0.84f1",
+  "unityTests": {
+    "total": 192,
+    "passed": 192,
+    "failed": 0,
+    "scope": "Actual serialized main/transparent prefabs and native articulation physics; CAD geometry/materials; model/parser math; TCP callbacks, input routing and status reset; shared tool/task/alignment world menu; calibration command gates and profile persistence; installed ROS2 CDR bytes"
+  },
+  "postPhysicsGoldenLinkPoses": 1806,
+  "maximumPositionErrorMetres": 2.026558e-06,
+  "maximumBasisVectorError": 2.58035448e-06,
+  "physicsPositionToleranceMetres": 2e-05,
+  "physicsBasisVectorTolerance": 2e-05,
+  "measurements": [
+    {
+      "prefab": "main",
+      "tool": "none",
+      "maximumPositionErrorMetres": 1.69008342e-06,
+      "maximumBasisVectorError": 2.045371e-06
+    },
+    {
+      "prefab": "main",
+      "tool": "kenos",
+      "maximumPositionErrorMetres": 1.69008342e-06,
+      "maximumBasisVectorError": 2.144525e-06
+    },
+    {
+      "prefab": "main",
+      "tool": "kenos_sl",
+      "maximumPositionErrorMetres": 1.69008342e-06,
+      "maximumBasisVectorError": 2.045371e-06
+    },
+    {
+      "prefab": "transparent",
+      "tool": "none",
+      "maximumPositionErrorMetres": 2.026558e-06,
+      "maximumBasisVectorError": 2.58035448e-06
+    },
+    {
+      "prefab": "transparent",
+      "tool": "kenos",
+      "maximumPositionErrorMetres": 2.026558e-06,
+      "maximumBasisVectorError": 2.58035448e-06
+    },
+    {
+      "prefab": "transparent",
+      "tool": "kenos_sl",
+      "maximumPositionErrorMetres": 2.026558e-06,
+      "maximumBasisVectorError": 2.58035448e-06
+    }
+  ],
+  "rosMessageFixtures": "Actual installed rcl_interfaces + rclpy serialization, without rclpy.init; unspecified CDR alignment padding masked using schema-derived offsets",
+  "isolatedWorkflowStubs": [
+    "ROSService (throws if requested)",
+    "PickPlaceController (tile command paths throw)",
+    "QRDetector and URInstantiator (hardware/placement tested separately)"
+  ],
+  "delegatedTests": [
+    "QrCalibrationTests and XrAlignmentIntegrationTests: independent actual SDK/placement audit"
+  ],
+  "hardwareExercised": false,
+  "networkExercised": false,
+  "activeUnityEditorModified": false,
+  "limitations": [
+    "ROS planning, service transport, hardware tracking, physical tool calibration and robot operation are not exercised.",
+    "Read-only GetParameters metadata handling is tested offline; the actual ROS service callback transport is not exercised.",
+    "Matching calibrated ROS/Unity model definitions does not prove that provisional tool dimensions match the physical installation."
+  ],
+  "resultXmlSha256": "a5f3d641f596ea8a54b64b6069181770f8aa2a8e10e7de028f5af83280d39bb5",
+  "editorLogSha256": "e05a7daa3c9bb4ff162da3359e1cabe55d414b2a79d2fb4f2900238d62ae6265",
+  "validatedSources": [
+    {
+      "path": "Assets/Prefabs/ur16e_kenos/ur16e_kenos.prefab",
+      "sha256": "78427e1fbd1d84f807d06937df1b7f265963ba867c3a1c7e0ee8bd3d7e19c2f3",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Prefabs/ur16e_kenos/ur16e_kenos_transparent.prefab",
+      "sha256": "7644c2dba1b4128019f731dfa014bc0c0d3e870d874c3245ff444c96c276b474",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Resources/RobotModels/kenos.urdf.txt",
+      "sha256": "a91ec30152e2960bb3919f6e225b920eaad88b14dda765b326878250b2e4cae0",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Resources/RobotModels/kenos_sl.urdf.txt",
+      "sha256": "802c45dffe3c072034ece1ef65c271a1eb7e586444cbd00974d6b97b03fdeb15",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Resources/RobotModels/KenosSLVisual.bytes",
+      "sha256": "aa8514e96c2639128bbd581b2a08f7c04625656506cd280748043f0f71360e32",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Resources/RobotModels/KenosSLVisualProvenance.json",
+      "sha256": "49e3db77de5c664b7dfd9c975e896181c10a6e157d103814b8ac423c90d7f5da",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Resources/RobotModels/Models.json",
+      "sha256": "5223b71fbc0f54dae9f82c1f67a47fabc883032fdc73595fd8eac485903c34e5",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Resources/RobotModels/none.urdf.txt",
+      "sha256": "56415af69b93f127bc5dc619870aec9deee9eecff684119b26e65fff2d04e28c",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Moveit/msg/RobotTrajectoryMsg.cs",
+      "sha256": "6459a8271681b0d5db6d7ba1c4955349f278d9f8dfda43200fe83cb27aa3bbde",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eInterfaces/msg/BoxMsg.cs",
+      "sha256": "bedcac3c807c9000a79b6d95acf2084f54fd317b36a32d1b2b6a0676bbd708de",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eInterfaces/msg/PickPlacePosesMsg.cs",
+      "sha256": "0ceaef005b1d7027733289e8862c7bcd924d54031913ea203ada5471ad19b105",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/AddPrimitiveRequest.cs",
+      "sha256": "455bcf3c1ab15086b6f56a2689fdc5cbb6111a777e9f2407059576160da8f702",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/AddPrimitiveResponse.cs",
+      "sha256": "11211fe1018df9c85f27aecfe6eb174512c0dd5b39d97cf04de29e4278c274e6",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UpdatePlanningSceneRequest.cs",
+      "sha256": "d62870df53a72c21449b8ebdc4b6a63cfeaa2ef7c1e866cbebe6b85535e1e884",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UpdatePlanningSceneResponse.cs",
+      "sha256": "c22bcdcf91113e500ef6bc29ff1e7f1a93ae54f1a9ca8e9c665f928d4bf7699a",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16eMoverServiceRequest.cs",
+      "sha256": "3c54a5cd340b267ec35d9aecc0c6bfcc4bb2b594bb8186f8faac9254e5f70fff",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16eMoverServiceResponse.cs",
+      "sha256": "4ef43838e21b822a77e7d0b1ddd45a2189df6c14841201bfd877e5207d3ad2be",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16ePathPlanRequest.cs",
+      "sha256": "1a7827b3938407cf82bcaddfadb81f9b871a49e9dbc98aaca62df33c4775c263",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16ePathPlanResponse.cs",
+      "sha256": "8a08465f9a66bccb30ee37055d69a1a3f4eae24d06971ed119fe75198c1c4eac",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Samples/Magic Leap SDK/2.6.0/ML Rig & OpenXR Input/MagicLeapOpenXRInput.cs",
+      "sha256": "4cb8b2271414f22bd1c7145214cfb53f5d64541e6ac2a9747d0a5382a8579507",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotCalibrationStore.cs",
+      "sha256": "4dae0680f0667e376da638b1851b0a58c9c530c623c1fca2c9420d8e4a811883",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotFrameMath.cs",
+      "sha256": "bd3747dba7ce7ec741afb01dfccf04faa0495afeba17be5d8a7c8e6de2037254",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotDescription.cs",
+      "sha256": "0a8dea5ff75a18c950d06eda2eb51fb5a48582715a8bdc79d0c32cdde233b097",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotModel.cs",
+      "sha256": "1b9aa2bdda6c48b6e17a063dc6665ff2a68e518246800528b68fbce7a7a1659b",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpPlanReview.cs",
+      "sha256": "cab22403f52de63b37362ff20fd870a31f759e98d80c27961a7458064efb0dba",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpTargetRotationMath.cs",
+      "sha256": "67b1090e38d9f0a4dafa1d099192c21ebda1a68deb9535045a481687b95a79c8",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/MTCPlansManager.cs",
+      "sha256": "feac4e662b51b05d3e09bc75bd62b4c49e8977683eec511b5f81791da3b79ea6",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotCoordinateService.cs",
+      "sha256": "bb32afe25c3da91131027ac663e65b0b6b1bbab698cc6e20276fc004011face7",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotDescriptionMessages.cs",
+      "sha256": "57544bbee3380640e9cb068f7d4ed8e7f5e513ed74dd8b78d7ed7b2dd0a9dce0",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotStateService.cs",
+      "sha256": "66340d3293f2a8339a62908979ea5d71543d3dfd66fd7d5d81a28c5d2b0cceb7",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RosRobotRig.cs",
+      "sha256": "a2cbdee49c64024c16963a83460852a099e78a11f63f527c8cd7fd781656b835",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/TcpPlanningController.cs",
+      "sha256": "f851880c8e4996f69a6741f6a5c2725a299cebf28fb359c969c4648566bab461",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/ToolSelectionController.cs",
+      "sha256": "d91fdb5ef8ba5befca11f9fbcbbd980dbf7fe29f71e69c6bd012aa98512ce442",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/UR16eTrajectoryVisualizer.cs",
+      "sha256": "ff492fc1507277e401d427772680b512dcae3d17dd0849653d4855379e78929c",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetRotationHandles.cs",
+      "sha256": "428d6d42c7e7275f0cee0cf95122d0b5b6f1bbc433788a57f69e97d41eb01641",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TcpTargetPreview.cs",
+      "sha256": "737a7391d542041b2ea644e99eb7f6fb7377e02e2f70cd71c991c4a72ba7edf0",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/MTCPlanUIManager.cs",
+      "sha256": "b86fb3f61cfca1dbe66cfd7b563bb115d5ade0101cfdf2517cec54c10ee768e3",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "9857abba500499dccde8917c5dabf17d18497524c1e03e624ee67170b432c00f",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/URInputManager.cs",
+      "sha256": "f43d904c0962fb24b612ad5c55ee46c6a5be66bd7dde760bbfeff26895b44037",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Scripts/V3/XRTrackingSpaceResolver.cs",
+      "sha256": "9ab0e8cc9b9c65488059e4259cf92ba2cb7503f28872f60f62a960077c0858bc",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/CalibrationCommandGateTests.cs",
+      "sha256": "7bb501c4fd4d9bbe1aeff339c0e7edbf7dab28d637ff60e8e9ff7d5e2dc931ec",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/CalibrationProfileTests.cs",
+      "sha256": "0cce4c5ab8b4cecab0604bc26245844eddf93b38a8cd59ca571996f7ba61aa39",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/Fixtures/GetParametersCdr.json",
+      "sha256": "e078c28e4ce110e4c33ac66d03c055852b90e1b54f1006252dcb4fedc47f964b",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/Fixtures/NoMaterialProperties.shader",
+      "sha256": "b6817621ec29068a853f512b90cb288065a022381614deb963d3fbd6fa22b970",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotDescriptionMessageTests.cs",
+      "sha256": "7d9d93df74ff36489a3a800ac69a7ebc308f3faef954f791ae9b33918d9bcd41",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotFrameMathTests.cs",
+      "sha256": "b7da8619080f1fa791b6462a049086ab1b1f098eb2dcc7e81f03dda70372381e",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotModelTests.cs",
+      "sha256": "3cd965e085449c47ece1a7c1ec24eb7613d40ff5ea4d502d9956fd20406fc7f2",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotRigPrefabTests.cs",
+      "sha256": "6112ac6eb32c006269b29c9b96c811156fe8e29e9cc1c82bb276f6fb62418deb",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpPlanningControllerTests.cs",
+      "sha256": "e5193c11b6790117d42ea3f8babd7f63af2958e4b43e43bf59c6f9173fa89511",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpPlanReviewTests.cs",
+      "sha256": "3f70f215b8b9eca00dd617a1f74633a65286ea0aace55818ef724be18358c93f",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpTargetRotationMathTests.cs",
+      "sha256": "5d76d1b060b32965c41cdfc194388fe856bf0aa4246326329f0f2e845b499560",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolCalibrationMenuTests.cs",
+      "sha256": "f6d5e6d3180a4168f0d21497a7232bddf37d486817229fc4e8d5afc35ac4b0a9",
+      "matchesValidatedCopy": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolSelectionControllerTests.cs",
+      "sha256": "27a18258c3bae79e82516b9d9b6ab1ebee1713cfc430e4084ad878fb59fadaac",
+      "matchesValidatedCopy": true
+    }
+  ],
+  "menuVisualEvidence": {
+    "renderer": "Graphics-enabled Unity Direct3D11 Camera.Render of the actual world-space menu",
+    "state": "Representative offline UI text; no live ROS or headset state",
+    "images": [
+      {
+        "path": "C:\\Users\\aca\\.codex\\visualizations\\2026\\10\\21\\01a15eb0-f294-75b2-9e48-6539d4129eea\\xr-task-menu.png",
+        "sha256": "9ff296af8f8e6b0748c31953ef6238f84e9841b3c89a9877e86a08694c1f8359"
+      },
+      {
+        "path": "C:\\Users\\aca\\.codex\\visualizations\\2026\\10\\21\\01a15eb0-f294-75b2-9e48-6539d4129eea\\xr-calibration-menu.png",
+        "sha256": "8e821d035d999e8847ff77fc18956c3317fea0f5445f9018f9a199fdb3571b93"
+      }
+    ]
+  },
+  "combinedUniqueCasesWithAlignmentSuite": 217,
+  "overlappingProfileCases": 11
+}

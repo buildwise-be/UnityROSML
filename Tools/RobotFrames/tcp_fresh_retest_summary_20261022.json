@@ -1,0 +1,81 @@
+{
+  "completed_utc": "2026-10-22T15:23:47.0305928Z",
+  "user_observation": "A/B near real suction face; virtual pad aligned.",
+  "prior_interpretation_correction": "The old logs established an IK rejection, not that the intended physical points were beyond reach. A mismatch between intended/displayed and submitted targets was not established or ruled out.",
+  "request_id": "1792682377:986229000",
+  "tcp_success": true,
+  "tcp_request_to_ready_seconds": 0.2080705165863037,
+  "tcp_targets": [
+    {
+      "name": "A",
+      "position": {
+        "x": -0.7389894723892212,
+        "y": 0.22433245182037354,
+        "z": 0.9275162220001221
+      },
+      "delta_from_current_tcp_m": [
+        -0.08881870733100472,
+        0.06246246389287918,
+        -0.02297739425010259
+      ],
+      "distance_from_current_tcp_m": 0.11098775974874237,
+      "full_rotation_delta_degrees": 86.13686212310503
+    },
+    {
+      "name": "B",
+      "position": {
+        "x": -0.7606954574584961,
+        "y": 0.09981000423431396,
+        "z": 0.9265258312225342
+      },
+      "delta_from_current_tcp_m": [
+        -0.11052469240027962,
+        -0.06205998369318039,
+        -0.02396778502769048
+      ],
+      "distance_from_current_tcp_m": 0.12900234077452946,
+      "full_rotation_delta_degrees": 85.14644921565366
+    }
+  ],
+  "current_tcp": {
+    "position": {
+      "x": -0.6501707650582165,
+      "y": 0.16186998792749435,
+      "z": 0.9504936162502247
+    },
+    "orientation": {
+      "x": -0.46671423448381466,
+      "y": 0.5467154475064193,
+      "z": 0.5019634249550033,
+      "w": -0.48094985476189245
+    }
+  },
+  "original_A_position_ur_base_link": {
+    "y": 0.05794048309326198,
+    "x": -0.8551559448242188,
+    "z": 0.9665164947509766
+  },
+  "fresh_A_distance_from_original_A_m": 0.206644520492357,
+  "mtc_latest_planning_success": true,
+  "model_parity": "All 29 joint name/type/parent/child/origin/axis entries match between RSP and MoveGroup. MTC and MoveGroup URDF/SRDF matched.",
+  "independent_controls": "Current TCP +/-2cm in each of six axis directions all solve collision-checked. A orientation at current position solves. Original A position with current orientation does not solve.",
+  "separate_execution_bug": {
+    "observed": {
+      "status": "rejected",
+      "reason": "planned scene: invalid fixed frame names",
+      "request_id": "1792682377:986229000"
+    },
+    "source": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp:166",
+    "cause": "Validator sorts/uniques fixed transforms by child_frame_id. MoveIt uses unique source header.frame_id and common target child_frame_id, so valid scene is rejected.",
+    "primary_source": "https://raw.githubusercontent.com/moveit/moveit2/jazzy/moveit_core/transforms/src/transforms.cpp",
+    "fix_status": "Not applied; ROS and Unity application code unchanged.",
+    "additional_guard_concern": "Robot-derived ur_tool0_controller transform can jitter while scene transform comparison is exact. This requires investigation alongside source-key correction, without relaxing relevant scene checks."
+  },
+  "diagnostics_scope": "Only passive subscriptions, parameters, FK/IK/state-validity queries and logs. User triggered the fresh Plan/Execute requests. No motion/IO commands sent by diagnostics.",
+  "evidence": [
+    "fresh_tcp_plan_capture_20261022.jsonl",
+    "fresh_planning_results_20261022.json",
+    "tcp_pose_discrepancy_20261022.json",
+    "planning_models_diagnostic_20261022.json"
+  ]
+}

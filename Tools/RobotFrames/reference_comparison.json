@@ -1,0 +1,897 @@
+{
+  "schema_version": 1,
+  "scope": "Offline source comparison of the old/default Kenos model; physical replacement tool is unmeasured.",
+  "physical_tool_status": "MEASUREMENT_REQUIRED: no dimensions or TCP for the replacement Kenos variant were inferred.",
+  "inputs": {
+    "unity_combined_urdf": {
+      "path": "C:/Users/aca/unity-source/UnityROSML/Assets/Prefabs/ur16e_kenos/mir250_ur16e.urdf",
+      "sha256": "31948477e85e89b6f1ee8d5ad753af3ded190de0c18db9c239768237d27efc19"
+    },
+    "ros_description_xacro": {
+      "path": "C:/Users/aca/source/UR16UnityControl/ros_ws/src/ur16e_mir250_description/urdf/mir250_ur16e.urdf.xacro",
+      "sha256": "cd4210a91b0672e15a95513e8d198540faae69ee7abed12095e6594332a3fb4e"
+    },
+    "ros_kenos_xacro": {
+      "path": "C:/Users/aca/source/UR16UnityControl/ros_ws/src/kenos-flexigrip/urdf/kenos.urdf.xacro",
+      "sha256": "3ea52cc0e3b8b396efe508020b74fdac045043317ad072f3a12b934a9c1e52d9"
+    },
+    "ros_arm_calibration": {
+      "path": "C:/Users/aca/source/UR16UnityControl/ros_ws/src/ur16e_mir250_control/config/ur16e_calibration.yaml",
+      "sha256": "aaf15b02eb051dd6a71c94414dcc82f414082770584c9a3b06424ff8ee38917d"
+    }
+  },
+  "ros_defaults": {
+    "tool_tcp_xyz_m": [
+      0.0,
+      0.0,
+      -0.06
+    ],
+    "tool_tcp_rpy_rad": [
+      3.14159,
+      0.0,
+      0.0
+    ],
+    "description_default_tool": "kenos"
+  },
+  "ros_calibration_hash": "calib_6927668154486911702",
+  "fixed_tool_comparison": {
+    "parent_frame": "ur_flange",
+    "child_frame": "tcp",
+    "same_topology": true,
+    "joint_comparisons": [
+      {
+        "unity_joint": "kenos_mount",
+        "ros_joint": "kenos_mount",
+        "ros_minus_unity_position_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "position_error_mm": 0.0,
+        "orientation_error_degrees": 0.0
+      },
+      {
+        "unity_joint": "kenos_tool",
+        "ros_joint": "kenos_tool",
+        "ros_minus_unity_position_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "position_error_mm": 0.0,
+        "orientation_error_degrees": 0.0
+      },
+      {
+        "unity_joint": "tcp_fixed",
+        "ros_joint": "tcp_fixed",
+        "ros_minus_unity_position_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "position_error_mm": 0.0,
+        "orientation_error_degrees": 0.0
+      }
+    ],
+    "matches_old_ros_default": true,
+    "unity_joints": [
+      {
+        "name": "kenos_mount",
+        "type": "fixed",
+        "parent": "ur_flange",
+        "child": "kenos_mount",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rpy_rad": [
+          0.0,
+          1.5708,
+          0.0
+        ],
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "kenos_tool",
+        "type": "fixed",
+        "parent": "kenos_mount",
+        "child": "kenos_base",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.05
+        ],
+        "rpy_rad": [
+          0.0,
+          3.14159,
+          1.5708
+        ],
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "tcp_fixed",
+        "type": "fixed",
+        "parent": "kenos_base",
+        "child": "tcp",
+        "xyz_m": [
+          0.0,
+          0.0,
+          -0.06
+        ],
+        "rpy_rad": [
+          3.14159,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "ros_default_joints": [
+      {
+        "name": "kenos_mount",
+        "type": "fixed",
+        "parent": "ur_flange",
+        "child": "kenos_mount",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rpy_rad": [
+          0.0,
+          1.5708,
+          0.0
+        ],
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "kenos_tool",
+        "type": "fixed",
+        "parent": "kenos_mount",
+        "child": "kenos_base",
+        "xyz_m": [
+          0.0,
+          0.0,
+          0.05
+        ],
+        "rpy_rad": [
+          0.0,
+          3.14159,
+          1.5708
+        ],
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "tcp_fixed",
+        "type": "fixed",
+        "parent": "kenos_base",
+        "child": "tcp",
+        "xyz_m": [
+          0.0,
+          0.0,
+          -0.06
+        ],
+        "rpy_rad": [
+          3.14159,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "unity_flange_to_tcp": {
+      "translation_m": [
+        0.10999999999904667,
+        -1.5921538760008966e-07,
+        -4.0405314619812143e-07
+      ],
+      "rotation_matrix": [
+        [
+          -2.6536032857705593e-06,
+          -6.326794896634347e-06,
+          0.999999999976465
+        ],
+        [
+          -0.999999999989733,
+          3.6732121448724328e-06,
+          -2.653580046145914e-06
+        ],
+        [
+          -3.6731953561292898e-06,
+          -0.9999999999732395,
+          -6.3268046438172065e-06
+        ]
+      ]
+    },
+    "ros_default_flange_to_tcp": {
+      "translation_m": [
+        0.10999999999904667,
+        -1.5921538760008966e-07,
+        -4.0405314619812143e-07
+      ],
+      "rotation_matrix": [
+        [
+          -2.6536032857705593e-06,
+          -6.326794896634347e-06,
+          0.999999999976465
+        ],
+        [
+          -0.999999999989733,
+          3.6732121448724328e-06,
+          -2.653580046145914e-06
+        ],
+        [
+          -3.6731953561292898e-06,
+          -0.9999999999732395,
+          -6.3268046438172065e-06
+        ]
+      ]
+    },
+    "ros_minus_unity_position_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "position_error_mm": 0.0,
+    "orientation_error_degrees": 0.0
+  },
+  "arm_origin_differences": [
+    {
+      "joint": "ur_shoulder_pan_joint",
+      "unity_xyz_m": [
+        0.0,
+        0.0,
+        0.1807
+      ],
+      "ros_xyz_m": [
+        0.0,
+        0.0,
+        0.18081968955798347
+      ],
+      "unity_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ros_rpy_rad": [
+        -0.0,
+        0.0,
+        -1.5163257281736175e-07
+      ],
+      "ros_minus_unity_position_m": [
+        0.0,
+        0.0,
+        0.00011968955798347114
+      ],
+      "position_error_mm": 0.11968955798347114,
+      "orientation_error_degrees": 8.68790645914496e-06
+    },
+    {
+      "joint": "ur_shoulder_lift_joint",
+      "unity_xyz_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ros_xyz_m": [
+        0.0001456093972520112,
+        0.0,
+        0.0
+      ],
+      "unity_rpy_rad": [
+        1.570796327,
+        0.0,
+        0.0
+      ],
+      "ros_rpy_rad": [
+        1.5699329609652921,
+        0.0,
+        -1.956936180214086e-06
+      ],
+      "ros_minus_unity_position_m": [
+        0.0001456093972520112,
+        0.0,
+        0.0
+      ],
+      "position_error_mm": 0.1456093972520112,
+      "orientation_error_degrees": 0.04946735703587171
+    },
+    {
+      "joint": "ur_elbow_joint",
+      "unity_xyz_m": [
+        -0.4784,
+        0.0,
+        0.0
+      ],
+      "ros_xyz_m": [
+        -0.4784765317083214,
+        0.0,
+        0.0
+      ],
+      "unity_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ros_rpy_rad": [
+        0.0007229116279579265,
+        0.0009179244647028055,
+        -2.594228713224712e-06
+      ],
+      "ros_minus_unity_position_m": [
+        -7.653170832139233e-05,
+        0.0,
+        0.0
+      ],
+      "position_error_mm": 0.07653170832139233,
+      "orientation_error_degrees": 0.06694528125397887
+    },
+    {
+      "joint": "ur_wrist_1_joint",
+      "unity_xyz_m": [
+        -0.36,
+        0.0,
+        0.17415
+      ],
+      "ros_xyz_m": [
+        -0.35974181604649325,
+        -0.0003621142591738172,
+        0.1749489673139152
+      ],
+      "unity_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ros_rpy_rad": [
+        0.002069824975894728,
+        0.00026725507477400257,
+        4.411033697347245e-06
+      ],
+      "ros_minus_unity_position_m": [
+        0.00025818395350674095,
+        -0.0003621142591738172,
+        0.0007989673139152109
+      ],
+      "position_error_mm": 0.9144038819090067,
+      "orientation_error_degrees": 0.11957696030392145
+    },
+    {
+      "joint": "ur_wrist_2_joint",
+      "unity_xyz_m": [
+        0.0,
+        -0.11985,
+        -2.458164590756244e-11
+      ],
+      "ros_xyz_m": [
+        5.132599036566243e-05,
+        -0.11986621413176356,
+        -3.3783971547799424e-05
+      ],
+      "unity_rpy_rad": [
+        1.570796327,
+        0.0,
+        0.0
+      ],
+      "ros_rpy_rad": [
+        1.5710781741102384,
+        0.0,
+        -6.560185613346815e-07
+      ],
+      "ros_minus_unity_position_m": [
+        5.132599036566243e-05,
+        -1.6214131763558903e-05,
+        -3.3783946966153514e-05
+      ],
+      "position_error_mm": 0.06355006237978053,
+      "orientation_error_degrees": 0.01614869362783388
+    },
+    {
+      "joint": "ur_wrist_3_joint",
+      "unity_xyz_m": [
+        0.0,
+        0.11655,
+        -2.390480459346185e-11
+      ],
+      "ros_xyz_m": [
+        -3.406215378220193e-05,
+        0.11562643465956536,
+        -1.3563183894578365e-05
+      ],
+      "unity_rpy_rad": [
+        1.570796326589793,
+        3.141592653589793,
+        3.141592653589793
+      ],
+      "ros_rpy_rad": [
+        1.5706790250388378,
+        3.141592653589793,
+        -3.1415925337905204
+      ],
+      "ros_minus_unity_position_m": [
+        -3.406215378220193e-05,
+        -0.00092356534043464,
+        -1.3563159989773771e-05
+      ],
+      "position_error_mm": 0.9242927716266871,
+      "orientation_error_degrees": 0.006720887305147555
+    }
+  ],
+  "forward_kinematics_comparison": {
+    "joint_order": [
+      "ur_shoulder_pan_joint",
+      "ur_shoulder_lift_joint",
+      "ur_elbow_joint",
+      "ur_wrist_1_joint",
+      "ur_wrist_2_joint",
+      "ur_wrist_3_joint"
+    ],
+    "method": "URDF origin * joint-axis rotation; calibrated proxy replaces six arm origins and uses ROS default tool chain.",
+    "samples": [
+      {
+        "name": "zero",
+        "joint_positions_degrees": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unity_base_to_tcp": {
+          "translation_m": [
+            0.8384001592153877,
+            0.4006999999498832,
+            0.06084959586466887
+          ],
+          "rotation_matrix": [
+            [
+              0.999999999989733,
+              -3.6732121450561296e-06,
+              2.6535800461459126e-06
+            ],
+            [
+              -2.6536032865239442e-06,
+              -6.327000000001624e-06,
+              0.9999999999764637
+            ],
+            [
+              -3.673195355768724e-06,
+              -0.9999999999732382,
+              -6.327009747184485e-06
+            ]
+          ]
+        },
+        "calibrated_proxy_base_to_tcp": {
+          "translation_m": [
+            0.8376285404470267,
+            0.40063810197544375,
+            0.06014459253342363
+          ],
+          "rotation_matrix": [
+            [
+              0.9999993034508095,
+              -1.5192084402632757e-06,
+              -0.0011802947034646326
+            ],
+            [
+              0.0011802889095889927,
+              -0.0021002473273695125,
+              0.9999970979354159
+            ],
+            [
+              -3.998114827882253e-06,
+              -0.9999977944769957,
+              -0.002100244071339064
+            ]
+          ]
+        },
+        "ros_minus_unity_position_m": [
+          -0.0007716187683609599,
+          -6.1897974439451e-05,
+          -0.0007050033312452422
+        ],
+        "position_error_mm": 1.0470227218133714,
+        "orientation_error_degrees": 0.13779447194212474
+      },
+      {
+        "name": "home_like",
+        "joint_positions_degrees": [
+          0,
+          -90,
+          0,
+          -90,
+          0,
+          0
+        ],
+        "unity_base_to_tcp": {
+          "translation_m": [
+            -1.5921538747153224e-07,
+            0.40070000017100554,
+            1.1389504039709613
+          ],
+          "rotation_matrix": [
+            [
+              -0.999999999989733,
+              3.673212145178593e-06,
+              -2.6535800459009824e-06
+            ],
+            [
+              -2.6536032847722445e-06,
+              -6.326589793144606e-06,
+              0.9999999999764664
+            ],
+            [
+              3.673195356979715e-06,
+              0.9999999999732408,
+              6.326599540327464e-06
+            ]
+          ]
+        },
+        "calibrated_proxy_base_to_tcp": {
+          "translation_m": [
+            0.0009902411910266739,
+            0.40018547945914745,
+            1.1388594534636398
+          ],
+          "rotation_matrix": [
+            [
+              -0.9999961021539768,
+              4.5502928545270866e-06,
+              0.002792070226102511
+            ],
+            [
+              0.0027920708811043,
+              0.00015093032749936315,
+              0.9999960907724743
+            ],
+            [
+              4.128866992770137e-06,
+              0.9999999885996653,
+              -0.0001509424439363661
+            ]
+          ]
+        },
+        "ros_minus_unity_position_m": [
+          0.0009904004064141454,
+          -0.0005145207118580908,
+          -9.095050732144117e-05
+        ],
+        "position_error_mm": 1.1197752108071906,
+        "orientation_error_degrees": 0.16037942813372058
+      },
+      {
+        "name": "bent_forward",
+        "joint_positions_degrees": [
+          0,
+          -60,
+          90,
+          -120,
+          -90,
+          0
+        ],
+        "unity_base_to_tcp": {
+          "translation_m": [
+            0.6708195493690778,
+            0.17415015919239668,
+            0.1884565531357098
+          ],
+          "rotation_matrix": [
+            [
+              3.673400460408229e-06,
+              0.9999999999732401,
+              6.326599540538656e-06
+            ],
+            [
+              0.9999999999897328,
+              -3.673417247309499e-06,
+              2.653374941358562e-06
+            ],
+            [
+              2.6533981815274275e-06,
+              6.326589793564968e-06,
+              -0.9999999999764669
+            ]
+          ]
+        },
+        "calibrated_proxy_base_to_tcp": {
+          "translation_m": [
+            0.6703273741906645,
+            0.1741766459272475,
+            0.1892798444369888
+          ],
+          "rotation_matrix": [
+            [
+              -0.0008116339184395652,
+              0.9999996644804818,
+              -0.00011085714159001453
+            ],
+            [
+              0.9999977710245191,
+              0.0008114162940287405,
+              -0.001949243338097766
+            ],
+            [
+              -0.0019491527327975854,
+              -0.00011243896650079403,
+              -0.9999980940787349
+            ]
+          ]
+        },
+        "ros_minus_unity_position_m": [
+          -0.0004921751784133788,
+          2.6486734850811322e-05,
+          0.0008232913012790055
+        ],
+        "position_error_mm": 0.9595553762712065,
+        "orientation_error_degrees": 0.12138320537670474
+      },
+      {
+        "name": "side_bent",
+        "joint_positions_degrees": [
+          90,
+          -90,
+          90,
+          -90,
+          -90,
+          45
+        ],
+        "unity_base_to_tcp": {
+          "translation_m": [
+            -0.1741498269006341,
+            0.4798503982445337,
+            0.43254999996523447
+          ],
+          "rotation_matrix": [
+            [
+              -0.7071041836929126,
+              0.7071093786658699,
+              2.597567126670024e-06
+            ],
+            [
+              0.7071093786656629,
+              0.7071041836693793,
+              6.349885807835137e-06
+            ],
+            [
+              2.653313225547105e-06,
+              6.326794897674466e-06,
+              -0.9999999999764658
+            ]
+          ]
+        },
+        "calibrated_proxy_base_to_tcp": {
+          "translation_m": [
+            -0.17374082180464803,
+            0.4795626213573469,
+            0.4332478657450629
+          ],
+          "rotation_matrix": [
+            [
+              -0.7065792373193003,
+              0.7076307357796061,
+              0.002126774386044188
+            ],
+            [
+              0.7076321617262503,
+              0.7065810009529333,
+              -0.00011306186246467766
+            ],
+            [
+              -0.0015827444234166558,
+              0.0014250867917502766,
+              -0.9999977320212908
+            ]
+          ]
+        },
+        "ros_minus_unity_position_m": [
+          0.00040900509598607027,
+          -0.00028777688718678585,
+          0.0006978657798284438
+        ],
+        "position_error_mm": 0.8585553866798883,
+        "orientation_error_degrees": 0.1290565391825195
+      },
+      {
+        "name": "folded",
+        "joint_positions_degrees": [
+          -90,
+          -120,
+          120,
+          -90,
+          90,
+          -45
+        ],
+        "unity_base_to_tcp": {
+          "translation_m": [
+            0.17414960181586034,
+            -0.24065017307997316,
+            0.8215565531338035
+          ],
+          "rotation_matrix": [
+            [
+              -0.7071093783756037,
+              -0.7071041839594406,
+              -6.349885808900551e-06
+            ],
+            [
+              0.7071041839829726,
+              -0.7071093783758132,
+              -2.597156917085729e-06
+            ],
+            [
+              -2.6536032846185457e-06,
+              -6.32650483647207e-06,
+              0.9999999999764668
+            ]
+          ]
+        },
+        "calibrated_proxy_base_to_tcp": {
+          "translation_m": [
+            0.17440409211584965,
+            -0.24038835851317228,
+            0.8204809276829117
+          ],
+          "rotation_matrix": [
+            [
+              -0.706329107163923,
+              -0.7078817159127987,
+              0.0016336001245267438
+            ],
+            [
+              0.7078827851990257,
+              -0.7063299157516973,
+              0.0001119511941724056
+            ],
+            [
+              0.0010746124348997267,
+              0.0012354717930771573,
+              0.9999986594078828
+            ]
+          ]
+        },
+        "ros_minus_unity_position_m": [
+          0.0002544902999893073,
+          0.0002618145668008831,
+          -0.0010756254508917928
+        ],
+        "position_error_mm": 1.1359059339504984,
+        "orientation_error_degrees": 0.11338404664441312
+      }
+    ],
+    "maximum_sampled_position_error_mm": 1.1359059339504984,
+    "maximum_sampled_orientation_error_degrees": 0.16037942813372058
+  },
+  "limitations": [
+    "Reads checked-in combined URDF, not Unity serialized prefabs or live ArticulationBody transforms.",
+    "Evaluates only the known explicit numeric Kenos macro/defaults; launch-time TCP overrides are not detected.",
+    "Calibration proxy inherits fixed arm transforms and joint axes from the Unity URDF; it is not a separately expanded deployed ROS model.",
+    "Sampled FK errors are illustrative, not a global bound; joint samples are not validated for collisions, limits, reachability, or execution.",
+    "Meshes, payload, physical mounting, replacement tool dimensions and real TCP calibration are not verified.",
+    "Changing a tool model requires coordinated ROS model generation and Unity reimport; this script changes neither."
+  ],
+  "ros_configuration_locations": {
+    "select_tool": "ros_ws/src/ur16e_bringup/launch/ur16e_start.launch.py (tool argument; none or kenos)",
+    "tool_tcp_defaults": "ros_ws/src/ur16e_mir250_description/urdf/mir250_ur16e.urdf.xacro (tool_tcp_xyz, tool_tcp_rpy)",
+    "tool_mount_and_geometry": "ros_ws/src/kenos-flexigrip/urdf/kenos.urdf.xacro (mount/body transforms and meshes)",
+    "arm_calibration": "ros_ws/src/ur16e_mir250_control/config/ur16e_calibration.yaml",
+    "unity_export": "ros_ws/src/ur16e_mir250_description/scripts/generate_urdf.sh (pass matching kinematics_params and measured tool arguments)"
+  },
+  "provisional_tcp_estimate": {
+    "status": "UNMEASURED_ESTIMATE_NOT_APPLIED",
+    "estimated_tool0_depth_mm": 150.0,
+    "assumptions": [
+      "The estimated thickness is provisionally treated as TCP distance along ur_tool0 +Z from the flange/tool0 origin.",
+      "TCP orientation is provisionally identical to ur_tool0 (zero teach-pendant rotation).",
+      "Body thickness may exclude adapter/mount depth and suction-pad compression; neither is measured here.",
+      "Teach-pendant RX/RY/RZ use an axis-angle rotation vector, whereas URDF rpy uses fixed-axis roll/pitch/yaw; only the all-zero case is equated here.",
+      "This candidate does not establish the physical TCP and is not applied to a URDF, prefab, runtime, or robot."
+    ],
+    "flange_to_tool0_from_unity_urdf": {
+      "translation_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation_matrix": [
+        [
+          6.123233995736766e-17,
+          -6.123233995736766e-17,
+          1.0
+        ],
+        [
+          1.0,
+          3.749399456654644e-33,
+          -6.123233995736766e-17
+        ],
+        [
+          0.0,
+          1.0,
+          6.123233995736766e-17
+        ]
+      ]
+    },
+    "tool0_to_candidate_tcp": {
+      "translation_m": [
+        0,
+        0,
+        0.15
+      ],
+      "rotation_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "flange_to_candidate_tcp": {
+      "translation_m": [
+        0.15,
+        -9.184850993605149e-18,
+        9.184850993605149e-18
+      ],
+      "rotation_matrix": [
+        [
+          6.123233995736766e-17,
+          -6.123233995736766e-17,
+          1.0
+        ],
+        [
+          1.0,
+          3.749399456654644e-33,
+          -6.123233995736766e-17
+        ],
+        [
+          0.0,
+          1.0,
+          6.123233995736766e-17
+        ]
+      ]
+    },
+    "candidate_minus_old_kenos": {
+      "position_error_mm": 40.00000000331094,
+      "orientation_error_degrees": 179.9997895409278,
+      "candidate_minus_old_position_in_flange_m": [
+        0.04000000000095333,
+        1.592153875909048e-07,
+        4.040531462073063e-07
+      ]
+    }
+  }
+}
