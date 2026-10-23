@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "origin": "Installed ROS2 rcl_interfaces + rclpy.serialization.serialize_message; no rclpy.init or ROS graph calls",
+  "pythonVersion": "3.12.3",
+  "description": "<robot name=\"ur16e_\u03bc\"><link name=\"ur_base_link\"/>\n<link name=\"tcp\"/></robot>",
+  "fixtures": [
+    {
+      "name": "request",
+      "base64": "AAEAAAEAAAASAAAAcm9ib3RfZGVzY3JpcHRpb24A",
+      "canonicalBase64": "AAEAAAEAAAASAAAAcm9ib3RfZGVzY3JpcHRpb24A",
+      "paddingOffsets": [],
+      "sha256": "eb27e98b4c823fa2e977ae7e8955b515c3400e416678db67f6c8449493f2c444",
+      "length": 30
+    },
+    {
+      "name": "unicode_request",
+      "base64": "AAEAAAMAAAASAAAAcm9ib3RfZGVzY3JpcHRpb24AUGEEAAAAb2RkAAMAAADPgAA=",
+      "canonicalBase64": "AAEAAAMAAAASAAAAcm9ib3RfZGVzY3JpcHRpb24AAAAEAAAAb2RkAAMAAADPgAA=",
+      "paddingOffsets": [
+        30,
+        31
+      ],
+      "sha256": "5f22c54bbff57c8880f0fc66b4a2c42936922db582ea4e1eae9d13216d636ae1",
+      "length": 47
+    },
+    {
+      "name": "response",
+      "base64": "AAEAAAIAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAE4AAAA8cm9ib3QgbmFtZT0idXIxNmVfzrwiPjxsaW5rIG5hbWU9InVyX2Jhc2VfbGluayIvPgo8bGluayBuYW1lPSJ0Y3AiLz48L3JvYm90PgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQEAAAAAAACHIPJ5t4///wAAAACASJPADQAAAGFsaWdubWVudF/PgAAAAAAFAAAAAAF/gP8AAAADAAAAAQABAAMAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAP////////9/AwAAAAAAAAAAAAAAAAAAAAAAAAAAAMC/fcOUJa1JslQEAAAAAQAAAAAAAAACAAAAQQAAAA4AAABjYWxpYnJhdGVkX868AAAACgAAADxyb2JvdC8+CgA=",
+      "canonicalBase64": "AAEAAAIAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAE4AAAA8cm9ib3QgbmFtZT0idXIxNmVfzrwiPjxsaW5rIG5hbWU9InVyX2Jhc2VfbGluayIvPgo8bGluayBuYW1lPSJ0Y3AiLz48L3JvYm90PgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQEAAAAAAACHIPJ5t4///wAAAACASJPADQAAAGFsaWdubWVudF/PgAAAAAAFAAAAAAF/gP8AAAADAAAAAQABAAMAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAP////////9/AwAAAAAAAAAAAAAAAAAAAAAAAAAAAMC/fcOUJa1JslQEAAAAAQAAAAAAAAACAAAAQQAAAA4AAABjYWxpYnJhdGVkX868AAAACgAAADxyb2JvdC8+CgA=",
+      "paddingOffsets": [
+        10,
+        11,
+        110,
+        111,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        173,
+        174,
+        175,
+        185,
+        186,
+        187,
+        195,
+        200,
+        201,
+        202,
+        203,
+        232,
+        233,
+        234,
+        235,
+        269,
+        270,
+        271,
+        278,
+        279,
+        298,
+        299
+      ],
+      "sha256": "ce5b951fca73c839a2390ae1cc202adf714dfa70c2853d23e2a4584685079360",
+      "length": 314
+    }
+  ]
+}

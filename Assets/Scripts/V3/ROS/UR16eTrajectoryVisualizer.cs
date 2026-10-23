@@ -1,311 +1,158 @@
-﻿using System;
 using System.Collections.Generic;
+using RosMessageTypes.Moveit;
 using UnityEngine;
-using RosMessageTypes.Moveit;       // For RobotTrajectoryMsg
-using RosMessageTypes.Trajectory;   // For JointTrajectoryPointMsg
 
-[Serializable]
+/// <summary>Trajectory replicas share the live robot's calibrated ROS model and TCP.</summary>
 public class UR16eTrajectoryVisualizer : MonoBehaviour
 {
-    [Header("Prefab & Scaling")]
-    [Tooltip("A UR16e prefab imported via URDF Importer, with ArticulationBodies at each joint.")]
     public GameObject virtualUr16ePrefab;
-    [SerializeField]
-    private URInstantiator _URInstantiator;
-    private Pose _ur16eBaseLinkPose;
-    private bool _hasUR16eBeenInstantiated = false;
-
-    [Header("Visualization Settings")]
-    [Range(0f, 100f)]
-    [Tooltip("Percentage (0–100) of intermediate trajectory waypoints to display. " +
-             "Final waypoint is always displayed even if this is 0.")]
-    private float _percentageToShow = 0f;
-
-    public float PercentageToShow { get { return _percentageToShow; } }
-
-    [Header("Trajectory Line")]
+    [SerializeField] private URInstantiator _URInstantiator;
+    [SerializeField, Range(0f, 100f)] private float _percentageToShow;
+    public float PercentageToShow => _percentageToShow;
     public LineRenderer trajectoryLineRenderer;
     public int resolution = 10;
-    private List<Vector3> trajectoryControlPoints;
+    private readonly List<RosRobotRig> _clones = new List<RosRobotRig>();
+    private readonly List<Pose> _plannedTcp = new List<Pose>();
+    private RosRobotRig _activeRig;
+    private RobotTrajectoryMsg _trajectory;
+    private float _previousPercentage = -1f;
+    public bool HasVisiblePreview => _trajectory != null && _clones.Count > 0 && _plannedTcp.Count > 0;
+    public bool IsShowingTrajectory(RobotTrajectoryMsg trajectory) => HasVisiblePreview && ReferenceEquals(_trajectory, trajectory);
 
-    // A copy of the last trajectory we visualized
-    private RobotTrajectoryMsg currentTrajectory;
-
-    // Keep track of all spawned clones so we can clear them later
-    private readonly List<GameObject> spawnedClones = new List<GameObject>();
-
-    // Remember the previous percentage so we can detect changes at runtime
-    private float prevPercentage = -1f;
-
-    // Map ROS joint names → Unity hierarchy path (relative to prefab root)
-    private static readonly Dictionary<string, string> RosNameToUnityName = new Dictionary<string, string>()
+    private void Start()
     {
-        { "ur_shoulder_pan_joint",   "world/base_link/base_link_inertia/shoulder_link" },
-        { "ur_shoulder_lift_joint",  "world/base_link/base_link_inertia/shoulder_link/upper_arm_link" },
-        { "ur_elbow_joint",          "world/base_link/base_link_inertia/shoulder_link/upper_arm_link/forearm_link" },
-        { "ur_wrist_1_joint",        "world/base_link/base_link_inertia/shoulder_link/upper_arm_link/forearm_link/wrist_1_link" },
-        { "ur_wrist_2_joint",        "world/base_link/base_link_inertia/shoulder_link/upper_arm_link/forearm_link/wrist_1_link/wrist_2_link" },
-        { "ur_wrist_3_joint",        "world/base_link/base_link_inertia/shoulder_link/upper_arm_link/forearm_link/wrist_1_link/wrist_2_link/wrist_3_link" }
-    };
-
-    private GameObject _ur16eInstance;
-
-    void Start()
-    {
-        trajectoryControlPoints = new List<Vector3>();
-        // Initialize prevPercentage so that the first SetTrajectory call always spawns clones
-        prevPercentage = -1f;
-        _URInstantiator.OnURInstantiated.AddListener(RecordUR16ePose);
+        if (_URInstantiator != null) _URInstantiator.OnURInstantiated.AddListener(RecordRobot);
+        if (RobotStateService.Instance.IsInitialized)
+            RecordRobot(RobotStateService.Instance.GetRobotInstance(), Pose.identity);
     }
 
-    void Update()
+    private void RecordRobot(GameObject robot, Pose qrPose)
     {
-        // If the user changed percentageToShow in the Inspector (or via a UI slider),
-        // and we have an existing trajectory, re-spread clones.
-        if (currentTrajectory != null && !Mathf.Approximately(prevPercentage, _percentageToShow))
-        {
-            prevPercentage = _percentageToShow;
-            ClearAllClones();
-            RedistributeClones();
-        }
+        if (_activeRig != null) _activeRig.ModelChanged -= OnModelChanged;
+        _activeRig = robot != null ? robot.GetComponent<RosRobotRig>() : null;
+        if (_activeRig != null) _activeRig.ModelChanged += OnModelChanged;
+        if (_trajectory != null) RedistributeClones();
     }
 
-    public void UpdatePercentageToShow(float newPercentageToShow)
+    private void OnModelChanged() => SetTrajectory(null);
+
+    private void LateUpdate()
     {
-        _percentageToShow = 100.0f * newPercentageToShow;
+        if (_trajectory != null && !Mathf.Approximately(_previousPercentage, _percentageToShow)) RedistributeClones();
+        if (_activeRig == null || _activeRig.BaseLink == null) return;
+        Pose basePose = RobotStateService.Instance.GetRobotRootPose();
+        foreach (RosRobotRig clone in _clones) if (clone != null) clone.SetBaseWorldPose(basePose);
+        if (_plannedTcp.Count > 0) ComputeTrajectorySpline();
     }
 
-    private void RecordUR16ePose(GameObject go, Pose qrPose)
-    {
-        _hasUR16eBeenInstantiated = true;
-        _ur16eInstance = go;
-        var children = _ur16eInstance.GetComponentsInChildren<ArticulationBody>();
-        foreach (var child in children)
-        {
-            if (child.transform.name == "base_link")
-            {
-                Pose p = new Pose(child.transform.position, child.transform.rotation);
-                _ur16eBaseLinkPose = p;
-            }
-        }
-    }
+    public void UpdatePercentageToShow(float percentage) => _percentageToShow = Mathf.Clamp01(percentage) * 100f;
 
-    /// <summary>
-    /// Call this when a new trajectory arrives. It will clear any existing clones
-    /// and spawn according to the current percentageToShow.
-    /// </summary>
-    public void SetTrajectory(RobotTrajectoryMsg trajectoryMsg)
+    public void SetTrajectory(RobotTrajectoryMsg trajectory)
     {
-        Debug.Log("In SetTrajectory");
-        // Replace stored trajectory
-        currentTrajectory = trajectoryMsg;
-        // Reset prevPercentage to force a full re‐draw
-        prevPercentage = -1f;
-        // Clear out old clones
-        ClearAllClones();
-        // Spawn new clones
+        _trajectory = trajectory;
         RedistributeClones();
     }
 
-    /// <summary>
-    /// Clears all UR16e clones from the scene.
-    /// </summary>
     public void ClearAllClones()
     {
-        foreach (var go in spawnedClones)
-        {
-            if (go) Destroy(go);
-        }
-        spawnedClones.Clear();
-        trajectoryControlPoints.Clear();
+        foreach (RosRobotRig clone in _clones)
+            if (clone != null) { clone.gameObject.SetActive(false); Destroy(clone.gameObject); }
+        _clones.Clear();
+        _plannedTcp.Clear();
+        if (trajectoryLineRenderer != null) trajectoryLineRenderer.positionCount = 0;
     }
 
-    /// <summary>
-    /// Recomputes which trajectory indices should be shown (based on percentageToShow),
-    /// and instantiates clones at those joint configurations.
-    /// </summary>
     private void RedistributeClones()
     {
-        Debug.Log("Now redistributing clones");
-        if (currentTrajectory == null)
-            return;
-
-        var jointTrajectory = currentTrajectory.joint_trajectory;
-        string[] jointNames = jointTrajectory.joint_names;
-        JointTrajectoryPointMsg[] points = jointTrajectory.points;
-
-        if (jointNames == null || jointNames.Length == 0)
+        ClearAllClones();
+        _previousPercentage = _percentageToShow;
+        if (_trajectory == null || _activeRig == null || _activeRig.Model == null || virtualUr16ePrefab == null) return;
+        var trajectory = _trajectory.joint_trajectory;
+        if (trajectory == null || trajectory.joint_names == null || trajectory.joint_names.Length == 0 ||
+            trajectory.points == null || trajectory.points.Length == 0) { _trajectory = null; return; }
+        Dictionary<string, double> positions = new Dictionary<string, double>();
+        foreach (RosRobotLink link in _activeRig.Model.links)
+            if (RosRobotModelMath.IsRevolute(link) && _activeRig.TryGetJointPosition(link.jointName, out double angle))
+                positions[link.jointName] = angle;
+        string[] initialNames = new string[positions.Count];
+        double[] initialAngles = new double[positions.Count];
+        int initialIndex = 0;
+        foreach (var joint in positions)
         {
-            Debug.LogError("[UR16eTrajectoryVisualizer] Received empty joint_names.");
-            return;
+            initialNames[initialIndex] = joint.Key;
+            initialAngles[initialIndex++] = joint.Value;
         }
-        if (points == null || points.Length == 0)
+        foreach (var point in trajectory.points)
         {
-            Debug.LogWarning("[UR16eTrajectoryVisualizer] Received zero waypoints.");
-            return;
-        }
-
-        int N = points.Length; // total waypoints
-        if (N == 0) return;
-
-        // 1) Compute how many intermediate points (0..N-2) to show,
-        //    rounding up: if percentageToShow=10% of 178, (10/100)*(177)=17.7 → Ceil → 18
-        int intermediateCount = Mathf.CeilToInt((_percentageToShow / 100f) * (N - 1));
-
-        // 2) Build a list of indices to show
-        List<int> indicesToShow = new List<int>();
-
-        if (intermediateCount > 0)
-        {
-            // Evenly space 'intermediateCount' indices in [0 .. N-2]
-            float step = (N - 1f) / (intermediateCount + 1f);
-            for (int i = 1; i <= intermediateCount; ++i)
+            if (point == null || point.positions == null || point.positions.Length != trajectory.joint_names.Length)
             {
-                int idx = Mathf.RoundToInt(i * step);
-                // Clamp just in case rounding pushes outside [0..N-2]
-                idx = Mathf.Clamp(idx, 0, N - 2);
-                indicesToShow.Add(idx);
+                ClearAllClones();
+                _trajectory = null;
+                return;
             }
-        }
-
-        // 3) Always add the last index (N-1)
-        indicesToShow.Add(N - 1);
-
-        // Sort them so clones appear in increasing‐time order
-        indicesToShow.Sort();
-
-        // 4) Instantiate clones for each selected index
-        foreach (int idx in indicesToShow)
-        {
-            InstantiateCloneAtPoint(jointNames, points[idx].positions);
-        }
-        trajectoryLineRenderer.positionCount = 0;
-        System.Collections.IEnumerator routine = ComputeTrajectorySplineCoroutine();
-        StartCoroutine(routine);
-    }
-
-    /// <summary>
-    /// Instantiates a UR16e prefab, sets all 6 joint angles according to 'positionsRad'.
-    /// 'jointNames' must align with the order of 'positionsRad'.
-    /// </summary>
-    private void InstantiateCloneAtPoint(string[] jointNames, double[] positionsRad)
-    {
-        if (virtualUr16ePrefab == null || !_hasUR16eBeenInstantiated)
-        {
-            Debug.LogError("[UR16eTrajectoryVisualizer] ur16ePrefab is null.");
-            return;
-        }
-
-        // 1) Instantiate
-        GameObject instance = Instantiate(
-            virtualUr16ePrefab,
-            _ur16eBaseLinkPose.position,
-            _ur16eBaseLinkPose.rotation
-        );
-
-        // 2) For each joint, find the Unity Transform via RosNameToUnityName, set articulation target
-        for (int j = 0; j < jointNames.Length; ++j)
-        {
-            string rosJointName = jointNames[j];
-            if (!RosNameToUnityName.TryGetValue(rosJointName, out string unityPath))
+            HashSet<string> seen = new HashSet<string>();
+            for (int index = 0; index < trajectory.joint_names.Length; index++)
             {
-                Debug.LogWarning($"[UR16eTrajectoryVisualizer] No Unity path for ROS joint '{rosJointName}'.");
-                continue;
+                string name = trajectory.joint_names[index];
+                if (name == null || double.IsNaN(point.positions[index]) || double.IsInfinity(point.positions[index]) || !seen.Add(name))
+                {
+                    ClearAllClones();
+                    _trajectory = null;
+                    return;
+                }
+                if (positions.ContainsKey(name)) positions[name] = point.positions[index];
             }
-
-            // Find child Transform by path (e.g. "world/base_link/.../wrist_3_link")
-            Transform jointTf = instance.transform.Find(unityPath);
-            if (jointTf == null)
-            {
-                Debug.LogWarning($"[UR16eTrajectoryVisualizer] Could not find '{unityPath}' in prefab.");
-                continue;
-            }
-
-            var ab = jointTf.GetComponent<ArticulationBody>();
-            if (ab == null)
-            {
-                Debug.LogWarning($"[UR16eTrajectoryVisualizer] No ArticulationBody on '{unityPath}'.");
-                continue;
-            }
-
-            // Convert from radians to degrees
-            float angleDeg = (float)(positionsRad[j] * Mathf.Rad2Deg);
-
-            // Set the xDrive target
-            var drive = ab.xDrive;
-            drive.target = angleDeg;
-            ab.xDrive = drive;
+            _plannedTcp.Add(RosRobotModelMath.ForwardKinematics(_activeRig.Model, positions)["tcp"]);
         }
-
-        // 3) Keep track of the spawned clone so we can destroy it later
-        spawnedClones.Add(instance);
-    }
-    
-    #region trajectory_spline
-    private System.Collections.IEnumerator ComputeTrajectorySplineCoroutine()
-    {
-        yield return new WaitForSeconds( 5.0f );
+        int count = trajectory.points.Length;
+        int intermediateCount = Mathf.CeilToInt(Mathf.Clamp01(_percentageToShow / 100f) * (count - 1));
+        SortedSet<int> indices = new SortedSet<int>();
+        for (int index = 0; index < intermediateCount; index++)
+            indices.Add(Mathf.Clamp(Mathf.FloorToInt(index * (count - 1f) / intermediateCount), 0, count - 2));
+        indices.Add(count - 1);
+        Pose basePose = RobotStateService.Instance.GetRobotRootPose();
+        foreach (int index in indices)
+        {
+            GameObject instance = Instantiate(virtualUr16ePrefab);
+            instance.SetActive(false);
+            RosRobotRig rig = instance.GetComponent<RosRobotRig>();
+            if (rig == null) rig = instance.AddComponent<RosRobotRig>();
+            rig.IsGhost = true;
+            if (!rig.ApplyModel(_activeRig.Model) ||
+                !rig.SetJointPositions(initialNames, initialAngles) ||
+                !rig.SetJointPositions(trajectory.joint_names, trajectory.points[index].positions))
+            {
+                Destroy(instance);
+                Debug.LogWarning("Trajectory contains an unsupported robot model or invalid joint values.", this);
+                ClearAllClones();
+                _trajectory = null;
+                return;
+            }
+            rig.SetBaseWorldPose(basePose);
+            instance.SetActive(true);
+            rig.SetBaseWorldPose(basePose);
+            _clones.Add(rig);
+        }
         ComputeTrajectorySpline();
-        yield return null;
     }
+
+    // Keep the public method used by existing UI events. The line follows actual
+    // waypoint TCP samples; interpolation must not imply an unplanned robot path.
     public void ComputeTrajectorySpline()
     {
-        trajectoryControlPoints.Clear();
-
-        Vector3 currentFlangePosition = _ur16eInstance.transform.Find("world/base_link/base_link_inertia/shoulder_link/upper_arm_link/forearm_link/wrist_1_link/wrist_2_link/wrist_3_link/flange").transform.position;
-        trajectoryControlPoints.Add(currentFlangePosition);
-
-        //Physics.SyncTransforms();
-        foreach (GameObject instance in spawnedClones)
-        {
-            Vector3 flangePos = instance.transform.Find("world/base_link/base_link_inertia/shoulder_link/upper_arm_link/forearm_link/wrist_1_link/wrist_2_link/wrist_3_link/flange").transform.position;
-            trajectoryControlPoints.Add(flangePos);
-        }
-        var splinePoints = GetSplinePoints(trajectoryControlPoints, resolution);
-        trajectoryLineRenderer.positionCount = splinePoints.Count;
-        trajectoryLineRenderer.SetPositions(splinePoints.ToArray());
+        if (trajectoryLineRenderer == null) return;
+        List<Vector3> points = new List<Vector3>();
+        Pose basePose = RobotStateService.Instance.GetRobotRootPose();
+        foreach (Pose tcp in _plannedTcp) points.Add(RobotFrameMath.Compose(basePose, tcp).position);
+        trajectoryLineRenderer.useWorldSpace = true;
+        trajectoryLineRenderer.positionCount = points.Count;
+        trajectoryLineRenderer.SetPositions(points.ToArray());
     }
-    private Vector3 CatmullRom(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
+
+    private void OnDestroy()
     {
-        // Standard Catmull-Rom spline formula
-        return 0.5f * (
-            2f * p1 +
-            (-p0 + p2) * t +
-            (2f * p0 - 5f * p1 + 4f * p2 - p3) * t * t +
-            (-p0 + 3f * p1 - 3f * p2 + p3) * t * t * t
-        );
+        if (_URInstantiator != null) _URInstantiator.OnURInstantiated.RemoveListener(RecordRobot);
+        if (_activeRig != null) _activeRig.ModelChanged -= OnModelChanged;
+        ClearAllClones();
     }
-    List<Vector3> GetSplinePoints(List<Vector3> controlPoints, int resolution)
-    {
-        List<Vector3> splinePoints = new List<Vector3>();
-
-        int count = controlPoints.Count;
-
-        if (count < 2)
-            return splinePoints;
-
-        for (int i = 0; i < count - 1; i++)
-        {
-            // Get surrounding points
-            Vector3 p0 = (i == 0)
-                ? controlPoints[i] + (controlPoints[i] - controlPoints[i + 1]) // Extrapolate before first
-                : controlPoints[i - 1];
-
-            Vector3 p1 = controlPoints[i];
-            Vector3 p2 = controlPoints[i + 1];
-
-            Vector3 p3 = (i + 2 >= count)
-                ? controlPoints[i + 1] + (controlPoints[i + 1] - controlPoints[i]) // Extrapolate after last
-                : controlPoints[i + 2];
-
-            for (int j = 0; j <= resolution; j++)
-            {
-                float t = j / (float)resolution;
-                splinePoints.Add(CatmullRom(p0, p1, p2, p3, t));
-            }
-        }
-
-        return splinePoints;
-    }
-    #endregion
 }

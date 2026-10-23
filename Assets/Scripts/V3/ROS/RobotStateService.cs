@@ -55,6 +55,13 @@ public class RobotStateService : MonoBehaviour
     /// </summary>
     public void InitializeRobot(Pose robotPose, GameObject robotInstance)
     {
+        InitializeRobot(robotPose, robotInstance, null);
+    }
+
+    public void InitializeRobot(Pose robotPose, GameObject robotInstance, Transform trackingSpace)
+    {
+        _isInitialized = false;
+        _robotRootArticulation = null;
         _robotInstance = robotInstance;
         _robotPose = robotPose;
 
@@ -74,10 +81,10 @@ public class RobotStateService : MonoBehaviour
             return;
         }
 
-        _isInitialized = true;
-
         // Initialize coordinate service
-        RobotCoordinateService.Instance.Initialize(_robotRootArticulation);
+        if (trackingSpace != null) RobotCoordinateService.Instance.Initialize(_robotRootArticulation, trackingSpace);
+        else RobotCoordinateService.Instance.Initialize(_robotRootArticulation);
+        _isInitialized = RobotCoordinateService.Instance.IsInitialized;
     }
 
     /// <summary>
@@ -101,6 +108,7 @@ public class RobotStateService : MonoBehaviour
     /// </summary>
     public Pose GetRobotRootPose()
     {
+        if (RobotCoordinateService.Instance.TryGetRobotBaseWorldPose(out Pose calibratedPose)) return calibratedPose;
         if (_robotRootArticulation != null)
         {
             return new Pose(_robotRootArticulation.transform.position, _robotRootArticulation.transform.rotation);

@@ -85,9 +85,12 @@ public class RemoteExecutionController : MonoBehaviour
             }
 
             Pose worldPose = new Pose(source.position, source.rotation);
-            Pose localPose = _convertToRobotFrame
-                ? RobotCoordinateService.Instance.ConvertWorldPoseToLocalPose(worldPose)
-                : worldPose;
+            Pose localPose = worldPose;
+            if (_convertToRobotFrame && !RobotCoordinateService.Instance.TryConvertWorldPoseToLocalPose(worldPose, out localPose))
+            {
+                OnRemoteExecutionFailed?.Invoke("Robot-base calibration or target pose is invalid.");
+                return;
+            }
 
             poses.Add(GeneratePoseStamped(localPose, _frameId));
         }
@@ -100,6 +103,16 @@ public class RemoteExecutionController : MonoBehaviour
     /// </summary>
     public void TriggerRemoteExecution(PoseStampedMsg[] poses)
     {
+        if (RobotCoordinateService.IsCalibrationEditActive)
+        {
+            OnRemoteExecutionFailed?.Invoke("Finish or cancel robot alignment before sending a task.");
+            return;
+        }
+        if (!ToolSelectionController.CanSendRobotCommands)
+        {
+            OnRemoteExecutionFailed?.Invoke("The selected tool must match the verified ROS robot models.");
+            return;
+        }
         RemoteExecutorClient.Instance.Execute(_command, poses, result =>
         {
             if (result.Success)

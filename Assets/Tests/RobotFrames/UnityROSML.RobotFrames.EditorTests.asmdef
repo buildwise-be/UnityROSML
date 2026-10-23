@@ -1,0 +1,13 @@
+{
+  "name": "UnityROSML.RobotFrames.EditorTests",
+  "references": [
+    "UnityROSML.RobotFrames"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "autoReferenced": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

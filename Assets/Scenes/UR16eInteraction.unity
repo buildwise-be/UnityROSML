@@ -537,9 +537,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 747135483}
-        m_TargetAssemblyTypeName: PickPlaceController, Assembly-CSharp
-        m_MethodName: ExecutePickAndPlace
+      - m_Target: {fileID: 1029355968}
+        m_TargetAssemblyTypeName: URInputManager, Assembly-CSharp
+        m_MethodName: ExecuteCurrentTask
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1879,21 +1879,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 747135483}
-        m_TargetAssemblyTypeName: PickPlaceController, Assembly-CSharp
-        m_MethodName: SendPickAndPlacePlanningRequest
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1664534035}
-        m_TargetAssemblyTypeName: MTCPlanUIManager, Assembly-CSharp
-        m_MethodName: ResetPlanStatusPanel
+      - m_Target: {fileID: 1029355968}
+        m_TargetAssemblyTypeName: URInputManager, Assembly-CSharp
+        m_MethodName: PlanCurrentTask
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2046,6 +2034,8 @@ GameObject:
   m_Component:
   - component: {fileID: 821121196}
   - component: {fileID: 821121195}
+  - component: {fileID: 1900000010}
+  - component: {fileID: 1900000011}
   m_Layer: 0
   m_Name: URInstantiator
   m_TagString: Untagged
@@ -2070,6 +2060,39 @@ MonoBehaviour:
   OnURInstantiated:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1900000010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 821121194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e303729cc7434ed3b752646fce128417, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _selectedTool: kenos
+  _modelServices:
+  - /robot_state_publisher/get_parameters
+  - /move_group/get_parameters
+  - /mtc_test_task_node/get_parameters
+  _refreshSeconds: 5
+--- !u!114 &1900000011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 821121194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6c04bcefa240a79c25fdd25639d65d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _controller: {fileID: 1900000010}
+  _appLogo: {fileID: 2800000, guid: d719059fcf9b4fe495c4334c18f78434, type: 3}
+  _canvas: {fileID: 0}
 --- !u!4 &821121196
 Transform:
   m_ObjectHideFlags: 0
@@ -2103,7 +2126,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &834730840
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2273,6 +2296,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1029355969}
   - component: {fileID: 1029355968}
+  - component: {fileID: 1900000001}
+  - component: {fileID: 1900000020}
   m_Layer: 0
   m_Name: URInputManager
   m_TagString: Untagged
@@ -2294,6 +2319,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _URInstantiator: {fileID: 821121195}
   _pickPlaceController: {fileID: 747135483}
+  _tcpTargetPreview: {fileID: 1900000001}
+  _tcpPlanningController: {fileID: 1900000020}
+  _trackingSpace: {fileID: 0}
+  _poseCaptureMode: 1
+--- !u!114 &1900000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1029355967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f23aeddb11b462ca8470f8bf3b45f17, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _markerMaterial: {fileID: 2100000, guid: 284c56280575d0b488b3dd24df533ff7, type: 2}
+  _sphereDiameter: 0.035
+  _arrowLength: 0.15
+  _pointerToTargetOffsetMeters: {x: 0, y: 0, z: 0}
 --- !u!4 &1029355969
 Transform:
   m_ObjectHideFlags: 0
@@ -2676,7 +2721,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1371822434
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3431,6 +3476,14 @@ PrefabInstance:
       value: ML Rig
       objectReference: {fileID: 0}
     - target: {fileID: 2587420837012734618, guid: 2ad7d02c3ee2a447abc9de300646685d, type: 3}
+      propertyPath: m_SelectInput.m_InputActionReferenceValue
+      value:
+      objectReference: {fileID: -7342047093304028865, guid: bb4daeceea261404d9e9069323220d1b, type: 3}
+    - target: {fileID: 2587420837012734618, guid: 2ad7d02c3ee2a447abc9de300646685d, type: 3}
+      propertyPath: m_SelectInput.m_InputActionReferencePerformed
+      value:
+      objectReference: {fileID: -1250625137801475051, guid: bb4daeceea261404d9e9069323220d1b, type: 3}
+    - target: {fileID: 2587420837012734618, guid: 2ad7d02c3ee2a447abc9de300646685d, type: 3}
       propertyPath: m_UIScrollInput.m_InputActionReference
       value: 
       objectReference: {fileID: -1646244213204276819, guid: bb4daeceea261404d9e9069323220d1b, type: 3}
@@ -3802,18 +3855,6 @@ MonoBehaviour:
       - m_Target: {fileID: 747135483}
         m_TargetAssemblyTypeName: PickPlaceController, Assembly-CSharp
         m_MethodName: SendFakePickAndPlacePlanningRequest
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1664534035}
-        m_TargetAssemblyTypeName: MTCPlanUIManager, Assembly-CSharp
-        m_MethodName: ResetPlanStatusPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4334,3 +4375,19 @@ SceneRoots:
   - {fileID: 776576047}
   - {fileID: 511627981}
   - {fileID: 225998206}
+--- !u!114 &1900000020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1029355967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eddfdb7bb894f5089a13eb3c497c276, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _targets: {fileID: 1900000001}
+  _visualizer: {fileID: 511627980}
+  _capabilityTimeout: 10
+  _planningTimeout: 120

@@ -1,291 +1,343 @@
+using System;
 using RosMessageTypes.Geometry;
+using RosMessageTypes.RclInterfaces;
 using RosMessageTypes.Std;
 using RosMessageTypes.Ur16eInterfaces;
-using RosMessageTypes.BuiltinInterfaces;
+using TMPro;
+using Unity.Robotics.ROSTCPConnector;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 using UnityEngine;
-using System;
-using Unity.XR.CoreUtils;
 
-/// <summary>
-/// Refactored from PickAndPlaceManager.
-/// Focuses on pick/place task orchestration using services and tile system.
-/// </summary>
+/// <summary>Desired tool-contact poses for MTC pick/place. Plan never executes motion.</summary>
 public class PickPlaceController : MonoBehaviour
 {
-    [SerializeField]
-    [Tooltip("ROS topic name for pick/place poses")]
-    private string _pickPlaceTopicName = "pick_place_poses_target";
-
-    [SerializeField]
-    private GameObject _pickPointPrefab;
-    private GameObject _pickPointInstance;
-
-    [SerializeField]
-    private GameObject _placePointPrefab;
-    private GameObject _placePointInstance;
-
-    [SerializeField]
-    [Tooltip("Optional. If assigned, its pose sources are kept in sync with the pick/place markers (pick first, place second).")]
-    private RemoteExecutionController _remoteExecutionController;
-
-    private bool _hasPlanningRequestBeenSent = false;
+    public const string ContactPlanTopic = "/pick_place_tcp_target";
+    private const string CapabilityService = "/mtc_test_task_node/get_parameters";
+    private const string CapabilityParameter = "pick_place_tcp_planning_enabled";
+    // Retain old scene fields during migration; tool poses never use the old surface API or planes.
+    [SerializeField, HideInInspector] private string _pickPlaceTopicName = ContactPlanTopic;
+    [SerializeField, HideInInspector] private GameObject _pickPointPrefab;
+    [SerializeField, HideInInspector] private GameObject _placePointPrefab;
+    [SerializeField] private RemoteExecutionController _remoteExecutionController;
+    [SerializeField] private MTCPlansManager _plansManager;
+    [SerializeField, Min(1f)] private float _capabilityTimeout = 10f;
+    private GameObject _pickPointInstance, _placePointInstance, _livePointInstance;
+    private TargetRotationHandles _pickRotationHandles, _placeRotationHandles;
+    private ToolPoseVisual _pickVisual, _placeVisual;
+    private Material _pickHandleMaterial, _placeHandleMaterial;
+    private bool _hasPlanningRequestBeenSent;
+    private bool _tilePlanningEnabled = true;
+    private bool _checkingCapability;
+    private int _generation, _requestCalibrationRevision;
+    private float _capabilityDeadline;
+    private PickPlacePosesMsg _requestedContactPoses;
+    private RobotCoordinateService _coordinates;
+    private ROSConnection _connection;
+    public bool IsTilePlanningEnabled => _tilePlanningEnabled;
+    public bool IsPlanning => _checkingCapability || (PlansManager != null && PlansManager.IsPlanning);
+    private MTCPlansManager PlansManager
+    {
+        get { if (_plansManager == null) _plansManager = FindFirstObjectByType<MTCPlansManager>(); return _plansManager; }
+    }
 
     private void Start()
     {
-        // Register ROS publishers via ROSService
-        ROSService.Instance.RegisterPublisher<PickPlacePosesMsg>(_pickPlaceTopicName);
-        ROSService.Instance.RegisterPublisher<BoolMsg>("execute_task");
+        _coordinates = RobotCoordinateService.Instance;
+        _coordinates.CalibrationChanged += InvalidatePlanningRequest;
+        _connection = ROSService.Instance.GetROSConnection();
+        _pickPlaceTopicName = ContactPlanTopic;
+        _connection.RegisterPublisher<PickPlacePosesMsg>(_pickPlaceTopicName);
+        _connection.RegisterPublisher<BoolMsg>("execute_task");
+        _connection.RegisterRosService<GetParametersRequest, GetParametersResponse>(CapabilityService);
+        if (_pickPointPrefab != null || _placePointPrefab != null)
+            Debug.Log("PickPlaceController: Using tool-contact previews instead of legacy plane markers.", this);
+    }
+
+    private void Update()
+    {
+        UpdateLabel(_pickPointInstance, "Pick — tool contact");
+        UpdateLabel(_placePointInstance, "Place — tool contact");
+        if (!_checkingCapability) return;
+        if (!CanKeepCapabilityRequest())
+        { RejectPlanningRequest("Tool targets, mode, model or alignment changed. Plan pick/place again."); return; }
+        if (Time.realtimeSinceStartup > _capabilityDeadline)
+            RejectPlanningRequest("ROS pick/place tool-pose planner did not answer. Update the MTC backend and reconnect.");
+    }
+
+    private void CancelCapabilityRequest()
+    {
+        unchecked { _generation++; }
+        _checkingCapability = false;
+        _requestedContactPoses = null;
+    }
+
+    public void InvalidatePlanningRequest()
+    {
+        CancelCapabilityRequest();
+        _hasPlanningRequestBeenSent = false;
+        if (PlansManager != null) PlansManager.InvalidatePlan();
+        UpdatePlanningReadiness();
+    }
+
+    public void SetTilePlanningEnabled(bool enabled)
+    {
+        bool changed = _tilePlanningEnabled != enabled;
+        _tilePlanningEnabled = enabled;
+        if (changed) { CancelCapabilityRequest(); _hasPlanningRequestBeenSent = false; SetTrackingLost(); }
+        if (PlansManager != null) PlansManager.SetTilePlanningEnabled(enabled);
+        if (_pickPointInstance != null) _pickPointInstance.SetActive(enabled);
+        if (_placePointInstance != null) _placePointInstance.SetActive(enabled);
+        UpdatePlanningReadiness();
     }
 
     private void UpdatePlanningReadiness()
     {
-        if (_pickPointInstance != null && _placePointInstance != null)
-        {
-            RobotStateService.Instance.IsReadyForPlanning = true;
-        }
-        else
-        {
-            RobotStateService.Instance.IsReadyForPlanning = false;
-        }
-
-        UpdateRemoteExecutionPoseSources();
+        RobotStateService.Instance.IsReadyForPlanning = _tilePlanningEnabled &&
+            ToolSelectionController.CanPlanPickPlace && RobotCoordinateService.Instance.IsInitialized &&
+            _pickPointInstance != null && _placePointInstance != null;
+        if (_remoteExecutionController != null)
+            _remoteExecutionController.SetPoseSources(
+                _tilePlanningEnabled && _pickPointInstance != null ? _pickPointInstance.transform : null,
+                _tilePlanningEnabled && _placePointInstance != null ? _placePointInstance.transform : null);
     }
 
-    /// <summary>
-    /// Keep the RemoteExecutionController's pose sources in sync with the
-    /// pick/place marker instances (pick first, place second).
-    /// </summary>
-    private void UpdateRemoteExecutionPoseSources()
+    public void SetPointerPose(Pose pointerWorld, Transform trackingSpace)
     {
-        if (_remoteExecutionController == null)
+        if (!_tilePlanningEnabled || !RobotFrameMath.IsValidPose(pointerWorld) || !RobotFrameMath.IsRigidFrame(trackingSpace)) return;
+        if (_livePointInstance == null)
         {
-            return;
+            _livePointInstance = new GameObject("Pick/place tool aim preview");
+            ToolPoseVisual.Attach(_livePointInstance.transform, new Color(0.1f, 0.9f, 1f), 0.3f);
         }
-
-        _remoteExecutionController.SetPoseSources(
-            _pickPointInstance != null ? _pickPointInstance.transform : null,
-            _placePointInstance != null ? _placePointInstance.transform : null);
+        _livePointInstance.transform.SetParent(trackingSpace, true);
+        Pose target = RobotFrameMath.PointerToTcpPose(pointerWorld);
+        _livePointInstance.transform.SetPositionAndRotation(target.position, target.rotation);
+        _livePointInstance.SetActive(true);
     }
 
-    public void SetPickPlace(Vector3 position, Quaternion rotation)
+    public void SetTrackingLost() { if (_livePointInstance != null) _livePointInstance.SetActive(false); }
+    // Inputs are canonical TCP contact poses. Pointer conversion belongs to URInputManager.
+    public void SetPickPlace(Vector3 position, Quaternion rotation) => SetContactPose(true, new Pose(position, rotation));
+    public void SetPlacePlace(Vector3 position, Quaternion rotation) => SetContactPose(false, new Pose(position, rotation));
+
+    private void SetContactPose(bool pick, Pose pose)
     {
-        if (_pickPointInstance == null)
+        if (!_tilePlanningEnabled || !RobotFrameMath.IsValidPose(pose)) return;
+        GameObject point = pick ? _pickPointInstance : _placePointInstance;
+        if (point == null)
         {
-            _pickPointInstance = Instantiate(_pickPointPrefab, position, rotation);
+            point = new GameObject(pick ? "Pick — tool contact" : "Place — tool contact");
+            if (pick) _pickPointInstance = point; else _placePointInstance = point;
+            Color tint = pick ? Color.green : new Color(1f, 0.6f, 0.05f);
+            ToolPoseVisual visual = ToolPoseVisual.Attach(point.transform, tint);
+            Material material = MakeHandleMaterial(tint);
+            TargetRotationHandles handles = TargetRotationHandles.Attach(point.transform, material, 0.035f);
+            handles.RotationStarted += OnTargetRotationChanged;
+            handles.RotationChanged += OnTargetRotationChanged;
+            if (pick)
+            {
+                _pickVisual = visual; _pickHandleMaterial = material; _pickRotationHandles = handles;
+                visual.VisualChanged += ConfigurePickHandle;
+                ConfigurePickHandle();
+            }
+            else
+            {
+                _placeVisual = visual; _placeHandleMaterial = material; _placeRotationHandles = handles;
+                visual.VisualChanged += ConfigurePlaceHandle;
+                ConfigurePlaceHandle();
+            }
+            GameObject caption = new GameObject("Contact target label", typeof(TextMeshPro));
+            caption.transform.SetParent(point.transform, false);
+            caption.transform.localScale = Vector3.one * 0.05f;
+            TextMeshPro text = caption.GetComponent<TextMeshPro>();
+            text.fontSize = 2f; text.color = tint; text.alignment = TextAlignmentOptions.Center;
+            text.rectTransform.sizeDelta = new Vector2(10f, 1.8f);
         }
-        else
-        {
-            _pickPointInstance.transform.position = position;
-            _pickPointInstance.transform.rotation = rotation;
-        }
-        UpdatePlanningReadiness();
+        Transform trackingSpace = null;
+        if (XRTrackingSpaceResolver.TryResolve(ref trackingSpace)) point.transform.SetParent(trackingSpace, true);
+        point.transform.SetPositionAndRotation(pose.position, pose.rotation);
+        TargetPoseContextMenu context = TargetPoseContextMenu.Attach(point.transform,
+            pick ? "Pick contact" : "Place contact", true, OnTargetRotationChanged);
+        context.RebaseAtCurrentPose();
+        point.SetActive(_tilePlanningEnabled);
+        InvalidatePlanningRequest();
     }
 
-    public void SetPlacePlace(Vector3 position, Quaternion rotation)
+    private static Material MakeHandleMaterial(Color color)
     {
-        if (_placePointInstance == null)
-        {
-            _placePointInstance = Instantiate(_placePointPrefab, position, rotation);
-        }
-        else
-        {
-            _placePointInstance.transform.position = position;
-            _placePointInstance.transform.rotation = rotation;
-        }
-        UpdatePlanningReadiness();
+        Shader shader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color");
+        return new Material(shader) { color = color };
+    }
+    private void ConfigurePickHandle()
+    { if (_pickVisual != null && _pickRotationHandles != null) _pickRotationHandles.ConfigureToolInteraction(_pickVisual.TcpLocalBounds); }
+    private void ConfigurePlaceHandle()
+    { if (_placeVisual != null && _placeRotationHandles != null) _placeRotationHandles.ConfigureToolInteraction(_placeVisual.TcpLocalBounds); }
+    private static void UpdateLabel(GameObject target, string title)
+    {
+        if (target == null || !target.activeInHierarchy) return;
+        TextMeshPro text = target.GetComponentInChildren<TextMeshPro>();
+        if (text == null) return;
+        text.text = title + "\nBumper over tool: adjust depth · drag tool: turn";
+        text.transform.position = target.transform.position + Vector3.up * 0.18f;
+        if (Camera.main != null) text.transform.rotation = Camera.main.transform.rotation;
+    }
+    private void OnTargetRotationChanged() => InvalidatePlanningRequest();
+
+    /// <summary>Export the displayed TCP contact poses without an object-surface or flange offset.</summary>
+    public bool TryGetContactPoses(out PickPlacePosesMsg message)
+    {
+        message = null;
+        if (!_tilePlanningEnabled || _pickPointInstance == null || _placePointInstance == null ||
+            !RobotFrameMath.IsRigidFrame(_pickPointInstance.transform) || !RobotFrameMath.IsRigidFrame(_placePointInstance.transform) ||
+            !RobotCoordinateService.Instance.TryConvertWorldPoseToLocalPose(
+                new Pose(_pickPointInstance.transform.position, _pickPointInstance.transform.rotation), out Pose pick) ||
+            !RobotCoordinateService.Instance.TryConvertWorldPoseToLocalPose(
+                new Pose(_placePointInstance.transform.position, _placePointInstance.transform.rotation), out Pose place)) return false;
+        string frame = RobotCoordinateService.Instance.RosBaseFrameId;
+        message = new PickPlacePosesMsg(GeneratePoseStamped(pick, frame), GeneratePoseStamped(place, frame));
+        return true;
     }
 
-    /// <summary>
-    /// Send pick and place planning request to ROS.
-    /// Gets tiles from TileManager and extracts poses using selected faces.
-    /// </summary>
     public void SendPickAndPlacePlanningRequest()
     {
-        Debug.Log("SendPickAndPlacePlanningRequest called");
-        if (RobotStateService.Instance.IsReadyForPlanning)
+        if (!ValidatePlanningRequest() || IsPlanning) return;
+        InvalidatePlanningRequest();
+        if (!TryGetContactPoses(out PickPlacePosesMsg message))
+        { RejectPlanningRequest("Cannot plan MTC pick/place without valid tool targets and robot alignment."); return; }
+        try
         {
-            Debug.Log("Robot is ready, now sending the request");
-            // Get poses from tiles
-            Pose pickPoseWorld = _pickPointInstance.transform.GetWorldPose();
-            Pose placePoseWorld = _placePointInstance.transform.GetWorldPose();
+            if (_connection == null) _connection = ROSService.Instance.GetROSConnection();
+            if (_connection == null || !_connection.HasConnectionThread || _connection.HasConnectionError)
+            { RejectPlanningRequest("ROS is disconnected. Reconnect before planning MTC pick/place."); return; }
+            _requestedContactPoses = message;
+            _requestCalibrationRevision = RobotCoordinateService.Instance.CalibrationRevision;
+            _checkingCapability = true;
+            _capabilityDeadline = Time.realtimeSinceStartup + _capabilityTimeout;
+            int generation = _generation;
+            // Show progress without arming callbacks for a planning request that has not been sent.
+            PlansManager.RejectPlanningRequest("Checking ROS pick/place tool-pose support...");
+            _connection.SendServiceMessage<GetParametersResponse>(CapabilityService,
+                new GetParametersRequest(new[] { CapabilityParameter }), response => OnCapabilityResponse(response, generation));
+        }
+        catch (Exception)
+        { RejectPlanningRequest("MTC planning request could not be sent. Check the ROS connection, then Plan again."); }
+    }
 
-            // Convert to robot-local poses
-            Pose pickPoseLocal = RobotCoordinateService.Instance.ConvertWorldPoseToLocalPose(pickPoseWorld);
-            Pose placePoseLocal = RobotCoordinateService.Instance.ConvertWorldPoseToLocalPose(placePoseWorld);
-
-            // Generate ROS messages
-            string header = "ur_base_link";
-            PoseStampedMsg pickPose = GeneratePoseStamped(pickPoseLocal, header);
-            PoseStampedMsg placePose = GeneratePoseStamped(placePoseLocal, header);
-
-            PickPlacePosesMsg msg = new PickPlacePosesMsg(pickPose, placePose);
-
-            // Debug log before sending
-            Debug.Log($"PickPlaceController: Sending PickPlacePosesMsg:\n" +
-                $"Pick Pose - Header: frame_id={pickPose.header.frame_id}, stamp={pickPose.header.stamp}, " +
-                $"Position: ({pickPose.pose.position.x:F4}, {pickPose.pose.position.y:F4}, {pickPose.pose.position.z:F4}), " +
-                $"Orientation: ({pickPose.pose.orientation.x:F4}, {pickPose.pose.orientation.y:F4}, {pickPose.pose.orientation.z:F4}, {pickPose.pose.orientation.w:F4})\n" +
-                $"Place Pose - Header: frame_id={placePose.header.frame_id}, stamp={placePose.header.stamp}, " +
-                $"Position: ({placePose.pose.position.x:F4}, {placePose.pose.position.y:F4}, {placePose.pose.position.z:F4}), " +
-                $"Orientation: ({placePose.pose.orientation.x:F4}, {placePose.pose.orientation.y:F4}, {placePose.pose.orientation.z:F4}, {placePose.pose.orientation.w:F4})");
-
-            // Send via ROSService
-            ROSService.Instance.Publish(_pickPlaceTopicName, msg);
+    private void OnCapabilityResponse(GetParametersResponse response, int generation)
+    {
+        if (this == null || generation != _generation || !_checkingCapability) return;
+        if (!CanKeepCapabilityRequest())
+        { RejectPlanningRequest("Tool targets, mode, model or alignment changed. Plan pick/place again."); return; }
+        if (response?.values == null || response.values.Length != 1 || response.values[0].type != 1 || !response.values[0].bool_value)
+        { RejectPlanningRequest("ROS needs the pick/place tool-pose update. Update the MTC backend; surface-pose fallback is disabled."); return; }
+        PickPlacePosesMsg message = _requestedContactPoses;
+        _checkingCapability = false;
+        try
+        {
+            if (PlansManager == null || !PlansManager.BeginPlanningRequest()) return;
+            _connection.Publish(ContactPlanTopic, message);
             _hasPlanningRequestBeenSent = true;
         }
+        catch (Exception)
+        { RejectPlanningRequest("MTC planning request could not be sent. Check the ROS connection, then Plan again."); }
+    }
+
+    private bool CanKeepCapabilityRequest() => _tilePlanningEnabled && _connection != null &&
+        _connection.HasConnectionThread && !_connection.HasConnectionError &&
+        !TargetPoseContextMenu.IsOpen &&
+        !RobotCoordinateService.IsCalibrationEditActive && RobotCoordinateService.Instance.IsInitialized &&
+        RobotCoordinateService.Instance.CalibrationRevision == _requestCalibrationRevision &&
+        ToolSelectionController.CanPlanPickPlace && TargetsMatchRequest();
+    private bool TargetsMatchRequest() => _requestedContactPoses != null && TryGetContactPoses(out PickPlacePosesMsg current) &&
+        SamePose(_requestedContactPoses.pick_pose, current.pick_pose) && SamePose(_requestedContactPoses.place_pose, current.place_pose);
+    private static bool SamePose(PoseStampedMsg a, PoseStampedMsg b)
+    {
+        if (a.header.frame_id != b.header.frame_id) return false;
+        PointMsg p = a.pose.position, q = b.pose.position;
+        QuaternionMsg r = a.pose.orientation, s = b.pose.orientation;
+        double norm = Math.Sqrt((r.x*r.x+r.y*r.y+r.z*r.z+r.w*r.w)*(s.x*s.x+s.y*s.y+s.z*s.z+s.w*s.w));
+        double dot = r.x*s.x+r.y*s.y+r.z*s.z+r.w*s.w;
+        return Math.Abs(p.x-q.x) < 0.00001 && Math.Abs(p.y-q.y) < 0.00001 &&
+            Math.Abs(p.z-q.z) < 0.00001 && norm > 0 && Math.Abs(dot/norm) > 0.9999999;
+    }
+
+    private bool ValidatePlanningRequest()
+    {
+        if (PlansManager == null)
+        { Debug.LogWarning("MTC planning status controller is missing. Planning is blocked.", this); return false; }
+        if (TargetPoseContextMenu.IsOpen)
+        { RejectPlanningRequest("Close the target menu before planning MTC pick/place."); return false; }
+        if (!_tilePlanningEnabled)
+        { RejectPlanningRequest("Select MTC pick/place mode to plan from tool contact points."); return false; }
+        if (TargetRotationHandles.IsInteracting)
+        { RejectPlanningRequest("Release the tool target before planning MTC pick/place."); return false; }
+        if (RobotCoordinateService.IsCalibrationEditActive || !RobotCoordinateService.Instance.IsInitialized)
+        { RejectPlanningRequest("Scan the robot QR and finish robot alignment before MTC planning."); return false; }
+        if (ToolSelectionController.Instance != null && ToolSelectionController.Instance.SelectedTool == "none")
+        { RejectPlanningRequest("MTC pick/place requires a suction tool. Select Kenos or Kenos SL and match ROS."); return false; }
+        if (!ToolSelectionController.CanPlanPickPlace)
+        { RejectPlanningRequest("MTC pick/place is blocked until Unity and ROS use the same suction-tool model."); return false; }
+        if (_pickPointInstance == null || _placePointInstance == null)
+        { RejectPlanningRequest("Capture both pick and place tool contact points before MTC planning."); return false; }
+        return true;
+    }
+    private void RejectPlanningRequest(string reason)
+    {
+        CancelCapabilityRequest(); _hasPlanningRequestBeenSent = false;
+        if (PlansManager != null) PlansManager.RejectPlanningRequest(reason); else Debug.LogWarning(reason, this);
     }
 
     public void SendFakePickAndPlacePlanningRequest()
     {
-        Debug.Log("SendFakePickAndPlacePlanningRequest called");
-
-        // Convert to robot-local poses
-        // These hardcoded coordinates are directly in ROS (FLU) coordinates
-
-        // mir_base_link coordinates:
-        /*
-        Vector3 pickPostion = new Vector3(1.0f, 0.0f, 0.4f);
-        Quaternion pickRotation = new Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
-        Vector3 placePostion = new Vector3(0.5f, 0.4f, 0.4f);
-        Quaternion placeRotation = new Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
-        */
-
-        // ur_base_link coordinates:
-        Vector3 pickPostionFLU = new Vector3(0.0f, 0.754485f, 0.098f);
-        Quaternion pickRotationFLU = new Quaternion(0.707107f, 0.707107f, 0.0f, 0.0f);
-        Vector3 placePostionFLU = new Vector3(-0.4f, 0.254485f, 0.098f);
-        Quaternion placeRotatioFLU = new Quaternion(0.707107f, 0.707107f, 0.0f, 0.0f);
-
-        // To place these in Unity, we need them in RUF
-        // For that we need PointMsg and QuaternionMsg
-        PointMsg PickPointMsgFLU = new PointMsg(pickPostionFLU.x, pickPostionFLU.y, pickPostionFLU.z);
-        QuaternionMsg PickQuaternionMsgFLU = new QuaternionMsg(pickRotationFLU.x, pickRotationFLU.y, pickRotationFLU.z, pickRotationFLU.w);
-        PointMsg PlacePointMsgFLU = new PointMsg(placePostionFLU.x, placePostionFLU.y, placePostionFLU.z);
-        QuaternionMsg PlaceQuaternionMsgFLU = new QuaternionMsg(placeRotatioFLU.x, placeRotatioFLU.y, placeRotatioFLU.z, placeRotatioFLU.w);
-
-        // Then convert in RUF
-        Vector3 PickPositionRUF = PickPointMsgFLU.From<FLU>();
-        Quaternion PickRotationRUF = PickQuaternionMsgFLU.From<FLU>();
-        Vector3 PlacePositionRUF = PlacePointMsgFLU.From<FLU>();
-        Quaternion PlaceRotationRUF = PlaceQuaternionMsgFLU.From<FLU>();
-
-        // Make local Poses out of that
-        Pose pickPoseLocal = new Pose(PickPositionRUF, PickRotationRUF);
-        Pose placePoseLocal = new Pose(PlacePositionRUF, PlaceRotationRUF);
-
-        // And then convert to world poses
-        Pose worldPickPosition = RobotCoordinateService.Instance.ConvertRootLocalPoseToWorldPose(pickPoseLocal);
-        Pose worldPlacePosition = RobotCoordinateService.Instance.ConvertRootLocalPoseToWorldPose(placePoseLocal);
-        SetPickPlace(worldPickPosition.position, worldPickPosition.rotation);
-        SetPlacePlace(worldPlacePosition.position, worldPlacePosition.rotation);
-
-        // Generate ROS messages
-        string header = "ur_base_link";
-        PoseStampedMsg pickPose = GenerateFakePoseStamped(new Pose(pickPostionFLU, pickRotationFLU), header);
-        PoseStampedMsg placePose = GenerateFakePoseStamped(new Pose(placePostionFLU, placeRotatioFLU), header);
-
-        PickPlacePosesMsg msg = new PickPlacePosesMsg(pickPose, placePose);
-
-        // Debug log before sending
-        Debug.Log($"PickPlaceController: Sending PickPlacePosesMsg:\n" +
-            $"Pick Pose - Header: frame_id={pickPose.header.frame_id}, stamp={pickPose.header.stamp}, " +
-            $"Position: ({pickPose.pose.position.x:F4}, {pickPose.pose.position.y:F4}, {pickPose.pose.position.z:F4}), " +
-            $"Orientation: ({pickPose.pose.orientation.x:F4}, {pickPose.pose.orientation.y:F4}, {pickPose.pose.orientation.z:F4}, {pickPose.pose.orientation.w:F4})\n" +
-            $"Place Pose - Header: frame_id={placePose.header.frame_id}, stamp={placePose.header.stamp}, " +
-            $"Position: ({placePose.pose.position.x:F4}, {placePose.pose.position.y:F4}, {placePose.pose.position.z:F4}), " +
-            $"Orientation: ({placePose.pose.orientation.x:F4}, {placePose.pose.orientation.y:F4}, {placePose.pose.orientation.z:F4}, {placePose.pose.orientation.w:F4})");
-
-        // Send via ROSService
-        ROSService.Instance.Publish(_pickPlaceTopicName, msg);
-        _hasPlanningRequestBeenSent = true;
+        if (!_tilePlanningEnabled || TargetRotationHandles.IsInteracting || !ToolSelectionController.CanPlanPickPlace ||
+            !RobotCoordinateService.Instance.IsInitialized)
+        { RejectPlanningRequest("Fake MTC planning requires pick/place mode, a matching suction tool and valid robot alignment."); return; }
+        QuaternionMsg orientation = new QuaternionMsg(0.707107, 0.707107, 0, 0);
+        Pose pick = new Pose(new PointMsg(0, 0.754485, 0.098).From<FLU>(), orientation.From<FLU>());
+        Pose place = new Pose(new PointMsg(-0.4, 0.254485, 0.098).From<FLU>(), orientation.From<FLU>());
+        pick = RobotCoordinateService.Instance.ConvertRootLocalPoseToWorldPose(pick);
+        place = RobotCoordinateService.Instance.ConvertRootLocalPoseToWorldPose(place);
+        SetPickPlace(pick.position, pick.rotation); SetPlacePlace(place.position, place.rotation);
+        SendPickAndPlacePlanningRequest();
     }
+    private static PoseStampedMsg GeneratePoseStamped(Pose localPose, string frame) =>
+        new PoseStampedMsg(new HeaderMsg { frame_id = frame }, new PoseMsg(localPose.position.To<FLU>(), localPose.rotation.To<FLU>()));
 
-    /// <summary>
-    /// Fake (for debug) Pose Stamped generation.
-    /// This is meant to be used with ROS-type (FLU) coordinates."
-    /// </summary>
-    /// <param name="localPose">The local to "ur_base_link", ROS-type (FLU) coordinates.</param>
-    /// <param name="header">The ROS link name, defining the coordinate system in which the local pose is defined.</param>
-    /// <returns></returns>
-    private PoseStampedMsg GenerateFakePoseStamped(Pose localPose, string header)
-    {
-        // No need to convert between Unity and ROS conventions, since fake pose is already in ROS coordinates, local to (ur_)base_link
-        PointMsg rosPos = new PointMsg(localPose.position.x, localPose.position.y, localPose.position.z);
-        QuaternionMsg rosRot = new QuaternionMsg(localPose.rotation.x, localPose.rotation.y, localPose.rotation.z, localPose.rotation.w);
-
-        HeaderMsg headerMsg = new HeaderMsg();
-        headerMsg.frame_id = header;
-
-        // Set the timestamp to current ROS time (Unix epoch)
-        DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        TimeSpan timeSinceEpoch = DateTime.UtcNow - epochStart;
-        double totalSeconds = timeSinceEpoch.TotalSeconds;
-        // TimeMsg.sec is int in ROS2 mode and uint in ROS1 mode
-#if ROS2
-        int sec = (int)totalSeconds;
-#else
-        uint sec = (uint)totalSeconds;
-#endif
-        uint nanosec = (uint)((totalSeconds - sec) * 1e9);
-        headerMsg.stamp = new TimeMsg(sec, nanosec);
-
-        PoseMsg pose = new PoseMsg(rosPos, rosRot);
-        PoseStampedMsg poseStamped = new PoseStampedMsg(headerMsg, pose);
-
-        return poseStamped;
-    }
-
-    /// <summary>
-    /// Generate a PoseStampedMsg from a local pose.
-    /// </summary>
-    private PoseStampedMsg GeneratePoseStamped(Pose localPose, string header)
-    {
-        // Convert Unity coordinates to ROS FLU coordinates
-        Vector3 pos = localPose.position;
-        Quaternion rot = localPose.rotation;
-
-        PointMsg rosPos = pos.To<FLU>();
-        QuaternionMsg rosRot = rot.To<FLU>();
-
-        HeaderMsg headerMsg = new HeaderMsg();
-        headerMsg.frame_id = header;
-        
-        // Set the timestamp to current ROS time (Unix epoch)
-        DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        TimeSpan timeSinceEpoch = DateTime.UtcNow - epochStart;
-        double totalSeconds = timeSinceEpoch.TotalSeconds;
-        // TimeMsg.sec is int in ROS2 mode and uint in ROS1 mode
-#if ROS2
-        int sec = (int)totalSeconds;
-#else
-        uint sec = (uint)totalSeconds;
-#endif
-        uint nanosec = (uint)((totalSeconds - sec) * 1e9);
-        headerMsg.stamp = new TimeMsg(sec, nanosec);
-        
-        PoseMsg pose = new PoseMsg(rosPos, rosRot);
-        PoseStampedMsg poseStamped = new PoseStampedMsg(headerMsg, pose);
-
-        return poseStamped;
-    }
-
-    /// <summary>
-    /// Executes the pick and place task by sending a Bool message to the execute_task topic.
-    /// This method can only be called after SendPickAndPlacePlanningRequest has been called.
-    /// </summary>
     public void ExecutePickAndPlace()
     {
-        if (!_hasPlanningRequestBeenSent)
+        if (TargetPoseContextMenu.IsOpen)
+        { RejectPlanningRequest("Close the target menu before executing MTC pick/place."); return; }
+        if (_checkingCapability || TargetRotationHandles.IsInteracting || !ToolSelectionController.CanPlanPickPlace ||
+            !_tilePlanningEnabled || !RobotCoordinateService.Instance.IsInitialized || !_hasPlanningRequestBeenSent ||
+            !TargetsMatchRequest() || PlansManager == null || !PlansManager.CanExecute)
+        { RejectPlanningRequest("MTC Execute requires a new successful pick/place plan and its visible trajectory preview."); return; }
+        try
         {
-            Debug.LogWarning("PickPlaceController: Cannot execute task. SendPickAndPlacePlanningRequest must be called first.");
-            return;
+            if (_connection == null) _connection = ROSService.Instance.GetROSConnection();
+            if (_connection == null || !_connection.HasConnectionThread || _connection.HasConnectionError)
+            { RejectPlanningRequest("ROS is disconnected. Reconnect and plan MTC pick/place again."); return; }
+            if (!PlansManager.ConsumePlanForExecution()) return;
+            _hasPlanningRequestBeenSent = false;
+            _connection.Publish("execute_task", new BoolMsg(true));
         }
-
-        BoolMsg executeMsg = new BoolMsg(true);
-        ROSService.Instance.Publish("execute_task", executeMsg);
-        Debug.Log("PickPlaceController: Sent execute_task message with value: true");
+        catch (Exception)
+        { RejectPlanningRequest("MTC execution request could not be sent. Check ROS and plan again before retrying."); }
     }
-
+    private void OnDisable() { CancelCapabilityRequest(); _hasPlanningRequestBeenSent = false; SetTrackingLost(); }
+    private void OnDestroy()
+    {
+        if (_coordinates != null) _coordinates.CalibrationChanged -= InvalidatePlanningRequest;
+        if (_pickVisual != null) _pickVisual.VisualChanged -= ConfigurePickHandle;
+        if (_placeVisual != null) _placeVisual.VisualChanged -= ConfigurePlaceHandle;
+        Unbind(_pickRotationHandles); Unbind(_placeRotationHandles);
+        Dispose(_livePointInstance); Dispose(_pickPointInstance); Dispose(_placePointInstance);
+        Dispose(_pickHandleMaterial); Dispose(_placeHandleMaterial);
+    }
+    private void Unbind(TargetRotationHandles handles)
+    {
+        if (handles == null) return;
+        handles.RotationStarted -= OnTargetRotationChanged; handles.RotationChanged -= OnTargetRotationChanged;
+    }
+    private static void Dispose(UnityEngine.Object value)
+    { if (value != null) { if (Application.isPlaying) Destroy(value); else DestroyImmediate(value); } }
 }
-

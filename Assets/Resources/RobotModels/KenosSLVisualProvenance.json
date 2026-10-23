@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "sourceFile": "KSL.240.120.N241.CVL.S1.1STH.X.stp",
+  "sourceSha256": "cfb722d77f26901b8299399c5c8beb66e5cf946b61a0637f6d34615044553731",
+  "sourceUnits": "millimetres",
+  "sourceCopyright": "Piab AB 2026; owner-supplied CAD",
+  "converter": "Tools/RobotFrames/convert_kenos_sl_step.py",
+  "cadKernel": "cadquery-ocp 8.0.1.1",
+  "dependencies": {
+    "cadquery-ocp": "8.0.1.1.0",
+    "cadquery-ocp-proxy": "8.0.1.1.0",
+    "vtk": "9.6.2"
+  },
+  "linearDeflectionMm": 0.3,
+  "angularDeflectionRadians": 0.3,
+  "sourceBrepValid": true,
+  "sourceFaceCount": 794,
+  "omittedZeroAreaTriangles": 9,
+  "sourceBoundsMm": {
+    "min": [
+      -65.00000010000011,
+      -125.00000010000011,
+      -58.0
+    ],
+    "max": [
+      65.00000010000012,
+      125.00000010000008,
+      33.72944632495975
+    ]
+  },
+  "sourceMountCentreMm": [
+    0,
+    -34,
+    31.75
+  ],
+  "sourceFoamContactCentreMm": [
+    0,
+    0,
+    -58
+  ],
+  "targetLink": "kenos_sl_base",
+  "coordinateConvention": "Unity RUF metres: (-STEP X, 31.75-STEP Z, STEP Y+34)/1000; triangle winding reversed",
+  "mountCentreUnityMetres": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "foamContactCentreUnityMetres": [
+    0.0,
+    0.08975,
+    0.034
+  ],
+  "vertexCount": 24569,
+  "indexCount": 78342,
+  "triangleCount": 26114,
+  "signedVolumeCubicMetres": 0.0017214898081939947,
+  "boundsUnityMetres": {
+    "min": [
+      -0.06499999761581421,
+      -0.0019729305058717728,
+      -0.09099999815225601
+    ],
+    "max": [
+      0.06499999761581421,
+      0.08974999934434891,
+      0.1589999943971634
+    ]
+  },
+  "binaryFormat": "KSL1 + little-endian int32 vertexCount,indexCount + float32 XYZ[vertexCount] + int32[indexCount]",
+  "binarySha256": "aa8514e96c2639128bbd581b2a08f7c04625656506cd280748043f0f71360e32",
+  "objPath": "Assets/Models/KenosSL/KenosSLVisual.obj",
+  "objSha256": "8a5fe0f9c315960b3a4638b811e1ab91f3a486a34b0c9928ccdebbfb33764f98",
+  "solids": [
+    {
+      "index": 0,
+      "name": "holder",
+      "boundsUnityMetres": {
+        "min": [
+          -0.06499999761581421,
+          0.028999999165534973,
+          -0.09099999815225601
+        ],
+        "max": [
+          0.06499999761581421,
+          0.06825000047683716,
+          0.1589999943971634
+        ]
+      },
+      "firstVertex": 0,
+      "vertexCount": 11598,
+      "firstIndex": 0,
+      "indexCount": 35958
+    },
+    {
+      "index": 1,
+      "name": "manifold",
+      "boundsUnityMetres": {
+        "min": [
+          -0.02381250075995922,
+          0.0,
+          -0.03968749940395355
+        ],
+        "max": [
+          0.02381250075995922,
+          0.03175000101327896,
+          0.03968749940395355
+        ]
+      },
+      "firstVertex": 11598,
+      "vertexCount": 4136,
+      "firstIndex": 35958,
+      "indexCount": 13170
+    },
+    {
+      "index": 2,
+      "name": "plug_1",
+      "boundsUnityMetres": {
+        "min": [
+          -0.02381250075995922,
+          0.009176407940685749,
+          -0.01624237559735775
+        ],
+        "max": [
+          -0.013812500052154064,
+          0.022573592141270638,
+          -0.0028076251037418842
+        ]
+      },
+      "firstVertex": 15734,
+      "vertexCount": 954,
+      "firstIndex": 49128,
+      "indexCount": 2958
+    },
+    {
+      "index": 3,
+      "name": "plug_2",
+      "boundsUnityMetres": {
+        "min": [
+          0.013812500052154064,
+          0.009176407940685749,
+          -0.01624237559735775
+        ],
+        "max": [
+          0.02381250075995922,
+          0.022573592141270638,
+          -0.0028076251037418842
+        ]
+      },
+      "firstVertex": 16688,
+      "vertexCount": 954,
+      "firstIndex": 52086,
+      "indexCount": 2958
+    },
+    {
+      "index": 4,
+      "name": "plug_3",
+      "boundsUnityMetres": {
+        "min": [
+          0.013812500052154064,
+          0.009176407940685749,
+          0.0028076251037418842
+        ],
+        "max": [
+          0.02381250075995922,
+          0.022573592141270638,
+          0.01624237559735775
+        ]
+      },
+      "firstVertex": 17642,
+      "vertexCount": 954,
+      "firstIndex": 55044,
+      "indexCount": 2958
+    },
+    {
+      "index": 5,
+      "name": "plug_4",
+      "boundsUnityMetres": {
+        "min": [
+          -0.02381250075995922,
+          0.009176407940685749,
+          0.0028076251037418842
+        ],
+        "max": [
+          -0.013812500052154064,
+          0.022573592141270638,
+          0.01624237559735775
+        ]
+      },
+      "firstVertex": 18596,
+      "vertexCount": 954,
+      "firstIndex": 58002,
+      "indexCount": 2958
+    },
+    {
+      "index": 6,
+      "name": "foam",
+      "boundsUnityMetres": {
+        "min": [
+          -0.05999999865889549,
+          0.06575000286102295,
+          -0.0860000029206276
+        ],
+        "max": [
+          0.05999999865889549,
+          0.08974999934434891,
+          0.15399999916553497
+        ]
+      },
+      "firstVertex": 19550,
+      "vertexCount": 256,
+      "firstIndex": 60960,
+      "indexCount": 636
+    },
+    {
+      "index": 7,
+      "name": "ejector",
+      "boundsUnityMetres": {
+        "min": [
+          -0.013062288984656334,
+          0.002776084467768669,
+          0.02618454582989216
+        ],
+        "max": [
+          0.013062288984656334,
+          0.028973916545510292,
+          0.13788749277591705
+        ]
+      },
+      "firstVertex": 19806,
+      "vertexCount": 2051,
+      "firstIndex": 61596,
+      "indexCount": 7608
+    },
+    {
+      "index": 8,
+      "name": "air_connection",
+      "boundsUnityMetres": {
+        "min": [
+          -0.007604438345879316,
+          -0.0019729305058717728,
+          -0.059485841542482376
+        ],
+        "max": [
+          0.017847931012511253,
+          0.02383047714829445,
+          -0.030687499791383743
+        ]
+      },
+      "firstVertex": 21857,
+      "vertexCount": 2712,
+      "firstIndex": 69204,
+      "indexCount": 9138
+    }
+  ],
+  "notes": [
+    "Detailed visuals only; ROS joint, TCP, mount and collision geometry remain authoritative.",
+    "DXX blank has no solid geometry in the source STEP.",
+    "The OnRobot mounting changer is not included in the supplied CAD.",
+    "STEP reader reports one unresolved reference; all 9 valid assembly solids and 794 faces transfer and tessellate."
+  ]
+}
