@@ -5,6 +5,10 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.UI;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Filtering;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 /// <summary>Shared XR controls for tool matching, TCP planning and marker alignment.</summary>
 public sealed class ToolSelectionMenu : MonoBehaviour
@@ -14,23 +18,16 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     [SerializeField] private TcpPlanningController _tcpPlanning;
     [SerializeField] private QRDetector _qrDetector;
     [SerializeField] private URInstantiator _instantiator;
+    [SerializeField] private UR16eTrajectoryVisualizer _trajectoryVisualizer;
     [SerializeField, Tooltip("Existing transparent app logo used in the task and alignment headers.")]
     private Texture2D _appLogo;
     [SerializeField, Tooltip("Optional canvas dedicated to this menu. A world-space canvas is created when empty.")]
     private Canvas _canvas;
 
-    [Header("Loose viewer follow")]
-    [SerializeField] private bool _followUser = true;
-    [SerializeField, Min(0.6f)] private float _followDistance = 1f;
-    [SerializeField, Range(-40f, 40f)] private float _followSideAngle = 20f;
-    [SerializeField] private float _followHeightOffset = -0.15f;
-    [SerializeField, Range(20f, 90f)] private float _followAngularDeadZone = 50f;
-    [SerializeField, Min(0.1f), Tooltip("Seconds for the remaining follow distance to halve.")]
-    private float _followHalfLife = 1.1f;
-    [SerializeField, Min(0.05f)] private float _followMaxSpeed = 0.6f;
-    [SerializeField, Min(0f)] private float _followDelay = 0.65f;
-    [SerializeField, Min(0f)] private float _followInteractionHold = 0.8f;
-    [SerializeField, Min(1f)] private float _followTurnSpeed = 35f;
+    [Header("Initial and recentered placement")]
+    [SerializeField, Min(0.6f)] private float _initialDistance = 1f;
+    [SerializeField, Range(-40f, 40f)] private float _initialSideAngle = 20f;
+    [SerializeField] private float _initialHeightOffset = -0.15f;
 
     private sealed class Choice
     {
@@ -43,7 +40,15 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     }
 
     private static readonly HashSet<ToolSelectionMenu> HoveredMenus = new HashSet<ToolSelectionMenu>();
+    private static readonly HashSet<ToolSelectionMenu> ActiveMenus = new HashSet<ToolSelectionMenu>();
     public static bool IsHovered => HoveredMenus.Count != 0;
+
+    /// <summary>Release menu grabs when the controller loses tracking or the app is suspended.</summary>
+    public static void CancelAllInteractions()
+    {
+        foreach (ToolSelectionMenu menu in new List<ToolSelectionMenu>(ActiveMenus))
+            if (menu != null) menu.ClearPointerState();
+    }
 
     private readonly List<Choice> _choices = new List<Choice>();
     private readonly HashSet<int> _hoveringPointers = new HashSet<int>();
@@ -67,6 +72,19 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private Button _rescanButton;
     private Button _recenterButton;
     private Button _alignButton;
+    private Button _playbackPlayPauseButton;
+    private TextMeshProUGUI _playbackPlayPauseLabel;
+    private Button _playbackReplayButton;
+    private Slider _playbackTimeline;
+    private TextMeshProUGUI _playbackTime;
+    private readonly List<Button> _playbackSpeedButtons = new List<Button>();
+    private readonly List<UnityAction> _playbackSpeedActions = new List<UnityAction>();
+    private readonly float[] _playbackSpeeds = { 0.25f, 0.5f, 1f, 2f };
+    private readonly HashSet<int> _playbackTimelinePointers = new HashSet<int>();
+    private Slider _pathThicknessSlider;
+    private TextMeshProUGUI _pathThicknessValue;
+    private const float MinimumPathThickness = 0.005f;
+    private const float MaximumPathThickness = 0.05f;
     private TextMeshProUGUI _alignmentStatus;
     private readonly List<Button> _translationStepButtons = new List<Button>();
     private readonly List<Button> _rotationStepButtons = new List<Button>();
@@ -82,10 +100,16 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private Vector3 _alignmentForwardInTracking;
     private bool _ownsCanvas;
     private bool _hasPositioned;
-    private bool _followActive;
-    private float _outsideComfortTime;
-    private float _interactionHoldRemaining;
-    private Vector3 _lastFollowForward = Vector3.forward;
+    private Vector3 _lastPlacementForward = Vector3.forward;
+    private XRSimpleInteractable _grabHandle;
+    private Image _grabImage;
+    private XRSelectFilterDelegate _grabFilter;
+    private readonly HashSet<IXRHoverInteractor> _grabHovering = new HashSet<IXRHoverInteractor>();
+    private IXRSelectInteractor _grabInteractor;
+    private bool _draggingMenu;
+    private Vector3 _grabPointLocal;
+    private float _grabDistance;
+    private readonly Color _grabColor = new Color(0.08f, 0.34f, 0.43f, 1f);
     private bool? _lastTcpMode;
     private bool? _lastQrValidated;
     private bool? _lastTargetRotation;
@@ -102,92 +126,124 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         if (!_hasPositioned) RecenterMenu();
     }
 
-    private void LateUpdate() => UpdateFollow(Time.unscaledDeltaTime);
-
-    private void UpdateFollow(float deltaTime)
+    private void LateUpdate()
     {
-        if (!_followUser || !IsVisible || _canvas == null || deltaTime <= 0f ||
-            float.IsNaN(deltaTime) || float.IsInfinity(deltaTime)) return;
-        if (_hoveringPointers.Count != 0 || _pressedPointers.Count != 0 || IsCalibrating ||
-            RobotCoordinateService.IsCalibrationEditActive || TargetRotationHandles.IsHovered || TargetRotationHandles.IsInteracting)
-        {
-            ResetFollowMotion();
-            _interactionHoldRemaining = _followInteractionHold;
-            return;
-        }
+        if (!IsVisible || _canvas == null) return;
         Camera viewer = Camera.main;
-        if (viewer == null || !RobotFrameMath.IsValidPose(new Pose(viewer.transform.position, viewer.transform.rotation)))
-        { ResetFollowMotion(); return; }
-        _canvas.worldCamera = viewer;
-        if (!_hasPositioned) { RecenterMenu(); return; }
-        if (_interactionHoldRemaining > 0f)
+        if (viewer != null && RobotFrameMath.IsValidPose(new Pose(viewer.transform.position, viewer.transform.rotation)))
         {
-            _interactionHoldRemaining = Mathf.Max(0f, _interactionHoldRemaining - deltaTime);
+            _canvas.worldCamera = viewer;
+            if (!_hasPositioned) RecenterMenu();
+            FaceCamera(viewer.transform);
+        }
+        if (!_draggingMenu || _grabInteractor == null) return;
+        if (!InteractorIsTracked(_grabInteractor) || !TryInteractorPose(_grabInteractor, out Pose pointer))
+        {
+            CancelMenuGrab();
             return;
         }
-
-        Transform camera = viewer.transform;
-        Vector3 goal = ComfortPosition(camera);
-        Vector3 fromViewer = _canvas.transform.position - camera.position;
-        Vector3 horizontal = Vector3.ProjectOnPlane(fromViewer, Vector3.up);
-        float angle = horizontal.sqrMagnitude > 0.000001f
-            ? Vector3.Angle(_lastFollowForward, horizontal) : 0f;
-        float distance = fromViewer.magnitude;
-        float desiredDistance = Mathf.Max(0.6f, _followDistance);
-        float heightError = Mathf.Abs(_canvas.transform.position.y - goal.y);
-        bool outside = distance < desiredDistance * 0.65f || distance > desiredDistance * 1.45f ||
-            angle > _followAngularDeadZone || heightError > 0.45f;
-        bool comfortable = distance >= desiredDistance * 0.85f && distance <= desiredDistance * 1.2f &&
-            angle <= _followAngularDeadZone * 0.65f && heightError <= 0.25f;
-        if (_followActive && comfortable) ResetFollowMotion();
-        if (!_followActive)
-        {
-            _outsideComfortTime = outside ? _outsideComfortTime + deltaTime : 0f;
-            if (outside && _outsideComfortTime >= _followDelay) _followActive = true;
-        }
-        if (_followActive)
-        {
-            // Resuming after a long frame must not jump across the user's view.
-            float motionTime = Mathf.Min(deltaTime, 0.1f);
-            float blend = 1f - Mathf.Pow(0.5f, motionTime / Mathf.Max(0.1f, _followHalfLife));
-            // Follow around the viewer: a large head turn must not send a straight
-            // path through their face on the way to the opposite peripheral side.
-            Vector3 goalOffset = goal - camera.position;
-            Vector3 goalHorizontal = Vector3.ProjectOnPlane(goalOffset, Vector3.up);
-            float radius = horizontal.magnitude;
-            Vector3 direction = radius > 0.0001f ? horizontal / radius : goalHorizontal.normalized;
-            float turn = Vector3.SignedAngle(direction, goalHorizontal, Vector3.up) * blend;
-            direction = Quaternion.AngleAxis(turn, Vector3.up) * direction;
-            Vector3 nextOffset = direction * Mathf.Lerp(radius, goalHorizontal.magnitude, blend) +
-                Vector3.up * Mathf.Lerp(fromViewer.y, goalOffset.y, blend);
-            Vector3 step = camera.position + nextOffset - _canvas.transform.position;
-            _canvas.transform.position += Vector3.ClampMagnitude(step, Mathf.Max(0.05f, _followMaxSpeed) * motionTime);
-        }
-        if (TryFacingRotation(camera, out Quaternion facing))
-        {
-            float angleError = Quaternion.Angle(_canvas.transform.rotation, facing);
-            if (angleError > 4f)
-            {
-                float motionTime = Mathf.Min(deltaTime, 0.1f);
-                float blend = 1f - Mathf.Pow(0.5f, motionTime / 0.3f);
-                _canvas.transform.rotation = Quaternion.RotateTowards(_canvas.transform.rotation, facing,
-                    Mathf.Min(angleError * blend, Mathf.Max(1f, _followTurnSpeed) * motionTime));
-            }
-        }
+        MoveMenuDrag(pointer);
     }
 
-    private Vector3 ComfortPosition(Transform camera)
+    private Vector3 InitialPosition(Transform camera)
     {
         Vector3 horizontal = Vector3.ProjectOnPlane(camera.forward, Vector3.up);
-        if (horizontal.sqrMagnitude > 0.000001f) _lastFollowForward = horizontal.normalized;
-        Vector3 direction = Quaternion.AngleAxis(_followSideAngle, Vector3.up) * _lastFollowForward;
-        return camera.position + direction * Mathf.Max(0.6f, _followDistance) + Vector3.up * _followHeightOffset;
+        if (horizontal.sqrMagnitude > 0.000001f) _lastPlacementForward = horizontal.normalized;
+        Vector3 direction = Quaternion.AngleAxis(_initialSideAngle, Vector3.up) * _lastPlacementForward;
+        return camera.position + direction * Mathf.Max(0.6f, _initialDistance) + Vector3.up * _initialHeightOffset;
     }
 
-    private void ResetFollowMotion()
+    private bool BeginMenuDrag(Pose pointer, Vector3 grabbedWorldPoint)
     {
-        _followActive = false;
-        _outsideComfortTime = 0f;
+        if (!IsVisible || _canvas == null || _draggingMenu || !RobotFrameMath.IsValidPose(pointer) ||
+            !RobotFrameMath.IsValidPose(new Pose(grabbedWorldPoint, Quaternion.identity))) return false;
+        _grabDistance = Vector3.Dot(grabbedWorldPoint - pointer.position, pointer.rotation * Vector3.forward);
+        if (_grabDistance < 0.05f || float.IsInfinity(_grabDistance)) return false;
+        _grabPointLocal = _canvas.transform.InverseTransformPoint(grabbedWorldPoint);
+        _draggingMenu = true;
+        _hasPositioned = true;
+        RefreshHoverState();
+        return true;
+    }
+
+    private void MoveMenuDrag(Pose pointer)
+    {
+        if (!_draggingMenu || !RobotFrameMath.IsValidPose(pointer)) return;
+        Vector3 grabbedWorldPoint = pointer.position + pointer.rotation * Vector3.forward * _grabDistance;
+        // Keep the selected point under the ray while the panel keeps facing the viewer.
+        // Updating the offset as we turn prevents a corner grab from snapping to the centre.
+        Camera viewer = Camera.main;
+        for (int pass = 0; pass < 4; pass++)
+        {
+            _canvas.transform.position = grabbedWorldPoint - _canvas.transform.TransformVector(_grabPointLocal);
+            if (viewer != null) FaceCamera(viewer.transform);
+        }
+    }
+
+    private void EndMenuDrag()
+    {
+        _draggingMenu = false;
+        _grabInteractor = null;
+        RefreshHoverState();
+    }
+
+    private void CancelMenuGrab()
+    {
+        EndMenuDrag();
+        if (_grabHandle != null && _grabHandle.interactionManager != null)
+            _grabHandle.interactionManager.CancelInteractableSelection((IXRSelectInteractable)_grabHandle);
+    }
+
+    private static bool InteractorIsTracked(IXRSelectInteractor interactor)
+    {
+        return !(interactor is Behaviour behaviour) || (behaviour != null && behaviour.isActiveAndEnabled);
+    }
+
+    private bool TryInteractorPose(IXRSelectInteractor interactor, out Pose pointer)
+    {
+        Transform origin;
+        if (interactor is XRRayInteractor ray)
+            origin = ray.rayOriginTransform != null ? ray.rayOriginTransform : ray.transform;
+        else origin = interactor.GetAttachTransform(_grabHandle);
+        pointer = origin != null ? new Pose(origin.position, origin.rotation) : default;
+        return origin != null && RobotFrameMath.IsValidPose(pointer);
+    }
+
+    private void GrabEntered(SelectEnterEventArgs args)
+    {
+        if (_grabInteractor != null || !TryInteractorPose(args.interactorObject, out Pose pointer)) return;
+        Vector3 point = _grabHandle.GetComponent<BoxCollider>().bounds.center;
+        if (args.interactorObject is XRRayInteractor ray && ray.TryGetCurrent3DRaycastHit(out RaycastHit hit)) point = hit.point;
+        if (!BeginMenuDrag(pointer, point)) return;
+        _grabInteractor = args.interactorObject;
+    }
+
+    private void GrabExited(SelectExitEventArgs args)
+    {
+        if (args.interactorObject == _grabInteractor) EndMenuDrag();
+    }
+
+    private void GrabHoverEntered(HoverEnterEventArgs args)
+    {
+        if (!isActiveAndEnabled) return;
+        _grabHovering.Add(args.interactorObject);
+        RefreshHoverState();
+    }
+
+    private void GrabHoverExited(HoverExitEventArgs args)
+    {
+        _grabHovering.Remove(args.interactorObject);
+        RefreshHoverState();
+    }
+
+    private void RefreshHoverState()
+    {
+        bool engaged = isActiveAndEnabled && (_hoveringPointers.Count != 0 || _pressedPointers.Count != 0 ||
+            _grabHovering.Count != 0 || _draggingMenu);
+        if (engaged) HoveredMenus.Add(this);
+        else HoveredMenus.Remove(this);
+        if (_grabImage != null)
+            _grabImage.color = Color.Lerp(_grabColor, Color.white, _draggingMenu ? 0.5f : _grabHovering.Count != 0 ? 0.25f : 0f);
     }
 
     private void Update()
@@ -197,6 +253,82 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         bool tcp = _input == null || _input.IsTcpMode;
         bool qr = _qrDetector != null && _qrDetector.HasValidatedPose;
         if (_lastTcpMode != tcp || _lastQrValidated != qr || _lastTargetRotation != TargetRotationHandles.IsInteracting) RefreshTask();
+        RefreshPlayback();
+        RefreshPathThickness();
+    }
+
+    private void RefreshPlayback()
+    {
+        if (_playbackTimeline == null) return;
+        if (_trajectoryVisualizer == null) _trajectoryVisualizer = FindFirstObjectByType<UR16eTrajectoryVisualizer>();
+        bool available = _trajectoryVisualizer != null && _trajectoryVisualizer.HasPlayback && !IsCalibrating;
+        _playbackPlayPauseButton.interactable = available;
+        _playbackReplayButton.interactable = available;
+        _playbackTimeline.interactable = available;
+        _playbackPlayPauseLabel.text = available && _trajectoryVisualizer.IsPlaying ? "Pause" : "Play";
+        _playbackTime.text = available
+            ? _trajectoryVisualizer.PlaybackTimeSeconds.ToString("0.0") + " / " + _trajectoryVisualizer.DurationSeconds.ToString("0.0") + " s"
+            : "Plan to enable";
+        if (!available) _playbackTimelinePointers.Clear();
+        if (_playbackTimelinePointers.Count == 0)
+            _playbackTimeline.SetValueWithoutNotify(available ? _trajectoryVisualizer.PlaybackNormalized : 0f);
+        for (int index = 0; index < _playbackSpeedButtons.Count; index++)
+        {
+            Button button = _playbackSpeedButtons[index];
+            button.interactable = available;
+            bool selected = _trajectoryVisualizer != null && Mathf.Approximately(_trajectoryVisualizer.PlaybackSpeed, _playbackSpeeds[index]);
+            button.image.color = selected
+                ? new Color(0.08f, 0.42f, 0.52f, 1f) : new Color(0.12f, 0.17f, 0.23f, 1f);
+        }
+    }
+
+    private void TogglePlayback()
+    {
+        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsCalibrating) return;
+        if (_trajectoryVisualizer.IsPlaying) _trajectoryVisualizer.Pause();
+        else _trajectoryVisualizer.Play();
+        RefreshPlayback();
+    }
+
+    private void ReplayPlayback()
+    {
+        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsCalibrating) return;
+        _trajectoryVisualizer.Replay();
+        RefreshPlayback();
+    }
+
+    private void SeekPlayback(float normalized)
+    {
+        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsCalibrating) return;
+        _trajectoryVisualizer.Seek(normalized);
+        RefreshPlayback();
+    }
+
+    private void SelectPlaybackSpeed(float speed)
+    {
+        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsCalibrating) return;
+        _trajectoryVisualizer.SetPlaybackSpeed(speed);
+        RefreshPlayback();
+    }
+
+    private void RefreshPathThickness()
+    {
+        if (_pathThicknessSlider == null) return;
+        if (_trajectoryVisualizer == null) _trajectoryVisualizer = FindFirstObjectByType<UR16eTrajectoryVisualizer>();
+        LineRenderer path = _trajectoryVisualizer != null ? _trajectoryVisualizer.trajectoryLineRenderer : null;
+        _pathThicknessSlider.interactable = path != null;
+        if (path == null) return;
+        float width = Mathf.Clamp(path.widthMultiplier, MinimumPathThickness, MaximumPathThickness);
+        _pathThicknessSlider.SetValueWithoutNotify(width);
+        _pathThicknessValue.text = Mathf.RoundToInt(width * 1000f) + " mm";
+    }
+
+    private void SetPathThickness(float width)
+    {
+        if (_trajectoryVisualizer == null || _trajectoryVisualizer.trajectoryLineRenderer == null ||
+            float.IsNaN(width) || float.IsInfinity(width)) return;
+        _trajectoryVisualizer.trajectoryLineRenderer.widthMultiplier = Mathf.Clamp(width, MinimumPathThickness, MaximumPathThickness);
+        RefreshPathThickness();
     }
 
     public void SelectTool(string tool)
@@ -426,13 +558,14 @@ public sealed class ToolSelectionMenu : MonoBehaviour
 
     private void OnLegacyPlanResult(bool success)
     {
-        _localNotice = null;
+        _localNotice = _legacyPlans != null && _legacyPlans.HasExecutionFeedback ? _legacyPlans.StatusText : null;
         RefreshTask();
     }
 
     private void RefreshTask()
     {
         bool tcp = _input == null || _input.IsTcpMode;
+        MTCPlansManager execution = MTCPlansManager.ActiveExecution;
         _lastTcpMode = tcp;
         _lastQrValidated = _qrDetector != null && _qrDetector.HasValidatedPose;
         _lastTargetRotation = TargetRotationHandles.IsInteracting;
@@ -441,13 +574,13 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         RefreshTaskChoice(_pickPlaceTaskButton, !tcp, canSelectMode);
         if (_taskHelp != null) _taskHelp.text = tcp
             ? "Hold bumper: TCP A. Double press: TCP B.\nPlace the tool preview; drag it to set exact orientation."
-            : "Hold/double bumper: pick/place tool contacts.\nBumper over a tool: depth ±5 mm. MTC chooses twist.";
+            : "Hold/double bumper: pick/place contact balls.\nArrow = normal. Drag ball to turn; bumper: depth ±5 mm.";
         if (_taskStatus != null)
-            _taskStatus.text = _localNotice ?? (tcp
+            _taskStatus.text = execution != null ? execution.StatusText : _localNotice ?? (tcp
                 ? (_tcpPlanning != null ? _tcpPlanning.StatusText : "Capture TCP A and B to prepare a preview.")
                 : (_legacyPlans != null ? _legacyPlans.StatusText : "Capture pick and place tool contacts, then Plan preview."));
-        if (_planButton != null) _planButton.interactable = !IsCalibrating;
-        if (_executeButton != null) _executeButton.interactable = !IsCalibrating && (tcp
+        if (_planButton != null) _planButton.interactable = !IsCalibrating && execution == null;
+        if (_executeButton != null) _executeButton.interactable = !IsCalibrating && execution == null && (tcp
             ? _tcpPlanning != null && _tcpPlanning.CanExecute
             : _legacyPlans != null && _legacyPlans.CanExecute && ToolSelectionController.CanPlanPickPlace);
         if (_rescanButton != null) _rescanButton.interactable = _qrDetector != null && !IsCalibrating;
@@ -466,6 +599,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
             if (_instantiator != null && _instantiator.HasSavedCalibration) qr += "\nSaved on this headset for this QR.";
             _qrStatus.text = qr;
         }
+        RefreshPlayback();
         RefreshAlignmentControls();
     }
 
@@ -513,22 +647,22 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     {
         if (_panel == null) BuildMenu();
         if (_canvas == null || Camera.main == null) return;
+        CancelMenuGrab();
         Transform camera = Camera.main.transform;
         if (!RobotFrameMath.IsValidPose(new Pose(camera.position, camera.rotation))) return;
-        _canvas.transform.position = ComfortPosition(camera);
+        _canvas.transform.position = InitialPosition(camera);
         FaceCamera(camera);
         _canvas.worldCamera = Camera.main;
         _hasPositioned = true;
-        ResetFollowMotion();
     }
 
-    /// <summary>Keep a following panel with its viewer when QR placement changes.</summary>
+    /// <summary>Robot placement never relocates a menu the viewer has already placed.</summary>
     public void PositionAt(Pose baseWorld)
     {
         if (IsCalibrating) return;
         if (_panel == null) BuildMenu();
         if (_canvas == null || !RobotFrameMath.IsValidPose(baseWorld)) return;
-        if (_followUser && Camera.main != null)
+        if (_hasPositioned || Camera.main != null)
         {
             if (!_hasPositioned) RecenterMenu();
             RefreshTask();
@@ -575,10 +709,10 @@ public sealed class ToolSelectionMenu : MonoBehaviour
             _ownsCanvas = true;
         }
         _canvas.renderMode = RenderMode.WorldSpace;
-        // Keep world space independent of the rig; loose following moves it only when needed.
+        // Stay where the user leaves it; head movement only changes facing.
         _canvas.transform.SetParent(null, true);
         RectTransform canvasRect = (RectTransform)_canvas.transform;
-        canvasRect.sizeDelta = new Vector2(440f, 580f);
+        canvasRect.sizeDelta = new Vector2(440f, 756f);
         canvasRect.localScale = Vector3.one * 0.001f;
         CanvasScaler scaler = _canvas.GetComponent<CanvasScaler>();
         if (scaler == null) scaler = _canvas.gameObject.AddComponent<CanvasScaler>();
@@ -586,7 +720,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         if (_canvas.GetComponent<TrackedDeviceGraphicRaycaster>() == null)
             _canvas.gameObject.AddComponent<TrackedDeviceGraphicRaycaster>();
 
-        _panel = Rect("Robot task controls", canvasRect, Vector2.zero, new Vector2(440f, 580f));
+        _panel = Rect("Robot task controls", canvasRect, Vector2.zero, new Vector2(440f, 756f));
         _panel.anchorMin = _panel.anchorMax = new Vector2(0.5f, 0.5f);
         _panel.pivot = new Vector2(0.5f, 0.5f);
         Image background = _panel.gameObject.AddComponent<Image>();
@@ -597,8 +731,8 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         panelBorder.effectDistance = new Vector2(1f, -1f);
         AddHoverTracking(_panel.gameObject);
 
-        _taskView = Rect("Task view", _panel, Vector2.zero, new Vector2(440f, 580f));
-        _alignmentView = Rect("Alignment view", _panel, Vector2.zero, new Vector2(440f, 580f));
+        _taskView = Rect("Task view", _panel, Vector2.zero, new Vector2(440f, 756f));
+        _alignmentView = Rect("Alignment view", _panel, Vector2.zero, new Vector2(440f, 756f));
         BuildHeader(_taskView, "Title", "Robot tool");
         Text("Subtitle", _taskView, new Vector2(16f, -44f), new Vector2(408f, 29f),
             "Match the mounted tool and ROS setup.", 14f).color = new Color(0.73f, 0.81f, 0.87f);
@@ -624,25 +758,174 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         _planButton.onClick.AddListener(PlanTask);
         _executeButton = CreateButton("Execute plan", _taskView, new Vector2(226f, -394f), new Vector2(198f, 42f), out _);
         _executeButton.onClick.AddListener(ExecuteTask);
-        _recenterButton = CreateButton("Recenter menu", _taskView, new Vector2(16f, -449f), new Vector2(130f, 28f), out TextMeshProUGUI recenterLabel);
+        BuildPlaybackControls();
+        BuildPathThicknessSlider();
+        _recenterButton = CreateButton("Recenter menu", _taskView, new Vector2(16f, -625f), new Vector2(130f, 28f), out TextMeshProUGUI recenterLabel);
         recenterLabel.text = "Recenter menu";
         recenterLabel.fontSize = 13f;
         _recenterButton.onClick.AddListener(RecenterMenu);
-        _rescanButton = CreateButton("Rescan QR", _taskView, new Vector2(155f, -449f), new Vector2(130f, 28f), out TextMeshProUGUI rescanLabel);
+        _rescanButton = CreateButton("Rescan QR", _taskView, new Vector2(155f, -625f), new Vector2(130f, 28f), out TextMeshProUGUI rescanLabel);
         rescanLabel.fontSize = 13f;
         _rescanButton.onClick.AddListener(RescanQr);
-        _alignButton = CreateButton("Align robot", _taskView, new Vector2(294f, -449f), new Vector2(130f, 28f), out TextMeshProUGUI alignLabel);
+        _alignButton = CreateButton("Align robot", _taskView, new Vector2(294f, -625f), new Vector2(130f, 28f), out TextMeshProUGUI alignLabel);
         alignLabel.fontSize = 13f;
         _alignButton.onClick.AddListener(BeginAlignment);
-        _qrStatus = Text("QR placement status", _taskView, new Vector2(16f, -487f), new Vector2(408f, 80f), string.Empty, 12f);
+        _qrStatus = Text("QR placement status", _taskView, new Vector2(16f, -663f), new Vector2(408f, 80f), string.Empty, 12f);
         _qrStatus.color = new Color(0.65f, 0.74f, 0.8f);
         _qrStatus.richText = false;
         _qrStatus.enableAutoSizing = true;
         _qrStatus.fontSizeMin = 10f;
         _qrStatus.fontSizeMax = 12f;
         BuildAlignmentView();
+        BuildGrabHandle(canvasRect);
         RefreshAlignmentControls();
         _panel.gameObject.SetActive(isActiveAndEnabled);
+    }
+
+    private void BuildPlaybackControls()
+    {
+        Text("Arm preview heading", _taskView, new Vector2(16f, -448f), new Vector2(236f, 24f),
+            "Arm + tool preview", 14f).color = new Color(0.73f, 0.81f, 0.87f);
+        _playbackTime = Text("Arm preview time", _taskView, new Vector2(254f, -448f), new Vector2(170f, 24f),
+            "Plan to enable", 13f);
+        _playbackTime.alignment = TextAlignmentOptions.MidlineRight;
+        _playbackPlayPauseButton = CreateButton("Play preview", _taskView, new Vector2(16f, -478f),
+            new Vector2(82f, 30f), out _playbackPlayPauseLabel);
+        _playbackPlayPauseLabel.text = "Play";
+        _playbackPlayPauseLabel.fontSize = 14f;
+        _playbackPlayPauseButton.onClick.AddListener(TogglePlayback);
+        _playbackReplayButton = CreateButton("Replay preview", _taskView, new Vector2(106f, -478f),
+            new Vector2(82f, 30f), out TextMeshProUGUI replayLabel);
+        replayLabel.text = "Replay";
+        replayLabel.fontSize = 14f;
+        _playbackReplayButton.onClick.AddListener(ReplayPlayback);
+        for (int index = 0; index < _playbackSpeeds.Length; index++)
+        {
+            float speed = _playbackSpeeds[index];
+            string caption = speed.ToString("0.##") + "×";
+            Button button = CreateButton("Preview speed " + caption, _taskView,
+                new Vector2(196f + index * 59f, -478f), new Vector2(51f, 30f), out TextMeshProUGUI speedLabel);
+            speedLabel.text = caption;
+            speedLabel.fontSize = 12f;
+            UnityAction click = () => SelectPlaybackSpeed(speed);
+            button.onClick.AddListener(click);
+            _playbackSpeedActions.Add(click);
+            _playbackSpeedButtons.Add(button);
+        }
+
+        RectTransform root = Rect("Arm preview timeline", _taskView, new Vector2(16f, -516f), new Vector2(408f, 30f));
+        root.gameObject.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
+        RectTransform track = Rect("Preview track", root, new Vector2(14f, -12f), new Vector2(380f, 6f));
+        track.gameObject.AddComponent<Image>().color = new Color(0.15f, 0.23f, 0.29f);
+        RectTransform fillArea = Rect("Preview fill area", root, new Vector2(14f, -12f), new Vector2(380f, 6f));
+        RectTransform fill = Rect("Preview fill", fillArea, Vector2.zero, Vector2.zero);
+        fill.anchorMin = Vector2.zero; fill.anchorMax = Vector2.one;
+        fill.pivot = new Vector2(0f, 0.5f);
+        fill.gameObject.AddComponent<Image>().color = new Color(0.08f, 0.56f, 0.68f);
+        RectTransform handleArea = Rect("Preview handle area", root, new Vector2(14f, 0f), new Vector2(380f, 30f));
+        RectTransform handle = Rect("Preview handle", handleArea, Vector2.zero, new Vector2(24f, -6f));
+        handle.anchorMin = Vector2.zero; handle.anchorMax = Vector2.up;
+        handle.pivot = new Vector2(0.5f, 0.5f);
+        Image handleImage = handle.gameObject.AddComponent<Image>();
+        handleImage.color = new Color(0.55f, 0.91f, 1f);
+        _playbackTimeline = root.gameObject.AddComponent<Slider>();
+        _playbackTimeline.direction = Slider.Direction.LeftToRight;
+        _playbackTimeline.minValue = 0f;
+        _playbackTimeline.maxValue = 1f;
+        _playbackTimeline.fillRect = fill;
+        _playbackTimeline.handleRect = handle;
+        _playbackTimeline.targetGraphic = handleImage;
+        Navigation navigation = _playbackTimeline.navigation;
+        navigation.mode = Navigation.Mode.None;
+        _playbackTimeline.navigation = navigation;
+        _playbackTimeline.onValueChanged.AddListener(SeekPlayback);
+        AddPressTracking(root.gameObject);
+        EventTrigger trigger = root.GetComponent<EventTrigger>();
+        EventTrigger.Entry pressed = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
+        pressed.callback.AddListener(data =>
+        {
+            if (!(data is PointerEventData pointer) || !_playbackTimeline.interactable) return;
+            _playbackTimelinePointers.Add(pointer.pointerId);
+            if (_trajectoryVisualizer != null) _trajectoryVisualizer.Pause();
+        });
+        EventTrigger.Entry released = new EventTrigger.Entry { eventID = EventTriggerType.PointerUp };
+        released.callback.AddListener(data =>
+        {
+            if (data is PointerEventData pointer) _playbackTimelinePointers.Remove(pointer.pointerId);
+        });
+        trigger.triggers.Add(pressed);
+        trigger.triggers.Add(released);
+        RefreshPlayback();
+    }
+
+    private void BuildPathThicknessSlider()
+    {
+        Text("Ghost path thickness", _taskView, new Vector2(16f, -560f), new Vector2(300f, 24f),
+            "Ghost path thickness", 14f).color = new Color(0.73f, 0.81f, 0.87f);
+        _pathThicknessValue = Text("Ghost path thickness value", _taskView, new Vector2(326f, -560f),
+            new Vector2(98f, 24f), "25 mm", 14f);
+        _pathThicknessValue.alignment = TextAlignmentOptions.MidlineRight;
+        RectTransform root = Rect("Ghost path thickness slider", _taskView, new Vector2(16f, -586f), new Vector2(408f, 30f));
+        // The full row accepts the laser, including the space around the thin track.
+        root.gameObject.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
+        RectTransform track = Rect("Thickness track", root, new Vector2(14f, -12f), new Vector2(380f, 6f));
+        track.gameObject.AddComponent<Image>().color = new Color(0.15f, 0.23f, 0.29f);
+        RectTransform fillArea = Rect("Thickness fill area", root, new Vector2(14f, -12f), new Vector2(380f, 6f));
+        RectTransform fill = Rect("Thickness fill", fillArea, Vector2.zero, Vector2.zero);
+        fill.anchorMin = Vector2.zero; fill.anchorMax = Vector2.one;
+        fill.pivot = new Vector2(0f, 0.5f);
+        fill.gameObject.AddComponent<Image>().color = new Color(0.08f, 0.56f, 0.68f);
+        RectTransform handleArea = Rect("Thickness handle area", root, new Vector2(14f, 0f), new Vector2(380f, 30f));
+        RectTransform handle = Rect("Thickness handle", handleArea, Vector2.zero, new Vector2(24f, -6f));
+        // Slider stretches the handle vertically; inset it to keep a square 24 mm grip.
+        handle.anchorMin = Vector2.zero;
+        handle.anchorMax = Vector2.up;
+        handle.pivot = new Vector2(0.5f, 0.5f);
+        Image handleImage = handle.gameObject.AddComponent<Image>();
+        handleImage.color = new Color(0.55f, 0.91f, 1f);
+        _pathThicknessSlider = root.gameObject.AddComponent<Slider>();
+        _pathThicknessSlider.direction = Slider.Direction.LeftToRight;
+        _pathThicknessSlider.minValue = MinimumPathThickness;
+        _pathThicknessSlider.maxValue = MaximumPathThickness;
+        _pathThicknessSlider.fillRect = fill;
+        _pathThicknessSlider.handleRect = handle;
+        _pathThicknessSlider.targetGraphic = handleImage;
+        Navigation navigation = _pathThicknessSlider.navigation;
+        navigation.mode = Navigation.Mode.None;
+        _pathThicknessSlider.navigation = navigation;
+        _pathThicknessSlider.SetValueWithoutNotify(0.025f);
+        _pathThicknessSlider.onValueChanged.AddListener(SetPathThickness);
+        AddPressTracking(root.gameObject);
+        RefreshPathThickness();
+    }
+
+    private void BuildGrabHandle(RectTransform canvas)
+    {
+        // A separate strip above the panel leaves every UI button unobstructed.
+        RectTransform bar = Rect("Grab menu - hold trigger and move", canvas, new Vector2(16f, 38f), new Vector2(408f, 30f));
+        _grabImage = bar.gameObject.AddComponent<Image>();
+        _grabImage.color = _grabColor;
+        _grabImage.raycastTarget = false;
+        TextMeshProUGUI hint = Text("Grab menu hint", bar, new Vector2(4f, -2f), new Vector2(400f, 26f),
+            "Grab menu · hold trigger and move", 15f);
+        hint.alignment = TextAlignmentOptions.Center;
+        BoxCollider hit = bar.gameObject.AddComponent<BoxCollider>();
+        hit.center = new Vector3(204f, -15f, 0f);
+        hit.size = new Vector3(408f, 30f, 14f);
+        _grabHandle = bar.gameObject.AddComponent<XRSimpleInteractable>();
+        _grabHandle.selectMode = InteractableSelectMode.Single;
+        _grabHandle.interactionLayers = 1;
+        _grabHandle.colliders.Clear();
+        _grabHandle.colliders.Add(hit);
+        _grabFilter = new XRSelectFilterDelegate((interactor, target) =>
+            isActiveAndEnabled && IsVisible && !TargetRotationHandles.IsInteracting &&
+            (!_draggingMenu || _grabInteractor == interactor));
+        _grabHandle.selectFilters.Add(_grabFilter);
+        _grabHandle.hoverEntered.AddListener(GrabHoverEntered);
+        _grabHandle.hoverExited.AddListener(GrabHoverExited);
+        _grabHandle.selectEntered.AddListener(GrabEntered);
+        _grabHandle.selectExited.AddListener(GrabExited);
+        bar.gameObject.SetActive(isActiveAndEnabled);
     }
 
     private void BuildAlignmentView()
@@ -799,7 +1082,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         exited.callback.AddListener(data =>
         {
             if (data is PointerEventData pointer) _hoveringPointers.Remove(pointer.pointerId);
-            if (_hoveringPointers.Count == 0 && _pressedPointers.Count == 0) HoveredMenus.Remove(this);
+            RefreshHoverState();
         });
         trigger.triggers.Add(entered);
         trigger.triggers.Add(exited);
@@ -821,7 +1104,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         released.callback.AddListener(data =>
         {
             if (data is PointerEventData pointer) _pressedPointers.Remove(pointer.pointerId);
-            if (_hoveringPointers.Count == 0 && _pressedPointers.Count == 0) HoveredMenus.Remove(this);
+            RefreshHoverState();
         });
         trigger.triggers.Add(pressed);
         trigger.triggers.Add(released);
@@ -857,9 +1140,11 @@ public sealed class ToolSelectionMenu : MonoBehaviour
 
     private void OnEnable()
     {
+        ActiveMenus.Add(this);
         BindController();
         if (_panel != null) BindTaskControls();
         if (_panel != null) _panel.gameObject.SetActive(true);
+        if (_grabHandle != null) _grabHandle.gameObject.SetActive(true);
         RefreshMenu();
     }
 
@@ -878,25 +1163,41 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         // A suspended XR input module may never send the matching PointerUp.
         _hoveringPointers.Clear();
         _pressedPointers.Clear();
+        _playbackTimelinePointers.Clear();
+        _grabHovering.Clear();
+        CancelMenuGrab();
+        if (_grabHandle != null && _grabHandle.interactionManager != null)
+            _grabHandle.interactionManager.CancelInteractableHover((IXRHoverInteractable)_grabHandle);
         HoveredMenus.Remove(this);
-        ResetFollowMotion();
-        _interactionHoldRemaining = _followInteractionHold;
     }
 
     private void OnDisable()
     {
+        ActiveMenus.Remove(this);
         Unsubscribe();
         UnsubscribeTaskControls();
         if (IsCalibrating) _instantiator.CancelCalibration();
         ClearPointerState();
         if (_panel != null) _panel.gameObject.SetActive(false);
+        if (_grabHandle != null) _grabHandle.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
     {
+        ActiveMenus.Remove(this);
         Unsubscribe();
         UnsubscribeTaskControls();
         HoveredMenus.Remove(this);
+        if (_grabHandle != null)
+        {
+            CancelMenuGrab();
+            _grabHandle.hoverEntered.RemoveListener(GrabHoverEntered);
+            _grabHandle.hoverExited.RemoveListener(GrabHoverExited);
+            _grabHandle.selectEntered.RemoveListener(GrabEntered);
+            _grabHandle.selectExited.RemoveListener(GrabExited);
+            _grabHandle.selectFilters.Remove(_grabFilter);
+            if (!_ownsCanvas) Destroy(_grabHandle.gameObject);
+        }
         foreach (Choice choice in _choices)
             if (choice.Button != null) choice.Button.onClick.RemoveListener(choice.Click);
         if (_recenterButton != null) _recenterButton.onClick.RemoveListener(RecenterMenu);
@@ -904,6 +1205,12 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         if (_executeButton != null) _executeButton.onClick.RemoveListener(ExecuteTask);
         if (_rescanButton != null) _rescanButton.onClick.RemoveListener(RescanQr);
         if (_alignButton != null) _alignButton.onClick.RemoveListener(BeginAlignment);
+        if (_pathThicknessSlider != null) _pathThicknessSlider.onValueChanged.RemoveListener(SetPathThickness);
+        if (_playbackPlayPauseButton != null) _playbackPlayPauseButton.onClick.RemoveListener(TogglePlayback);
+        if (_playbackReplayButton != null) _playbackReplayButton.onClick.RemoveListener(ReplayPlayback);
+        if (_playbackTimeline != null) _playbackTimeline.onValueChanged.RemoveListener(SeekPlayback);
+        for (int index = 0; index < _playbackSpeedButtons.Count; index++)
+            if (_playbackSpeedButtons[index] != null) _playbackSpeedButtons[index].onClick.RemoveListener(_playbackSpeedActions[index]);
         if (_tcpTaskButton != null) _tcpTaskButton.onClick.RemoveListener(SelectTcpTask);
         if (_pickPlaceTaskButton != null) _pickPlaceTaskButton.onClick.RemoveListener(SelectPickPlaceTask);
         foreach (Button button in _alignmentActionButtons) if (button != null) button.onClick.RemoveAllListeners();

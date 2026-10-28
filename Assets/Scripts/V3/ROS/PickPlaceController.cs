@@ -3,7 +3,6 @@ using RosMessageTypes.Geometry;
 using RosMessageTypes.RclInterfaces;
 using RosMessageTypes.Std;
 using RosMessageTypes.Ur16eInterfaces;
-using TMPro;
 using Unity.Robotics.ROSTCPConnector;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 using UnityEngine;
@@ -23,7 +22,6 @@ public class PickPlaceController : MonoBehaviour
     [SerializeField, Min(1f)] private float _capabilityTimeout = 10f;
     private GameObject _pickPointInstance, _placePointInstance, _livePointInstance;
     private TargetRotationHandles _pickRotationHandles, _placeRotationHandles;
-    private ToolPoseVisual _pickVisual, _placeVisual;
     private Material _pickHandleMaterial, _placeHandleMaterial;
     private bool _hasPlanningRequestBeenSent;
     private bool _tilePlanningEnabled = true;
@@ -50,13 +48,11 @@ public class PickPlaceController : MonoBehaviour
         _connection.RegisterPublisher<BoolMsg>("execute_task");
         _connection.RegisterRosService<GetParametersRequest, GetParametersResponse>(CapabilityService);
         if (_pickPointPrefab != null || _placePointPrefab != null)
-            Debug.Log("PickPlaceController: Using tool-contact previews instead of legacy plane markers.", this);
+            Debug.Log("PickPlaceController: Using contact balls and normal arrows instead of legacy plane markers.", this);
     }
 
     private void Update()
     {
-        UpdateLabel(_pickPointInstance, "Pick — tool contact");
-        UpdateLabel(_placePointInstance, "Place — tool contact");
         if (!_checkingCapability) return;
         if (!CanKeepCapabilityRequest())
         { RejectPlanningRequest("Tool targets, mode, model or alignment changed. Plan pick/place again."); return; }
@@ -106,8 +102,8 @@ public class PickPlaceController : MonoBehaviour
         if (!_tilePlanningEnabled || !RobotFrameMath.IsValidPose(pointerWorld) || !RobotFrameMath.IsRigidFrame(trackingSpace)) return;
         if (_livePointInstance == null)
         {
-            _livePointInstance = new GameObject("Pick/place tool aim preview");
-            ToolPoseVisual.Attach(_livePointInstance.transform, new Color(0.1f, 0.9f, 1f), 0.3f);
+            _livePointInstance = new GameObject("Pick/place normal aim preview");
+            NormalTargetMarker.Attach(_livePointInstance.transform, new Color(0.1f, 0.9f, 1f), 0.65f);
         }
         _livePointInstance.transform.SetParent(trackingSpace, true);
         Pose target = RobotFrameMath.PointerToTcpPose(pointerWorld);
@@ -124,38 +120,38 @@ public class PickPlaceController : MonoBehaviour
     {
         if (!_tilePlanningEnabled || !RobotFrameMath.IsValidPose(pose)) return;
         GameObject point = pick ? _pickPointInstance : _placePointInstance;
+        Color tint = pick ? Color.green : new Color(1f, 0.6f, 0.05f);
         if (point == null)
         {
             point = new GameObject(pick ? "Pick — tool contact" : "Place — tool contact");
             if (pick) _pickPointInstance = point; else _placePointInstance = point;
-            Color tint = pick ? Color.green : new Color(1f, 0.6f, 0.05f);
-            ToolPoseVisual visual = ToolPoseVisual.Attach(point.transform, tint);
+        }
+        // Reapply visuals on recapture as well, including after an interrupted first capture.
+        NormalTargetMarker marker = NormalTargetMarker.Attach(point.transform, tint);
+        // The rotation handle supplies the visible, highlightable ball and its collider.
+        marker.SetBallVisible(false);
+        TargetRotationHandles handles = pick ? _pickRotationHandles : _placeRotationHandles;
+        if (handles == null)
+        {
             Material material = MakeHandleMaterial(tint);
-            TargetRotationHandles handles = TargetRotationHandles.Attach(point.transform, material, 0.035f);
+            handles = TargetRotationHandles.Attach(point.transform, material, 0.035f);
             handles.RotationStarted += OnTargetRotationChanged;
             handles.RotationChanged += OnTargetRotationChanged;
             if (pick)
             {
-                _pickVisual = visual; _pickHandleMaterial = material; _pickRotationHandles = handles;
-                visual.VisualChanged += ConfigurePickHandle;
-                ConfigurePickHandle();
+                _pickHandleMaterial = material; _pickRotationHandles = handles;
             }
             else
             {
-                _placeVisual = visual; _placeHandleMaterial = material; _placeRotationHandles = handles;
-                visual.VisualChanged += ConfigurePlaceHandle;
-                ConfigurePlaceHandle();
+                _placeHandleMaterial = material; _placeRotationHandles = handles;
             }
-            GameObject caption = new GameObject("Contact target label", typeof(TextMeshPro));
-            caption.transform.SetParent(point.transform, false);
-            caption.transform.localScale = Vector3.one * 0.05f;
-            TextMeshPro text = caption.GetComponent<TextMeshPro>();
-            text.fontSize = 2f; text.color = tint; text.alignment = TextAlignmentOptions.Center;
-            text.rectTransform.sizeDelta = new Vector2(10f, 1.8f);
         }
+        handles.enabled = true;
+        handles.ConfigureNormalInteraction();
         Transform trackingSpace = null;
         if (XRTrackingSpaceResolver.TryResolve(ref trackingSpace)) point.transform.SetParent(trackingSpace, true);
         point.transform.SetPositionAndRotation(pose.position, pose.rotation);
+        TargetNameLabel.Attach(point.transform, pick ? "Pick" : "Place", tint);
         TargetPoseContextMenu context = TargetPoseContextMenu.Attach(point.transform,
             pick ? "Pick contact" : "Place contact", true, OnTargetRotationChanged);
         context.RebaseAtCurrentPose();
@@ -165,21 +161,7 @@ public class PickPlaceController : MonoBehaviour
 
     private static Material MakeHandleMaterial(Color color)
     {
-        Shader shader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color");
-        return new Material(shader) { color = color };
-    }
-    private void ConfigurePickHandle()
-    { if (_pickVisual != null && _pickRotationHandles != null) _pickRotationHandles.ConfigureToolInteraction(_pickVisual.TcpLocalBounds); }
-    private void ConfigurePlaceHandle()
-    { if (_placeVisual != null && _placeRotationHandles != null) _placeRotationHandles.ConfigureToolInteraction(_placeVisual.TcpLocalBounds); }
-    private static void UpdateLabel(GameObject target, string title)
-    {
-        if (target == null || !target.activeInHierarchy) return;
-        TextMeshPro text = target.GetComponentInChildren<TextMeshPro>();
-        if (text == null) return;
-        text.text = title + "\nBumper over tool: adjust depth · drag tool: turn";
-        text.transform.position = target.transform.position + Vector3.up * 0.18f;
-        if (Camera.main != null) text.transform.rotation = Camera.main.transform.rotation;
+        return TargetMarkerMaterials.Create(color);
     }
     private void OnTargetRotationChanged() => InvalidatePlanningRequest();
 
@@ -200,6 +182,7 @@ public class PickPlaceController : MonoBehaviour
 
     public void SendPickAndPlacePlanningRequest()
     {
+        if (MTCPlansManager.ActiveExecution != null) return;
         if (!ValidatePlanningRequest() || IsPlanning) return;
         InvalidatePlanningRequest();
         if (!TryGetContactPoses(out PickPlacePosesMsg message))
@@ -289,6 +272,7 @@ public class PickPlaceController : MonoBehaviour
 
     public void SendFakePickAndPlacePlanningRequest()
     {
+        if (MTCPlansManager.ActiveExecution != null) return;
         if (!_tilePlanningEnabled || TargetRotationHandles.IsInteracting || !ToolSelectionController.CanPlanPickPlace ||
             !RobotCoordinateService.Instance.IsInitialized)
         { RejectPlanningRequest("Fake MTC planning requires pick/place mode, a matching suction tool and valid robot alignment."); return; }
@@ -305,6 +289,9 @@ public class PickPlaceController : MonoBehaviour
 
     public void ExecutePickAndPlace()
     {
+        // Repeated clicks must not clear the acknowledgement/outcome window or
+        // publish another command while the first request is unresolved.
+        if (MTCPlansManager.ActiveExecution != null) return;
         if (TargetPoseContextMenu.IsOpen)
         { RejectPlanningRequest("Close the target menu before executing MTC pick/place."); return; }
         if (_checkingCapability || TargetRotationHandles.IsInteracting || !ToolSelectionController.CanPlanPickPlace ||
@@ -313,22 +300,36 @@ public class PickPlaceController : MonoBehaviour
         { RejectPlanningRequest("MTC Execute requires a new successful pick/place plan and its visible trajectory preview."); return; }
         try
         {
-            if (_connection == null) _connection = ROSService.Instance.GetROSConnection();
-            if (_connection == null || !_connection.HasConnectionThread || _connection.HasConnectionError)
-            { RejectPlanningRequest("ROS is disconnected. Reconnect and plan MTC pick/place again."); return; }
             if (!PlansManager.ConsumePlanForExecution()) return;
             _hasPlanningRequestBeenSent = false;
-            _connection.Publish("execute_task", new BoolMsg(true));
+            if (!TryPublishExecutionRequest(out string reason)) PlansManager.RejectExecutionRequest(reason);
         }
-        catch (Exception)
-        { RejectPlanningRequest("MTC execution request could not be sent. Check ROS and plan again before retrying."); }
+        catch (Exception exception)
+        {
+            Debug.LogWarning("MTC execution publication failed: " + exception.Message, this);
+            PlansManager.RejectExecutionRequest("The execution request could not be sent. Check ROS and plan again before retrying.");
+        }
+    }
+
+    // This transport boundary also permits offline tests of the actual public
+    // Execute action without opening a connection or sending robot commands.
+    protected virtual bool TryPublishExecutionRequest(out string reason)
+    {
+        if (_connection == null) _connection = ROSService.Instance.GetROSConnection();
+        if (_connection == null || !_connection.HasConnectionThread || _connection.HasConnectionError)
+        {
+            reason = "ROS is disconnected. Reconnect and plan MTC pick/place again.";
+            return false;
+        }
+        _connection.Publish("execute_task", new BoolMsg(true));
+        Debug.Log("MTC execution command sent on execute_task; waiting for /mtc/execution_status.", this);
+        reason = null;
+        return true;
     }
     private void OnDisable() { CancelCapabilityRequest(); _hasPlanningRequestBeenSent = false; SetTrackingLost(); }
     private void OnDestroy()
     {
         if (_coordinates != null) _coordinates.CalibrationChanged -= InvalidatePlanningRequest;
-        if (_pickVisual != null) _pickVisual.VisualChanged -= ConfigurePickHandle;
-        if (_placeVisual != null) _placeVisual.VisualChanged -= ConfigurePlaceHandle;
         Unbind(_pickRotationHandles); Unbind(_placeRotationHandles);
         Dispose(_livePointInstance); Dispose(_pickPointInstance); Dispose(_placePointInstance);
         Dispose(_pickHandleMaterial); Dispose(_placeHandleMaterial);

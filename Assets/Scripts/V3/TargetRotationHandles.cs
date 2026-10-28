@@ -74,6 +74,23 @@ public sealed class TargetRotationHandles : MonoBehaviour
         }
     }
 
+    /// <summary>Contact points specify a normal, so the ball alone provides free rotation.</summary>
+    public void ConfigureNormalInteraction()
+    {
+        EndRotation();
+        foreach (Handle handle in _handles)
+        {
+            if (handle.Interactable == null) continue;
+            bool ball = handle.Kind == RotationHandleKind.Free;
+            handle.Interactable.gameObject.SetActive(ball);
+            if (ball)
+            {
+                MeshRenderer renderer = handle.Interactable.GetComponent<MeshRenderer>();
+                if (renderer != null) renderer.enabled = true;
+            }
+        }
+    }
+
     private readonly List<Handle> _handles = new List<Handle>();
     private readonly List<Mesh> _ownedMeshes = new List<Mesh>();
     private Transform _visualRoot;

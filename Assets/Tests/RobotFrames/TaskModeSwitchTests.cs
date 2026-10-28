@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
@@ -226,7 +227,7 @@ public sealed class TaskModeSwitchTests
     }
 
     [Test]
-    public void MtcSuccessWaitsForPreviewAndRejectsAnUndisplayableTrajectory()
+    public void MtcSuccessWaitsForItsPreviewAndForTheUnityRobotModel()
     {
         Assert.That(Call(_mtc, "BeginPlanningRequest"), Is.EqualTo(true));
         MtcStatus(true);
@@ -234,8 +235,12 @@ public sealed class TaskModeSwitchTests
         Assert.That(Get<bool>(_mtc, "CanExecute"), Is.False);
         Assert.That(Get<string>(_mtc, "StatusText"), Does.Contain("Waiting"));
         Private(_mtc, "OnPlannedTrajectory", Trajectory());
-        Assert.That(Get<bool>(_mtc, "CanExecute") || Get<bool>(_mtc, "IsPlanning"), Is.False);
-        Assert.That(Get<string>(_mtc, "StatusText"), Does.Contain("could not be displayed"));
+        Assert.That(Get<bool>(_mtc, "CanExecute"), Is.False);
+        Assert.That(Get<bool>(_mtc, "IsPlanning"), Is.True);
+        Assert.That(Get<string>(_mtc, "StatusText"), Does.Contain("succeeded").And.Contain("Waiting for the Unity robot model"));
+        InstallActualGhostModel();
+        Private(_mtc, "Update");
+        Assert.That(Get<bool>(_mtc, "CanExecute"), Is.True);
     }
 
     [Test]
@@ -297,6 +302,7 @@ public sealed class TaskModeSwitchTests
         Assert.That(Call(_mtc, "BeginPlanningRequest"), Is.EqualTo(true));
         MtcStatus(true);
         Private(_mtc, "OnPlannedTrajectory", Trajectory());
+        MtcExecutionStatus("ready", "A successful plan is available for one execution attempt");
         Assert.That(Get<bool>(_mtc, "CanExecute"), Is.True);
         // EditMode requires immediate teardown of native clones before runtime
         // invalidation; the frozen request/result flags remain unchanged.
@@ -304,6 +310,228 @@ public sealed class TaskModeSwitchTests
         MtcExecutionStatus("invalidated", "New planning request replaced the previous plan");
         Assert.That(Get<bool>(_mtc, "HasPlanResult") || Get<bool>(_mtc, "CanExecute"), Is.False);
         Assert.That(Get<string>(_mtc, "StatusText"), Does.Contain("invalidated"));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void ActualEmptyMtcRootResetDoesNotRejectTheFollowingSuccess(bool previewFirst)
+    {
+        InstallActualGhostModel();
+        Assert.That(Call(_mtc, "BeginPlanningRequest"), Is.EqualTo(true));
+        // Task() creates this SerialContainer and traverseRecursively includes
+        // the root, even before buildTask adds any child stages.
+        MtcStatusJson("{\"overall_success\":false,\"stages\":[{\"name\":\"task pipeline\",\"depth\":0,\"solved\":0,\"failed\":0}],\"message\":\"\"}");
+        Assert.That(Get<bool>(_mtc, "IsPlanning"), Is.True);
+        Assert.That(Get<bool>(_mtc, "HasPlanResult"), Is.False);
+        object trajectory = Trajectory();
+        if (previewFirst) Private(_mtc, "OnPlannedTrajectory", trajectory); else MtcStatus(true);
+        // This is a different topic, so its initial reset can arrive after the
+        // first result message or even after the complete reviewed preview.
+        MtcExecutionStatus("invalidated", "New planning request replaced the previous plan");
+        if (previewFirst) MtcStatus(true); else Private(_mtc, "OnPlannedTrajectory", trajectory);
+        Assert.That(Get<bool>(_mtc, "CanExecute"), Is.True);
+        MtcExecutionStatus("ready", "A successful plan is available for one execution attempt");
+        Assert.That(Get<bool>(_mtc, "CanExecute"), Is.True);
+    }
+
+    [TestCaseSource(nameof(MtcTopicOrders))]
+    public void MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(string order)
+    {
+        InstallActualGhostModel();
+        Assert.That(Call(_mtc, "BeginPlanningRequest"), Is.EqualTo(true));
+        foreach (char delivery in order)
+        {
+            switch (delivery)
+            {
+                case 'I': MtcStatusJson("{\"overall_success\":false,\"stages\":[{\"name\":\"task pipeline\",\"depth\":0,\"solved\":0,\"failed\":0}],\"message\":\"\"}"); break;
+                case 'S': MtcStatus(true); break;
+                case 'R': MtcExecutionStatus("invalidated", "New planning request replaced the previous plan"); break;
+                case 'E': MtcExecutionStatus("ready", "A successful plan is available for one execution attempt"); break;
+                case 'C': Private(_mtc, "OnPlannedTrajectory", EmptyTrajectory()); break;
+                case 'T': Private(_mtc, "OnPlannedTrajectory", Trajectory()); break;
+            }
+            Assert.That(Get<bool>(_mtc, "IsPlanning") || Get<bool>(_mtc, "CanExecute"), Is.True,
+                "A valid request was rejected at " + delivery + " in topic order " + order);
+        }
+        Assert.That(Get<bool>(_mtc, "CanExecute"), Is.True);
+        Assert.That(Get<bool>(_visualizer, "HasVisiblePreview"), Is.True);
+        Assert.That(Get<string>(_mtc, "StatusText"), Does.Contain("plan ready"));
+    }
+
+    public static IEnumerable<string> MtcTopicOrders() => InterleaveMtcTopics("", "IS", "RE", "CT");
+
+    private static IEnumerable<string> InterleaveMtcTopics(string prefix, string planning, string execution, string trajectory)
+    {
+        if (planning.Length + execution.Length + trajectory.Length == 0) { yield return prefix; yield break; }
+        if (planning.Length > 0)
+            foreach (string order in InterleaveMtcTopics(prefix + planning[0], planning.Substring(1), execution, trajectory)) yield return order;
+        if (execution.Length > 0)
+            foreach (string order in InterleaveMtcTopics(prefix + execution[0], planning, execution.Substring(1), trajectory)) yield return order;
+        if (trajectory.Length > 0)
+            foreach (string order in InterleaveMtcTopics(prefix + trajectory[0], planning, execution, trajectory.Substring(1))) yield return order;
+    }
+
+    [Test]
+    public void ASecondReplacementNoticeStillRevokesAReviewedPlanBeforeReady()
+    {
+        InstallActualGhostModel();
+        Assert.That(Call(_mtc, "BeginPlanningRequest"), Is.EqualTo(true));
+        MtcStatus(true);
+        Private(_mtc, "OnPlannedTrajectory", Trajectory());
+        MtcExecutionStatus("invalidated", "New planning request replaced the previous plan");
+        Assert.That(Get<bool>(_mtc, "CanExecute"), Is.True);
+        DestroyPreviewClonesImmediately();
+        MtcExecutionStatus("invalidated", "New planning request replaced the previous plan");
+        Assert.That(Get<bool>(_mtc, "CanExecute") || Get<bool>(_mtc, "IsPlanning"), Is.False);
+        Assert.That(Get<string>(_mtc, "StatusText"), Does.Contain("invalidated"));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void RealPlanningFailureRejectsLateSuccessEvenWhenNoStageWasAttempted(bool hasFailedStage)
+    {
+        Assert.That(Call(_mtc, "BeginPlanningRequest"), Is.EqualTo(true));
+        MtcStatusJson("{\"overall_success\":false,\"stages\":[{\"name\":\"task pipeline\",\"depth\":0,\"solved\":0,\"failed\":" +
+            (hasFailedStage ? "1" : "0") + "}],\"message\":\"Task planning produced no successful solution\"}");
+        Assert.That(Get<bool>(_mtc, "IsPlanning") || Get<bool>(_mtc, "CanExecute"), Is.False);
+        Assert.That(Get<string>(_mtc, "StatusText"), Does.Contain("planning failed").And.Contain("no successful solution"));
+        MtcStatus(true);
+        Private(_mtc, "OnPlannedTrajectory", Trajectory());
+        MtcExecutionStatus("ready", "A successful plan is available for one execution attempt");
+        Assert.That(Get<bool>(_mtc, "CanExecute"), Is.False);
+    }
+
+    [Test]
+    public void FailedStageCountsRemainTerminalWhenAnOlderBackendOmitsTheMessage()
+    {
+        Assert.That(Call(_mtc, "BeginPlanningRequest"), Is.EqualTo(true));
+        MtcStatusJson("{\"overall_success\":false,\"stages\":[{\"name\":\"approach pick\",\"depth\":1,\"solved\":0,\"failed\":2}]}");
+        Assert.That(Get<bool>(_mtc, "IsPlanning") || Get<bool>(_mtc, "CanExecute"), Is.False);
+        Assert.That(Get<string>(_mtc, "StatusText"), Does.Contain("planning failed"));
+    }
+
+    [Test]
+    public void MalformedPreviewKeepsExecutionBlockedAndDistinguishesUnityFromRosFailure()
+    {
+        InstallActualGhostModel();
+        Assert.That(Call(_mtc, "BeginPlanningRequest"), Is.EqualTo(true));
+        MtcStatus(true);
+        object trajectory = Trajectory();
+        object joints = trajectory.GetType().GetField("joint_trajectory").GetValue(trajectory);
+        joints.GetType().GetField("joint_names").SetValue(joints, new[] { "shoulder_pan_joint", "wrist_1_joint" });
+        Private(_mtc, "OnPlannedTrajectory", trajectory);
+        Assert.That(Get<bool>(_mtc, "CanExecute") || Get<bool>(_mtc, "IsPlanning"), Is.False);
+        Assert.That(Get<string>(_mtc, "StatusText"), Does.Contain("ROS MTC planning succeeded").And.Contain("could not be displayed"));
+    }
+
+    [Test]
+    public void WaitingForTheUnityModelTimesOutWithoutMisreportingRosPlanningFailure()
+    {
+        Assert.That(Call(_mtc, "BeginPlanningRequest"), Is.EqualTo(true));
+        MtcStatus(true);
+        Private(_mtc, "OnPlannedTrajectory", Trajectory());
+        Set(_mtc, "_planningDeadline", Time.realtimeSinceStartup - 1f);
+        Private(_mtc, "Update");
+        Assert.That(Get<bool>(_mtc, "CanExecute") || Get<bool>(_mtc, "IsPlanning"), Is.False);
+        Assert.That(Get<string>(_mtc, "StatusText"), Does.Contain("ROS MTC planning succeeded").And.Contain("Unity did not"));
+        InstallActualGhostModel();
+        MtcStatus(true);
+        Private(_mtc, "OnPlannedTrajectory", Trajectory());
+        Assert.That(Get<bool>(_mtc, "CanExecute"), Is.False);
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void LatestSuccessfulNordboPlanReplaysAsAVisibleExecutableUnityReview(bool previewFirst)
+    {
+        string snapshot = ReadSavedNordboSnapshot();
+        string statusLiteral = SavedTopic(snapshot, "/mtc/planning_status");
+        string status = JsonUtility.FromJson<SavedString>("{\"value\":" + statusLiteral + "}").value;
+        Assert.That(status, Does.Contain("\"overall_success\":true"));
+        Assert.That(status, Does.Contain("\"failed\":8"), "The real successful task includes failed IK alternatives, which are not an overall failure.");
+        string trajectoryJson = SavedTopic(snapshot, "/mtc/planned_trajectory");
+        Type trajectoryType = _mtc.GetType().GetMethod("OnPlannedTrajectory", BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0].ParameterType;
+        object trajectory = JsonUtility.FromJson(trajectoryJson, trajectoryType);
+        object joints = trajectoryType.GetField("joint_trajectory").GetValue(trajectory);
+        // DurationMsg is handwritten without [Serializable]. Restore its fields
+        // from plain JSON DTOs; real ROS transport reads them with its binary decoder.
+        SavedMotionTimes savedTimes = JsonUtility.FromJson<SavedMotionTimes>(trajectoryJson);
+        Array recordedPoints = (Array)joints.GetType().GetField("points").GetValue(joints);
+        for (int index = 0; index < recordedPoints.Length; index++)
+        {
+            object point = recordedPoints.GetValue(index);
+            FieldInfo durationField = point.GetType().GetField("time_from_start");
+            object duration = Activator.CreateInstance(durationField.FieldType);
+            duration.GetType().GetField("sec").SetValue(duration, savedTimes.joint_trajectory.points[index].time_from_start.sec);
+            FieldInfo nanos = duration.GetType().GetField("nanosec");
+            nanos.SetValue(duration, Convert.ChangeType(savedTimes.joint_trajectory.points[index].time_from_start.nanosec, nanos.FieldType));
+            durationField.SetValue(point, duration);
+        }
+        Assert.That(((string[])joints.GetType().GetField("joint_names").GetValue(joints)).Length, Is.EqualTo(6));
+        Assert.That(((Array)joints.GetType().GetField("points").GetValue(joints)).Length, Is.EqualTo(97));
+
+        InstallActualGhostModel();
+        Assert.That(Call(_mtc, "BeginPlanningRequest"), Is.EqualTo(true));
+        MtcStatusJson("{\"overall_success\":false,\"stages\":[{\"name\":\"task pipeline\",\"depth\":0,\"solved\":0,\"failed\":0}],\"message\":\"\"}");
+        if (previewFirst) Private(_mtc, "OnPlannedTrajectory", trajectory); else MtcStatusJson(status);
+        if (previewFirst) MtcStatusJson(status); else Private(_mtc, "OnPlannedTrajectory", trajectory);
+        MtcExecutionStatus("invalidated", "New planning request replaced the previous plan");
+        MtcExecutionStatus("ready", "A successful plan is available for one execution attempt");
+        Assert.That(Get<bool>(_mtc, "CanExecute"), Is.True);
+        Assert.That(Get<bool>(_visualizer, "HasVisiblePreview"), Is.True);
+        Assert.That(Get<string>(_mtc, "StatusText"), Does.Contain("plan ready"));
+        Assert.That(Get<bool>(_mtc, "IsLastPlanSuccessful"), Is.True);
+    }
+
+    [Serializable]
+    private sealed class SavedString { public string value; }
+    [Serializable] private sealed class SavedMotionTimes { public SavedJointTimes joint_trajectory; }
+    [Serializable] private sealed class SavedJointTimes { public SavedPointTime[] points; }
+    [Serializable] private sealed class SavedPointTime { public SavedDuration time_from_start; }
+    [Serializable] private sealed class SavedDuration { public int sec; public uint nanosec; }
+
+    private static string ReadSavedNordboSnapshot()
+    {
+        // The isolated validation project lives under this repository's Library
+        // directory. Keep recorded ROS data outside Unity's player Assets.
+        DirectoryInfo candidate = new DirectoryInfo(Application.dataPath);
+        while (candidate != null)
+        {
+            string path = Path.Combine(candidate.FullName, "Tools/RobotFrames/mtc_success_live_20261023.json");
+            if (File.Exists(path)) return File.ReadAllText(path);
+            candidate = candidate.Parent;
+        }
+        Assert.Fail("The recorded 23 October Nordbo MTC success fixture is missing.");
+        return null;
+    }
+
+    private static string SavedTopic(string snapshot, string topic)
+    {
+        int key = snapshot.IndexOf("\"" + topic + "\"", StringComparison.Ordinal);
+        Assert.That(key, Is.GreaterThanOrEqualTo(0), "Recorded ROS topic is missing: " + topic);
+        int start = snapshot.IndexOf(':', key) + 1;
+        while (char.IsWhiteSpace(snapshot[start])) start++;
+        bool quoted = false, escaped = false;
+        int depth = 0;
+        for (int index = start; index < snapshot.Length; index++)
+        {
+            char value = snapshot[index];
+            if (quoted)
+            {
+                if (escaped) escaped = false;
+                else if (value == '\\') escaped = true;
+                else if (value == '"')
+                {
+                    quoted = false;
+                    if (depth == 0) return snapshot.Substring(start, index - start + 1);
+                }
+            }
+            else if (value == '"') quoted = true;
+            else if (value == '{' || value == '[') depth++;
+            else if ((value == '}' || value == ']') && --depth == 0)
+                return snapshot.Substring(start, index - start + 1);
+        }
+        throw new InvalidOperationException("Invalid recorded ROS topic JSON: " + topic);
     }
 
     [Test]
@@ -379,10 +607,12 @@ public sealed class TaskModeSwitchTests
         return root;
     }
     private void MtcStatus(bool success)
+        => MtcStatusJson("{\"overall_success\":" + (success ? "true" : "false") + ",\"stages\":[]}");
+    private void MtcStatusJson(string json)
     {
         MethodInfo callback = _mtc.GetType().GetMethod("OnPlanningStatus", BindingFlags.Instance | BindingFlags.NonPublic);
         object msg = Activator.CreateInstance(callback.GetParameters()[0].ParameterType,
-            new object[] { "{\"overall_success\":" + (success ? "true" : "false") + ",\"stages\":[]}" });
+            new object[] { json });
         callback.Invoke(_mtc, new[] { msg });
     }
     private void MtcExecutionStatus(string status, string reason)
@@ -418,7 +648,7 @@ public sealed class TaskModeSwitchTests
         Type type = _mtc.GetType().GetMethod("OnPlannedTrajectory", BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0].ParameterType;
         object value = Activator.CreateInstance(type);
         object joints = type.GetField("joint_trajectory").GetValue(value);
-        joints.GetType().GetField("joint_names").SetValue(joints, new[] { "shoulder_pan_joint" });
+        joints.GetType().GetField("joint_names").SetValue(joints, new[] { "ur_shoulder_pan_joint" });
         FieldInfo pointsField = joints.GetType().GetField("points");
         Type pointType = pointsField.FieldType.GetElementType();
         Array points = Array.CreateInstance(pointType, 1);
@@ -427,6 +657,11 @@ public sealed class TaskModeSwitchTests
         points.SetValue(point, 0);
         pointsField.SetValue(joints, points);
         return value;
+    }
+    private object EmptyTrajectory()
+    {
+        Type type = _mtc.GetType().GetMethod("OnPlannedTrajectory", BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0].ParameterType;
+        return Activator.CreateInstance(type);
     }
     private GameObject New(string name) { var value = new GameObject(name); _owned.Add(value); return value; }
     private Component Add(string name, string type) => Disabled(New(name), type);

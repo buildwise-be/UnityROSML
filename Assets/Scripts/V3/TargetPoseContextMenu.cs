@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.UI;
 
-/// <summary>Local target editing only. Bumper opens the hovered tool's menu; no ROS publication.</summary>
+/// <summary>Local target editing only. Bumper opens the hovered target's menu; no ROS publication.</summary>
 public sealed class TargetPoseContextMenu : MonoBehaviour
 {
     public const float DepthStepMetres = 0.005f;
@@ -159,7 +159,7 @@ public sealed class TargetPoseContextMenu : MonoBehaviour
             Button(panel, "+Z  5 mm", new Vector2(186f, -126f), new Vector2(158f, 43f), () => NudgeDepth(1));
             Button(panel, "Reset depth", new Vector2(16f, -181f), new Vector2(158f, 40f), ResetDepth);
             Button(panel, "Close", new Vector2(186f, -181f), new Vector2(158f, 40f), Close);
-            Text(panel, "Hint", "Close to turn the tool; depth steps use its current +Z.",
+            Text(panel, "Hint", "Close to turn the ball; depth steps follow the arrow.",
                 new Vector2(16f, -228f), new Vector2(328f, 30f), 14f);
         }
         else Button(panel, "Close", new Vector2(16f, -135f), new Vector2(328f, 43f), Close);

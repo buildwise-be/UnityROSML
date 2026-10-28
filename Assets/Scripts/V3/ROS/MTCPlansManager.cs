@@ -8,17 +8,44 @@ public class MTCPlansManager : MonoBehaviour
     [SerializeField]
     private UR16eTrajectoryVisualizer _UR16eTrajectoryVisualizer;
     [SerializeField, Min(10f)] private float _planningTimeout = 120f;
+    [SerializeField, Min(1f)] private float _executionAcknowledgementTimeout = 10f;
     private bool _isLastPlanSuccessful = false;
     private RobotCoordinateService _coordinates;
     private bool _tilePlanningEnabled = true;
     private bool _hasPlanningRequest;
     private bool _acceptingResults;
+    private bool _receivedInitialExecutionReset;
+    private bool _receivedExecutionReady;
     private int _requestCalibrationRevision;
     private RobotTrajectoryMsg _pendingTrajectory;
     private float _planningDeadline;
+    private bool _executionRequested;
+    private bool _awaitingExecutionAcknowledgement;
+    private float _executionDeadline;
     public bool HasPlanResult { get; private set; }
     public bool IsPlanning => IsCurrentRequest && _acceptingResults;
-    public bool CanExecute => IsCurrentRequest && HasPlanResult && _isLastPlanSuccessful &&
+    public bool IsExecuting => _executionRequested;
+    public bool HasExecutionFeedback { get; private set; }
+    public static MTCPlansManager ActiveExecution
+    {
+        get
+        {
+            foreach (MTCPlansManager plans in FindObjectsByType<MTCPlansManager>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                if (plans.IsExecuting) return plans;
+            return null;
+        }
+    }
+
+    public static void DismissCompletedExecutionFeedback()
+    {
+        foreach (MTCPlansManager plans in FindObjectsByType<MTCPlansManager>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (plans.IsExecuting || !plans.HasExecutionFeedback) continue;
+            plans.HasExecutionFeedback = false;
+            plans.OnSuccessfulPlan?.Invoke(false);
+        }
+    }
+    public bool CanExecute => ActiveExecution == null && IsCurrentRequest && HasPlanResult && _isLastPlanSuccessful &&
         _UR16eTrajectoryVisualizer != null && _UR16eTrajectoryVisualizer.IsShowingTrajectory(_pendingTrajectory);
     public string StatusText { get; private set; } = "Capture pick and place tool contacts, then Plan.";
     public UnityEvent<bool> OnSuccessfulPlan;
@@ -31,30 +58,41 @@ public class MTCPlansManager : MonoBehaviour
     public void InvalidatePlan()
     {
         ClearPlan();
-        SetStatus(_tilePlanningEnabled ? "Targets, tool or calibration changed. Plan MTC pick / place again." : "MTC pick / place is inactive.");
+        SetReviewStatus(_tilePlanningEnabled ? "Targets, tool or calibration changed. Plan MTC pick / place again." : "MTC pick / place is inactive.");
     }
 
     private void ClearPlan()
     {
         _hasPlanningRequest = false;
         _acceptingResults = false;
+        // Editing a target, changing mode or disabling the component revokes
+        // review permission, but cannot cancel a command already sent to ROS.
+        if (!_executionRequested)
+        {
+            _receivedInitialExecutionReset = false;
+            _receivedExecutionReady = false;
+            HasExecutionFeedback = false;
+        }
         HasPlanResult = false;
         _isLastPlanSuccessful = false;
         _pendingTrajectory = null;
         if (_UR16eTrajectoryVisualizer != null) _UR16eTrajectoryVisualizer.SetTrajectory(null);
     }
 
+    private void SetReviewStatus(string status) => SetStatus(_executionRequested ? StatusText : status);
+
     public void SetTilePlanningEnabled(bool enabled)
     {
         if (_tilePlanningEnabled == enabled) return;
         _tilePlanningEnabled = enabled;
         ClearPlan();
-        SetStatus(enabled ? "MTC pick / place selected. Capture tool contacts, then Plan." : "MTC pick / place is inactive.");
+        SetReviewStatus(enabled ? "MTC pick / place selected. Capture tool contacts, then Plan." : "MTC pick / place is inactive.");
     }
 
     /// <summary>Arm callbacks only for a deliberate local tile-plan request. Does not publish anything.</summary>
     public bool BeginPlanningRequest()
     {
+        if (ActiveExecution != null) return false;
         if (IsPlanning) return false;
         ClearPlan();
         if (!CanUseTilePlanner)
@@ -73,17 +111,43 @@ public class MTCPlansManager : MonoBehaviour
     public void RejectPlanningRequest(string reason)
     {
         ClearPlan();
-        SetStatus(reason);
+        SetReviewStatus(reason);
     }
 
     public bool ConsumePlanForExecution()
     {
         if (!CanExecute) return false;
+        // Consuming permission must not stop listening for the outcome of the
+        // command. ROS can reject its start-state/scene preflight without motion.
+        _executionRequested = true;
+        HasExecutionFeedback = true;
+        _awaitingExecutionAcknowledgement = true;
+        _executionDeadline = Time.realtimeSinceStartup + _executionAcknowledgementTimeout;
+        _acceptingResults = false;
         _hasPlanningRequest = false;
         HasPlanResult = false;
         _isLastPlanSuccessful = false;
-        SetStatus("MTC execution requested. Plan again before another execution.");
+        SetStatus("MTC execution requested. Waiting for ROS acknowledgement...");
         return true;
+    }
+
+    public void RejectExecutionRequest(string reason)
+    {
+        if (!_executionRequested) return;
+        FinishExecution("request failed", reason);
+    }
+
+    private void FinishExecution(string status, string reason)
+    {
+        _hasPlanningRequest = false;
+        _executionRequested = false;
+        _awaitingExecutionAcknowledgement = false;
+        _executionDeadline = 0f;
+        _acceptingResults = false;
+        HasPlanResult = false;
+        _isLastPlanSuccessful = false;
+        SetStatus("MTC execution " + status + (string.IsNullOrEmpty(reason) ? "." : ": " + reason) +
+            " Plan again before another execution.");
     }
 
     private bool CanUseTilePlanner => _tilePlanningEnabled &&
@@ -91,11 +155,13 @@ public class MTCPlansManager : MonoBehaviour
         !RobotCoordinateService.IsCalibrationEditActive && RobotCoordinateService.Instance.IsInitialized &&
         ToolSelectionController.CanPlanPickPlace;
 
-    private bool IsCurrentRequest => _hasPlanningRequest && CanUseTilePlanner &&
+    private bool IsReviewContextValid => CanUseTilePlanner &&
         RobotCoordinateService.Instance.CalibrationRevision == _requestCalibrationRevision;
+    private bool IsCurrentRequest => _hasPlanningRequest && IsReviewContextValid;
 
     private void SetStatus(string status)
     {
+        if (StatusText != status) Debug.Log("MTC: " + status, this);
         StatusText = status;
         OnSuccessfulPlan?.Invoke(HasPlanResult && _isLastPlanSuccessful);
     }
@@ -116,13 +182,27 @@ public class MTCPlansManager : MonoBehaviour
 
     private void Update()
     {
+        if (_executionRequested)
+        {
+            if (_pendingTrajectory != null && !IsReviewContextValid) InvalidatePlan();
+            if (_awaitingExecutionAcknowledgement && Time.realtimeSinceStartup > _executionDeadline)
+            {
+                _awaitingExecutionAcknowledgement = false;
+                SetStatus("MTC execution acknowledgement timed out. The outcome is unknown; inspect the robot and ROS logs. Execute will not be resent.");
+            }
+            return;
+        }
         if (!_hasPlanningRequest) return;
         if (!IsCurrentRequest) { InvalidatePlan(); return; }
         if (_acceptingResults && Time.realtimeSinceStartup > _planningDeadline)
-            RejectPlanningRequest("No complete MTC preview received. Check ROS planning logs, then Plan again.");
+            RejectPlanningRequest(HasPlanResult && _isLastPlanSuccessful
+                ? "ROS MTC planning succeeded, but Unity did not receive and display its trajectory preview. Check the Unity robot model and ROS connection, then Plan again."
+                : "No complete MTC preview received. Check ROS planning logs, then Plan again.");
         else if (!_acceptingResults && (_UR16eTrajectoryVisualizer == null ||
             !_UR16eTrajectoryVisualizer.IsShowingTrajectory(_pendingTrajectory)))
             RejectPlanningRequest("The reviewed MTC trajectory is no longer displayed. Plan again.");
+        else if (_acceptingResults && HasPlanResult && _isLastPlanSuccessful && _pendingTrajectory != null)
+            ShowPreviewIfComplete();
     }
 
     private void OnPlanningStatus(StringMsg message)
@@ -134,11 +214,15 @@ public class MTCPlansManager : MonoBehaviour
         try { status = JsonUtility.FromJson<PlanningStatus>(message.data); }
         catch (System.Exception) { return; }
         if (status == null) return;
-        // createTask publishes false with no stages when clearing the previous
-        // task before planning. A terminal empty-task failure is reported on
-        // execution_status; do not mistake this initial reset for plan failure.
-        if (!status.overall_success && (status.stages == null || status.stages.Length == 0))
-        { SetStatus("Planning MTC pick / place from tool contact poses..."); return; }
+        // A freshly constructed MTC task may report its empty root container,
+        // rather than an empty stages array. Neither is a terminal failure. ROS
+        // publishes an error message / failed stage counts or execution_status
+        // planning_failed for a real failure.
+        if (IsPlanningReset(status))
+        {
+            if (!HasPlanResult) SetStatus("Planning MTC pick / place from tool contact poses...");
+            return;
+        }
         HasPlanResult = true;
         _isLastPlanSuccessful = status.overall_success;
         if (!_isLastPlanSuccessful)
@@ -147,27 +231,61 @@ public class MTCPlansManager : MonoBehaviour
             _acceptingResults = false;
             _pendingTrajectory = null;
             if (_UR16eTrajectoryVisualizer != null) _UR16eTrajectoryVisualizer.SetTrajectory(null);
-            SetStatus("MTC pick / place planning failed. Adjust tool targets and plan again.");
+            SetStatus(string.IsNullOrEmpty(status.message)
+                ? "ROS MTC pick / place planning failed. Adjust tool targets and plan again."
+                : "ROS MTC pick / place planning failed: " + status.message);
             return;
         }
         ShowPreviewIfComplete();
     }
 
+    private static bool IsPlanningReset(PlanningStatus status)
+    {
+        if (status.overall_success || !string.IsNullOrEmpty(status.message)) return false;
+        if (status.stages != null)
+            foreach (StageStatus stage in status.stages)
+                if (stage != null && (stage.solved != 0 || stage.failed != 0)) return false;
+        return true;
+    }
+
     private void OnExecutionStatus(StringMsg message)
     {
-        if (!IsCurrentRequest) return;
+        // Execution outcomes belong to the command already sent, independently
+        // of the currently selected mode, edited targets or calibration.
+        if (!_executionRequested && !IsCurrentRequest) return;
         MtcExecutionStatus status;
         try { status = JsonUtility.FromJson<MtcExecutionStatus>(message.data); }
         catch (System.Exception) { return; }
         if (status == null) return;
+        if (status.status == "ready")
+        {
+            // A ready callback can arrive after the separate result and preview
+            // topics, even after Execute. It must never re-arm a consumed plan.
+            _receivedExecutionReady = true;
+            return;
+        }
+        // Three independent topics can deliver the planning reset after the
+        // result/preview, even if Execute has already consumed the permission.
+        // One reset before ready is harmless; later invalidations revoke it.
+        bool initialReset = status.status == "invalidated" && !_receivedInitialExecutionReset && !_receivedExecutionReady &&
+            status.reason == "New planning request replaced the previous plan";
+        if (initialReset) { _receivedInitialExecutionReset = true; return; }
+        if (_executionRequested)
+        {
+            if (status.status == "executing")
+            {
+                _awaitingExecutionAcknowledgement = false;
+                SetStatus("MTC executing" + (string.IsNullOrEmpty(status.reason) ? "." : ": " + status.reason));
+            }
+            else if (status.status == "succeeded" || status.status == "failed" ||
+                status.status == "rejected" || status.status == "invalidated")
+                FinishExecution(status.status, status.reason);
+            return;
+        }
         if (status.status == "planning_failed" || status.status == "rejected" || status.status == "failed")
             RejectPlanningRequest("MTC planning " + status.status + ": " + status.reason);
         else if (status.status == "invalidated")
-        {
-            bool initialReset = _acceptingResults && !HasPlanResult &&
-                status.reason == "New planning request replaced the previous plan";
-            if (!initialReset) RejectPlanningRequest("MTC plan invalidated: " + status.reason + ". Plan again.");
-        }
+            RejectPlanningRequest("MTC plan invalidated: " + status.reason + ". Plan again.");
     }
 
     private void OnPlannedTrajectory(RobotTrajectoryMsg trajectory)
@@ -182,10 +300,15 @@ public class MTCPlansManager : MonoBehaviour
         if (!HasPlanResult) { SetStatus("MTC trajectory received. Waiting for its planning result..."); return; }
         if (_pendingTrajectory == null) { SetStatus("MTC plan succeeded. Waiting for its trajectory preview..."); return; }
         if (_UR16eTrajectoryVisualizer == null)
-        { RejectPlanningRequest("MTC trajectory visualizer is missing. Execution is blocked."); return; }
+        { RejectPlanningRequest("ROS MTC planning succeeded, but the Unity trajectory visualizer is missing. Execution is blocked."); return; }
+        if (!_UR16eTrajectoryVisualizer.IsReadyForPreview)
+        {
+            SetStatus("ROS MTC plan succeeded. Waiting for the Unity robot model to display its trajectory preview...");
+            return;
+        }
         _UR16eTrajectoryVisualizer.SetTrajectory(_pendingTrajectory);
         if (!_UR16eTrajectoryVisualizer.IsShowingTrajectory(_pendingTrajectory))
-        { RejectPlanningRequest("MTC trajectory could not be displayed. Execution is blocked."); return; }
+        { RejectPlanningRequest("ROS MTC planning succeeded, but its trajectory could not be displayed in Unity. Execution is blocked."); return; }
         _acceptingResults = false;
         SetStatus("MTC pick / place plan ready. Review the ghost path, then Execute.");
     }
@@ -219,4 +342,5 @@ public class PlanningStatus
 {
     public bool overall_success;
     public StageStatus[] stages;
+    public string message;
 }

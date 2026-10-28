@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 
-/// <summary>Advances the actual world menu's follow loop without ROS, XR hardware or runtime Start.</summary>
+/// <summary>The actual world menu and native XRI selection, without ROS or XR hardware.</summary>
 public sealed class MenuFollowTests
 {
     private readonly List<GameObject> _owned = new List<GameObject>();
@@ -15,9 +14,11 @@ public sealed class MenuFollowTests
     private Camera _camera;
     private Transform _canvas;
     private GameObject _panel;
+    private Component _interactionManager;
+    private readonly List<Component> _rays = new List<Component>();
 
     [SetUp]
-    public void CreateAnIndependentCameraAndTheActualWorldCanvas()
+    public void CreateTheActualWorldMenu()
     {
         foreach (Camera existing in UnityEngine.Object.FindObjectsByType<Camera>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             if (existing.CompareTag("MainCamera"))
@@ -25,28 +26,43 @@ public sealed class MenuFollowTests
                 _previousMainCameras.Add(existing.gameObject);
                 existing.gameObject.tag = "Untagged";
             }
-        GameObject view = New("Follow-test user view");
+        GameObject view = New("Menu-test user view");
         _camera = view.AddComponent<Camera>();
         view.tag = "MainCamera";
         view.transform.SetPositionAndRotation(new Vector3(0f, 1.6f, 0f), Quaternion.identity);
-        _camera.fieldOfView = 60f;
-        _camera.aspect = 1.5f;
-        Assert.That(Camera.main, Is.EqualTo(_camera));
-        GameObject owner = New("Follow-test menu owner");
+        GameObject owner = New("Menu-test owner");
         owner.SetActive(false);
         _menu = owner.AddComponent(TypeOf("ToolSelectionMenu"));
         Private("BuildMenu");
         _canvas = Get<Canvas>("_canvas").transform;
         _panel = Get<RectTransform>("_panel").gameObject;
         owner.SetActive(true);
-        _panel.SetActive(true);
+        // EditMode has no player lifecycle. Run the real callbacks explicitly,
+        // including XRI registration, rather than silently bypassing native selection.
+        Private("OnEnable");
+        _interactionManager = New("Menu-test XRI manager").AddComponent(TypeOf("UnityEngine.XR.Interaction.Toolkit.XRInteractionManager"));
+        Lifecycle(_interactionManager, "Awake");
+        Lifecycle(_interactionManager, "OnEnable");
+        Component grab = Get<Component>("_grabHandle");
+        grab.GetType().GetProperty("interactionManager").SetValue(grab, _interactionManager);
+        Lifecycle(grab, "Awake");
+        Lifecycle(grab, "OnEnable");
         Call("RecenterMenu");
-        Assert.That(GetProperty<bool>(_menu, "IsVisible"), Is.True);
+        Physics.SyncTransforms();
+        Assert.That(grab.gameObject.activeInHierarchy, Is.True, "Runtime OnEnable must show the grab bar.");
+        Assert.That(grab.GetType().GetProperty("interactionManager").GetValue(grab), Is.EqualTo(_interactionManager));
     }
 
     [TearDown]
-    public void CleanupDetachedCanvasAndRestoreThePreviousCameraTags()
+    public void Cleanup()
     {
+        if (_menu != null) Private("OnDisable");
+        foreach (Component ray in _rays)
+            if (ray != null) Lifecycle(ray, "OnDisable");
+        _rays.Clear();
+        Component grab = _menu != null ? Get<Component>("_grabHandle") : null;
+        if (grab != null) Lifecycle(grab, "OnDisable");
+        if (_interactionManager != null) Lifecycle(_interactionManager, "OnDisable");
         if (_canvas != null) UnityEngine.Object.DestroyImmediate(_canvas.gameObject);
         for (int index = _owned.Count - 1; index >= 0; index--)
             if (_owned[index] != null) UnityEngine.Object.DestroyImmediate(_owned[index]);
@@ -54,312 +70,194 @@ public sealed class MenuFollowTests
         foreach (GameObject previous in _previousMainCameras)
             if (previous != null) previous.tag = "MainCamera";
         _previousMainCameras.Clear();
-        Type connection = TypeOf("Unity.Robotics.ROSTCPConnector.ROSConnection");
-        Assert.That(Resources.FindObjectsOfTypeAll(connection), Is.Empty, "Following the user must not request ROS transport.");
+        Assert.That(Resources.FindObjectsOfTypeAll(TypeOf("Unity.Robotics.ROSTCPConnector.ROSConnection")), Is.Empty);
+        Assert.That(Hovered, Is.False);
     }
 
     [Test]
-    public void RecenterPlacesAnUprightMenuOneMetreAwayAndTwentyDegreesToTheRight()
+    public void RecenterStartsOneMetreAwayAndTwentyDegreesRight()
     {
         _camera.transform.rotation = Quaternion.Euler(25f, 40f, 22f);
         Call("RecenterMenu");
         Vector3 offset = _canvas.position - _camera.transform.position;
-        Vector3 horizontalView = Vector3.ProjectOnPlane(_camera.transform.forward, Vector3.up).normalized;
+        Vector3 horizontal = Vector3.ProjectOnPlane(_camera.transform.forward, Vector3.up).normalized;
         Assert.That(Vector3.ProjectOnPlane(offset, Vector3.up).magnitude, Is.EqualTo(1f).Within(0.00001f));
         Assert.That(offset.y, Is.EqualTo(-0.15f).Within(0.00001f));
-        Assert.That(Vector3.SignedAngle(horizontalView, Vector3.ProjectOnPlane(offset, Vector3.up), Vector3.up), Is.EqualTo(20f).Within(0.001f));
-        Assert.That(Vector3.Dot(_canvas.forward, offset.normalized), Is.GreaterThan(0.99999f));
-        Assert.That(Mathf.Abs(_canvas.right.y), Is.LessThan(0.00001f), "The panel must not inherit head roll.");
-        Assert.That(_canvas.parent, Is.Null, "Following remains a world-space operation.");
+        Assert.That(Vector3.SignedAngle(horizontal, Vector3.ProjectOnPlane(offset, Vector3.up), Vector3.up), Is.EqualTo(20f).Within(0.001f));
+        AssertFacing();
+        Assert.That(_canvas.parent, Is.Null);
     }
 
     [Test]
-    public void SmallHeadMotionInsideTheComfortZoneLeavesTheMenuStationary()
+    public void WalkingFarAwayOrTurningAroundNeverMovesTheMenuButItAlwaysFacesTheViewer()
     {
-        Pose original = PoseOf(_canvas);
-        _camera.transform.position += new Vector3(0.02f, 0.01f, 0f);
-        _camera.transform.rotation = Quaternion.Euler(0f, 15f, 0f);
-        Advance(4f, 0.02f);
-        AssertPose(PoseOf(_canvas), original);
+        Vector3 placed = _canvas.position;
+        foreach (Vector3 position in new[] { new Vector3(-3f, 1.9f, -2f), new Vector3(4f, 2.1f, 5f), new Vector3(0.1f, 0.5f, 0.1f) })
+        {
+            _camera.transform.SetPositionAndRotation(position, Quaternion.Euler(45f, 180f, 30f));
+            for (int frame = 0; frame < 200; frame++) Private("LateUpdate");
+            Assert.That(_canvas.position, Is.EqualTo(placed));
+            AssertFacing();
+        }
     }
 
     [Test]
-    public void ABriefExcursionDoesNotStartPositionFollowing()
+    public void OnlyTheSeparateVisibleBarHasAGrabCollider()
     {
-        Vector3 original = _canvas.position;
-        _camera.transform.position += Vector3.back * 3f;
-        Advance(0.6f, 0.01f);
-        Assert.That(Vector3.Distance(_canvas.position, original), Is.LessThan(0.000001f));
-        Advance(0.1f, 0.01f);
-        Assert.That(Vector3.Distance(_canvas.position, original), Is.GreaterThan(0.001f));
-        Assert.That(Vector3.Distance(_canvas.position, original), Is.LessThan(0.04f));
+        Component grab = Get<Component>("_grabHandle");
+        Collider[] colliders = _canvas.GetComponentsInChildren<Collider>(true);
+        Assert.That(colliders.Length, Is.EqualTo(1));
+        BoxCollider hit = grab.GetComponent<BoxCollider>();
+        Assert.That(hit, Is.EqualTo(colliders[0]));
+        Assert.That(hit.size.x * Mathf.Abs(hit.transform.lossyScale.x), Is.EqualTo(0.408f).Within(0.00001f));
+        Assert.That(hit.bounds.size.y, Is.GreaterThan(0.025f));
+        Assert.That(hit.bounds.size.z, Is.GreaterThan(0.01f));
+        Component image = grab.GetComponent(TypeOf("UnityEngine.UI.Image"));
+        Assert.That((bool)image.GetType().GetProperty("raycastTarget").GetValue(image), Is.False);
+        RectTransform bar = (RectTransform)grab.transform;
+        Assert.That(bar.anchoredPosition.y - bar.sizeDelta.y, Is.GreaterThan(0f), "The bar stays entirely above the panel.");
+        foreach (Component button in _panel.GetComponentsInChildren(TypeOf("UnityEngine.UI.Button"), true))
+            Assert.That(button.GetComponent<Collider>(), Is.Null, button.name);
     }
 
     [Test]
-    public void FarFollowingAndFacingAreGradualAndBoundedEveryFrame()
+    public void NativeRaySelectionMovesWithoutASnapAndReleaseRetainsWorldPosition()
     {
-        Vector3 original = _canvas.position;
-        _camera.transform.SetPositionAndRotation(_camera.transform.position + new Vector3(-3f, 0f, -1f), Quaternion.Euler(0f, 80f, 0f));
-        for (int frame = 0; frame < 150; frame++)
-        {
-            Pose before = PoseOf(_canvas);
-            Follow(0.02f);
-            Assert.That(Vector3.Distance(before.position, _canvas.position), Is.LessThanOrEqualTo(0.01201f), "Position is capped at 0.6 m/s.");
-            Assert.That(Quaternion.Angle(before.rotation, _canvas.rotation), Is.LessThanOrEqualTo(0.705f), "Facing is capped at 35 degrees/s.");
-        }
-        Assert.That(Vector3.Distance(original, _canvas.position), Is.GreaterThan(0.1f));
-        Assert.That(Vector3.Distance(original, _canvas.position), Is.LessThan(1.5f));
-        Assert.That(Vector3.Dot(_canvas.forward, (_canvas.position - _camera.transform.position).normalized), Is.GreaterThan(0.99f));
+        Component ray = SelectGrabWithRay();
+        Vector3 before = _canvas.position;
+        Private("LateUpdate");
+        Assert.That(Vector3.Distance(_canvas.position, before), Is.LessThan(0.00001f));
+        ray.transform.position += new Vector3(0.3f, 0.12f, -0.2f);
+        Private("LateUpdate");
+        Assert.That(Vector3.Distance(_canvas.position, before), Is.GreaterThan(0.2f));
+        AssertFacing();
+        NativeEvent("SelectExit", ray);
+        Assert.That(Get<bool>("_draggingMenu"), Is.False);
+        Vector3 placed = _canvas.position;
+        ray.transform.position += Vector3.right * 3f;
+        _camera.transform.position += new Vector3(3f, 0f, -3f);
+        for (int frame = 0; frame < 100; frame++) Private("LateUpdate");
+        Assert.That(_canvas.position, Is.EqualTo(placed));
+        AssertFacing();
     }
 
-    [TestCase("hover")]
-    [TestCase("pressed")]
-    [TestCase("alignment")]
-    [TestCase("target drag")]
-    public void InteractionFreezesPositionAndFacingThenResumesGently(string interaction)
+    [Test]
+    public void SelectedMenuStillSuppressesTargetCaptureAfterHoverExit()
     {
-        Action release;
-        if (interaction == "hover")
+        Component ray = SelectGrabWithRay();
+        NativeEvent("HoverEnter", ray);
+        NativeEvent("HoverExit", ray);
+        Assert.That(Hovered, Is.True, "URInputManager suppresses bumper capture and robot placement using this flag.");
+        NativeEvent("SelectExit", ray);
+        Assert.That(Hovered, Is.False);
+    }
+
+    [TestCase("focus")]
+    [TestCase("pause")]
+    [TestCase("disable")]
+    [TestCase("tracking loss")]
+    public void InterruptedGrabsReleaseNativeSelectionAndDoNotResume(string interruption)
+    {
+        Component ray = SelectGrabWithRay();
+        if (interruption == "focus") Private("OnApplicationFocus", false);
+        else if (interruption == "pause") Private("OnApplicationPause", true);
+        else if (interruption == "disable")
         {
-            PointerEvent("PointerEnter");
-            Assert.That((bool)_menu.GetType().GetProperty("IsHovered").GetValue(null), Is.True);
-            release = () => PointerEvent("PointerExit");
-        }
-        else if (interaction == "pressed")
-        {
-            GameObject button = _panel.GetComponentsInChildren(TypeOf("UnityEngine.UI.Button"), true)
-                .Single(component => component.name == "Plan preview").gameObject;
-            PointerEvent("PointerEnter");
-            PointerEvent("PointerDown", button);
-            PointerEvent("PointerExit"); // A pressed pointer may leave the panel before release.
-            Assert.That((bool)_menu.GetType().GetProperty("IsHovered").GetValue(null), Is.True);
-            release = () => PointerEvent("PointerUp", button);
-        }
-        else if (interaction == "alignment")
-        {
-            Component coordinates = New("Follow-test alignment service").AddComponent(TypeOf("RobotCoordinateService"));
-            coordinates.GetType().GetMethod("BeginCalibrationEdit").Invoke(coordinates, null);
-            release = () => coordinates.GetType().GetMethod("EndCalibrationEdit").Invoke(coordinates, null);
+            ((Behaviour)_menu).enabled = false;
+            Private("OnDisable");
         }
         else
         {
-            Component handles = New("Follow-test selected target").AddComponent(TypeOf("TargetRotationHandles"));
-            object free = Enum.Parse(TypeOf("TargetRotationHandles+RotationHandleKind"), "Free");
-            Assert.That(handles.GetType().GetMethod("BeginRotation").Invoke(handles, new[] { free, (object)Quaternion.identity, Vector3.zero }), Is.EqualTo(true));
-            release = () => handles.GetType().GetMethod("EndRotation").Invoke(handles, null);
+            GameObject inputOwner = New("Untracked controller input");
+            inputOwner.SetActive(false);
+            Component input = inputOwner.AddComponent(TypeOf("URInputManager"));
+            input.GetType().GetMethod("ResetPendingInteraction", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(input, null);
         }
-        Pose original = PoseOf(_canvas);
-        _camera.transform.SetPositionAndRotation(_camera.transform.position + new Vector3(-3f, 0.3f, -1f), Quaternion.Euler(0f, 90f, 0f));
-        Advance(3f, 0.02f);
-        AssertPose(PoseOf(_canvas), original);
-        release();
-        Advance(0.7f, 0.02f);
-        AssertPose(PoseOf(_canvas), original);
-        Advance(1f, 0.02f);
-        Assert.That(Vector3.Distance(_canvas.position, original.position), Is.GreaterThan(0.001f));
-        Assert.That(Vector3.Distance(_canvas.position, original.position), Is.LessThan(0.3f));
-    }
-
-    [Test]
-    public void AHiddenMenuStaysStillAndReenablingDoesNotSnapIt()
-    {
-        Pose original = PoseOf(_canvas);
-        PointerEvent("PointerDown");
-        Private("OnDisable");
-        Assert.That((bool)_menu.GetType().GetProperty("IsHovered").GetValue(null), Is.False, "Disabling clears unfinished pointer presses.");
-        _camera.transform.position += Vector3.back * 3f;
-        Advance(2f, 0.02f);
-        AssertPose(PoseOf(_canvas), original);
+        Assert.That(Get<bool>("_draggingMenu"), Is.False);
+        Assert.That(Hovered, Is.False);
+        Component grab = Get<Component>("_grabHandle");
+        Assert.That((bool)grab.GetType().GetProperty("isSelected").GetValue(grab), Is.False);
+        Vector3 placed = _canvas.position;
+        ray.transform.position += Vector3.right;
+        ((Behaviour)_menu).enabled = true;
         Private("OnEnable");
-        Follow(0.02f);
-        Assert.That(Vector3.Distance(_canvas.position, original.position), Is.LessThan(0.01201f));
-        Advance(2f, 0.02f);
-        Assert.That(Vector3.Distance(_canvas.position, original.position), Is.GreaterThan(0.01f));
-        Assert.That(Vector3.Distance(_canvas.position, original.position), Is.LessThan(1f));
+        Private("LateUpdate");
+        Assert.That(_canvas.position, Is.EqualTo(placed));
     }
 
     [Test]
-    public void LookingStraightUpOrDownKeepsAValidHorizontalPlacement()
+    public void ExplicitRecenterWorksAndQrPlacementDoesNotRelocateTheMenu()
+    {
+        Vector3 placed = _canvas.position;
+        Call("PositionAt", new Pose(new Vector3(100f, -10f, 40f), Quaternion.Euler(0f, 120f, 0f)));
+        Assert.That(_canvas.position, Is.EqualTo(placed));
+        _camera.transform.position += Vector3.right * 5f;
+        Private("LateUpdate");
+        Assert.That(_canvas.position, Is.EqualTo(placed));
+        Call("RecenterMenu");
+        Assert.That(Vector3.Distance(_canvas.position, placed), Is.GreaterThan(4f));
+        AssertFacing();
+    }
+
+    [Test]
+    public void VerticalViewingAndCoincidentViewerPreserveAValidPose()
     {
         foreach (float pitch in new[] { -90f, 90f })
         {
             _camera.transform.rotation = Quaternion.Euler(pitch, 73f, 0f);
             Call("RecenterMenu");
-            Vector3 offset = _canvas.position - _camera.transform.position;
-            Assert.That(RobotFrameMath.IsValidPose(PoseOf(_canvas)), Is.True);
-            Assert.That(Vector3.ProjectOnPlane(offset, Vector3.up).magnitude, Is.EqualTo(1f).Within(0.00001f));
-            Assert.That(offset.y, Is.EqualTo(-0.15f).Within(0.00001f));
-            Advance(1f, 0.02f);
-            Assert.That(RobotFrameMath.IsValidPose(PoseOf(_canvas)), Is.True);
+            Private("LateUpdate");
+            Assert.That(RobotFrameMath.IsValidPose(new Pose(_canvas.position, _canvas.rotation)), Is.True);
         }
+        _camera.transform.position = _canvas.position;
+        Private("LateUpdate");
+        Assert.That(RobotFrameMath.IsValidPose(new Pose(_canvas.position, _canvas.rotation)), Is.True);
     }
 
-    [Test]
-    public void ExplicitRecenterMovesImmediatelyWhileAutomaticFollowingDoesNotSnap()
+    private Component SelectGrabWithRay()
     {
-        Vector3 original = _canvas.position;
-        _camera.transform.SetPositionAndRotation(new Vector3(10f, 1.8f, -5f), Quaternion.Euler(0f, 140f, 0f));
-        Follow(0.02f);
-        Assert.That(Vector3.Distance(_canvas.position, original), Is.LessThan(0.01201f));
-        Call("RecenterMenu");
-        Assert.That(Vector3.Distance(_canvas.position, original), Is.GreaterThan(5f));
-        Assert.That(Vector3.ProjectOnPlane(_canvas.position - _camera.transform.position, Vector3.up).magnitude, Is.EqualTo(1f).Within(0.00001f));
+        Component grab = Get<Component>("_grabHandle");
+        Vector3 point = grab.GetComponent<BoxCollider>().bounds.center;
+        GameObject rayOwner = New("Menu-test laser");
+        rayOwner.SetActive(false);
+        rayOwner.transform.SetPositionAndRotation(point - Vector3.forward, Quaternion.identity);
+        Component ray = rayOwner.AddComponent(TypeOf("UnityEngine.XR.Interaction.Toolkit.Interactors.XRRayInteractor"));
+        ray.GetType().GetProperty("interactionManager").SetValue(ray, _interactionManager);
+        ray.GetType().GetProperty("enableUIInteraction").SetValue(ray, false);
+        Lifecycle(ray, "Awake");
+        rayOwner.SetActive(true);
+        Lifecycle(ray, "OnEnable");
+        _rays.Add(ray);
+        Physics.SyncTransforms();
+        NativeEvent("SelectEnter", ray);
+        Assert.That(Get<bool>("_draggingMenu"), Is.True, "Actual XRI selectEntered must begin movement.");
+        Assert.That(Hovered, Is.True);
+        return ray;
     }
 
-    [Test]
-    public void RobotPlacementDoesNotMoveAnAlreadyPositionedViewerMenu()
+    private void NativeEvent(string method, Component ray)
     {
-        Pose original = PoseOf(_canvas);
-        Call("PositionAt", new Pose(new Vector3(100f, -10f, 40f), Quaternion.Euler(0f, 120f, 0f)));
-        AssertPose(PoseOf(_canvas), original);
+        Component grab = Get<Component>("_grabHandle");
+        object manager = grab.GetType().GetProperty("interactionManager").GetValue(grab);
+        bool hover = method.StartsWith("Hover", StringComparison.Ordinal);
+        MethodInfo native = manager.GetType().GetMethod(method, new[] {
+            TypeOf("UnityEngine.XR.Interaction.Toolkit.Interactors." + (hover ? "IXRHoverInteractor" : "IXRSelectInteractor")),
+            TypeOf("UnityEngine.XR.Interaction.Toolkit.Interactables." + (hover ? "IXRHoverInteractable" : "IXRSelectInteractable")) });
+        native.Invoke(manager, new object[] { ray, grab });
     }
 
-    [Test]
-    public void FollowingAtThirtyAndOneHundredTwentyFramesPerSecondEndsInTheSameComfortZone()
+    private bool Hovered => (bool)_menu.GetType().GetProperty("IsHovered").GetValue(null);
+    private static void Lifecycle(Component component, string method) => component.GetType()
+        .GetMethod(method, BindingFlags.NonPublic | BindingFlags.Instance).Invoke(component, null);
+    private void AssertFacing()
     {
-        Vector3 cameraStart = _camera.transform.position;
-        _camera.transform.position = cameraStart + Vector3.back * 3f;
-        Advance(8f, 1f / 30f);
-        Vector3 atThirty = _canvas.position;
-        _camera.transform.position = cameraStart;
-        Call("RecenterMenu");
-        _camera.transform.position = cameraStart + Vector3.back * 3f;
-        Advance(8f, 1f / 120f);
-        Vector3 atOneTwenty = _canvas.position;
-        float difference = Vector3.Distance(atThirty, atOneTwenty);
-        Assert.That(difference, Is.LessThan(0.025f));
-        Assert.That(Vector3.ProjectOnPlane(atThirty - _camera.transform.position, Vector3.up).magnitude, Is.InRange(0.85f, 1.21f));
-        Assert.That(Vector3.ProjectOnPlane(atOneTwenty - _camera.transform.position, Vector3.up).magnitude, Is.InRange(0.85f, 1.21f));
-        Debug.Log("MenuFollowValidation: frame-rate-position-difference-metres=" + difference.ToString("R", System.Globalization.CultureInfo.InvariantCulture));
-    }
-
-    [Test]
-    public void TurningToLookAtTheMenuStopsThePositionChase()
-    {
-        _camera.transform.rotation = Quaternion.Euler(0f, 110f, 0f);
-        Advance(0.8f, 0.02f);
-        Assert.That(Vector3.Distance(_canvas.position, _camera.transform.position), Is.InRange(0.85f, 1.2f));
-        Vector3 horizontal = Vector3.ProjectOnPlane(_canvas.position - _camera.transform.position, Vector3.up);
-        _camera.transform.rotation = Quaternion.LookRotation(horizontal.normalized, Vector3.up);
-        Vector3 original = _canvas.position;
-        Advance(4f, 0.02f);
-        Assert.That(Vector3.Distance(_canvas.position, original), Is.LessThan(0.000001f));
-    }
-
-    [Test]
-    public void TurningAroundMovesTheMenuAroundTheViewerAndKeepsClearOfTheirFace()
-    {
-        _camera.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
-        float closest = float.PositiveInfinity;
-        Vector3 original = _canvas.position;
-        for (int frame = 0; frame < 300; frame++)
-        {
-            Follow(0.02f);
-            float clearance = Vector3.ProjectOnPlane(_canvas.position - _camera.transform.position, Vector3.up).magnitude;
-            closest = Mathf.Min(closest, clearance);
-            Assert.That(clearance, Is.GreaterThanOrEqualTo(0.85f), "A 180-degree turn must arc around the viewer rather than travel through their face.");
-        }
-        Assert.That(Vector3.Distance(_canvas.position, original), Is.GreaterThan(0.5f));
-        Debug.Log("MenuFollowValidation: turn-clearance-minimum-metres=" + closest.ToString("R", System.Globalization.CultureInfo.InvariantCulture));
-    }
-
-    [TestCase("focus")]
-    [TestCase("pause")]
-    public void ApplicationSuspensionClearsAnUnreleasedButtonAndResumesGently(string signal)
-    {
-        GameObject button = _panel.GetComponentsInChildren(TypeOf("UnityEngine.UI.Button"), true)
-            .Single(component => component.name == "Plan preview").gameObject;
-        PointerEvent("PointerEnter");
-        PointerEvent("PointerDown", button);
-        PointerEvent("PointerExit");
-        Assert.That((bool)_menu.GetType().GetProperty("IsHovered").GetValue(null), Is.True);
-        if (signal == "focus")
-        {
-            Private("OnApplicationFocus", false);
-            Private("OnApplicationFocus", true);
-        }
-        else
-        {
-            Private("OnApplicationPause", true);
-            Private("OnApplicationPause", false);
-        }
-        Assert.That((bool)_menu.GetType().GetProperty("IsHovered").GetValue(null), Is.False);
-        Assert.That(GetProperty<int>(Field(_menu, "_pressedPointers").GetValue(_menu), "Count"), Is.Zero);
-        Pose original = PoseOf(_canvas);
-        _camera.transform.position += new Vector3(-3f, 0f, -1f);
-        Advance(0.7f, 0.02f);
-        AssertPose(PoseOf(_canvas), original);
-        Advance(1f, 0.02f);
-        Assert.That(Vector3.Distance(_canvas.position, original.position), Is.GreaterThan(0.001f));
-        Assert.That(Vector3.Distance(_canvas.position, original.position), Is.LessThan(0.3f));
-    }
-
-    [Test]
-    public void InvalidDurationsAreIgnoredAndLongFrameHitchesCannotSnapTheMenu()
-    {
-        Pose original = PoseOf(_canvas);
-        _camera.transform.position += new Vector3(-3f, 0f, -1f);
-        foreach (float delta in new[] { 0f, -1f, float.NaN, float.PositiveInfinity })
-        {
-            Follow(delta);
-            AssertPose(PoseOf(_canvas), original);
-        }
-        Follow(10f);
-        Assert.That(Vector3.Distance(_canvas.position, original.position), Is.LessThanOrEqualTo(0.06001f));
-        Assert.That(Quaternion.Angle(_canvas.rotation, original.rotation), Is.LessThanOrEqualTo(3.505f));
-    }
-
-    [Test]
-    public void MissingCameraLeavesTheWorldMenuUntouched()
-    {
-        Pose original = PoseOf(_canvas);
-        _camera.gameObject.tag = "Untagged";
-        _camera.transform.position += new Vector3(-3f, 0f, -1f);
-        Advance(3f, 0.02f);
-        AssertPose(PoseOf(_canvas), original);
-    }
-
-    [Test]
-    public void DisablingFollowingKeepsTheWorldMenuStationary()
-    {
-        Field(_menu, "_followUser").SetValue(_menu, false);
-        Pose original = PoseOf(_canvas);
-        _camera.transform.SetPositionAndRotation(_camera.transform.position + Vector3.back * 3f, Quaternion.Euler(0f, 120f, 0f));
-        Advance(3f, 0.02f);
-        AssertPose(PoseOf(_canvas), original);
-    }
-
-    private void Follow(float deltaTime) => Private("UpdateFollow", deltaTime);
-    private void Advance(float duration, float deltaTime)
-    {
-        int count = Mathf.RoundToInt(duration / deltaTime);
-        for (int frame = 0; frame < count; frame++) Follow(deltaTime);
-    }
-    private void PointerEvent(string eventName, GameObject target = null)
-    {
-        Type triggerType = TypeOf("UnityEngine.EventSystems.EventTrigger");
-        object trigger = (target != null ? target : _panel).GetComponent(triggerType);
-        IList entries = (IList)triggerType.GetProperty("triggers").GetValue(trigger);
-        object entry = entries.Cast<object>().Single(value => value.GetType().GetField("eventID").GetValue(value).ToString() == eventName);
-        object callback = entry.GetType().GetField("callback").GetValue(entry);
-        Type pointerType = TypeOf("UnityEngine.EventSystems.PointerEventData");
-        object pointer = Activator.CreateInstance(pointerType, new object[] { null });
-        pointerType.GetProperty("pointerId").SetValue(pointer, 41);
-        callback.GetType().GetMethod("Invoke").Invoke(callback, new[] { pointer });
+        Assert.That(Vector3.Dot(_canvas.forward, (_canvas.position - _camera.transform.position).normalized), Is.GreaterThan(0.99999f));
+        Assert.That(Mathf.Abs(_canvas.right.y), Is.LessThan(0.00001f));
     }
     private GameObject New(string name) { var value = new GameObject(name); _owned.Add(value); return value; }
-    private T Get<T>(string name) => (T)Field(_menu, name).GetValue(_menu);
-    private static FieldInfo Field(object value, string name) => value.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-        ?? throw new InvalidOperationException("Missing field " + value.GetType().Name + "." + name);
+    private T Get<T>(string name) => (T)_menu.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(_menu);
     private object Call(string name, params object[] args) => _menu.GetType().GetMethod(name).Invoke(_menu, args);
     private object Private(string name, params object[] args) => _menu.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic).Invoke(_menu, args);
-    private static T GetProperty<T>(object value, string name) => (T)value.GetType().GetProperty(name).GetValue(value);
     private static Type TypeOf(string name) => AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(name)).FirstOrDefault(t => t != null)
         ?? throw new InvalidOperationException("Missing runtime type " + name);
-    private static Pose PoseOf(Transform value) => new Pose(value.position, value.rotation);
-    private static void AssertPose(Pose actual, Pose expected)
-    {
-        Assert.That(Vector3.Distance(actual.position, expected.position), Is.LessThan(0.000001f));
-        Assert.That(Quaternion.Angle(actual.rotation, expected.rotation), Is.LessThan(0.001f));
-    }
 }

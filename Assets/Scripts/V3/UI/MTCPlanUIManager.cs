@@ -74,7 +74,8 @@ public class MTCPlanUIManager : MonoBehaviour
         bool tcp = _input == null || _input.IsTcpMode;
         _previousTcpMode = tcp;
         if (_textBox != null)
-            _textBox.text = tcp
+            _textBox.text = _MTCPlansManager != null && _MTCPlansManager.HasExecutionFeedback
+                ? _MTCPlansManager.StatusText : tcp
                 ? (_tcpPlanning != null ? _tcpPlanning.StatusText : "Capture TCP A and B, then plan a preview.")
                 : (_MTCPlansManager != null ? _MTCPlansManager.StatusText : "Capture pick and place surfaces, then Plan.");
         if (_sharedMenu == null) _sharedMenu = FindFirstObjectByType<ToolSelectionMenu>();

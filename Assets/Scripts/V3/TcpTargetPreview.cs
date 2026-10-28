@@ -1,6 +1,5 @@
 using RosMessageTypes.Geometry;
 using RosMessageTypes.Std;
-using TMPro;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 using UnityEngine;
 
@@ -19,7 +18,7 @@ public class TcpTargetPreview : MonoBehaviour
     private sealed class Marker
     {
         public Transform Root;
-        public TextMeshPro Label;
+        public TargetNameLabel Label;
         public string Caption;
         public TargetRotationHandles RotationHandles;
         public ToolPoseVisual ToolVisual;
@@ -59,12 +58,12 @@ public class TcpTargetPreview : MonoBehaviour
         Marker marker;
         if (isPick)
         {
-            if (_pick == null) _pick = CreateMarker("TCP A — exact tool pose", Color.green, out _pickMaterial);
+            if (_pick == null) _pick = CreateMarker("TCP A — exact tool pose", Color.green, out _pickMaterial, "A");
             marker = _pick;
         }
         else
         {
-            if (_place == null) _place = CreateMarker("TCP B — exact tool pose", new Color(1f, 0.6f, 0.05f), out _placeMaterial);
+            if (_place == null) _place = CreateMarker("TCP B — exact tool pose", new Color(1f, 0.6f, 0.05f), out _placeMaterial, "B");
             marker = _place;
         }
         if (marker.RotationHandles == null)
@@ -118,33 +117,10 @@ public class TcpTargetPreview : MonoBehaviour
     {
         if (marker.Root.parent != trackingSpace) marker.Root.SetParent(trackingSpace, true);
         marker.Root.SetPositionAndRotation(worldPose.position, worldPose.rotation);
+        if (marker.Label != null) marker.Label.Refresh();
     }
 
-    private void LateUpdate()
-    {
-        UpdateLabel(_live);
-        UpdateLabel(_pick);
-        UpdateLabel(_place);
-    }
-
-    private static void UpdateLabel(Marker marker)
-    {
-        if (marker == null || marker.Label == null || !marker.Root.gameObject.activeInHierarchy) return;
-        string coordinates = "Scan QR and place robot to inspect ROS coordinates";
-        if (RobotCoordinateService.Instance.TryConvertWorldPoseToLocalPose(
-                new Pose(marker.Root.position, marker.Root.rotation), out Pose local))
-        {
-            PointMsg ros = local.position.To<FLU>();
-            coordinates = $"{RobotCoordinateService.Instance.RosBaseFrameId}: {ros.x:F3}, {ros.y:F3}, {ros.z:F3} m";
-        }
-        string editing = marker.RotationHandles != null ? "\nTrigger-drag tool / rings to rotate; bumper: menu" : "";
-        string geometry = marker.ToolVisual != null && !marker.ToolVisual.HasVisual ? "\n" + marker.ToolVisual.StatusText : "";
-        marker.Label.text = $"{marker.Caption}\n{coordinates}{geometry}{editing}";
-        marker.Label.transform.position = marker.Root.position + Vector3.up * (marker.RotationHandles != null ? 0.17f : 0.09f);
-        if (Camera.main != null) marker.Label.transform.rotation = Camera.main.transform.rotation;
-    }
-
-    private Marker CreateMarker(string caption, Color color, out Material material)
+    private Marker CreateMarker(string caption, Color color, out Material material, string targetName = null)
     {
         Shader shader = _markerMaterial != null ? _markerMaterial.shader : Shader.Find("Universal Render Pipeline/Unlit");
         material = _markerMaterial != null ? new Material(_markerMaterial) : new Material(shader);
@@ -154,15 +130,7 @@ public class TcpTargetPreview : MonoBehaviour
         root.layer = 2;
         ToolPoseVisual visual = ToolPoseVisual.Attach(root.transform, color,
             caption == "TCP tool aim" ? 0.35f : 0.72f);
-        GameObject labelObject = new GameObject("Target label", typeof(TextMeshPro));
-        labelObject.layer = 2;
-        labelObject.transform.SetParent(root.transform, false);
-        labelObject.transform.localScale = Vector3.one * 0.05f;
-        TextMeshPro label = labelObject.GetComponent<TextMeshPro>();
-        label.fontSize = 2f;
-        label.color = color;
-        label.alignment = TextAlignmentOptions.Center;
-        label.rectTransform.sizeDelta = new Vector2(12f, 3f);
+        TargetNameLabel label = targetName != null ? TargetNameLabel.Attach(root.transform, targetName, color) : null;
         return new Marker { Root = root.transform, Label = label, Caption = caption, ToolVisual = visual };
     }
     private void OnDestroy()

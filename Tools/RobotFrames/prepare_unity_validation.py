@@ -65,7 +65,7 @@ def main():
                 elif not guid.startswith("0000000000000000"):
                     missing.add(guid)
 
-    for folder in ("Assets/Scripts/V3/Frames", "Assets/Tests/RobotFrames", "Assets/Resources/RobotModels", "Assets/RosMessages",
+    for folder in ("Assets/Scripts/V3/Frames", "Assets/Tests/RobotFrames", "Assets/Resources/RobotModels", "Assets/Resources/RobotTargetMarkers", "Assets/RosMessages",
                    "Assets/Branding/UnityROSML"):
         for source in (PROJECT / folder).rglob("*"):
             if source.is_file() and source.suffix != ".meta":
@@ -92,6 +92,9 @@ def main():
                     "Assets/Scripts/V3/ROS/TcpPlanningController.cs", "Assets/Scripts/V3/TcpTargetPreview.cs",
                     "Assets/Scripts/V3/URInputManager.cs", "Assets/Scripts/V3/TargetRotationHandles.cs",
                     "Assets/Scripts/V3/TargetPoseContextMenu.cs", "Assets/Scripts/V3/ToolPoseVisual.cs",
+                    "Assets/Scripts/V3/NormalTargetMarker.cs",
+                    "Assets/Scripts/V3/TargetNameLabel.cs",
+                    "Assets/Scripts/V3/TargetMarkerMaterials.cs",
                     "Assets/Scripts/V3/XRTrackingSpaceResolver.cs", "Assets/Scripts/V3/UI/MTCPlanUIManager.cs",
                     "Assets/Scripts/V3/ROS/RobotCoordinateService.cs", "Assets/Scripts/V3/ROS/RobotStateService.cs",
                     "Assets/Scripts/V3/ROS/MTCPlansManager.cs", "Assets/Scripts/V3/ROS/PickPlaceController.cs",
@@ -108,13 +111,23 @@ def main():
     cache = PROJECT / "Library/PackageCache"
     wanted = ("com.unity.ext.nunit", "com.unity.test-framework", "com.unity.robotics.urdf-importer",
               "com.unity.editorcoroutines", "com.unity.inputsystem", "com.unity.ugui",
-              "com.unity.xr.interaction.toolkit", "com.unity.xr.core-utils", "com.unity.mathematics")
+              "com.unity.xr.interaction.toolkit", "com.unity.xr.core-utils", "com.unity.mathematics",
+              "com.unity.render-pipelines.universal")
     dependencies = {}
-    for name in wanted:
+    pending_packages = list(wanted)
+    while pending_packages:
+        name = pending_packages.pop()
+        if name in dependencies:
+            continue
+        if name.startswith("com.unity.modules."):
+            dependencies[name] = "1.0.0"
+            continue
         matches = sorted(cache.glob(name + "@*"))
         if len(matches) != 1:
             raise ValueError(f"Expected one cached {name}, found {len(matches)}")
         dependencies[name] = "file:" + matches[0].as_posix()
+        manifest = json.loads((matches[0] / "package.json").read_text(encoding="utf-8-sig"))
+        pending_packages.extend(manifest.get("dependencies", {}))
     for module in ("physics", "jsonserialize", "imgui", "uielements", "ui", "animation", "imageconversion",
                    "audio", "unitywebrequest", "xr"):
         dependencies["com.unity.modules." + module] = "1.0.0"
@@ -171,10 +184,26 @@ public sealed class URInstantiator : MonoBehaviour {
     public void RestoreDefaultCalibration() { CalibrationStateChanged?.Invoke(); }
     public void InstantiateUR() => throw new InvalidOperationException("Offline validation must never place a robot.");
 }
+// Exercises the actual public Execute path without constructing ROS transport.
+public sealed class OfflineMtcExecutionController : PickPlaceController {
+    public int PublishCount;
+    public bool PublishSucceeds = true;
+    protected override bool TryPublishExecutionRequest(out string reason) {
+        PublishCount++;
+        reason = PublishSucceeds ? null : "Offline transport refused request";
+        return PublishSucceeds;
+    }
+}
 ''')
     settings = DESTINATION / "ProjectSettings"
     settings.mkdir(parents=True, exist_ok=True)
     shutil.copy2(PROJECT / "ProjectSettings/ProjectVersion.txt", settings / "ProjectVersion.txt")
+    for asset in ("Mobile_RPAsset.asset", "Mobile_Renderer.asset", "UniversalRenderPipelineGlobalSettings.asset"):
+        copy_file(PROJECT / "Assets/Settings" / asset)
+    graphics = (PROJECT / "ProjectSettings/GraphicsSettings.asset").read_text(encoding="utf-8-sig")
+    mobile_guid = GUID.search((PROJECT / "Assets/Settings/Mobile_RPAsset.asset.meta").read_text()).group(1)
+    graphics = re.sub(r"  m_CustomRenderPipeline:.*", f"  m_CustomRenderPipeline: {{fileID: 11400000, guid: {mobile_guid}, type: 2}}", graphics)
+    (settings / "GraphicsSettings.asset").write_text(graphics, encoding="utf-8")
     (settings / "ProjectSettings.asset").write_text("%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n--- !u!129 &1\nPlayerSettings:\n  m_ObjectHideFlags: 0\n  serializedVersion: 28\n  activeInputHandler: 1\n  scriptingDefineSymbols:\n    Standalone: ROS2\n", encoding="utf-8")
     (DESTINATION / "preparation-report.json").write_text(json.dumps({
         "sourceProject": str(PROJECT), "copiedPrefabAssetCount": len(copied),

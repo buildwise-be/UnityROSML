@@ -65,6 +65,9 @@ public sealed class TcpPlanningController : MonoBehaviour
 
     public void Plan()
     {
+        if (MTCPlansManager.ActiveExecution != null)
+        { SetStatus("An MTC execution request is unresolved. Wait for its ROS outcome before planning another task."); return; }
+        MTCPlansManager.DismissCompletedExecutionFeedback();
         if (IsPlanning) { SetStatus("A TCP plan is already pending. Change a target to cancel it, or wait for the result."); return; }
         InvalidatePlan(null);
         if (!TryValidate(out string reason)) { SetStatus(reason); return; }
@@ -177,7 +180,9 @@ public sealed class TcpPlanningController : MonoBehaviour
     private bool TryValidate(out string reason)
     {
         reason = null;
-        if (RobotCoordinateService.IsCalibrationEditActive)
+        if (MTCPlansManager.ActiveExecution != null)
+            reason = "An MTC execution request is unresolved. Wait for its ROS outcome before planning or executing another task.";
+        else if (RobotCoordinateService.IsCalibrationEditActive)
             reason = "Finish or cancel robot alignment before planning or executing.";
         else if (_connection == null || !_connection.HasConnectionThread || _connection.HasConnectionError)
             reason = "ROS is disconnected. Start the ROS stack and reconnect.";

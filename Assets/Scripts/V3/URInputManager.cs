@@ -93,6 +93,8 @@ public class URInputManager : MonoBehaviour
 
     public void PlanCurrentTask()
     {
+        if (MTCPlansManager.ActiveExecution != null) return;
+        MTCPlansManager.DismissCompletedExecutionFeedback();
         ApplyCaptureMode();
         if (IsTcpMode)
         {
@@ -104,6 +106,7 @@ public class URInputManager : MonoBehaviour
 
     public void ExecuteCurrentTask()
     {
+        if (MTCPlansManager.ActiveExecution != null) return;
         ApplyCaptureMode();
         if (IsTcpMode)
         {
@@ -206,6 +209,7 @@ public class URInputManager : MonoBehaviour
         _contextBumperConsumedUntil = 0f;
         TargetPoseContextMenu.CloseAll();
         TargetRotationHandles.CancelAllInteractions();
+        ToolSelectionMenu.CancelAllInteractions();
         if (_tcpTargetPreview != null) _tcpTargetPreview.SetTrackingLost();
         if (_pickPlaceController != null) _pickPlaceController.SetTrackingLost();
     }

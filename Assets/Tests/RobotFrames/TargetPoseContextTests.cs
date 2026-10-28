@@ -16,7 +16,7 @@ public sealed class TargetPoseContextTests
     private Transform _target, _tracking;
     private int _changes;
 
-    /// <summary>Graphics-enabled preview of the actual runtime tool ghost and target menu, without ROS.</summary>
+    /// <summary>Graphics-enabled preview of the actual contact ball, normal arrow and menu, without ROS.</summary>
     public static void RenderToolContactPreview()
     {
         if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
@@ -31,13 +31,14 @@ public sealed class TargetPoseContextTests
             preview._tracking.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             preview._target.SetPositionAndRotation(new Vector3(-0.15f, -0.03f, 0f), Quaternion.Euler(-50f, 0f, -20f));
             Call(preview._menu, "RebaseAtCurrentPose");
-            Component visual = (Component)TypeOf("ToolPoseVisual").GetMethod("Attach").Invoke(null,
-                new object[] { preview._target, new Color(0.15f, 0.95f, 0.55f), 0.78f });
-            RosRobotModel model = RosRobotModelCatalog.Load().Find("kenos_sl");
-            Assert.That(Call(visual, "Refresh", null, model), Is.EqualTo(true));
+            Component marker = (Component)TypeOf("NormalTargetMarker").GetMethod("Attach").Invoke(null,
+                new object[] { preview._target, Color.green, 1f });
+            Call(marker, "SetBallVisible", false);
+            Material ballMaterial = new Material(Shader.Find("Unlit/Color")) { color = Color.green };
             Component handles = (Component)TypeOf("TargetRotationHandles").GetMethod("Attach").Invoke(null,
-                new object[] { preview._target, null, 0.035f });
-            Call(handles, "ConfigureToolInteraction", Get<Bounds>(visual, "TcpLocalBounds"));
+                new object[] { preview._target, ballMaterial, 0.035f });
+            UnityEngine.Object.DestroyImmediate(ballMaterial);
+            Call(handles, "ConfigureNormalInteraction");
             camera = Camera.main;
             camera.transform.SetPositionAndRotation(new Vector3(0f, 0.10f, -1f), Quaternion.identity);
             camera.orthographic = true;
@@ -68,7 +69,7 @@ public sealed class TargetPoseContextTests
             RenderTexture.active = image;
             pixels.ReadPixels(new Rect(0f, 0f, 1024f, 768f), 0, 0);
             pixels.Apply();
-            string path = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "tool-contact-context.png"));
+            string path = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "normal-contact-context.png"));
             File.WriteAllBytes(path, pixels.EncodeToPNG());
             Debug.Log("ToolContactPreview: " + path);
         }

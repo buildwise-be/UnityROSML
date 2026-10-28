@@ -30,16 +30,25 @@ public sealed class ToolCalibrationMenuTests
             Camera camera = preview._camera.GetComponent<Camera>();
             camera.transform.position = new Vector3(0f, 0f, -1f);
             camera.orthographic = true;
-            camera.orthographicSize = 0.32f;
+            camera.orthographicSize = 0.45f;
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.08f, 0.11f, 0.15f, 1f);
             Canvas canvas = preview.Get<Canvas>("_canvas");
             canvas.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             canvas.worldCamera = camera;
             preview.Get<RectTransform>("_panel").gameObject.SetActive(true);
-            target = new RenderTexture(880, 1160, 24, RenderTextureFormat.ARGB32);
+            // This graphics fixture keeps its owner inactive to suppress runtime transport.
+            preview.Get<Component>("_grabHandle").gameObject.SetActive(true);
+            Component visualizer = preview._owner.AddComponent(RuntimeType("UR16eTrajectoryVisualizer"));
+            LineRenderer path = preview._owner.AddComponent<LineRenderer>();
+            path.enabled = false;
+            path.widthMultiplier = 0.025f;
+            visualizer.GetType().GetField("trajectoryLineRenderer").SetValue(visualizer, path);
+            preview._menu.GetType().GetField("_trajectoryVisualizer", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(preview._menu, visualizer);
+            preview.Invoke("RefreshPathThickness");
+            target = new RenderTexture(880, 1480, 24, RenderTextureFormat.ARGB32);
             camera.targetTexture = target;
-            pixels = new Texture2D(880, 1160, TextureFormat.RGB24, false);
+            pixels = new Texture2D(880, 1480, TextureFormat.RGB24, false);
 
             Type textType = RuntimeType("TMPro.TMP_Text");
             Type fontType = RuntimeType("TMPro.TMP_FontAsset");
@@ -57,13 +66,13 @@ public sealed class ToolCalibrationMenuTests
             input.GetType().GetMethod("UseTcpPreview").Invoke(input, null);
             preview.Invoke("RefreshTask");
             preview.SetText("_status", "Offline menu preview. Live ROS model status appears here.");
-            preview.SetText("_taskStatus", "Capture TCP A and B, then Plan preview. Inspect the ghost path before Execute.");
+            preview.SetText("_taskStatus", "Capture TCP A and B, then Plan preview. Review the virtual arm and ghost path before Execute.");
             preview.SetText("_qrStatus", "Marker: 87 mm · robot-lab\nSaved QR-to-base alignment is kept on this headset.");
             preview.RenderPreview(camera, target, pixels, "calibration-menu-task.png");
 
             input.GetType().GetMethod("UseTilePickPlace").Invoke(input, null);
             preview.Invoke("RefreshTask");
-            preview.SetText("_taskStatus", "Capture pick and place top surfaces. Plan and inspect the approach, grasp, transfer and release before Execute.");
+            preview.SetText("_taskStatus", "Capture pick and place contact points and normals. Review the planned approach, grasp, transfer and release before Execute.");
             preview.SetText("_qrStatus", "Marker: 87 mm · robot-lab\nSaved QR-to-base alignment is kept on this headset.");
             preview.RenderPreview(camera, target, pixels, "calibration-menu-pick-place.png");
 
