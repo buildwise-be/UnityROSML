@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-10-28T13:59:21.665713+00:00",
+  "unityVersion": "6000.0.84f1",
+  "unityTests": {
+    "total": 173,
+    "passed": 173,
+    "failed": 0,
+    "skipped": 0
+  },
+  "fixtures": [
+    "CalibrationCommandGateTests",
+    "MenuFollowTests",
+    "PointPlacementMenuTests",
+    "RobotCoverLandmarkTests",
+    "RobotPointRegistrationMathTests",
+    "RobotPointRegistrationWorkflowTests",
+    "TaskModeSwitchTests",
+    "ToolCalibrationMenuTests"
+  ],
+  "testResults": {
+    "path": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\PointRegistrationValidation\\point-results.xml",
+    "sha256": "f071d5535193ae0d44dedb35c0103848814d78a140fe92d37e31ca8da48fc5ec"
+  },
+  "validatedSources": [
+    {
+      "path": "Assets/Prefabs/ur16e_kenos/ur16e_kenos.prefab",
+      "sha256": "78427e1fbd1d84f807d06937df1b7f265963ba867c3a1c7e0ee8bd3d7e19c2f3"
+    },
+    {
+      "path": "Assets/Resources/RobotModels/Models.json",
+      "sha256": "f5ffba5bdee22bae41595cbd7fb6f70f9f1019dfa5a18ea51665f7e6f3708bec"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotCalibrationStore.cs",
+      "sha256": "09a84795fb0983bb1cf4239fb1a345e983b1941bb1d5b7fe4201975f0ac3ee36"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotCoverLandmarks.cs",
+      "sha256": "b780ecdb48ca45bb64c6d04a2263f46242ecdce2cf7a12a0a08f94bf4c408ce3"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotFrameMath.cs",
+      "sha256": "9776aa4a05be4d8db0d463283f666bb15b156bf5f9f615d5251fc6df084dac31"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotPointRegistrationMath.cs",
+      "sha256": "09187b4d0558af7da57bd39aaeff82720486148f18085b3c74bd19f7241616ec"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotDescription.cs",
+      "sha256": "ff33d874821b402e9f7a27b6abcd24dbbe23fa5902bc55fca8d2657961fb12b1"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotModel.cs",
+      "sha256": "7fbfe618978cc0d3c78ab69660ffa56ca7f2c233ef97a1f5033bca133ea42fb0"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpPlanReview.cs",
+      "sha256": "dd853d13d85e81a1783452140d717dc64250620c35dcb4957f06807e9a02899a"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpTargetRotationMath.cs",
+      "sha256": "c087c5e2656cfe4ff8ac9a01bcf726c05c3e0125e6a0714d234e3ee99c7032ae"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/JointStateSubscriber.cs",
+      "sha256": "84554a93d48645f03923d1da7bc145d97cf540755194d383090ac5fd24e7b601"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotCoordinateService.cs",
+      "sha256": "bb32afe25c3da91131027ac663e65b0b6b1bbab698cc6e20276fc004011face7"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotStateService.cs",
+      "sha256": "66340d3293f2a8339a62908979ea5d71543d3dfd66fd7d5d81a28c5d2b0cceb7"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RosRobotRig.cs",
+      "sha256": "a453489e6e94a4ba7ddbffbbfcdfcd9a00a4bcedb40f26dbb50cef3803bdf704"
+    },
+    {
+      "path": "Assets/Scripts/V3/RobotPointRegistration.cs",
+      "sha256": "1f6b742e3c2177f0f8af44d4e1ca5e3bbb30fe864ec8fc07ed1cc34999cefd3f"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "c865ae13674a2395bb19b81dfd480d9db2d2dabc3589f86e002fec674bb06f60"
+    },
+    {
+      "path": "Assets/Scripts/V3/URInputManager.cs",
+      "sha256": "7b18decb251dc20f0ff527815ecad0f9c6b470407961cbf64e47d83390a46ddd"
+    },
+    {
+      "path": "Assets/Scripts/V3/URInstantiator.cs",
+      "sha256": "1d8853f2a1d9f00b65f02117551e1cbb03d1ce7c0b660698652fe9a8793c3356"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/CalibrationCommandGateTests.cs",
+      "sha256": "b3a515ba44b3adcc8879380a05ac67ae63670028a01ed72102ba3c5c3dbeb8c2"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/CalibrationProfileTests.cs",
+      "sha256": "f011b9a934e79f4b8fe93f4aabfed221b9c58b7764d4129e976d1f017614f989"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/MenuFollowTests.cs",
+      "sha256": "befd0f754b35563d05dbb8ce765580255d7b5387c3cbb5255412bcb3019df721"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/MtcExecutionWorkflowTests.cs",
+      "sha256": "2ab1512f854f06f0fd5a4dcc90d6544262cdf16e55d379567d741e90d55fa76a"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/PickPlaceToolContactTests.cs",
+      "sha256": "f4a645cd6ee3ea0681192237c1be17b931cae91c792c3786c6f06a2185dd9611"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/PointPlacementMenuTests.cs",
+      "sha256": "78a49e06c23c68a7d35e9dd49d0fc3cd01de6886029e230ef5361710abd22345"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotCoverLandmarkTests.cs",
+      "sha256": "8fe354630842dc7ac112378f8b82d2db636ba83adc3c450b0ff81a9dc6b64c23"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotDescriptionMessageTests.cs",
+      "sha256": "ad8c370da3bff1805281448341ef06be8e1a2830323d48f8e68c33803511e2e8"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotFrameMathTests.cs",
+      "sha256": "a3df440bf6120fece0d94691c67679e73d2830aecf38033622e440cca2a95fb9"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotPointRegistrationMathTests.cs",
+      "sha256": "3ec9a06545ca02e7330a586242961f429a9803656b861b5bc8d92dffc28af8f0"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotPointRegistrationWorkflowTests.cs",
+      "sha256": "fc6c2967a75909b2cbdce7b6c67507ef0a13e393cd8359e781d1396ec96bc45f"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotModelTests.cs",
+      "sha256": "577cf737541a51202c4764c0f4b54ab1d5aabbbbc9aa74525a649b4e143cfe67"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotRigPrefabTests.cs",
+      "sha256": "030d39943498bab3325272551980b0e50f2388db50dd5ef8280736084752ece5"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TargetPoseContextTests.cs",
+      "sha256": "7559e8c9b48499f412d85a8479d980aff5fe63b573873ab365786eed5310edc0"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TaskModeSwitchTests.cs",
+      "sha256": "b35b2e96a151c325da504d764310d5c2eaa9987511d8ee23e24cca0a595781a3"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpPlanReviewTests.cs",
+      "sha256": "267e72eb1a89e67c2821593c396f69d7c64c02121e7551b4f82caa214dcd3070"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpPlanningControllerTests.cs",
+      "sha256": "647c38a5ab06ad680eb5cbce01c26dcaddc30b5b0f31b91e30d5afdeae249668"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpTargetRotationMathTests.cs",
+      "sha256": "51fccecb55868bca24b688046cd9e74d4a645b3b3554dc8d4eae70a017ea67b8"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolCalibrationMenuTests.cs",
+      "sha256": "20ef7116c4851285f112823a1e79081e0c92d8bc22559c39fe71b8c66967a99c"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolPoseVisualTests.cs",
+      "sha256": "7e7415bb54fe83f3fac4e131d19eaf994d7f310f31ecaa1765d08e535d482229"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolSelectionControllerTests.cs",
+      "sha256": "51b6af35c2b2e14e33e1bed8468e017a6363227a18a14cfa54416a1b0afba9fb"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TrajectoryPlaybackTests.cs",
+      "sha256": "6ed825a67a6fb38c00ff48b32d1939aa2dc50e907b9bb3442911b8b4ef37982d"
+    }
+  ],
+  "hardwareExercised": false,
+  "networkExercised": false,
+  "activeProjectOpened": false,
+  "boundaries": [
+    "Actual placement/subscriber/rig/input/menu runtime sources, native articulation physics and CAD mesh contacts.",
+    "QR hardware is an inert synthetic-pose stub. ROSService throws before any connection or subscription.",
+    "No headset tracking, physical tip measurement, physical cover measurement or real robot motion was tested.",
+    "Fit residual measures agreement of four contacts, not absolute physical alignment accuracy."
+  ],
+  "menuPreview": {
+    "path": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\PointRegistrationValidation\\point-placement-menu.png",
+    "sha256": "e4c6d22bb7de523c1b0d5a53673caf170381d77fc5f23723fa22b996f0bff797"
+  }
+}

@@ -23,6 +23,8 @@ public class URInputManager : MonoBehaviour
     private PoseCaptureMode? _appliedMode;
     private bool _robotPlacementRequested;
     private float _contextBumperConsumedUntil;
+    private RobotPointRegistration PointRegistration => _URInstantiator != null
+        ? _URInstantiator.GetComponent<RobotPointRegistration>() : null;
     public bool IsTcpMode => _poseCaptureMode == PoseCaptureMode.TcpPreview;
 
     private void Start()
@@ -45,6 +47,16 @@ public class URInputManager : MonoBehaviour
     private void Update()
     {
         ApplyCaptureMode();
+        RobotPointRegistration registration = PointRegistration;
+        if (registration != null && registration.IsCollecting)
+        {
+            if (_tcpTargetPreview != null) _tcpTargetPreview.SetTrackingLost();
+            if (_pickPlaceController != null) _pickPlaceController.SetTrackingLost();
+            if (!ToolSelectionMenu.IsHovered && TryGetPointerWorldPose(out Pose contactPointer))
+                registration.SetPointerPose(contactPointer, _trackingSpace);
+            else registration.SetTrackingLost();
+            return;
+        }
         if (RobotCoordinateService.IsCalibrationEditActive)
         {
             _robotPlacementRequested = false;
@@ -119,6 +131,7 @@ public class URInputManager : MonoBehaviour
     {
         pointerWorld = default;
         if (_magicLeapInputs == null || !_controllerActions.IsTracked.IsPressed() ||
+            (_controllerActions.Status.ReadValue<int>() & 3) != 3 ||
             _controllerActions.PointerPosition.activeControl == null ||
             _controllerActions.PointerRotation.activeControl == null ||
             !XRTrackingSpaceResolver.TryResolve(ref _trackingSpace)) return false;
@@ -138,6 +151,15 @@ public class URInputManager : MonoBehaviour
     {
         if (!_robotPlacementRequested) return;
         _robotPlacementRequested = false;
+        RobotPointRegistration registration = PointRegistration;
+        if (registration != null && registration.IsCollecting)
+        {
+            if (!ToolSelectionMenu.IsHovered && !TargetPoseContextMenu.IsOpen && !TargetPoseContextMenu.IsHovered &&
+                !TargetRotationHandles.IsHovered && !TargetRotationHandles.IsInteracting &&
+                TryGetPointerWorldPose(out Pose pointerWorld))
+                registration.CapturePointerPose(pointerWorld, _trackingSpace);
+            return;
+        }
         if (!RobotCoordinateService.IsCalibrationEditActive &&
             !ToolSelectionMenu.IsHovered && !TargetPoseContextMenu.IsOpen && !TargetPoseContextMenu.IsHovered &&
             !TargetRotationHandles.IsHovered && !TargetRotationHandles.IsInteracting &&
@@ -150,6 +172,7 @@ public class URInputManager : MonoBehaviour
 
     private void HandleOnBumper(InputAction.CallbackContext context)
     {
+        if (PointRegistration != null && PointRegistration.IsCollecting) return;
         if (TargetPoseContextMenu.TryOpenHovered() || TargetPoseContextMenu.IsOpen || TargetPoseContextMenu.IsHovered)
             _contextBumperConsumedUntil = float.PositiveInfinity;
     }
@@ -206,6 +229,7 @@ public class URInputManager : MonoBehaviour
     private void ResetPendingInteraction()
     {
         _robotPlacementRequested = false;
+        if (PointRegistration != null) PointRegistration.SetTrackingLost();
         _contextBumperConsumedUntil = 0f;
         TargetPoseContextMenu.CloseAll();
         TargetRotationHandles.CancelAllInteractions();

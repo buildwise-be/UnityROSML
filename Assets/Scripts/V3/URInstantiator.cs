@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -17,6 +18,8 @@ public class URInstantiator : MonoBehaviour
     [SerializeField] private Vector3 _baseEulerInMarker = new Vector3(-90f, 0f, 0f);
     [SerializeField, Tooltip("Stable identity for this physical robot's per-QR saved alignment; independent of its selected tool.")]
     private string _calibrationProfileId = "ur16e";
+    [SerializeField, Tooltip("Physical ML2 contact tip relative to its OpenXR pointer pose, in local Unity metres. Measure/verify on the headset. Used when the point-registration component is created automatically.")]
+    private Vector3 _controllerTipOffsetInPointer = Vector3.zero;
     // Isolated tests inject a temporary directory. Normal applications use persistentDataPath.
     private string _calibrationDirectoryOverride;
 
@@ -42,13 +45,17 @@ public class URInstantiator : MonoBehaviour
     private int _editingValidationRevision;
     private string _editingPayload;
     private float _editingMarkerSize;
+    private bool _placedWithPoints;
+    public GameObject RobotInstance => _robotInstance;
+    public bool IsPointPlaced => _placedWithPoints;
+    public QRDetector MarkerDetector => _QRDetector;
 
     public bool HasRobot => _robotInstance != null;
     public bool IsCalibrating { get; private set; }
     public bool HasSavedCalibration => _savedCalibration != null;
     public string AlignmentStatus { get; private set; } = "Scan the robot QR, place the robot, then align its base.";
     public event Action CalibrationStateChanged;
-    public bool CanCalibrate => _robotInstance != null && _QRDetector != null && _QRDetector.HasValidatedPose &&
+    public bool CanCalibrate => !_placedWithPoints && _robotInstance != null && _QRDetector != null && _QRDetector.HasValidatedPose &&
         !string.IsNullOrWhiteSpace(_QRDetector.DetectedPayload) &&
         _appliedValidationRevision == _QRDetector.ValidationRevision &&
         RobotFrameMath.IsRigidFrame(_QRDetector.TrackingSpace) &&
@@ -59,6 +66,9 @@ public class URInstantiator : MonoBehaviour
     {
         get
         {
+            if (_placedWithPoints) return GetComponent<RobotPointRegistration>()?.HasPlacement == true
+                ? "Robot placed from four rear-cover centers (this XR session)."
+                : "Point placement is pending. Pick the four covers again.";
             if (!TryGetCalibration(out Pose pose)) return "QR-to-base calibration is unavailable.";
             Vector3 euler = pose.rotation.eulerAngles;
             string source = IsCalibrating ? "Unsaved alignment" : _hasActiveCalibration ? "Saved alignment" :
@@ -74,6 +84,8 @@ public class URInstantiator : MonoBehaviour
     {
         if (OnURInstantiated == null) OnURInstantiated = new UnityEvent<GameObject, Pose>();
         ToolPoseVisual.SetReferencePrefab(_URPrefab);
+        if (GetComponent<RobotPointRegistration>() == null)
+            gameObject.AddComponent<RobotPointRegistration>().SetTipOffset(_controllerTipOffsetInPointer);
     }
 
     private void OnEnable()
@@ -84,6 +96,7 @@ public class URInstantiator : MonoBehaviour
     private void Start()
     {
         SubscribeToDetector();
+        GetComponent<RobotPointRegistration>().BeginRegistration();
     }
 
     private void SubscribeToDetector()
@@ -111,6 +124,8 @@ public class URInstantiator : MonoBehaviour
 
     public void InstantiateUR()
     {
+        RobotPointRegistration points = GetComponent<RobotPointRegistration>();
+        if (_placedWithPoints || (points != null && (points.IsCollecting || points.HasPlacement))) return;
         if (IsCalibrating || _QRDetector == null || (_robotInstance != null && _appliedValidationRevision == _QRDetector.ValidationRevision)) return;
         // Also supports a detector validated before this component subscribed.
         if (!_hasValidatedPose && _QRDetector.HasValidatedPose) HandleQRValidated(_QRDetector.StabilizedPose);
@@ -153,6 +168,8 @@ public class URInstantiator : MonoBehaviour
         RobotStateService.Instance.InitializeRobot(qrPose, robotInstance, trackingSpace);
         if (!RobotCoordinateService.Instance.IsInitialized) return;
         _robotInstance = robotInstance;
+        _placedWithPoints = false;
+        if (points != null) points.NotifyQrPlacement();
         _appliedValidationRevision = _QRDetector.ValidationRevision;
         Pose baseWorld = new Pose(rig.BaseLink.position, rig.BaseLink.rotation);
         Debug.Log("URInstantiator: " + (firstPlacement ? "placed" : "realigned") + " robot. " + CalibrationSummary +
@@ -163,6 +180,42 @@ public class URInstantiator : MonoBehaviour
         if (!AlignmentStatus.StartsWith("Saved alignment could not", StringComparison.Ordinal))
             SetAlignmentStatus(_hasActiveCalibration ? "Saved alignment applied for this QR." : "Default alignment applied. Use Align robot to adjust it.");
     }
+
+    /// <summary>Place directly in tracking space; no QR extrinsic is involved.</summary>
+    public bool PlaceFromPointRegistration(Pose baseWorld, Transform trackingSpace, IDictionary<string, double> joints)
+    {
+        if (IsCalibrating || RobotCoordinateService.IsCalibrationEditActive ||
+            !RobotFrameMath.IsValidPose(baseWorld) || !RobotFrameMath.IsRigidFrame(trackingSpace) ||
+            _URPrefab == null || joints == null || joints.Count != 6) return false;
+        bool firstPlacement = _robotInstance == null;
+        GameObject robot = _robotInstance;
+        if (firstPlacement) robot = Instantiate(_URPrefab, trackingSpace);
+        RosRobotRig rig = robot.GetComponent<RosRobotRig>();
+        if (rig == null) rig = robot.AddComponent<RosRobotRig>();
+        ToolSelectionController tools = ToolSelectionController.Instance;
+        bool configured = rig.Model != null || (tools != null
+            ? tools.ConfigureRobot(rig) : rig.ApplyModel(RosRobotModelCatalog.Load().Find("kenos")));
+        if (!configured || rig.BaseLink == null ||
+            !rig.SetJointPositions(new List<string>(joints.Keys).ToArray(), new List<double>(joints.Values).ToArray()))
+        {
+            if (firstPlacement) Destroy(robot);
+            return false;
+        }
+        robot.transform.SetParent(trackingSpace, true);
+        rig.SetBaseWorldPose(baseWorld);
+        RobotStateService.Instance.InitializeRobot(baseWorld, robot, trackingSpace);
+        if (!RobotCoordinateService.Instance.IsInitialized)
+        { if (firstPlacement) Destroy(robot); return false; }
+        _robotInstance = robot;
+        _placedWithPoints = true;
+        _appliedValidationRevision = -1;
+        RobotStateService.Instance.IsReadyForPlanning = false;
+        if (firstPlacement) OnURInstantiated.Invoke(robot, baseWorld);
+        SetAlignmentStatus("Four-point placement applied. Review the overlay before planning.");
+        return true;
+    }
+
+    public void SelectQrPlacement() { _placedWithPoints = false; }
 
     private bool TryGetCalibration(out Pose pose)
     {
@@ -254,6 +307,8 @@ public class URInstantiator : MonoBehaviour
 
     public void BeginCalibration()
     {
+        RobotPointRegistration points = GetComponent<RobotPointRegistration>();
+        if (points != null && points.IsCollecting) return;
         if (IsCalibrating) return;
         if (!CanCalibrate)
         { SetAlignmentStatus("Scan one identified QR and trigger to place the robot before alignment."); return; }

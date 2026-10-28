@@ -1,5 +1,47 @@
 # Offline robot-frame comparison
 
+## Four-point controller placement
+
+The interaction scene starts with **Place robot with 4 points**. Keep the real
+robot still in a bent pose, with `/joint_states` streaming. Touch the centre of
+each indicated blue rear cover with the controller contact tip and press trigger:
+**Shoulder → Elbow → Wrist 2 → Wrist 3**. These are the four covers in the supplied
+photo. The XR robot appears after the fourth accepted touch. Undo, Restart,
+Cancel, and Use QR instead are available in the placement menu.
+
+`RobotPointRegistration` fits a rigid rotation and translation using all four
+ordered correspondences and the calibrated model at the first touch's live joint
+pose. It estimates no scale. Incomplete/stale feedback, robot movement over
+0.5 degrees, changed models, repeated points and nearly collinear geometry are
+rejected. A failed fit remains in the picker. Default acceptance limits are
+10 mm RMS and 20 mm worst-point residual; both values appear after placement.
+Residuals measure consistency of the four touches, not absolute physical accuracy.
+
+**Verify the physical contact tip first.** The 6 mm marker shows the point being
+sampled. OpenXR's pointer origin is the default; it is not a measured physical
+tip. Set **Controller Tip Offset In Pointer** on the existing `URInstantiator`
+in the scene to the measured local Unity XYZ offset in metres. An explicitly
+added `RobotPointRegistration` component exposes its own tip offset, cover
+definitions and fit thresholds. A common tip error can produce a low residual
+and a shifted robot. The cover defaults come from the actual visual meshes;
+see [landmark derivation](controller_point_landmarks.md) for coordinates and
+source-mesh verification. Check the resulting overlay on the physical robot.
+
+Point placement requires no QR-to-base distance and does not overwrite saved
+QR alignment profiles. Planning/capture are blocked while picking; placement
+never sends robot motion. Existing placement is hidden during a retry and
+restored on Cancel when its tracking session is still valid. Native tracking
+origin resets and app suspension invalidate the fit and require four new touches.
+Moving the XR Origin transform retains the fit in tracking space. Contacts and
+world placement are session-local and are not restored after restarting the app.
+
+`prepare_point_registration_validation.py` prepares an isolated Unity project
+under `Library/PointRegistrationValidation`, using the actual placement,
+subscriber, input, menu and rig code. QR hardware is inert and obtaining a ROS
+connection throws. Run its EditMode fixtures `RobotPointRegistrationMathTests`,
+`RobotCoverLandmarkTests`, `RobotPointRegistrationWorkflowTests` and
+`PointPlacementMenuTests`; the menu fixture can also render an offline preview.
+
 ## Choosing TCP or MTC pick/place in XR
 
 The shared robot menu in `UR16eInteraction` has two separate task buttons:

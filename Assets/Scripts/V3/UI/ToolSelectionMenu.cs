@@ -57,10 +57,21 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private TcpPlanningController _subscribedPlanning;
     private QRDetector _subscribedQr;
     private URInstantiator _subscribedInstantiator;
+    private RobotPointRegistration _pointRegistration;
+    private RobotPointRegistration _subscribedPointRegistration;
     private MTCPlansManager _legacyPlans;
     private RectTransform _panel;
     private RectTransform _taskView;
     private RectTransform _alignmentView;
+    private RectTransform _pointView;
+    private Button _pointPlacementButton;
+    private Button _pointUndoButton;
+    private Button _pointRestartButton;
+    private Button _pointCancelButton;
+    private Button _pointQrButton;
+    private TextMeshProUGUI _pointProgress;
+    private TextMeshProUGUI _pointStatus;
+    private readonly List<TextMeshProUGUI> _pointLabels = new List<TextMeshProUGUI>();
     private TextMeshProUGUI _status;
     private Button _tcpTaskButton;
     private Button _pickPlaceTaskButton;
@@ -249,7 +260,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private void Update()
     {
         if (_controller == null) BindController();
-        if (_input == null || _tcpPlanning == null || _qrDetector == null || _instantiator == null) BindTaskControls();
+        if (_input == null || _tcpPlanning == null || _qrDetector == null || _instantiator == null || _pointRegistration == null) BindTaskControls();
         bool tcp = _input == null || _input.IsTcpMode;
         bool qr = _qrDetector != null && _qrDetector.HasValidatedPose;
         if (_lastTcpMode != tcp || _lastQrValidated != qr || _lastTargetRotation != TargetRotationHandles.IsInteracting) RefreshTask();
@@ -261,7 +272,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     {
         if (_playbackTimeline == null) return;
         if (_trajectoryVisualizer == null) _trajectoryVisualizer = FindFirstObjectByType<UR16eTrajectoryVisualizer>();
-        bool available = _trajectoryVisualizer != null && _trajectoryVisualizer.HasPlayback && !IsCalibrating;
+        bool available = _trajectoryVisualizer != null && _trajectoryVisualizer.HasPlayback && !IsPlacementBusy;
         _playbackPlayPauseButton.interactable = available;
         _playbackReplayButton.interactable = available;
         _playbackTimeline.interactable = available;
@@ -284,7 +295,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
 
     private void TogglePlayback()
     {
-        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsCalibrating) return;
+        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsPlacementBusy) return;
         if (_trajectoryVisualizer.IsPlaying) _trajectoryVisualizer.Pause();
         else _trajectoryVisualizer.Play();
         RefreshPlayback();
@@ -292,21 +303,21 @@ public sealed class ToolSelectionMenu : MonoBehaviour
 
     private void ReplayPlayback()
     {
-        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsCalibrating) return;
+        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsPlacementBusy) return;
         _trajectoryVisualizer.Replay();
         RefreshPlayback();
     }
 
     private void SeekPlayback(float normalized)
     {
-        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsCalibrating) return;
+        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsPlacementBusy) return;
         _trajectoryVisualizer.Seek(normalized);
         RefreshPlayback();
     }
 
     private void SelectPlaybackSpeed(float speed)
     {
-        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsCalibrating) return;
+        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsPlacementBusy) return;
         _trajectoryVisualizer.SetPlaybackSpeed(speed);
         RefreshPlayback();
     }
@@ -333,7 +344,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
 
     public void SelectTool(string tool)
     {
-        if (_instantiator != null && _instantiator.IsCalibrating) return;
+        if (IsPlacementBusy) return;
         if (tool != "none" && tool != "kenos" && tool != "kenos_sl") return;
         BindController();
         if (_controller != null) _controller.SelectTool(tool);
@@ -346,7 +357,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         foreach (Choice choice in _choices)
         {
             bool active = choice.Tool == selected;
-            choice.Button.interactable = _controller != null && !IsCalibrating;
+            choice.Button.interactable = _controller != null && !IsPlacementBusy;
             choice.Button.image.color = active
                 ? new Color(0.08f, 0.42f, 0.52f, 1f) : new Color(0.12f, 0.17f, 0.23f, 1f);
             choice.Border.effectColor = active
@@ -365,7 +376,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     public void PlanTask()
     {
         BindTaskControls();
-        if (IsCalibrating) return;
+        if (IsPlacementBusy) return;
         _localNotice = null;
         if (_input != null)
         {
@@ -382,7 +393,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private void SelectTaskMode(bool tcp)
     {
         BindTaskControls();
-        if (IsCalibrating || TargetRotationHandles.IsInteracting) return;
+        if (IsPlacementBusy || TargetRotationHandles.IsInteracting) return;
         if (_input == null)
         {
             _localNotice = "Task controls are unavailable. Open the robot interaction scene.";
@@ -398,7 +409,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     public void ExecuteTask()
     {
         BindTaskControls();
-        if (IsCalibrating) return;
+        if (IsPlacementBusy) return;
         if (_input != null) _input.ExecuteCurrentTask();
         else if (_tcpPlanning != null) _tcpPlanning.Execute();
         RefreshTask();
@@ -407,16 +418,58 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     public void RescanQr()
     {
         BindTaskControls();
-        if (IsCalibrating) return;
-        if (_qrDetector != null) _qrDetector.Rescan();
+        if (IsPlacementBusy) return;
+        if (_pointRegistration != null) _pointRegistration.UseQrPlacement();
+        else if (_qrDetector != null) _qrDetector.Rescan();
         RefreshTask();
     }
 
     private bool IsCalibrating => _instantiator != null && _instantiator.IsCalibrating;
+    private bool IsPointCollecting => _pointRegistration != null && _pointRegistration.IsCollecting;
+    private bool IsPlacementBusy => IsCalibrating || IsPointCollecting;
+
+    public void BeginPointPlacement()
+    {
+        BindTaskControls();
+        if (IsCalibrating || MTCPlansManager.ActiveExecution != null) return;
+        _localNotice = null;
+        if (_pointRegistration == null) _localNotice = "Four-point placement is unavailable in this scene.";
+        else _pointRegistration.BeginRegistration();
+        RefreshMenu();
+    }
+
+    public void UndoPointPlacement()
+    {
+        if (IsPointCollecting) _pointRegistration.UndoLastPoint();
+        RefreshMenu();
+    }
+
+    public void CancelPointPlacement()
+    {
+        if (IsPointCollecting) _pointRegistration.CancelRegistration();
+        RefreshMenu();
+    }
+
+    public void UseQrPlacement()
+    {
+        BindTaskControls();
+        if (IsCalibrating || MTCPlansManager.ActiveExecution != null) return;
+        _localNotice = null;
+        if (_pointRegistration != null) _pointRegistration.UseQrPlacement();
+        else if (_qrDetector != null) _qrDetector.Rescan();
+        RefreshMenu();
+    }
+
+    private void OnPointRegistrationChanged()
+    {
+        _localNotice = null;
+        RefreshMenu();
+    }
 
     public void BeginAlignment()
     {
         BindTaskControls();
+        if (IsPointCollecting) return;
         _localNotice = null;
         if (_instantiator == null)
         {
@@ -528,6 +581,14 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         if (_tcpPlanning == null) _tcpPlanning = _input != null ? _input.GetComponent<TcpPlanningController>() : FindFirstObjectByType<TcpPlanningController>();
         if (_qrDetector == null) _qrDetector = FindFirstObjectByType<QRDetector>();
         if (_instantiator == null) _instantiator = FindFirstObjectByType<URInstantiator>();
+        if (_pointRegistration == null && _instantiator != null)
+            _pointRegistration = _instantiator.GetComponent<RobotPointRegistration>();
+        if (_subscribedPointRegistration != _pointRegistration)
+        {
+            if (_subscribedPointRegistration != null) _subscribedPointRegistration.StateChanged -= OnPointRegistrationChanged;
+            _subscribedPointRegistration = _pointRegistration;
+            if (_subscribedPointRegistration != null) _subscribedPointRegistration.StateChanged += OnPointRegistrationChanged;
+        }
         if (_subscribedInstantiator != _instantiator)
         {
             if (_subscribedInstantiator != null) _subscribedInstantiator.CalibrationStateChanged -= OnCalibrationStateChanged;
@@ -569,7 +630,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         _lastTcpMode = tcp;
         _lastQrValidated = _qrDetector != null && _qrDetector.HasValidatedPose;
         _lastTargetRotation = TargetRotationHandles.IsInteracting;
-        bool canSelectMode = _input != null && !IsCalibrating && !TargetRotationHandles.IsInteracting;
+        bool canSelectMode = _input != null && !IsPlacementBusy && !TargetRotationHandles.IsInteracting;
         RefreshTaskChoice(_tcpTaskButton, tcp, canSelectMode);
         RefreshTaskChoice(_pickPlaceTaskButton, !tcp, canSelectMode);
         if (_taskHelp != null) _taskHelp.text = tcp
@@ -579,13 +640,14 @@ public sealed class ToolSelectionMenu : MonoBehaviour
             _taskStatus.text = execution != null ? execution.StatusText : _localNotice ?? (tcp
                 ? (_tcpPlanning != null ? _tcpPlanning.StatusText : "Capture TCP A and B to prepare a preview.")
                 : (_legacyPlans != null ? _legacyPlans.StatusText : "Capture pick and place tool contacts, then Plan preview."));
-        if (_planButton != null) _planButton.interactable = !IsCalibrating && execution == null;
-        if (_executeButton != null) _executeButton.interactable = !IsCalibrating && execution == null && (tcp
+        if (_planButton != null) _planButton.interactable = !IsPlacementBusy && execution == null;
+        if (_executeButton != null) _executeButton.interactable = !IsPlacementBusy && execution == null && (tcp
             ? _tcpPlanning != null && _tcpPlanning.CanExecute
             : _legacyPlans != null && _legacyPlans.CanExecute && ToolSelectionController.CanPlanPickPlace);
-        if (_rescanButton != null) _rescanButton.interactable = _qrDetector != null && !IsCalibrating;
+        if (_rescanButton != null) _rescanButton.interactable = _qrDetector != null && !IsPlacementBusy;
+        if (_pointPlacementButton != null) _pointPlacementButton.interactable = _pointRegistration != null && !IsCalibrating && execution == null;
         // Keep the entry usable so the core can explain which placement is missing.
-        if (_alignButton != null) _alignButton.interactable = !IsCalibrating;
+        if (_alignButton != null) _alignButton.interactable = !IsPlacementBusy && execution == null;
         if (_qrStatus != null)
         {
             string qr = _qrDetector != null ? _qrDetector.StatusText : "QR scanner unavailable.";
@@ -597,10 +659,14 @@ public sealed class ToolSelectionMenu : MonoBehaviour
             }
             if (_instantiator != null) qr += "\n" + _instantiator.CalibrationSummary;
             if (_instantiator != null && _instantiator.HasSavedCalibration) qr += "\nSaved on this headset for this QR.";
-            _qrStatus.text = qr;
+            _qrStatus.text = _pointRegistration != null && _pointRegistration.HasPlacement
+                ? "Four-point placement: RMS " + (_pointRegistration.RmsErrorMeters * 1000f).ToString("F1") +
+                    " mm · max " + (_pointRegistration.MaxErrorMeters * 1000f).ToString("F1") + " mm\n" + _pointRegistration.StatusText
+                : qr;
         }
         RefreshPlayback();
         RefreshAlignmentControls();
+        RefreshPointPlacementControls();
     }
 
     private static void RefreshTaskChoice(Button button, bool selected, bool enabled)
@@ -613,8 +679,8 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private void RefreshAlignmentControls()
     {
         bool editing = IsCalibrating;
-        if (_taskView != null) _taskView.gameObject.SetActive(!editing);
-        if (_alignmentView != null) _alignmentView.gameObject.SetActive(editing);
+        if (_taskView != null) _taskView.gameObject.SetActive(!editing && !IsPointCollecting);
+        if (_alignmentView != null) _alignmentView.gameObject.SetActive(editing && !IsPointCollecting);
         if (_alignmentStatus != null)
             _alignmentStatus.text = _instantiator != null
                 ? "QR: " + (_qrDetector != null ? ShortPayload(_qrDetector.DetectedPayload, 26) : "unknown") +
@@ -625,6 +691,27 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         RefreshStepButtons(_rotationStepButtons, _rotationStepIndex, editing);
         foreach (Button button in _alignmentActionButtons)
             if (button != null) button.interactable = editing;
+    }
+
+    private void RefreshPointPlacementControls()
+    {
+        bool collecting = IsPointCollecting;
+        if (_pointView != null) _pointView.gameObject.SetActive(collecting);
+        int count = _pointRegistration != null ? _pointRegistration.CapturedPointCount : 0;
+        if (_pointProgress != null)
+            _pointProgress.text = count + " / 4 points captured\n" +
+                (collecting ? "Next: " + _pointRegistration.CurrentPointName : "Choose Place with 4 points to begin.");
+        if (_pointStatus != null) _pointStatus.text = _pointRegistration != null ? _pointRegistration.StatusText : string.Empty;
+        for (int index = 0; index < _pointLabels.Count; index++)
+        {
+            TextMeshProUGUI label = _pointLabels[index];
+            label.color = index < count ? new Color(0.45f, 0.92f, 0.68f) :
+                index == count ? new Color(0.55f, 0.91f, 1f) : new Color(0.73f, 0.81f, 0.87f);
+        }
+        if (_pointUndoButton != null) _pointUndoButton.interactable = collecting && count > 0;
+        if (_pointRestartButton != null) _pointRestartButton.interactable = collecting;
+        if (_pointCancelButton != null) _pointCancelButton.interactable = collecting;
+        if (_pointQrButton != null) _pointQrButton.interactable = collecting && _qrDetector != null;
     }
 
     private static void RefreshStepButtons(List<Button> buttons, int selectedIndex, bool editing)
@@ -733,6 +820,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
 
         _taskView = Rect("Task view", _panel, Vector2.zero, new Vector2(440f, 756f));
         _alignmentView = Rect("Alignment view", _panel, Vector2.zero, new Vector2(440f, 756f));
+        _pointView = Rect("Four-point placement view", _panel, Vector2.zero, new Vector2(440f, 756f));
         BuildHeader(_taskView, "Title", "Robot tool");
         Text("Subtitle", _taskView, new Vector2(16f, -44f), new Vector2(408f, 29f),
             "Match the mounted tool and ROS setup.", 14f).color = new Color(0.73f, 0.81f, 0.87f);
@@ -760,15 +848,18 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         _executeButton.onClick.AddListener(ExecuteTask);
         BuildPlaybackControls();
         BuildPathThicknessSlider();
-        _recenterButton = CreateButton("Recenter menu", _taskView, new Vector2(16f, -625f), new Vector2(130f, 28f), out TextMeshProUGUI recenterLabel);
-        recenterLabel.text = "Recenter menu";
-        recenterLabel.fontSize = 13f;
+        _pointPlacementButton = CreateButton("Place with 4 points", _taskView, new Vector2(16f, -625f), new Vector2(130f, 28f), out TextMeshProUGUI pointPlacementLabel);
+        pointPlacementLabel.fontSize = 13f;
+        _pointPlacementButton.onClick.AddListener(BeginPointPlacement);
+        _recenterButton = CreateButton("Recenter menu", _taskView, new Vector2(343f, -625f), new Vector2(81f, 28f), out TextMeshProUGUI recenterLabel);
+        recenterLabel.text = "Recenter";
+        recenterLabel.fontSize = 12f;
         _recenterButton.onClick.AddListener(RecenterMenu);
-        _rescanButton = CreateButton("Rescan QR", _taskView, new Vector2(155f, -625f), new Vector2(130f, 28f), out TextMeshProUGUI rescanLabel);
-        rescanLabel.fontSize = 13f;
+        _rescanButton = CreateButton("Rescan QR", _taskView, new Vector2(155f, -625f), new Vector2(85f, 28f), out TextMeshProUGUI rescanLabel);
+        rescanLabel.fontSize = 12f;
         _rescanButton.onClick.AddListener(RescanQr);
-        _alignButton = CreateButton("Align robot", _taskView, new Vector2(294f, -625f), new Vector2(130f, 28f), out TextMeshProUGUI alignLabel);
-        alignLabel.fontSize = 13f;
+        _alignButton = CreateButton("Align robot", _taskView, new Vector2(249f, -625f), new Vector2(85f, 28f), out TextMeshProUGUI alignLabel);
+        alignLabel.fontSize = 12f;
         _alignButton.onClick.AddListener(BeginAlignment);
         _qrStatus = Text("QR placement status", _taskView, new Vector2(16f, -663f), new Vector2(408f, 80f), string.Empty, 12f);
         _qrStatus.color = new Color(0.65f, 0.74f, 0.8f);
@@ -777,9 +868,50 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         _qrStatus.fontSizeMin = 10f;
         _qrStatus.fontSizeMax = 12f;
         BuildAlignmentView();
+        BuildPointPlacementView();
         BuildGrabHandle(canvasRect);
         RefreshAlignmentControls();
+        RefreshPointPlacementControls();
         _panel.gameObject.SetActive(isActiveAndEnabled);
+    }
+
+    private void BuildPointPlacementView()
+    {
+        BuildHeader(_pointView, "Four-point placement title", "Place robot with 4 points");
+        Text("Four-point placement introduction", _pointView, new Vector2(16f, -52f), new Vector2(408f, 64f),
+            "Touch each blue rear cover's center with the controller tip, from shoulder to wrist. Press the trigger once at each point.", 17f);
+        _pointProgress = Text("Four-point placement progress", _pointView, new Vector2(16f, -126f),
+            new Vector2(408f, 70f), string.Empty, 23f);
+        _pointProgress.color = new Color(0.55f, 0.91f, 1f);
+        string[] descriptions = {
+            "1  Shoulder — large cover above the base",
+            "2  Elbow — large cover between long links",
+            "3  Wrist 2 — blue cover behind the bent wrist",
+            "4  Wrist 3 — last blue cover by the tool flange"
+        };
+        for (int index = 0; index < descriptions.Length; index++)
+            _pointLabels.Add(Text("Four-point cover " + (index + 1), _pointView,
+                new Vector2(16f, -210f - index * 45f), new Vector2(408f, 40f), descriptions[index], 17f));
+        _pointStatus = Text("Four-point placement status", _pointView, new Vector2(16f, -400f),
+            new Vector2(408f, 115f), string.Empty, 16f);
+        _pointStatus.richText = false;
+        _pointStatus.enableAutoSizing = true;
+        _pointStatus.fontSizeMin = 13f;
+        _pointStatus.fontSizeMax = 16f;
+        Text("Four-point placement fit hint", _pointView, new Vector2(16f, -519f), new Vector2(408f, 51f),
+            "Keep the robot still; live ROS joints are required. Verify the tip marker. Point 4 reveals a valid fit.", 14f).color = new Color(0.73f, 0.81f, 0.87f);
+        _pointUndoButton = CreateButton("Undo last point", _pointView, new Vector2(16f, -582f), new Vector2(198f, 38f), out _);
+        _pointUndoButton.onClick.AddListener(UndoPointPlacement);
+        _pointRestartButton = CreateButton("Restart 4 points", _pointView, new Vector2(226f, -582f), new Vector2(198f, 38f), out _);
+        _pointRestartButton.onClick.AddListener(BeginPointPlacement);
+        _pointCancelButton = CreateButton("Cancel placement", _pointView, new Vector2(16f, -633f), new Vector2(198f, 38f), out _);
+        _pointCancelButton.onClick.AddListener(CancelPointPlacement);
+        _pointQrButton = CreateButton("Use QR instead", _pointView, new Vector2(226f, -633f), new Vector2(198f, 38f), out _);
+        _pointQrButton.onClick.AddListener(UseQrPlacement);
+        Button recenter = CreateButton("Recenter point menu", _pointView, new Vector2(16f, -689f), new Vector2(408f, 30f), out TextMeshProUGUI recenterLabel);
+        recenterLabel.text = "Recenter menu";
+        recenterLabel.fontSize = 14f;
+        recenter.onClick.AddListener(RecenterMenu);
     }
 
     private void BuildPlaybackControls()
@@ -1128,6 +1260,8 @@ public sealed class ToolSelectionMenu : MonoBehaviour
 
     private void UnsubscribeTaskControls()
     {
+        if (_subscribedPointRegistration != null) _subscribedPointRegistration.StateChanged -= OnPointRegistrationChanged;
+        _subscribedPointRegistration = null;
         if (_subscribedPlanning != null) _subscribedPlanning.StateChanged -= OnPlanningStateChanged;
         _subscribedPlanning = null;
         if (_subscribedQr != null) _subscribedQr.StateChanged -= RefreshTask;
@@ -1177,6 +1311,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         Unsubscribe();
         UnsubscribeTaskControls();
         if (IsCalibrating) _instantiator.CancelCalibration();
+        if (IsPointCollecting) _pointRegistration.CancelRegistration();
         ClearPointerState();
         if (_panel != null) _panel.gameObject.SetActive(false);
         if (_grabHandle != null) _grabHandle.gameObject.SetActive(false);
@@ -1205,6 +1340,11 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         if (_executeButton != null) _executeButton.onClick.RemoveListener(ExecuteTask);
         if (_rescanButton != null) _rescanButton.onClick.RemoveListener(RescanQr);
         if (_alignButton != null) _alignButton.onClick.RemoveListener(BeginAlignment);
+        if (_pointPlacementButton != null) _pointPlacementButton.onClick.RemoveListener(BeginPointPlacement);
+        if (_pointUndoButton != null) _pointUndoButton.onClick.RemoveListener(UndoPointPlacement);
+        if (_pointRestartButton != null) _pointRestartButton.onClick.RemoveListener(BeginPointPlacement);
+        if (_pointCancelButton != null) _pointCancelButton.onClick.RemoveListener(CancelPointPlacement);
+        if (_pointQrButton != null) _pointQrButton.onClick.RemoveListener(UseQrPlacement);
         if (_pathThicknessSlider != null) _pathThicknessSlider.onValueChanged.RemoveListener(SetPathThickness);
         if (_playbackPlayPauseButton != null) _playbackPlayPauseButton.onClick.RemoveListener(TogglePlayback);
         if (_playbackReplayButton != null) _playbackReplayButton.onClick.RemoveListener(ReplayPlayback);
