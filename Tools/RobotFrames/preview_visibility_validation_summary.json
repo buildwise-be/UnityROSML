@@ -1,0 +1,43 @@
+{
+  "completedUtc": "2026-10-27T09:10:27.251818+00:00",
+  "scope": "Hide the animated arm/tool preview until Play or Replay, preserving static waypoint and path review.",
+  "behavior": {
+    "newPlan": "animated robot hidden, playback prepared",
+    "playOrReplay": "reveals animated robot",
+    "pauseAndSeekAfterPlay": "keep robot visible for inspection",
+    "seekBeforeFirstPlay": "stays hidden",
+    "replacementPlan": "starts hidden again",
+    "sameResultAndDensityChanges": "preserve current visibility",
+    "zeroDurationPlay": "reveals prepared pose without animation",
+    "staticWaypointAndPathPreview": "unchanged"
+  },
+  "nativeChecks": {
+    "total": 207,
+    "passed": 207,
+    "failed": 0,
+    "playbackCases": 20,
+    "results": "ArmPlaybackValidation/visibility-unity-results.xml"
+  },
+  "runtimeCompile": {
+    "sourceCount": 82,
+    "errors": 0,
+    "allCurrentSourceHashesMatch": true,
+    "summary": "runtime_compile_summary.json"
+  },
+  "sources": [
+    {
+      "path": "Assets/Scripts/V3/ROS/UR16eTrajectoryVisualizer.cs",
+      "sha256": "9482390245df2318af713ca7be3227ffbc12ca1d26a222f170dc9d41e106c36a",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TrajectoryPlaybackTests.cs",
+      "sha256": "6ed825a67a6fb38c00ff48b32d1939aa2dc50e907b9bb3442911b8b4ef37982d",
+      "isolatedCopyMatches": true
+    }
+  ],
+  "hardwareExercised": false,
+  "rosRequestsSent": false,
+  "headsetDeployed": false,
+  "validationStartup": "Unity licensing client cold-start recovered without configuration or installation changes."
+}

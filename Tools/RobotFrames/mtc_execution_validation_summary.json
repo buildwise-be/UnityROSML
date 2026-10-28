@@ -1,0 +1,72 @@
+{
+  "completedUtc": "2026-10-23T15:13:07.869587+00:00",
+  "scope": "MTC Execute acknowledgement/outcome feedback, single-use publishing, bounded acknowledgement wait and retained command lifetime across review invalidation/mode changes.",
+  "nativeChecks": {
+    "total": 205,
+    "passed": 205,
+    "failed": 0,
+    "results": "MtcExecutionValidation/unity-results.xml",
+    "newExecutionCases": 20
+  },
+  "runtimeCompile": {
+    "summary": "runtime_compile_summary.json",
+    "sources": 82,
+    "errors": 0,
+    "allCurrentSourceHashesMatch": true
+  },
+  "sources": [
+    {
+      "path": "Assets/Scripts/V3/ROS/MTCPlansManager.cs",
+      "sha256": "781058b115c0c20f87f696cc6ea159dfb5680b8158659a7c7cdb85dbd3009671",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/PickPlaceController.cs",
+      "sha256": "a720653bbda923088dd2dee4f98a6cb014188709c239535340d46bc209521d69",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/TcpPlanningController.cs",
+      "sha256": "e8b6acb5d394538b8b564516ffef561a1004d03eeef4341e5de7f09931878208",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/URInputManager.cs",
+      "sha256": "207207c1a562922e6818970ca3562eba3e015eb77fed0fe201a58fc44d391917",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "e73809c0a5034a162d17fdad072fbbf526700c41579e07a25dc2f3d7735e864f",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/MTCPlanUIManager.cs",
+      "sha256": "eb0a8dc42d6411d4d7adc55ad7625643b6935d268a8f29cfe0e1357c78463b07",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/MtcExecutionWorkflowTests.cs",
+      "sha256": "2ab1512f854f06f0fd5a4dcc90d6544262cdf16e55d379567d741e90d55fa76a",
+      "isolatedCopyMatches": true
+    }
+  ],
+  "liveDiagnosis": "mtc_execute_scene_diagnosis_20261023.json",
+  "confirmedBackendRejection": "world collision geometry or octomap changed",
+  "confirmedBackendCause": "Exact equality rejects three quaternion coefficients differing only by <=6.94e-18; geometry and octomap otherwise identical.",
+  "backendFixApplied": true,
+  "transport": "Actual public controller Execute tested through validation-only publish override; no live publish.",
+  "livePlanningRequested": false,
+  "motionOrIORequested": false,
+  "deviceDeployed": false,
+  "headsetTested": false,
+  "backendValidation": "ExecutePrecisionProposal/Validation/summary.json",
+  "backendDeploymentRequired": true,
+  "commandLifecycle": "In-flight execution survives targets, tool/alignment, mode and disable; both workflows block new plans/execute until terminal. Late acknowledgements/outcomes remain accepted after timeout or review invalidation.",
+  "capturedSceneReplay": {
+    "results": "ExecutePrecisionProposal/Validation/captured-scene-result.json",
+    "compiledPatchedValidator": "passed",
+    "compiledUnchangedValidator": "world collision geometry or octomap changed",
+    "allLaterGuardsExercised": true
+  }
+}

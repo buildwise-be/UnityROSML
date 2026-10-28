@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="15" result="Passed" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-23 14:31:42Z" end-time="2026-10-23 14:31:43Z" duration="0,2715113">
+  <test-suite type="TestSuite" id="1000" name="RosRigValidation" fullname="RosRigValidation" runstate="Runnable" testcasecount="355" result="Passed" start-time="2026-10-23 14:31:42Z" end-time="2026-10-23 14:31:43Z" duration="0.271511" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1406" name="UnityROSML.RobotFrames.EditorTests.dll" fullname="C:/Users/aca/unity-source/UnityROSML/Library/RosRigValidation/Library/ScriptAssemblies/UnityROSML.RobotFrames.EditorTests.dll" runstate="Runnable" testcasecount="355" result="Passed" start-time="2026-10-23 14:31:42Z" end-time="2026-10-23 14:31:43Z" duration="0.267034" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="48512" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestFixture" id="1023" name="MenuFollowTests" fullname="MenuFollowTests" classname="MenuFollowTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-10-23 14:31:42Z" end-time="2026-10-23 14:31:43Z" duration="0.223840" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1034" name="ExplicitRecenterWorksAndQrPlacementDoesNotRelocateTheMenu" fullname="MenuFollowTests.ExplicitRecenterWorksAndQrPlacementDoesNotRelocateTheMenu" methodname="ExplicitRecenterWorksAndQrPlacementDoesNotRelocateTheMenu" classname="MenuFollowTests" runstate="Runnable" seed="914040799" result="Passed" start-time="2026-10-23 14:31:42Z" end-time="2026-10-23 14:31:43Z" duration="0.100938" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1033" name="InterruptedGrabsReleaseNativeSelectionAndDoNotResume" fullname="MenuFollowTests.InterruptedGrabsReleaseNativeSelectionAndDoNotResume" classname="MenuFollowTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.052576" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1029" name="InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;focus&quot;)" fullname="MenuFollowTests.InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;focus&quot;)" methodname="InterruptedGrabsReleaseNativeSelectionAndDoNotResume" classname="MenuFollowTests" runstate="Runnable" seed="474428051" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.021553" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Reference frame of the curve not set and XROrigin is not found, using global up as default.
+]]></output>
+          </test-case>
+          <test-case id="1030" name="InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;pause&quot;)" fullname="MenuFollowTests.InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;pause&quot;)" methodname="InterruptedGrabsReleaseNativeSelectionAndDoNotResume" classname="MenuFollowTests" runstate="Runnable" seed="1376376651" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.009261" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Reference frame of the curve not set and XROrigin is not found, using global up as default.
+]]></output>
+          </test-case>
+          <test-case id="1031" name="InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;disable&quot;)" fullname="MenuFollowTests.InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;disable&quot;)" methodname="InterruptedGrabsReleaseNativeSelectionAndDoNotResume" classname="MenuFollowTests" runstate="Runnable" seed="1211583383" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.009195" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Reference frame of the curve not set and XROrigin is not found, using global up as default.
+]]></output>
+          </test-case>
+          <test-case id="1032" name="InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;tracking loss&quot;)" fullname="MenuFollowTests.InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;tracking loss&quot;)" methodname="InterruptedGrabsReleaseNativeSelectionAndDoNotResume" classname="MenuFollowTests" runstate="Runnable" seed="5622246" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.009747" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Reference frame of the curve not set and XROrigin is not found, using global up as default.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1027" name="NativeRaySelectionMovesWithoutASnapAndReleaseRetainsWorldPosition" fullname="MenuFollowTests.NativeRaySelectionMovesWithoutASnapAndReleaseRetainsWorldPosition" methodname="NativeRaySelectionMovesWithoutASnapAndReleaseRetainsWorldPosition" classname="MenuFollowTests" runstate="Runnable" seed="912801527" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.010241" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Reference frame of the curve not set and XROrigin is not found, using global up as default.
+]]></output>
+        </test-case>
+        <test-case id="1026" name="OnlyTheSeparateVisibleBarHasAGrabCollider" fullname="MenuFollowTests.OnlyTheSeparateVisibleBarHasAGrabCollider" methodname="OnlyTheSeparateVisibleBarHasAGrabCollider" classname="MenuFollowTests" runstate="Runnable" seed="277763596" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.012095" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1024" name="RecenterStartsOneMetreAwayAndTwentyDegreesRight" fullname="MenuFollowTests.RecenterStartsOneMetreAwayAndTwentyDegreesRight" methodname="RecenterStartsOneMetreAwayAndTwentyDegreesRight" classname="MenuFollowTests" runstate="Runnable" seed="1719947790" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.009311" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1028" name="SelectedMenuStillSuppressesTargetCaptureAfterHoverExit" fullname="MenuFollowTests.SelectedMenuStillSuppressesTargetCaptureAfterHoverExit" methodname="SelectedMenuStillSuppressesTargetCaptureAfterHoverExit" classname="MenuFollowTests" runstate="Runnable" seed="1750252813" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.011938" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Reference frame of the curve not set and XROrigin is not found, using global up as default.
+]]></output>
+        </test-case>
+        <test-case id="1035" name="VerticalViewingAndCoincidentViewerPreserveAValidPose" fullname="MenuFollowTests.VerticalViewingAndCoincidentViewerPreserveAValidPose" methodname="VerticalViewingAndCoincidentViewerPreserveAValidPose" classname="MenuFollowTests" runstate="Runnable" seed="1497523828" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.008124" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1025" name="WalkingFarAwayOrTurningAroundNeverMovesTheMenuButItAlwaysFacesTheViewer" fullname="MenuFollowTests.WalkingFarAwayOrTurningAroundNeverMovesTheMenuButItAlwaysFacesTheViewer" methodname="WalkingFarAwayOrTurningAroundNeverMovesTheMenuButItAlwaysFacesTheViewer" classname="MenuFollowTests" runstate="Runnable" seed="390783108" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.009631" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1380" name="ToolCalibrationMenuTests" fullname="ToolCalibrationMenuTests" classname="ToolCalibrationMenuTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.040062" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1381" name="AlignmentActionsFitTheExistingPanelAndOnlyTaskViewStartsVisible" fullname="ToolCalibrationMenuTests.AlignmentActionsFitTheExistingPanelAndOnlyTaskViewStartsVisible" methodname="AlignmentActionsFitTheExistingPanelAndOnlyTaskViewStartsVisible" classname="ToolCalibrationMenuTests" runstate="Runnable" seed="1992846867" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.013393" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1384" name="AlignmentEntryExplainsMissingPlacementWithoutHidingTaskControls" fullname="ToolCalibrationMenuTests.AlignmentEntryExplainsMissingPlacementWithoutHidingTaskControls" methodname="AlignmentEntryExplainsMissingPlacementWithoutHidingTaskControls" classname="ToolCalibrationMenuTests" runstate="Runnable" seed="1944877252" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.007686" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1383" name="LookingStraightUpStillProducesRigidHorizontalMovementAxes" fullname="ToolCalibrationMenuTests.LookingStraightUpStillProducesRigidHorizontalMovementAxes" methodname="LookingStraightUpStillProducesRigidHorizontalMovementAxes" classname="ToolCalibrationMenuTests" runstate="Runnable" seed="115674593" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.009091" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1382" name="MovementBasisUsesHorizontalStartingViewAndDoesNotFollowLaterHeadTurns" fullname="ToolCalibrationMenuTests.MovementBasisUsesHorizontalStartingViewAndDoesNotFollowLaterHeadTurns" methodname="MovementBasisUsesHorizontalStartingViewAndDoesNotFollowLaterHeadTurns" classname="ToolCalibrationMenuTests" runstate="Runnable" seed="897956411" result="Passed" start-time="2026-10-23 14:31:43Z" end-time="2026-10-23 14:31:43Z" duration="0.008470" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: C:/Users/aca/AppData/LocalLow/DefaultCompany/RosRigValidation\TestResults.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

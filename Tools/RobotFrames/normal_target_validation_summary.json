@@ -1,0 +1,62 @@
+{
+  "completedUtc": "2026-10-23T07:44:14.8249819Z",
+  "unityVersion": "6000.0.84f1",
+  "nativeTests": {
+    "total": 85,
+    "passed": 85,
+    "failed": 0,
+    "result": "Passed",
+    "results": "NormalTargetValidation/unity-results.xml"
+  },
+  "runtimeCompile": "runtime_compile_summary.json",
+  "visualPreview": "NormalTargetValidation/normal-contact-context.png",
+  "scope": "MTC pick/place and live aim use a ball and tool+Z normal arrow; TCP A/B retains full-pose tool geometry.",
+  "preserved": [
+    "ROS contact point and normal export",
+    "free MTC tool twist",
+    "ball drag orientation editing",
+    "5mm tool+Z context depth steps",
+    "plan invalidation and separate Execute"
+  ],
+  "hardware": false,
+  "rosTransport": false,
+  "headsetTested": false,
+  "appRebuilt": false,
+  "sources": [
+    {
+      "path": "Assets/Scripts/V3/NormalTargetMarker.cs",
+      "sha256": "486b3f24546a18a4189be628335f68839912da5d0e9dbb9cb86226e5436afe58",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/PickPlaceController.cs",
+      "sha256": "33da99b75d4bb807251cae11e23b201605fe200bf0c42b62ce82c5d94393fb81",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetRotationHandles.cs",
+      "sha256": "8c64fa1069f485cb43cc7d25eb8534269f5c8b3f98dd5148b0a060e3729344bd",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetPoseContextMenu.cs",
+      "sha256": "6909e339c00439ea8e37ba6daf83ef46dc6059685dc6b972e8548a2e6dbb6c05",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "7033f7cc426b1e0714c778fdb895511e8ef16097cb9fbe10f1a47602bfe054e7",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/PickPlaceToolContactTests.cs",
+      "sha256": "784c97254b78c3cfbf410413f40c98baf9141d155aa35cdd7a6f9aaa40fc713a",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TargetPoseContextTests.cs",
+      "sha256": "7559e8c9b48499f412d85a8479d980aff5fe63b573873ab365786eed5310edc0",
+      "isolatedCopyMatches": true
+    }
+  ]
+}

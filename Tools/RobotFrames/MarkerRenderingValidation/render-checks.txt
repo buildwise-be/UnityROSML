@@ -1,0 +1,6 @@
+Pick/Free rotation ball - select and turn controller: 49/49 colored pixels
+Pick/Tool +Z normal shaft: 49/49 colored pixels
+Pick/Tool +Z normal arrowhead: 49/49 colored pixels
+Place/Free rotation ball - select and turn controller: 49/49 colored pixels
+Place/Tool +Z normal shaft: 49/49 colored pixels
+Place/Tool +Z normal arrowhead: 49/49 colored pixels

@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-10-23T14:51:34.283543+00:00",
+  "unityVersion": "6000.0.84f1",
+  "scope": "Calibrated cyan arm/tool trajectory playback for TCP A/B and MTC with main-menu Play/Pause, Replay, scrubbing and speed controls.",
+  "nativeChecks": {
+    "total": 185,
+    "passed": 185,
+    "failed": 0,
+    "fixtures": [
+      {
+        "name": "MenuFollowTests",
+        "total": "11",
+        "passed": "11",
+        "failed": "0"
+      },
+      {
+        "name": "PickPlaceToolContactTests",
+        "total": "14",
+        "passed": "14",
+        "failed": "0"
+      },
+      {
+        "name": "TargetPoseContextTests",
+        "total": "10",
+        "passed": "10",
+        "failed": "0"
+      },
+      {
+        "name": "TaskModeSwitchTests",
+        "total": "119",
+        "passed": "119",
+        "failed": "0"
+      },
+      {
+        "name": "TcpPlanningControllerTests",
+        "total": "9",
+        "passed": "9",
+        "failed": "0"
+      },
+      {
+        "name": "ToolCalibrationMenuTests",
+        "total": "4",
+        "passed": "4",
+        "failed": "0"
+      },
+      {
+        "name": "TrajectoryPlaybackTests",
+        "total": "18",
+        "passed": "18",
+        "failed": "0"
+      }
+    ],
+    "results": "ArmPlaybackValidation/unity-results.xml"
+  },
+  "runtimeCompile": {
+    "summary": "runtime_compile_summary.json",
+    "sourceCount": 82,
+    "allCurrentSourceHashesMatch": true,
+    "errors": 0
+  },
+  "recordedMtcReplay": {
+    "snapshot": "mtc_success_live_20261023.json",
+    "points": 97,
+    "joints": 6,
+    "durationSeconds": 8.569338209,
+    "allRecordedToolTcpSamplesChecked": true,
+    "seamTimestampsAccepted": true
+  },
+  "preserved": [
+    "live robot joints and model",
+    "ROS calibrated arm/tool/TCP transforms",
+    "trajectory identity and review readiness",
+    "separate Execute action",
+    "static ghost density and path width controls"
+  ],
+  "previewFiles": [
+    "ArmPlaybackValidation/arm-playback-0.png",
+    "ArmPlaybackValidation/arm-playback-50.png",
+    "ArmPlaybackValidation/arm-playback-100.png",
+    "ArmPlaybackValidation/main-menu.png"
+  ],
+  "visuallyInspected": true,
+  "pipeline": "Assets/Settings/Mobile_RPAsset.asset",
+  "sourceFiles": [
+    {
+      "path": "Assets/Scripts/V3/ROS/UR16eTrajectoryVisualizer.cs",
+      "sha256": "41c7f9dfd6dff588539280b79dd0ba7a26c8bede68889c80f5a12046994646bb",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "48e56da3c552bc8ba135d92361d77e999521e7fe67df15f4e202e79c7e464234",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TrajectoryPlaybackTests.cs",
+      "sha256": "8c528c049d7d52a9c0db37357b91413ad78678d8e1c4c15989321fadb09cb255",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TaskModeSwitchTests.cs",
+      "sha256": "b35b2e96a151c325da504d764310d5c2eaa9987511d8ee23e24cca0a595781a3",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolCalibrationMenuTests.cs",
+      "sha256": "20ef7116c4851285f112823a1e79081e0c92d8bc22559c39fe71b8c66967a99c",
+      "isolatedCopyMatches": true
+    }
+  ],
+  "headsetTested": false,
+  "deviceDeployed": false,
+  "rosConnected": false,
+  "robotCommandsSent": false,
+  "limitations": "Offline native/graphics verification. Linear joint interpolation follows ROS motion timestamps; the flattened MTC preview does not simulate object attachments, suction or IO pauses."
+}

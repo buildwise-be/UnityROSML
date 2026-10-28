@@ -1,0 +1,4 @@
+Requested 0,005 metres; actual LineRenderer width 0,005 metres
+Requested 0,04 metres; actual LineRenderer width 0,04 metres
+Requested 0,05 metres; actual LineRenderer width 0,05 metres
+Requested 0,025 metres; actual LineRenderer width 0,025 metres

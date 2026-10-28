@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-23T14:56:22.5822778Z",
+  "scope": "Read-only installed ROS endpoint and retained solution/current scene audit. No planning, execution, motion, IO, deployment or live source mutation.",
+  "host": "nordbo@10.200.101.144",
+  "container": "urmir-jazzy",
+  "snapshot": "mtc_execute_scene_live_20261023.json",
+  "snapshot_sha256": "afb73828949f2709a06884e2b509c329810ed9037c4dd90d709fab3e765cff87",
+  "actual_execute_reached_backend": true,
+  "ready_unix": 1792766490.7805402,
+  "rejected_unix": 1792766503.2618363,
+  "execution_rejection": "world collision geometry or octomap changed",
+  "topic_registration": "execute_task consistently registered and published as the exact endpoint key; resolves ROS /execute_task at root namespace",
+  "world_differences": [
+    {
+      "planned": -0.02658928758289149,
+      "path": "world.collision_objects[1].pose.orientation.x",
+      "current": -0.026589287582891495,
+      "absolute_difference": 3.469446951953614E-18
+    },
+    {
+      "planned": -0.04993929412406222,
+      "path": "world.collision_objects[1].pose.orientation.z",
+      "current": -0.04993929412406223,
+      "absolute_difference": 6.938893903907228E-18
+    },
+    {
+      "planned": -0.01897693931805181,
+      "path": "world.collision_objects[1].pose.orientation.w",
+      "current": -0.018976939318051812,
+      "absolute_difference": 3.469446951953614E-18
+    }
+  ],
+  "world_objects_identical_except_quaternion_roundoff": true,
+  "finding": "Exact ROS message equality rejects harmless quaternion serialization rounding, at <=6.94e-18 per coefficient, between the MTC start scene and GetPlanningScene. All collision shapes, dimensions, IDs, frames, poses other than these 3 coefficients, metadata and empty octomap match.",
+  "source": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp:224-225"
+}

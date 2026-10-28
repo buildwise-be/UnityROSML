@@ -1,0 +1,45 @@
+{
+  "completedUtc": "2026-10-23T14:32:17.341764+00:00",
+  "scope": "Move the existing ghost path width control into the main XR task menu.",
+  "rangeMillimetres": [
+    5,
+    50
+  ],
+  "defaultMillimetres": 25,
+  "nativeMenuChecks": {
+    "passed": 15,
+    "failed": 0,
+    "results": "PathSliderValidation/unity-results.xml"
+  },
+  "sliderEventReadbackMillimetres": [
+    5,
+    40,
+    50,
+    25
+  ],
+  "preview": "PathSliderValidation/main-menu.png",
+  "previewVisuallyInspected": true,
+  "runtimeCompile": "runtime_compile_summary.json",
+  "runtimeSources": 82,
+  "sources": [
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "9b4c4226af45410d49da7a8af6a8519b21cdf9dfe1d9247d0034eb554042ece6",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolCalibrationMenuTests.cs",
+      "sha256": "f336cecea20d6cbf8a944b82937bdad374f5402e2dd8f82dbdbf6a3da067d9d4",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scenes/UR16eInteraction.unity",
+      "sha256": "14a29f82fa8d83491462996f0af40e2a08ad630d4496870577456749368d77b7",
+      "legacySliderCanvasInactive": true
+    }
+  ],
+  "requiresFullRebuildForSceneChange": true,
+  "headsetTested": false,
+  "deviceDeployed": false,
+  "rosAccess": false
+}

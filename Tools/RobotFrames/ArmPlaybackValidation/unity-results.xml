@@ -1,0 +1,1750 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="185" result="Passed" total="185" passed="185" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:49:07Z" duration="12,3380643">
+  <test-suite type="TestSuite" id="1000" name="RosRigValidation" fullname="RosRigValidation" runstate="Runnable" testcasecount="373" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:49:07Z" duration="12.338064" total="185" passed="185" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1427" name="UnityROSML.RobotFrames.EditorTests.dll" fullname="C:/Users/aca/unity-source/UnityROSML/Library/RosRigValidation/Library/ScriptAssemblies/UnityROSML.RobotFrames.EditorTests.dll" runstate="Runnable" testcasecount="373" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:49:07Z" duration="12.333549" total="185" passed="185" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="43840" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestFixture" id="1023" name="MenuFollowTests" fullname="MenuFollowTests" classname="MenuFollowTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.232338" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1034" name="ExplicitRecenterWorksAndQrPlacementDoesNotRelocateTheMenu" fullname="MenuFollowTests.ExplicitRecenterWorksAndQrPlacementDoesNotRelocateTheMenu" methodname="ExplicitRecenterWorksAndQrPlacementDoesNotRelocateTheMenu" classname="MenuFollowTests" runstate="Runnable" seed="805340091" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.092242" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1033" name="InterruptedGrabsReleaseNativeSelectionAndDoNotResume" fullname="MenuFollowTests.InterruptedGrabsReleaseNativeSelectionAndDoNotResume" classname="MenuFollowTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.061035" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1029" name="InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;focus&quot;)" fullname="MenuFollowTests.InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;focus&quot;)" methodname="InterruptedGrabsReleaseNativeSelectionAndDoNotResume" classname="MenuFollowTests" runstate="Runnable" seed="1056710469" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.023679" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Reference frame of the curve not set and XROrigin is not found, using global up as default.
+]]></output>
+          </test-case>
+          <test-case id="1030" name="InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;pause&quot;)" fullname="MenuFollowTests.InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;pause&quot;)" methodname="InterruptedGrabsReleaseNativeSelectionAndDoNotResume" classname="MenuFollowTests" runstate="Runnable" seed="17329350" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.010879" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Reference frame of the curve not set and XROrigin is not found, using global up as default.
+]]></output>
+          </test-case>
+          <test-case id="1031" name="InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;disable&quot;)" fullname="MenuFollowTests.InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;disable&quot;)" methodname="InterruptedGrabsReleaseNativeSelectionAndDoNotResume" classname="MenuFollowTests" runstate="Runnable" seed="214653909" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.011355" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Reference frame of the curve not set and XROrigin is not found, using global up as default.
+]]></output>
+          </test-case>
+          <test-case id="1032" name="InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;tracking loss&quot;)" fullname="MenuFollowTests.InterruptedGrabsReleaseNativeSelectionAndDoNotResume(&quot;tracking loss&quot;)" methodname="InterruptedGrabsReleaseNativeSelectionAndDoNotResume" classname="MenuFollowTests" runstate="Runnable" seed="2029283048" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.012217" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Reference frame of the curve not set and XROrigin is not found, using global up as default.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1027" name="NativeRaySelectionMovesWithoutASnapAndReleaseRetainsWorldPosition" fullname="MenuFollowTests.NativeRaySelectionMovesWithoutASnapAndReleaseRetainsWorldPosition" methodname="NativeRaySelectionMovesWithoutASnapAndReleaseRetainsWorldPosition" classname="MenuFollowTests" runstate="Runnable" seed="1317247106" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.012413" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Reference frame of the curve not set and XROrigin is not found, using global up as default.
+]]></output>
+        </test-case>
+        <test-case id="1026" name="OnlyTheSeparateVisibleBarHasAGrabCollider" fullname="MenuFollowTests.OnlyTheSeparateVisibleBarHasAGrabCollider" methodname="OnlyTheSeparateVisibleBarHasAGrabCollider" classname="MenuFollowTests" runstate="Runnable" seed="258206619" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.012494" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1024" name="RecenterStartsOneMetreAwayAndTwentyDegreesRight" fullname="MenuFollowTests.RecenterStartsOneMetreAwayAndTwentyDegreesRight" methodname="RecenterStartsOneMetreAwayAndTwentyDegreesRight" classname="MenuFollowTests" runstate="Runnable" seed="1031165642" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.010506" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1028" name="SelectedMenuStillSuppressesTargetCaptureAfterHoverExit" fullname="MenuFollowTests.SelectedMenuStillSuppressesTargetCaptureAfterHoverExit" methodname="SelectedMenuStillSuppressesTargetCaptureAfterHoverExit" classname="MenuFollowTests" runstate="Runnable" seed="736730953" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.014401" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Reference frame of the curve not set and XROrigin is not found, using global up as default.
+]]></output>
+        </test-case>
+        <test-case id="1035" name="VerticalViewingAndCoincidentViewerPreserveAValidPose" fullname="MenuFollowTests.VerticalViewingAndCoincidentViewerPreserveAValidPose" methodname="VerticalViewingAndCoincidentViewerPreserveAValidPose" classname="MenuFollowTests" runstate="Runnable" seed="1477013660" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.010094" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1025" name="WalkingFarAwayOrTurningAroundNeverMovesTheMenuButItAlwaysFacesTheViewer" fullname="MenuFollowTests.WalkingFarAwayOrTurningAroundNeverMovesTheMenuButItAlwaysFacesTheViewer" methodname="WalkingFarAwayOrTurningAroundNeverMovesTheMenuButItAlwaysFacesTheViewer" classname="MenuFollowTests" runstate="Runnable" seed="580516688" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.011023" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1036" name="PickPlaceToolContactTests" fullname="PickPlaceToolContactTests" classname="PickPlaceToolContactTests" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:56Z" duration="0.210007" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1039" name="ActualControllerKeepsBallAndArrowVisibleWhenLabelsFaceTheViewerAndTargetsAreRecaptured" fullname="PickPlaceToolContactTests.ActualControllerKeepsBallAndArrowVisibleWhenLabelsFaceTheViewerAndTargetsAreRecaptured" methodname="ActualControllerKeepsBallAndArrowVisibleWhenLabelsFaceTheViewerAndTargetsAreRecaptured" classname="PickPlaceToolContactTests" runstate="Runnable" seed="674608749" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.042556" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: MTC pick / place is inactive.
+MTC planning: MTC pick / place selected. Capture tool contacts, then Plan.
+MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1042" name="CapturedAndLiveMaterialsUseBundledUrpVariantsWithoutRecoloringTheirTemplates" fullname="PickPlaceToolContactTests.CapturedAndLiveMaterialsUseBundledUrpVariantsWithoutRecoloringTheirTemplates" methodname="CapturedAndLiveMaterialsUseBundledUrpVariantsWithoutRecoloringTheirTemplates" classname="PickPlaceToolContactTests" runstate="Runnable" seed="223690087" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.011278" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1046" name="DelayedCapabilityResponseCannotRearmAfterAContactChanges" fullname="PickPlaceToolContactTests.DelayedCapabilityResponseCannotRearmAfterAContactChanges" methodname="DelayedCapabilityResponseCannotRearmAfterAContactChanges" classname="PickPlaceToolContactTests" runstate="Runnable" seed="297778880" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.008881" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1043" name="DepthClickMovesExportedContactFiveMillimetresAlongToolZAndRevokesReview" fullname="PickPlaceToolContactTests.DepthClickMovesExportedContactFiveMillimetresAlongToolZAndRevokesReview" methodname="DepthClickMovesExportedContactFiveMillimetresAlongToolZAndRevokesReview" classname="PickPlaceToolContactTests" runstate="Runnable" seed="296489981" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.011555" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1037" name="DisplayedBallAndArrowExportTheExactContactPointAndNormal" fullname="PickPlaceToolContactTests.DisplayedBallAndArrowExportTheExactContactPointAndNormal" methodname="DisplayedBallAndArrowExportTheExactContactPointAndNormal" classname="PickPlaceToolContactTests" runstate="Runnable" seed="846934301" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.010228" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1045" name="InactiveModeHidesNormalAimAndRejectsCaptureAndExportWhileKeepingPreviousPoints" fullname="PickPlaceToolContactTests.InactiveModeHidesNormalAimAndRejectsCaptureAndExportWhileKeepingPreviousPoints" methodname="InactiveModeHidesNormalAimAndRejectsCaptureAndExportWhileKeepingPreviousPoints" classname="PickPlaceToolContactTests" runstate="Runnable" seed="287591043" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:55Z" duration="0.010029" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: MTC pick / place is inactive.
+MTC planning: MTC pick / place selected. Capture tool contacts, then Plan.
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1051" name="InterruptedContextBumperDoesNotBlockTheNextCapture" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-23 14:48:55Z" end-time="2026-10-23 14:48:56Z" duration="0.078028" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1047" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;focus&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;focus&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="709467658" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.014597" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+          <test-case id="1048" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;pause&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;pause&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1454161239" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.010073" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+          <test-case id="1049" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;tracking&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;tracking&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1941697266" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.010078" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+          <test-case id="1050" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;disabled&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;disabled&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="649438244" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.010142" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1038" name="LegacyPlanePrefabsAreNeverInstantiatedForContactTargets" fullname="PickPlaceToolContactTests.LegacyPlanePrefabsAreNeverInstantiatedForContactTargets" methodname="LegacyPlanePrefabsAreNeverInstantiatedForContactTargets" classname="PickPlaceToolContactTests" runstate="Runnable" seed="129157852" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.008743" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1040" name="RecapturingALabelOnlyReferenceRebuildsTheContactGeometry" fullname="PickPlaceToolContactTests.RecapturingALabelOnlyReferenceRebuildsTheContactGeometry" methodname="RecapturingALabelOnlyReferenceRebuildsTheContactGeometry" classname="PickPlaceToolContactTests" runstate="Runnable" seed="755173618" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.009056" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1044" name="RecapturingResetsDepthBaselineWithoutKeepingTheOldOffset" fullname="PickPlaceToolContactTests.RecapturingResetsDepthBaselineWithoutKeepingTheOldOffset" methodname="RecapturingResetsDepthBaselineWithoutKeepingTheOldOffset" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1373098800" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.008757" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1041" name="RecapturingRestoresHiddenBallAndArrowGeometryWithoutChangingTheRequestedPose" fullname="PickPlaceToolContactTests.RecapturingRestoresHiddenBallAndArrowGeometryWithoutChangingTheRequestedPose" methodname="RecapturingRestoresHiddenBallAndArrowGeometryWithoutChangingTheRequestedPose" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1187396874" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.008688" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1205" name="TargetPoseContextTests" fullname="TargetPoseContextTests" classname="TargetPoseContextTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.020948" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1206" name="DepthStepMovesExactlyFiveMillimetresAlongPhysicalToolZ" fullname="TargetPoseContextTests.DepthStepMovesExactlyFiveMillimetresAlongPhysicalToolZ" methodname="DepthStepMovesExactlyFiveMillimetresAlongPhysicalToolZ" classname="TargetPoseContextTests" runstate="Runnable" seed="1601076168" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.003041" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1211" name="ExactTcpContextDisallowsContactDepthAdjustments" fullname="TargetPoseContextTests.ExactTcpContextDisallowsContactDepthAdjustments" methodname="ExactTcpContextDisallowsContactDepthAdjustments" classname="TargetPoseContextTests" runstate="Runnable" seed="1535229542" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.000932" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1212" name="HiddenTargetsAndCalibrationEditsRejectPositionChanges" fullname="TargetPoseContextTests.HiddenTargetsAndCalibrationEditsRejectPositionChanges" methodname="HiddenTargetsAndCalibrationEditsRejectPositionChanges" classname="TargetPoseContextTests" runstate="Runnable" seed="1957381128" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.001082" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1213" name="MenuStaysStillWhenItsButtonsMoveTheToolAndClosesOnDisable" fullname="TargetPoseContextTests.MenuStaysStillWhenItsButtonsMoveTheToolAndClosesOnDisable" methodname="MenuStaysStillWhenItsButtonsMoveTheToolAndClosesOnDisable" classname="TargetPoseContextTests" runstate="Runnable" seed="1913992901" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.002949" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1207" name="NegativeStepRetractsAndOppositeStepsCancel" fullname="TargetPoseContextTests.NegativeStepRetractsAndOppositeStepsCancel" methodname="NegativeStepRetractsAndOppositeStepsCancel" classname="TargetPoseContextTests" runstate="Runnable" seed="165960503" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.001011" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1214" name="OnlyOneTargetContextCanBeOpenAtOnce" fullname="TargetPoseContextTests.OnlyOneTargetContextCanBeOpenAtOnce" methodname="OnlyOneTargetContextCanBeOpenAtOnce" classname="TargetPoseContextTests" runstate="Runnable" seed="901397866" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.003393" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1209" name="RecaptureRebasesWithoutMovingTheNewContactPoint" fullname="TargetPoseContextTests.RecaptureRebasesWithoutMovingTheNewContactPoint" methodname="RecaptureRebasesWithoutMovingTheNewContactPoint" classname="TargetPoseContextTests" runstate="Runnable" seed="1318457307" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.000924" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1208" name="ResetUndoesActualTranslationsWhenOrientationChangesBetweenSteps" fullname="TargetPoseContextTests.ResetUndoesActualTranslationsWhenOrientationChangesBetweenSteps" methodname="ResetUndoesActualTranslationsWhenOrientationChangesBetweenSteps" classname="TargetPoseContextTests" runstate="Runnable" seed="1349011695" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.001065" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1215" name="ToolHandleCoversActualGeometryWithoutRenderingTheOldBall" fullname="TargetPoseContextTests.ToolHandleCoversActualGeometryWithoutRenderingTheOldBall" methodname="ToolHandleCoversActualGeometryWithoutRenderingTheOldBall" classname="TargetPoseContextTests" runstate="Runnable" seed="2118252910" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.002985" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1210" name="TrackingOriginMovementPreservesThePhysicalDepthOffset" fullname="TargetPoseContextTests.TrackingOriginMovementPreservesThePhysicalDepthOffset" methodname="TrackingOriginMovementPreservesThePhysicalDepthOffset" classname="TargetPoseContextTests" runstate="Runnable" seed="1674234803" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.000877" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1216" name="TaskModeSwitchTests" fullname="TaskModeSwitchTests" classname="TaskModeSwitchTests" runstate="Runnable" testcasecount="119" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:49:07Z" duration="11.338554" total="119" passed="119" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="ParameterizedMethod" id="1235" name="ActualEmptyMtcRootResetDoesNotRejectTheFollowingSuccess" fullname="TaskModeSwitchTests.ActualEmptyMtcRootResetDoesNotRejectTheFollowingSuccess" classname="TaskModeSwitchTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.067476" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1233" name="ActualEmptyMtcRootResetDoesNotRejectTheFollowingSuccess(True)" fullname="TaskModeSwitchTests.ActualEmptyMtcRootResetDoesNotRejectTheFollowingSuccess(True)" methodname="ActualEmptyMtcRootResetDoesNotRejectTheFollowingSuccess" classname="TaskModeSwitchTests" runstate="Runnable" seed="2076567835" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.051375" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1234" name="ActualEmptyMtcRootResetDoesNotRejectTheFollowingSuccess(False)" fullname="TaskModeSwitchTests.ActualEmptyMtcRootResetDoesNotRejectTheFollowingSuccess(False)" methodname="ActualEmptyMtcRootResetDoesNotRejectTheFollowingSuccess" classname="TaskModeSwitchTests" runstate="Runnable" seed="1484906016" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.015783" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1340" name="AlignmentBlocksBothModesBeforeAnyPlanningOrExecutionConnection" fullname="TaskModeSwitchTests.AlignmentBlocksBothModesBeforeAnyPlanningOrExecutionConnection" methodname="AlignmentBlocksBothModesBeforeAnyPlanningOrExecutionConnection" classname="TaskModeSwitchTests" runstate="Runnable" seed="87248065" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.012331" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Scan the robot QR and finish robot alignment before MTC planning.
+MTC planning: MTC Execute requires a new successful pick/place plan and its visible trajectory preview.
+MTC planning: MTC planning requires pick / place mode, a matching suction tool and valid robot alignment.
+TCP planning: Task mode changed. Plan again in the selected mode.
+MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: MTC pick / place is inactive.
+TCP planning: Finish or cancel robot alignment before planning or executing.
+]]></output>
+        </test-case>
+        <test-case id="1327" name="ASecondReplacementNoticeStillRevokesAReviewedPlanBeforeReady" fullname="TaskModeSwitchTests.ASecondReplacementNoticeStillRevokesAReviewedPlanBeforeReady" methodname="ASecondReplacementNoticeStillRevokesAReviewedPlanBeforeReady" classname="TaskModeSwitchTests" runstate="Runnable" seed="1685934522" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.018361" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC planning: MTC plan invalidated: New planning request replaced the previous plan. Plan again.
+]]></output>
+        </test-case>
+        <test-case id="1231" name="EmptyFalseFollowedByPlanningFailedTerminatesAndRejectsLateSuccess" fullname="TaskModeSwitchTests.EmptyFalseFollowedByPlanningFailedTerminatesAndRejectsLateSuccess" methodname="EmptyFalseFollowedByPlanningFailedTerminatesAndRejectsLateSuccess" classname="TaskModeSwitchTests" runstate="Runnable" seed="2090068651" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.009443" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC planning planning_failed: No solution
+]]></output>
+        </test-case>
+        <test-case id="1224" name="FailedOfflineMtcPublishCannotLeaveAnArmedRequest" fullname="TaskModeSwitchTests.FailedOfflineMtcPublishCannotLeaveAnArmedRequest" methodname="FailedOfflineMtcPublishCannotLeaveAnArmedRequest" classname="TaskModeSwitchTests" runstate="Runnable" seed="1882603818" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.009090" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: MTC planning request could not be sent. Check the ROS connection, then Plan again.
+]]></output>
+        </test-case>
+        <test-case id="1331" name="FailedStageCountsRemainTerminalWhenAnOlderBackendOmitsTheMessage" fullname="TaskModeSwitchTests.FailedStageCountsRemainTerminalWhenAnOlderBackendOmitsTheMessage" methodname="FailedStageCountsRemainTerminalWhenAnOlderBackendOmitsTheMessage" classname="TaskModeSwitchTests" runstate="Runnable" seed="430723065" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.009104" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: ROS MTC pick / place planning failed. Adjust tool targets and plan again.
+]]></output>
+        </test-case>
+        <test-case id="1221" name="HiddenTcpTargetsRejectCaptureAndExportUntilTheirModeIsRestored" fullname="TaskModeSwitchTests.HiddenTcpTargetsRejectCaptureAndExportUntilTheirModeIsRestored" methodname="HiddenTcpTargetsRejectCaptureAndExportUntilTheirModeIsRestored" classname="TaskModeSwitchTests" runstate="Runnable" seed="2139989509" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.011004" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: MTC pick / place is inactive.
+]]></output>
+        </test-case>
+        <test-case id="1338" name="HistoricalResetListenerPreservesTheMtcBlockedReason" fullname="TaskModeSwitchTests.HistoricalResetListenerPreservesTheMtcBlockedReason" methodname="HistoricalResetListenerPreservesTheMtcBlockedReason" classname="TaskModeSwitchTests" runstate="Runnable" seed="1575632306" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.010716" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Capture both pick and place tool contact points before MTC planning.
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1230" name="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder" fullname="TaskModeSwitchTests.InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder" classname="TaskModeSwitchTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.041788" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1228" name="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder(True)" fullname="TaskModeSwitchTests.InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder(True)" methodname="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder" classname="TaskModeSwitchTests" runstate="Runnable" seed="15724317" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.018163" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1229" name="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder(False)" fullname="TaskModeSwitchTests.InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder(False)" methodname="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder" classname="TaskModeSwitchTests" runstate="Runnable" seed="159084893" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.022423" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1225" name="LateMtcResultsCannotRestoreAPlanAfterSwitchingAwayAndBack" fullname="TaskModeSwitchTests.LateMtcResultsCannotRestoreAPlanAfterSwitchingAwayAndBack" methodname="LateMtcResultsCannotRestoreAPlanAfterSwitchingAwayAndBack" classname="TaskModeSwitchTests" runstate="Runnable" seed="2021691322" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.017856" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+TCP planning: Task mode changed. Plan again in the selected mode.
+MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: MTC pick / place is inactive.
+MTC planning: MTC pick / place selected. Capture tool contacts, then Plan.
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1336" name="LatestSuccessfulNordboPlanReplaysAsAVisibleExecutableUnityReview" fullname="TaskModeSwitchTests.LatestSuccessfulNordboPlanReplaysAsAVisibleExecutableUnityReview" classname="TaskModeSwitchTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.075738" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1334" name="LatestSuccessfulNordboPlanReplaysAsAVisibleExecutableUnityReview(True)" fullname="TaskModeSwitchTests.LatestSuccessfulNordboPlanReplaysAsAVisibleExecutableUnityReview(True)" methodname="LatestSuccessfulNordboPlanReplaysAsAVisibleExecutableUnityReview" classname="TaskModeSwitchTests" runstate="Runnable" seed="2121276020" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.050210" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1335" name="LatestSuccessfulNordboPlanReplaysAsAVisibleExecutableUnityReview(False)" fullname="TaskModeSwitchTests.LatestSuccessfulNordboPlanReplaysAsAVisibleExecutableUnityReview(False)" methodname="LatestSuccessfulNordboPlanReplaysAsAVisibleExecutableUnityReview" classname="TaskModeSwitchTests" runstate="Runnable" seed="334100258" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.024022" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1222" name="LiveToolAimUsesTheSameTcpPoseInBothTaskModes" fullname="TaskModeSwitchTests.LiveToolAimUsesTheSameTcpPoseInBothTaskModes" methodname="LiveToolAimUsesTheSameTcpPoseInBothTaskModes" classname="TaskModeSwitchTests" runstate="Runnable" seed="267303571" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.015512" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: MTC pick / place is inactive.
+]]></output>
+        </test-case>
+        <test-case id="1332" name="MalformedPreviewKeepsExecutionBlockedAndDistinguishesUnityFromRosFailure" fullname="TaskModeSwitchTests.MalformedPreviewKeepsExecutionBlockedAndDistinguishesUnityFromRosFailure" methodname="MalformedPreviewKeepsExecutionBlockedAndDistinguishesUnityFromRosFailure" classname="TaskModeSwitchTests" runstate="Runnable" seed="1804687919" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.017788" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: ROS MTC planning succeeded, but its trajectory could not be displayed in Unity. Execution is blocked.
+]]></output>
+        </test-case>
+        <test-case id="1220" name="ModeSwitchEndsAnActiveTargetRotation" fullname="TaskModeSwitchTests.ModeSwitchEndsAnActiveTargetRotation" methodname="ModeSwitchEndsAnActiveTargetRotation" classname="TaskModeSwitchTests" runstate="Runnable" seed="1592330326" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.016071" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: MTC pick / place is inactive.
+]]></output>
+        </test-case>
+        <test-case id="1218" name="ModeSwitchRevokesBothPlansAndClearsTheSharedGhostPath" fullname="TaskModeSwitchTests.ModeSwitchRevokesBothPlansAndClearsTheSharedGhostPath" methodname="ModeSwitchRevokesBothPlansAndClearsTheSharedGhostPath" classname="TaskModeSwitchTests" runstate="Runnable" seed="1951231046" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.016202" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+TCP planning: Task mode changed. Plan again in the selected mode.
+MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: MTC pick / place is inactive.
+]]></output>
+        </test-case>
+        <test-case id="1337" name="MtcPreviewTimeoutDisarmsTheRequestAndRejectsLateCallbacks" fullname="TaskModeSwitchTests.MtcPreviewTimeoutDisarmsTheRequestAndRejectsLateCallbacks" methodname="MtcPreviewTimeoutDisarmsTheRequestAndRejectsLateCallbacks" classname="TaskModeSwitchTests" runstate="Runnable" seed="671588697" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.015299" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: No complete MTC preview received. Check ROS planning logs, then Plan again.
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1326" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" testcasecount="90" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:49:05Z" duration="9.140769" total="90" passed="90" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1236" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ISRECT&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ISRECT&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1929212078" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.024514" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1237" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ISRCET&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ISRCET&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="2007913065" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.026507" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1238" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ISRCTE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ISRCTE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="730079885" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.026812" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1239" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ISCRET&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ISCRET&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1213978841" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.028031" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1240" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ISCRTE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ISCRTE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1429937762" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.030411" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1241" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ISCTRE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ISCTRE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="31161236" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.031938" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1242" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRSECT&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRSECT&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1581275864" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.031831" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1243" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRSCET&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRSCET&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1888766833" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.034235" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1244" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRSCTE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRSCTE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="2035951982" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.036434" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1245" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRESCT&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRESCT&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1544406284" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.039793" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1246" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRECST&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRECST&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1021231235" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.039100" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1247" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRECTS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRECTS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="546908723" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.041050" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1248" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRCSET&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRCSET&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1152423910" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.041711" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1249" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRCSTE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRCSTE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1495644343" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:56Z" duration="0.044734" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1250" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRCEST&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRCEST&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="41511799" result="Passed" start-time="2026-10-23 14:48:56Z" end-time="2026-10-23 14:48:57Z" duration="0.056866" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1251" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRCETS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRCETS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="587183557" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.058775" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1252" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRCTSE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRCTSE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1200717034" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.048328" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1253" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRCTES&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;IRCTES&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="482194353" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.050680" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1254" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICSRET&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICSRET&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1847068639" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.051362" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1255" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICSRTE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICSRTE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="753095593" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.053300" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1256" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICSTRE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICSTRE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="469064997" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.057096" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1257" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICRSET&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICRSET&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="412234192" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.055897" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1258" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICRSTE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICRSTE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1928726726" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.059323" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1259" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICREST&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICREST&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1968331948" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.059981" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1260" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICRETS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICRETS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="607061387" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.065311" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1261" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICRTSE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICRTSE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1904268042" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.066875" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1262" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICRTES&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICRTES&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="854629173" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.065094" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1263" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICTSRE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICTSRE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1098098739" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.070078" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1264" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICTRSE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICTRSE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1434775211" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.079508" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1265" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICTRES&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;ICTRES&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="377433110" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:57Z" duration="0.086765" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1266" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RISECT&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RISECT&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="120873979" result="Passed" start-time="2026-10-23 14:48:57Z" end-time="2026-10-23 14:48:58Z" duration="0.071516" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1267" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RISCET&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RISCET&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1218910933" result="Passed" start-time="2026-10-23 14:48:58Z" end-time="2026-10-23 14:48:58Z" duration="0.073007" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1268" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RISCTE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RISCTE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1333385166" result="Passed" start-time="2026-10-23 14:48:58Z" end-time="2026-10-23 14:48:58Z" duration="0.079791" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1269" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RIESCT&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RIESCT&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1296914942" result="Passed" start-time="2026-10-23 14:48:58Z" end-time="2026-10-23 14:48:58Z" duration="0.077484" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1270" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RIECST&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RIECST&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="2137604762" result="Passed" start-time="2026-10-23 14:48:58Z" end-time="2026-10-23 14:48:58Z" duration="0.079924" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1271" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RIECTS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RIECTS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1936048525" result="Passed" start-time="2026-10-23 14:48:58Z" end-time="2026-10-23 14:48:58Z" duration="0.079742" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1272" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RICSET&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RICSET&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="322539513" result="Passed" start-time="2026-10-23 14:48:58Z" end-time="2026-10-23 14:48:58Z" duration="0.080719" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1273" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RICSTE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RICSTE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="777036225" result="Passed" start-time="2026-10-23 14:48:58Z" end-time="2026-10-23 14:48:58Z" duration="0.083596" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1274" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RICEST&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RICEST&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="972977253" result="Passed" start-time="2026-10-23 14:48:58Z" end-time="2026-10-23 14:48:58Z" duration="0.084330" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1275" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RICETS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RICETS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1649282840" result="Passed" start-time="2026-10-23 14:48:58Z" end-time="2026-10-23 14:48:58Z" duration="0.088052" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1276" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RICTSE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RICTSE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1375325126" result="Passed" start-time="2026-10-23 14:48:58Z" end-time="2026-10-23 14:48:58Z" duration="0.113390" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1277" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RICTES&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RICTES&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1075153315" result="Passed" start-time="2026-10-23 14:48:58Z" end-time="2026-10-23 14:48:58Z" duration="0.091286" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1278" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;REISCT&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;REISCT&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1853545305" result="Passed" start-time="2026-10-23 14:48:58Z" end-time="2026-10-23 14:48:59Z" duration="0.090279" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1279" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;REICST&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;REICST&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="788834414" result="Passed" start-time="2026-10-23 14:48:59Z" end-time="2026-10-23 14:48:59Z" duration="0.091896" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1280" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;REICTS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;REICTS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1628147248" result="Passed" start-time="2026-10-23 14:48:59Z" end-time="2026-10-23 14:48:59Z" duration="0.093835" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1281" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RECIST&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RECIST&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="961524458" result="Passed" start-time="2026-10-23 14:48:59Z" end-time="2026-10-23 14:48:59Z" duration="0.096573" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1282" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RECITS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RECITS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="63949278" result="Passed" start-time="2026-10-23 14:48:59Z" end-time="2026-10-23 14:48:59Z" duration="0.104041" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1283" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RECTIS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RECTIS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="186418856" result="Passed" start-time="2026-10-23 14:48:59Z" end-time="2026-10-23 14:48:59Z" duration="0.101566" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1284" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCISET&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCISET&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1229753122" result="Passed" start-time="2026-10-23 14:48:59Z" end-time="2026-10-23 14:48:59Z" duration="0.104514" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1285" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCISTE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCISTE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="880445136" result="Passed" start-time="2026-10-23 14:48:59Z" end-time="2026-10-23 14:48:59Z" duration="0.111891" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1286" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCIEST&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCIEST&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="916454123" result="Passed" start-time="2026-10-23 14:48:59Z" end-time="2026-10-23 14:48:59Z" duration="0.127398" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1287" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCIETS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCIETS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1371546577" result="Passed" start-time="2026-10-23 14:48:59Z" end-time="2026-10-23 14:48:59Z" duration="0.113193" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1288" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCITSE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCITSE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1717720118" result="Passed" start-time="2026-10-23 14:48:59Z" end-time="2026-10-23 14:49:00Z" duration="0.117554" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1289" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCITES&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCITES&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1951749049" result="Passed" start-time="2026-10-23 14:49:00Z" end-time="2026-10-23 14:49:00Z" duration="0.109629" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1290" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCEIST&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCEIST&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1496454869" result="Passed" start-time="2026-10-23 14:49:00Z" end-time="2026-10-23 14:49:00Z" duration="0.113430" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1291" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCEITS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCEITS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1516977886" result="Passed" start-time="2026-10-23 14:49:00Z" end-time="2026-10-23 14:49:00Z" duration="0.119272" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1292" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCETIS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCETIS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="79186339" result="Passed" start-time="2026-10-23 14:49:00Z" end-time="2026-10-23 14:49:00Z" duration="0.119371" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1293" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCTISE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCTISE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="909231584" result="Passed" start-time="2026-10-23 14:49:00Z" end-time="2026-10-23 14:49:00Z" duration="0.118021" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1294" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCTIES&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCTIES&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="606917454" result="Passed" start-time="2026-10-23 14:49:00Z" end-time="2026-10-23 14:49:00Z" duration="0.143622" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1295" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCTEIS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;RCTEIS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1673153367" result="Passed" start-time="2026-10-23 14:49:00Z" end-time="2026-10-23 14:49:00Z" duration="0.123659" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1296" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CISRET&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CISRET&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1324015710" result="Passed" start-time="2026-10-23 14:49:00Z" end-time="2026-10-23 14:49:01Z" duration="0.126421" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1297" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CISRTE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CISRTE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="483177125" result="Passed" start-time="2026-10-23 14:49:01Z" end-time="2026-10-23 14:49:01Z" duration="0.133585" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1298" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CISTRE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CISTRE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="453991622" result="Passed" start-time="2026-10-23 14:49:01Z" end-time="2026-10-23 14:49:01Z" duration="0.129073" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1299" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CIRSET&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CIRSET&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1658518872" result="Passed" start-time="2026-10-23 14:49:01Z" end-time="2026-10-23 14:49:01Z" duration="0.127375" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1300" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CIRSTE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CIRSTE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1423532305" result="Passed" start-time="2026-10-23 14:49:01Z" end-time="2026-10-23 14:49:01Z" duration="0.130315" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1301" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CIREST&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CIREST&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1949803949" result="Passed" start-time="2026-10-23 14:49:01Z" end-time="2026-10-23 14:49:01Z" duration="0.131523" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1302" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CIRETS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CIRETS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1361007204" result="Passed" start-time="2026-10-23 14:49:01Z" end-time="2026-10-23 14:49:01Z" duration="0.159613" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1303" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CIRTSE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CIRTSE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="2002992615" result="Passed" start-time="2026-10-23 14:49:01Z" end-time="2026-10-23 14:49:02Z" duration="0.138390" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1304" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CIRTES&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CIRTES&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1505523228" result="Passed" start-time="2026-10-23 14:49:02Z" end-time="2026-10-23 14:49:02Z" duration="0.137967" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1305" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CITSRE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CITSRE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="252946921" result="Passed" start-time="2026-10-23 14:49:02Z" end-time="2026-10-23 14:49:02Z" duration="0.146110" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1306" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CITRSE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CITRSE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="264644044" result="Passed" start-time="2026-10-23 14:49:02Z" end-time="2026-10-23 14:49:02Z" duration="0.142518" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1307" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CITRES&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CITRES&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="423680809" result="Passed" start-time="2026-10-23 14:49:02Z" end-time="2026-10-23 14:49:02Z" duration="0.151376" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1308" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRISET&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRISET&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1656700747" result="Passed" start-time="2026-10-23 14:49:02Z" end-time="2026-10-23 14:49:02Z" duration="0.145780" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1309" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRISTE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRISTE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="197785799" result="Passed" start-time="2026-10-23 14:49:02Z" end-time="2026-10-23 14:49:02Z" duration="0.171975" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1310" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRIEST&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRIEST&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1525254114" result="Passed" start-time="2026-10-23 14:49:02Z" end-time="2026-10-23 14:49:03Z" duration="0.149452" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1311" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRIETS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRIETS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1541395329" result="Passed" start-time="2026-10-23 14:49:03Z" end-time="2026-10-23 14:49:03Z" duration="0.150750" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1312" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRITSE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRITSE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="706172534" result="Passed" start-time="2026-10-23 14:49:03Z" end-time="2026-10-23 14:49:03Z" duration="0.157755" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1313" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRITES&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRITES&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1139892312" result="Passed" start-time="2026-10-23 14:49:03Z" end-time="2026-10-23 14:49:03Z" duration="0.156303" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1314" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CREIST&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CREIST&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="340184700" result="Passed" start-time="2026-10-23 14:49:03Z" end-time="2026-10-23 14:49:03Z" duration="0.165488" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1315" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CREITS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CREITS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1793020576" result="Passed" start-time="2026-10-23 14:49:03Z" end-time="2026-10-23 14:49:03Z" duration="0.169071" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1316" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRETIS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRETIS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1840318764" result="Passed" start-time="2026-10-23 14:49:03Z" end-time="2026-10-23 14:49:04Z" duration="0.190945" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1317" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRTISE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRTISE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="668210317" result="Passed" start-time="2026-10-23 14:49:04Z" end-time="2026-10-23 14:49:04Z" duration="0.164978" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1318" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRTIES&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRTIES&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="2015829264" result="Passed" start-time="2026-10-23 14:49:04Z" end-time="2026-10-23 14:49:04Z" duration="0.162656" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1319" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRTEIS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CRTEIS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="554330075" result="Passed" start-time="2026-10-23 14:49:04Z" end-time="2026-10-23 14:49:04Z" duration="0.160445" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1320" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CTISRE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CTISRE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1608462634" result="Passed" start-time="2026-10-23 14:49:04Z" end-time="2026-10-23 14:49:04Z" duration="0.167629" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1321" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CTIRSE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CTIRSE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="896811049" result="Passed" start-time="2026-10-23 14:49:04Z" end-time="2026-10-23 14:49:04Z" duration="0.169847" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1322" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CTIRES&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CTIRES&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1648674462" result="Passed" start-time="2026-10-23 14:49:04Z" end-time="2026-10-23 14:49:05Z" duration="0.197376" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1323" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CTRISE&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CTRISE&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1529119764" result="Passed" start-time="2026-10-23 14:49:05Z" end-time="2026-10-23 14:49:05Z" duration="0.178467" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1324" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CTRIES&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CTRIES&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="1947943720" result="Passed" start-time="2026-10-23 14:49:05Z" end-time="2026-10-23 14:49:05Z" duration="0.171304" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+          <test-case id="1325" name="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CTREIS&quot;)" fullname="TaskModeSwitchTests.MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics(&quot;CTREIS&quot;)" methodname="MtcSuccessSurvivesEveryDeliveryOrderAcrossItsThreeTopics" classname="TaskModeSwitchTests" runstate="Runnable" seed="620626876" result="Passed" start-time="2026-10-23 14:49:05Z" end-time="2026-10-23 14:49:05Z" duration="0.177413" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC trajectory received. Waiting for its planning result...
+MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1226" name="MtcSuccessWaitsForItsPreviewAndForTheUnityRobotModel" fullname="TaskModeSwitchTests.MtcSuccessWaitsForItsPreviewAndForTheUnityRobotModel" methodname="MtcSuccessWaitsForItsPreviewAndForTheUnityRobotModel" classname="TaskModeSwitchTests" runstate="Runnable" seed="1978607246" result="Passed" start-time="2026-10-23 14:49:05Z" end-time="2026-10-23 14:49:05Z" duration="0.170773" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: ROS MTC plan succeeded. Waiting for the Unity robot model to display its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+]]></output>
+        </test-case>
+        <test-case id="1223" name="PlanAndExecuteUseOnlyTheSelectedPlanner" fullname="TaskModeSwitchTests.PlanAndExecuteUseOnlyTheSelectedPlanner" methodname="PlanAndExecuteUseOnlyTheSelectedPlanner" classname="TaskModeSwitchTests" runstate="Runnable" seed="1387504278" result="Passed" start-time="2026-10-23 14:49:05Z" end-time="2026-10-23 14:49:05Z" duration="0.153638" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Capture both pick and place tool contact points before MTC planning.
+MTC planning: MTC Execute requires a new successful pick/place plan and its visible trajectory preview.
+TCP planning: Task mode changed. Plan again in the selected mode.
+MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: MTC pick / place is inactive.
+TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+        </test-case>
+        <test-case id="1227" name="ReadyMtcReviewRequiresTheSameDisplayedTrajectoryAndConsumesOnce" fullname="TaskModeSwitchTests.ReadyMtcReviewRequiresTheSameDisplayedTrajectoryAndConsumesOnce" methodname="ReadyMtcReviewRequiresTheSameDisplayedTrajectoryAndConsumesOnce" classname="TaskModeSwitchTests" runstate="Runnable" seed="1659879076" result="Passed" start-time="2026-10-23 14:49:05Z" end-time="2026-10-23 14:49:06Z" duration="0.219643" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC planning: MTC execution requested. Plan again before another execution.
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1330" name="RealPlanningFailureRejectsLateSuccessEvenWhenNoStageWasAttempted" fullname="TaskModeSwitchTests.RealPlanningFailureRejectsLateSuccessEvenWhenNoStageWasAttempted" classname="TaskModeSwitchTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-23 14:49:06Z" end-time="2026-10-23 14:49:06Z" duration="0.485023" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1328" name="RealPlanningFailureRejectsLateSuccessEvenWhenNoStageWasAttempted(False)" fullname="TaskModeSwitchTests.RealPlanningFailureRejectsLateSuccessEvenWhenNoStageWasAttempted(False)" methodname="RealPlanningFailureRejectsLateSuccessEvenWhenNoStageWasAttempted" classname="TaskModeSwitchTests" runstate="Runnable" seed="2063644699" result="Passed" start-time="2026-10-23 14:49:06Z" end-time="2026-10-23 14:49:06Z" duration="0.258017" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: ROS MTC pick / place planning failed: Task planning produced no successful solution
+]]></output>
+          </test-case>
+          <test-case id="1329" name="RealPlanningFailureRejectsLateSuccessEvenWhenNoStageWasAttempted(True)" fullname="TaskModeSwitchTests.RealPlanningFailureRejectsLateSuccessEvenWhenNoStageWasAttempted(True)" methodname="RealPlanningFailureRejectsLateSuccessEvenWhenNoStageWasAttempted" classname="TaskModeSwitchTests" runstate="Runnable" seed="93299731" result="Passed" start-time="2026-10-23 14:49:06Z" end-time="2026-10-23 14:49:06Z" duration="0.173429" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: ROS MTC pick / place planning failed: Task planning produced no successful solution
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1232" name="ReplacementNoticeRevokesAnAlreadyReviewedMtcPlan" fullname="TaskModeSwitchTests.ReplacementNoticeRevokesAnAlreadyReviewedMtcPlan" methodname="ReplacementNoticeRevokesAnAlreadyReviewedMtcPlan" classname="TaskModeSwitchTests" runstate="Runnable" seed="1480038794" result="Passed" start-time="2026-10-23 14:49:06Z" end-time="2026-10-23 14:49:06Z" duration="0.166590" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC planning: MTC plan invalidated: New planning request replaced the previous plan. Plan again.
+]]></output>
+        </test-case>
+        <test-case id="1219" name="SelectingTheCurrentModePreservesItsPendingReview" fullname="TaskModeSwitchTests.SelectingTheCurrentModePreservesItsPendingReview" methodname="SelectingTheCurrentModePreservesItsPendingReview" classname="TaskModeSwitchTests" runstate="Runnable" seed="723816788" result="Passed" start-time="2026-10-23 14:49:06Z" end-time="2026-10-23 14:49:06Z" duration="0.155777" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+TCP planning: Task mode changed. Plan again in the selected mode.
+MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: MTC pick / place is inactive.
+]]></output>
+        </test-case>
+        <test-case id="1339" name="SurfaceRotationRevokesThePreviousMtcRequestAndPreview" fullname="TaskModeSwitchTests.SurfaceRotationRevokesThePreviousMtcRequestAndPreview" methodname="SurfaceRotationRevokesThePreviousMtcRequestAndPreview" classname="TaskModeSwitchTests" runstate="Runnable" seed="815583474" result="Passed" start-time="2026-10-23 14:49:06Z" end-time="2026-10-23 14:49:07Z" duration="0.151370" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1217" name="SwitchingModesRetainsPosesAndShowsOnlyTheSelectedTargets" fullname="TaskModeSwitchTests.SwitchingModesRetainsPosesAndShowsOnlyTheSelectedTargets" methodname="SwitchingModesRetainsPosesAndShowsOnlyTheSelectedTargets" classname="TaskModeSwitchTests" runstate="Runnable" seed="697675004" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.150211" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC planning: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC planning: MTC pick / place is inactive.
+MTC planning: MTC pick / place selected. Capture tool contacts, then Plan.
+]]></output>
+        </test-case>
+        <test-case id="1333" name="WaitingForTheUnityModelTimesOutWithoutMisreportingRosPlanningFailure" fullname="TaskModeSwitchTests.WaitingForTheUnityModelTimesOutWithoutMisreportingRosPlanningFailure" methodname="WaitingForTheUnityModelTimesOutWithoutMisreportingRosPlanningFailure" classname="TaskModeSwitchTests" runstate="Runnable" seed="1976095477" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.176482" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[MTC planning: Planning MTC pick / place from tool contact poses...
+MTC planning: MTC plan succeeded. Waiting for its trajectory preview...
+MTC planning: ROS MTC plan succeeded. Waiting for the Unity robot model to display its trajectory preview...
+MTC planning: ROS MTC planning succeeded, but Unity did not receive and display its trajectory preview. Check the Unity robot model and ROS connection, then Plan again.
+]]></output>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1347" name="TcpPlanningControllerTests" fullname="TcpPlanningControllerTests" classname="TcpPlanningControllerTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.028055" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1359" name="HistoricalResetListenerCannotOverwriteVisibleTcpBlockedReason" fullname="TcpPlanningControllerTests.HistoricalResetListenerCannotOverwriteVisibleTcpBlockedReason" methodname="HistoricalResetListenerCannotOverwriteVisibleTcpBlockedReason" classname="TcpPlanningControllerTests" runstate="Runnable" seed="911805707" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.009320" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1351" name="MatchingFailureConsumesTokenAndAbsorbsLateSuccess" fullname="TcpPlanningControllerTests.MatchingFailureConsumesTokenAndAbsorbsLateSuccess" classname="TcpPlanningControllerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.002596" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1349" name="MatchingFailureConsumesTokenAndAbsorbsLateSuccess(&quot;failed&quot;)" fullname="TcpPlanningControllerTests.MatchingFailureConsumesTokenAndAbsorbsLateSuccess(&quot;failed&quot;)" methodname="MatchingFailureConsumesTokenAndAbsorbsLateSuccess" classname="TcpPlanningControllerTests" runstate="Runnable" seed="1743723070" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.001321" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[TCP planning: Planning exact TCP A → B. No motion requested.
+TCP planning: TCP planning failed or invalidated. Changed or failed
+]]></output>
+          </test-case>
+          <test-case id="1350" name="MatchingFailureConsumesTokenAndAbsorbsLateSuccess(&quot;invalidated&quot;)" fullname="TcpPlanningControllerTests.MatchingFailureConsumesTokenAndAbsorbsLateSuccess(&quot;invalidated&quot;)" methodname="MatchingFailureConsumesTokenAndAbsorbsLateSuccess" classname="TcpPlanningControllerTests" runstate="Runnable" seed="313641616" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.000791" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[TCP planning: Planning exact TCP A → B. No motion requested.
+TCP planning: TCP planning failed or invalidated. Changed or failed
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1352" name="OtherClientsStatusCannotChangePendingReview" fullname="TcpPlanningControllerTests.OtherClientsStatusCannotChangePendingReview" methodname="OtherClientsStatusCannotChangePendingReview" classname="TcpPlanningControllerTests" runstate="Runnable" seed="2087797317" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.000323" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1348" name="PlanningProgressRetainsTokenAndReadyResultWaitsForMatchingPreview" fullname="TcpPlanningControllerTests.PlanningProgressRetainsTokenAndReadyResultWaitsForMatchingPreview" methodname="PlanningProgressRetainsTokenAndReadyResultWaitsForMatchingPreview" classname="TcpPlanningControllerTests" runstate="Runnable" seed="1658207731" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.001022" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Planning exact TCP A → B. No motion requested.
+TCP planning: TCP plan succeeded. Waiting for its matching trajectory preview...
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1358" name="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets" fullname="TcpPlanningControllerTests.PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets" classname="TcpPlanningControllerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.001394" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1356" name="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets(1.0d)" fullname="TcpPlanningControllerTests.PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets(1.0d)" methodname="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets" classname="TcpPlanningControllerTests" runstate="Runnable" seed="1677915970" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.000827" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1357" name="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets(-1.0d)" fullname="TcpPlanningControllerTests.PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets(-1.0d)" methodname="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets" classname="TcpPlanningControllerTests" runstate="Runnable" seed="1413881886" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.000212" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1355" name="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus" fullname="TcpPlanningControllerTests.UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus" classname="TcpPlanningControllerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.000854" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1353" name="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus(null)" fullname="TcpPlanningControllerTests.UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus(null)" methodname="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus" classname="TcpPlanningControllerTests" runstate="Runnable" seed="77262971" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.000347" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1354" name="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus(&quot;&quot;)" fullname="TcpPlanningControllerTests.UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus(&quot;&quot;)" methodname="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus" classname="TcpPlanningControllerTests" runstate="Runnable" seed="880405003" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.000195" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+      </test-suite>
+      <test-suite type="TestFixture" id="1380" name="ToolCalibrationMenuTests" fullname="ToolCalibrationMenuTests" classname="ToolCalibrationMenuTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.060885" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1381" name="AlignmentActionsFitTheExistingPanelAndOnlyTaskViewStartsVisible" fullname="ToolCalibrationMenuTests.AlignmentActionsFitTheExistingPanelAndOnlyTaskViewStartsVisible" methodname="AlignmentActionsFitTheExistingPanelAndOnlyTaskViewStartsVisible" classname="ToolCalibrationMenuTests" runstate="Runnable" seed="183637508" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.014830" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1384" name="AlignmentEntryExplainsMissingPlacementWithoutHidingTaskControls" fullname="ToolCalibrationMenuTests.AlignmentEntryExplainsMissingPlacementWithoutHidingTaskControls" methodname="AlignmentEntryExplainsMissingPlacementWithoutHidingTaskControls" classname="ToolCalibrationMenuTests" runstate="Runnable" seed="731912688" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.020454" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1383" name="LookingStraightUpStillProducesRigidHorizontalMovementAxes" fullname="ToolCalibrationMenuTests.LookingStraightUpStillProducesRigidHorizontalMovementAxes" methodname="LookingStraightUpStillProducesRigidHorizontalMovementAxes" classname="ToolCalibrationMenuTests" runstate="Runnable" seed="1852579006" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.012540" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1382" name="MovementBasisUsesHorizontalStartingViewAndDoesNotFollowLaterHeadTurns" fullname="ToolCalibrationMenuTests.MovementBasisUsesHorizontalStartingViewAndDoesNotFollowLaterHeadTurns" methodname="MovementBasisUsesHorizontalStartingViewAndDoesNotFollowLaterHeadTurns" classname="ToolCalibrationMenuTests" runstate="Runnable" seed="724961249" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.012212" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1406" name="TrajectoryPlaybackTests" fullname="TrajectoryPlaybackTests" classname="TrajectoryPlaybackTests" runstate="Runnable" testcasecount="18" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.438997" total="18" passed="18" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1426" name="ActualMenuEnablesPlaybackControlsAfterPlanningAndScrubsOnlyThePreview" fullname="TrajectoryPlaybackTests.ActualMenuEnablesPlaybackControlsAfterPlanningAndScrubsOnlyThePreview" methodname="ActualMenuEnablesPlaybackControlsAfterPlanningAndScrubsOnlyThePreview" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="1641744723" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.187392" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1411" name="AStaticOnePointPlanRetainsItsVisibleReviewWithoutPlaying" fullname="TrajectoryPlaybackTests.AStaticOnePointPlanRetainsItsVisibleReviewWithoutPlaying" methodname="AStaticOnePointPlanRetainsItsVisibleReviewWithoutPlaying" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="1471697609" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.016958" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1422" name="ClearingOrChangingTheRobotModelStopsAndDisposesTheOwnedPreview" fullname="TrajectoryPlaybackTests.ClearingOrChangingTheRobotModelStopsAndDisposesTheOwnedPreview" classname="TrajectoryPlaybackTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.058263" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1419" name="ClearingOrChangingTheRobotModelStopsAndDisposesTheOwnedPreview(&quot;clear&quot;)" fullname="TrajectoryPlaybackTests.ClearingOrChangingTheRobotModelStopsAndDisposesTheOwnedPreview(&quot;clear&quot;)" methodname="ClearingOrChangingTheRobotModelStopsAndDisposesTheOwnedPreview" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="1284422060" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.017450" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1420" name="ClearingOrChangingTheRobotModelStopsAndDisposesTheOwnedPreview(&quot;model&quot;)" fullname="TrajectoryPlaybackTests.ClearingOrChangingTheRobotModelStopsAndDisposesTheOwnedPreview(&quot;model&quot;)" methodname="ClearingOrChangingTheRobotModelStopsAndDisposesTheOwnedPreview" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="1815294287" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.019277" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1421" name="ClearingOrChangingTheRobotModelStopsAndDisposesTheOwnedPreview(&quot;mode&quot;)" fullname="TrajectoryPlaybackTests.ClearingOrChangingTheRobotModelStopsAndDisposesTheOwnedPreview(&quot;mode&quot;)" methodname="ClearingOrChangingTheRobotModelStopsAndDisposesTheOwnedPreview" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="1320938164" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.016768" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1410" name="HoldsAndDuplicateTimestampsHaveDeterministicSampling" fullname="TrajectoryPlaybackTests.HoldsAndDuplicateTimestampsHaveDeterministicSampling" methodname="HoldsAndDuplicateTimestampsHaveDeterministicSampling" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="744920680" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.016210" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1418" name="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview" fullname="TrajectoryPlaybackTests.InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview" classname="TrajectoryPlaybackTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.044572" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1412" name="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview(&quot;negative time&quot;)" fullname="TrajectoryPlaybackTests.InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview(&quot;negative time&quot;)" methodname="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="1906672927" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.007589" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1413" name="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview(&quot;decreasing time&quot;)" fullname="TrajectoryPlaybackTests.InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview(&quot;decreasing time&quot;)" methodname="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="963762070" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.006987" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1414" name="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview(&quot;noncanonical nanoseconds&quot;)" fullname="TrajectoryPlaybackTests.InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview(&quot;noncanonical nanoseconds&quot;)" methodname="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="907910138" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.006800" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1415" name="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview(&quot;nonfinite position&quot;)" fullname="TrajectoryPlaybackTests.InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview(&quot;nonfinite position&quot;)" methodname="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="1736402182" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.006695" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1416" name="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview(&quot;unknown joint&quot;)" fullname="TrajectoryPlaybackTests.InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview(&quot;unknown joint&quot;)" methodname="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="1550466635" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.007939" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1417" name="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview(&quot;instantaneous jump&quot;)" fullname="TrajectoryPlaybackTests.InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview(&quot;instantaneous jump&quot;)" methodname="InvalidTrajectoryCannotProduceAnExecutableLookingArmPreview" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="689959925" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.006738" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1408" name="JointInterpolationPreservesRosUnwrappedAnglesAcrossPi" fullname="TrajectoryPlaybackTests.JointInterpolationPreservesRosUnwrappedAnglesAcrossPi" methodname="JointInterpolationPreservesRosUnwrappedAnglesAcrossPi" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="1864433844" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.018980" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1407" name="NonuniformTimingInterpolatesEveryJointAndTheSelectedToolTcpWithoutMovingTheLiveRig" fullname="TrajectoryPlaybackTests.NonuniformTimingInterpolatesEveryJointAndTheSelectedToolTcpWithoutMovingTheLiveRig" methodname="NonuniformTimingInterpolatesEveryJointAndTheSelectedToolTcpWithoutMovingTheLiveRig" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="2027125898" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.016692" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1409" name="PauseSpeedSeekEndAndReplayAffectOnlyVirtualPlaybackAndPreserveTheReviewedTrajectory" fullname="TrajectoryPlaybackTests.PauseSpeedSeekEndAndReplayAffectOnlyVirtualPlaybackAndPreserveTheReviewedTrajectory" methodname="PauseSpeedSeekEndAndReplayAffectOnlyVirtualPlaybackAndPreserveTheReviewedTrajectory" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="1606740075" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.018128" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1425" name="ReattachingTheSameReviewedResultKeepsPlaybackProgressAndItsOwnedArm" fullname="TrajectoryPlaybackTests.ReattachingTheSameReviewedResultKeepsPlaybackProgressAndItsOwnedArm" methodname="ReattachingTheSameReviewedResultKeepsPlaybackProgressAndItsOwnedArm" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="404135459" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.016177" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1424" name="RecordedSuccessfulMtcPlanReplaysAllTimedSamplesWithTheKenosSlTcp" fullname="TrajectoryPlaybackTests.RecordedSuccessfulMtcPlanReplaysAllTimedSamplesWithTheKenosSlTcp" methodname="RecordedSuccessfulMtcPlanReplaysAllTimedSamplesWithTheKenosSlTcp" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="2040108070" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.026680" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1423" name="SubsetTrajectoryHoldsTheRemainingLiveJointsAtTheirCapturedInitialValues" fullname="TrajectoryPlaybackTests.SubsetTrajectoryHoldsTheRemainingLiveJointsAtTheirCapturedInitialValues" methodname="SubsetTrajectoryHoldsTheRemainingLiveJointsAtTheirCapturedInitialValues" classname="TrajectoryPlaybackTests" runstate="Runnable" seed="429801343" result="Passed" start-time="2026-10-23 14:49:07Z" end-time="2026-10-23 14:49:07Z" duration="0.016403" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: C:/Users/aca/AppData/LocalLow/DefaultCompany/RosRigValidation\TestResults.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

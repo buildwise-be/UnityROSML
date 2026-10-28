@@ -1,0 +1,42 @@
+{
+  "completedUtc": "2026-10-23T08:02:59.9610976Z",
+  "unityVersion": "6000.0.84f1",
+  "captions": [
+    "A",
+    "B",
+    "Pick",
+    "Place"
+  ],
+  "appearance": "Approx 2cm capital height; target colour and black outline; camera-facing label beside each captured target; hidden with target",
+  "runtimeCompile": "runtime_compile_summary.json",
+  "runtimeSourceCount": 81,
+  "nativeCaptureModeChecks": {
+    "total": 29,
+    "passed": 29,
+    "failed": 0,
+    "results": "TargetNameValidation/unity-results.xml"
+  },
+  "renderPreview": "TargetNameValidation/named-targets.png",
+  "renderInspected": true,
+  "headsetTested": false,
+  "hardware": false,
+  "rosTransport": false,
+  "appRebuilt": false,
+  "sources": [
+    {
+      "path": "Assets/Scripts/V3/TargetNameLabel.cs",
+      "sha256": "b0d51cb550c90d4b2ef71a08920b111e1fa91703116c8551bd59fcf5278dbb4e",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TcpTargetPreview.cs",
+      "sha256": "03feccd990ab265b0806d564c5f76d5f92753767b8d86fefe3cc487c632089e6",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/PickPlaceController.cs",
+      "sha256": "b9b094a43116e7d7704bde4201f67ccf4ef9332f94296e3f570e4f9adc5134bb",
+      "isolatedCopyMatches": true
+    }
+  ]
+}

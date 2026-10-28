@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="29" result="Passed" total="29" passed="29" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-23 08:02:03Z" end-time="2026-10-23 08:02:04Z" duration="0,5817227">
+  <test-suite type="TestSuite" id="1000" name="RosRigValidation" fullname="RosRigValidation" runstate="Runnable" testcasecount="260" result="Passed" start-time="2026-10-23 08:02:03Z" end-time="2026-10-23 08:02:04Z" duration="0.581723" total="29" passed="29" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1307" name="UnityROSML.RobotFrames.EditorTests.dll" fullname="C:/Users/aca/unity-source/UnityROSML/Library/RosRigValidation/Library/ScriptAssemblies/UnityROSML.RobotFrames.EditorTests.dll" runstate="Runnable" testcasecount="260" result="Passed" start-time="2026-10-23 08:02:03Z" end-time="2026-10-23 08:02:04Z" duration="0.575818" total="29" passed="29" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="39496" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestFixture" id="1045" name="PickPlaceToolContactTests" fullname="PickPlaceToolContactTests" classname="PickPlaceToolContactTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-10-23 08:02:03Z" end-time="2026-10-23 08:02:04Z" duration="0.286539" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1051" name="DelayedCapabilityResponseCannotRearmAfterAContactChanges" fullname="PickPlaceToolContactTests.DelayedCapabilityResponseCannotRearmAfterAContactChanges" methodname="DelayedCapabilityResponseCannotRearmAfterAContactChanges" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1919650580" result="Passed" start-time="2026-10-23 08:02:03Z" end-time="2026-10-23 08:02:04Z" duration="0.103741" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1048" name="DepthClickMovesExportedContactFiveMillimetresAlongToolZAndRevokesReview" fullname="PickPlaceToolContactTests.DepthClickMovesExportedContactFiveMillimetresAlongToolZAndRevokesReview" methodname="DepthClickMovesExportedContactFiveMillimetresAlongToolZAndRevokesReview" classname="PickPlaceToolContactTests" runstate="Runnable" seed="448948564" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.022889" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1046" name="DisplayedBallAndArrowExportTheExactContactPointAndNormal" fullname="PickPlaceToolContactTests.DisplayedBallAndArrowExportTheExactContactPointAndNormal" methodname="DisplayedBallAndArrowExportTheExactContactPointAndNormal" classname="PickPlaceToolContactTests" runstate="Runnable" seed="858128639" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.014140" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1050" name="InactiveModeHidesNormalAimAndRejectsCaptureAndExportWhileKeepingPreviousPoints" fullname="PickPlaceToolContactTests.InactiveModeHidesNormalAimAndRejectsCaptureAndExportWhileKeepingPreviousPoints" methodname="InactiveModeHidesNormalAimAndRejectsCaptureAndExportWhileKeepingPreviousPoints" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1050451131" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.012145" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1056" name="InterruptedContextBumperDoesNotBlockTheNextCapture" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.103406" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1052" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;focus&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;focus&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1966180783" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.030214" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+          <test-case id="1053" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;pause&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;pause&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1118857007" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.011465" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+          <test-case id="1054" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;tracking&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;tracking&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="459896762" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.009845" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+          <test-case id="1055" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;disabled&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;disabled&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="2113409315" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.011604" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1047" name="LegacyPlanePrefabsAreNeverInstantiatedForContactTargets" fullname="PickPlaceToolContactTests.LegacyPlanePrefabsAreNeverInstantiatedForContactTargets" methodname="LegacyPlanePrefabsAreNeverInstantiatedForContactTargets" classname="PickPlaceToolContactTests" runstate="Runnable" seed="333292915" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.010119" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1049" name="RecapturingResetsDepthBaselineWithoutKeepingTheOldOffset" fullname="PickPlaceToolContactTests.RecapturingResetsDepthBaselineWithoutKeepingTheOldOffset" methodname="RecapturingResetsDepthBaselineWithoutKeepingTheOldOffset" classname="PickPlaceToolContactTests" runstate="Runnable" seed="359351393" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.012293" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1221" name="TaskModeSwitchTests" fullname="TaskModeSwitchTests" classname="TaskModeSwitchTests" runstate="Runnable" testcasecount="19" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.284776" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1241" name="AlignmentBlocksBothModesBeforeAnyPlanningOrExecutionConnection" fullname="TaskModeSwitchTests.AlignmentBlocksBothModesBeforeAnyPlanningOrExecutionConnection" methodname="AlignmentBlocksBothModesBeforeAnyPlanningOrExecutionConnection" classname="TaskModeSwitchTests" runstate="Runnable" seed="142631113" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.014738" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+TCP planning: Finish or cancel robot alignment before planning or executing.
+]]></output>
+        </test-case>
+        <test-case id="1236" name="EmptyFalseFollowedByPlanningFailedTerminatesAndRejectsLateSuccess" fullname="TaskModeSwitchTests.EmptyFalseFollowedByPlanningFailedTerminatesAndRejectsLateSuccess" methodname="EmptyFalseFollowedByPlanningFailedTerminatesAndRejectsLateSuccess" classname="TaskModeSwitchTests" runstate="Runnable" seed="1337749937" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.009139" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1229" name="FailedOfflineMtcPublishCannotLeaveAnArmedRequest" fullname="TaskModeSwitchTests.FailedOfflineMtcPublishCannotLeaveAnArmedRequest" methodname="FailedOfflineMtcPublishCannotLeaveAnArmedRequest" classname="TaskModeSwitchTests" runstate="Runnable" seed="560222267" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.007945" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1226" name="HiddenTcpTargetsRejectCaptureAndExportUntilTheirModeIsRestored" fullname="TaskModeSwitchTests.HiddenTcpTargetsRejectCaptureAndExportUntilTheirModeIsRestored" methodname="HiddenTcpTargetsRejectCaptureAndExportUntilTheirModeIsRestored" classname="TaskModeSwitchTests" runstate="Runnable" seed="1592052967" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.009783" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+        <test-case id="1239" name="HistoricalResetListenerPreservesTheMtcBlockedReason" fullname="TaskModeSwitchTests.HistoricalResetListenerPreservesTheMtcBlockedReason" methodname="HistoricalResetListenerPreservesTheMtcBlockedReason" classname="TaskModeSwitchTests" runstate="Runnable" seed="1486460617" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.007268" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1235" name="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder" fullname="TaskModeSwitchTests.InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder" classname="TaskModeSwitchTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.120206" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1233" name="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder(True)" fullname="TaskModeSwitchTests.InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder(True)" methodname="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder" classname="TaskModeSwitchTests" runstate="Runnable" seed="2052720149" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.100006" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1234" name="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder(False)" fullname="TaskModeSwitchTests.InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder(False)" methodname="InitialEmptyFalseAndReplacementNoticeAllowSuccessAndPreviewInEitherOrder" classname="TaskModeSwitchTests" runstate="Runnable" seed="1983845701" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.019496" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1230" name="LateMtcResultsCannotRestoreAPlanAfterSwitchingAwayAndBack" fullname="TaskModeSwitchTests.LateMtcResultsCannotRestoreAPlanAfterSwitchingAwayAndBack" methodname="LateMtcResultsCannotRestoreAPlanAfterSwitchingAwayAndBack" classname="TaskModeSwitchTests" runstate="Runnable" seed="1786933533" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.006669" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+        <test-case id="1227" name="LiveToolAimUsesTheSameTcpPoseInBothTaskModes" fullname="TaskModeSwitchTests.LiveToolAimUsesTheSameTcpPoseInBothTaskModes" methodname="LiveToolAimUsesTheSameTcpPoseInBothTaskModes" classname="TaskModeSwitchTests" runstate="Runnable" seed="932837216" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.009650" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+        <test-case id="1225" name="ModeSwitchEndsAnActiveTargetRotation" fullname="TaskModeSwitchTests.ModeSwitchEndsAnActiveTargetRotation" methodname="ModeSwitchEndsAnActiveTargetRotation" classname="TaskModeSwitchTests" runstate="Runnable" seed="87820663" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.008951" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+        <test-case id="1223" name="ModeSwitchRevokesBothPlansAndClearsTheSharedGhostPath" fullname="TaskModeSwitchTests.ModeSwitchRevokesBothPlansAndClearsTheSharedGhostPath" methodname="ModeSwitchRevokesBothPlansAndClearsTheSharedGhostPath" classname="TaskModeSwitchTests" runstate="Runnable" seed="2008607476" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.008989" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+        <test-case id="1238" name="MtcPreviewTimeoutDisarmsTheRequestAndRejectsLateCallbacks" fullname="TaskModeSwitchTests.MtcPreviewTimeoutDisarmsTheRequestAndRejectsLateCallbacks" methodname="MtcPreviewTimeoutDisarmsTheRequestAndRejectsLateCallbacks" classname="TaskModeSwitchTests" runstate="Runnable" seed="755073430" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.005870" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1231" name="MtcSuccessWaitsForPreviewAndRejectsAnUndisplayableTrajectory" fullname="TaskModeSwitchTests.MtcSuccessWaitsForPreviewAndRejectsAnUndisplayableTrajectory" methodname="MtcSuccessWaitsForPreviewAndRejectsAnUndisplayableTrajectory" classname="TaskModeSwitchTests" runstate="Runnable" seed="749844228" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.007586" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1228" name="PlanAndExecuteUseOnlyTheSelectedPlanner" fullname="TaskModeSwitchTests.PlanAndExecuteUseOnlyTheSelectedPlanner" methodname="PlanAndExecuteUseOnlyTheSelectedPlanner" classname="TaskModeSwitchTests" runstate="Runnable" seed="254304725" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.008779" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+        </test-case>
+        <test-case id="1232" name="ReadyMtcReviewRequiresTheSameDisplayedTrajectoryAndConsumesOnce" fullname="TaskModeSwitchTests.ReadyMtcReviewRequiresTheSameDisplayedTrajectoryAndConsumesOnce" methodname="ReadyMtcReviewRequiresTheSameDisplayedTrajectoryAndConsumesOnce" classname="TaskModeSwitchTests" runstate="Runnable" seed="2009175073" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.014592" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1237" name="ReplacementNoticeRevokesAnAlreadyReviewedMtcPlan" fullname="TaskModeSwitchTests.ReplacementNoticeRevokesAnAlreadyReviewedMtcPlan" methodname="ReplacementNoticeRevokesAnAlreadyReviewedMtcPlan" classname="TaskModeSwitchTests" runstate="Runnable" seed="1740000195" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.010898" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1224" name="SelectingTheCurrentModePreservesItsPendingReview" fullname="TaskModeSwitchTests.SelectingTheCurrentModePreservesItsPendingReview" methodname="SelectingTheCurrentModePreservesItsPendingReview" classname="TaskModeSwitchTests" runstate="Runnable" seed="315746381" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.014302" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+]]></output>
+        </test-case>
+        <test-case id="1240" name="SurfaceRotationRevokesThePreviousMtcRequestAndPreview" fullname="TaskModeSwitchTests.SurfaceRotationRevokesThePreviousMtcRequestAndPreview" methodname="SurfaceRotationRevokesThePreviousMtcRequestAndPreview" classname="TaskModeSwitchTests" runstate="Runnable" seed="1104960484" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.005782" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1222" name="SwitchingModesRetainsPosesAndShowsOnlyTheSelectedTargets" fullname="TaskModeSwitchTests.SwitchingModesRetainsPosesAndShowsOnlyTheSelectedTargets" methodname="SwitchingModesRetainsPosesAndShowsOnlyTheSelectedTargets" classname="TaskModeSwitchTests" runstate="Runnable" seed="599292063" result="Passed" start-time="2026-10-23 08:02:04Z" end-time="2026-10-23 08:02:04Z" duration="0.008256" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+Saving results to: C:/Users/aca/unity-source/UnityROSML/Library/RosRigValidation/target-label-results.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

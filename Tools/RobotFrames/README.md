@@ -5,24 +5,54 @@
 The shared robot menu in `UR16eInteraction` has two separate task buttons:
 **TCP A → B** and **MTC pick / place**. The selected button is highlighted.
 Hold the controller bumper to capture A or the pick tool pose; double press it to
-capture B or the place tool pose. Only the selected task's captured tool copies and
+capture B or the place contact point. Only the selected task's captured references and
 rotation handles are visible. Switching retains each task's targets but clears
 both planning states and the ghost trajectory; a new Plan is required before
 Execute. Mode selection is blocked while aligning the robot or turning a target.
+
+Captured references have short **A**, **B**, **Pick** or **Place** labels beside
+them. The labels face the viewer, follow their reference after rotation/depth
+edits, and hide with the inactive mode. Their text is about 2 cm high; coordinates
+and instructions remain in the menu and diagnostic logs.
+`target_name_validation_summary.json` records compilation of 81 runtime sources,
+29/29 existing capture/mode checks passing, and the inspected
+[`label preview`](TargetNameValidation/named-targets.png). No headset app build
+or hardware operation is part of those checks.
 
 TCP targets specify the complete tool pose, including rotation about tool +Z.
 MTC targets specify desired TCP contact points and tool +Z normals. ROS samples
 twelve tool twists at 30-degree intervals independently at pick and place; it
 also generates approach, lift, placement, retreat and vacuum stages. The contact
-normal is constrained, while rotation around it can change from the reference
-tool shown in XR. Review the actual solved tool rotation in the trajectory.
+normal is constrained, while rotation around it is free. Review the actual
+solved tool rotation in the trajectory.
 
-Both modes show the selected tool geometry at the requested TCP. Hover a placed
-tool and press the bumper for its contextual menu. MTC targets have **+Z 5 mm**,
+TCP A/B shows the selected tool geometry. MTC pick/place shows a small ball at
+each contact point with a single arrow along tool +Z, and the same ball/arrow
+as the live aim preview. It shows no fixed tool clocking or curved twist rings.
+Trigger-drag the ball to turn the normal. Hover a placed reference and press
+the bumper for its contextual menu. MTC targets have **+Z 5 mm**,
 **-Z 5 mm** and **Reset depth** controls for contact compression/backoff. Depth
 steps follow the current tool normal and invalidate any reviewed plan. Close the
 menu before rotating, planning or executing. TCP targets retain exact captured
 positions; their context menu explains rotation controls.
+
+The ball/arrow materials are bundled under `Resources/RobotTargetMarkers` so
+Android includes their opaque and transparent URP Unlit shader variants.
+Runtime-only `Shader.Find` references were absent from the previous full Android
+build; scripts-only builds kept reusing that player data. **Make a full Android
+Build/Build And Run after this fix; scripts-only rebuilding is insufficient.**
+Recapturing also restores incomplete or hidden marker geometry while retaining
+the short labels and exact contact pose.
+
+`marker_rendering_validation_summary.json` records 80/80 focused native tests,
+82 runtime sources compiling without errors, and an actual-controller render
+using the mobile URP settings. Each Pick/Place ball, shaft and arrowhead must
+render colored pixels independently of its label; see the
+[`controller preview`](MarkerRenderingValidation/controller-preview.png).
+`marker_player_validation_summary.json` additionally records a full isolated
+Android player-data export retaining both materials and the Unlit shader, with
+opaque, transparent and instanced Vulkan variants compiled. This export does
+not install the app or test headset stereo rendering.
 
 MTC requires a matching Kenos or Kenos SL model and the new capability-gated
 `/pick_place_tcp_target` interface. It constructs the virtual object centre half
@@ -31,12 +61,97 @@ The original surface-pose API remains compatible for older clients; this Unity
 workflow does not use it. Neither endpoint adds a hidden compression distance.
 
 Both tasks use **Plan preview** followed by a separate **Execute plan**.
+MTC keeps listening after Execute consumes the reviewed permission: ROS
+acknowledgement, progress, success or rejection now appears in the main menu.
+No acknowledgement after 10 seconds reports an unknown outcome and keeps the
+request consumed; Unity never retries automatically. A late outcome is still
+accepted. New Plan/Execute is blocked until the execution attempt resolves.
+Execution tracking survives target edits, tool/alignment changes, mode switches
+and component disable. Those changes revoke the reviewed preview; they cannot
+cancel a command already sent. Both workflows remain blocked until its outcome
+arrives, and the main menu keeps showing MTC execution feedback across modes.
 MTC execution now additionally requires its successful result and the actual
 displayed trajectory, and consumes local readiness once. Local rejections and
 planning timeouts are shown in the menu. The legacy MTC messages have no request
 ID: callbacks are ignored outside a deliberate current MTC request, but an old
 response arriving after a new MTC request cannot be distinguished by this
 legacy protocol. Exact TCP requests use their separate correlated interface.
+
+`mtc_execution_validation_summary.json` records 205/205 native checks passing,
+including 20 execution lifecycle and actual public-action cases with a
+non-network publish substitute. `mtc_execute_scene_diagnosis_20261023.json`
+confirms the reported silent Execute reached ROS, which rejected three harmless
+world-object quaternion rounding differences (at most 6.94e-18). The Unity
+feedback fix does not bypass that ROS scene check. The approved backend
+[precision fix](ExecutePrecisionProposal/README.md) is applied and built offline;
+all 14 plan-validation cases pass. Nine of ten package test targets pass, with
+the existing scene-effects assertion reproduced on the unchanged baseline.
+The complete recorded planned/current scenes also pass the compiled validator;
+the unchanged validator rejects the same data with the original error.
+The precision fix was deployed to Nordbo on **2026-10-28** with an MTC-only
+restart. The robot driver, MoveIt and ROS–Unity endpoint retained their original
+processes. Plan again before Execute; this backend correction needs no additional
+Unity rebuild.
+
+The initial read-only **2026-10-28** Nordbo audit confirmed the same rejection:
+the source, installed header and running MTC executable all predated the fix.
+The fresh world's only difference is one quaternion coefficient by
+`6.94e-18`; the octomap is unchanged. The complete fresh scenes pass the fixed
+compiled validator and fail the old one. See
+`mtc_execute_diagnosis_20261028.json` and `ExecutePrecisionValidation_20261028/`.
+The durable Nordbo checkout and running container now carry the approved fix.
+The verified `urmir-jazzy:latest` and `urmir-jazzy:mtc-precision-20261028` images
+also contain it; the previous image is retained for rollback.
+Deployment records, exact parameter/model checks and the rollback paths are in
+`ExecutePrecisionValidation_20261028/`. No robot motion or IO was requested.
+
+MTC's initial reset can contain an unsolved `task pipeline` root stage. Unity
+treats that as initialization and continues waiting for the final result.
+Failed IK alternatives inside an overall successful result do not make the
+task fail. Success still requires its trajectory to be displayed before Execute;
+waiting for the robot preview to initialize is reported separately from a ROS
+planning failure. `mtc_success_live_20261023.json` is the read-only Nordbo success
+snapshot used for the offline 97-point trajectory replay.
+`mtc_menu_validation_summary.json` records 167/167 native tests passing,
+including all 90 delivery orders across the three MTC topics and both orders
+for the actual successful Nordbo result/trajectory. It also covers native XRI
+menu grab/release and interruption recovery. Runtime compilation covers 82
+sources without errors; the inspected menu render is
+[`MtcMenuValidation/mtc-menu.png`](MtcMenuValidation/mtc-menu.png). These checks
+send no planning, execution or IO requests and do not install the headset app.
+
+## Animated arm and tool preview
+
+Both planning modes display a separate cyan arm and selected tool using the
+same calibrated ROS link transforms as the live replica. New plans prepare
+their first pose with the animated arm hidden to avoid covering the live robot.
+**Play** or **Replay** reveals it; Pause and subsequent timeline scrubbing keep
+it visible for inspection. Scrubbing before the first Play keeps it hidden.
+The path and static waypoint previews remain available for plan review.
+In the main menu, **Play/Pause** controls virtual
+playback, **Replay** restarts it, and the timeline inspects any point while
+pausing playback. Speed choices are **0.25x**, **0.5x**, **1x** and **2x**.
+
+Playback follows ROS waypoint timestamps and interpolates joint positions
+between samples, preserving the supplied joint winding. The live robot replica
+continues to show joint feedback. Playback controls send no ROS commands and
+do not consume the reviewed plan; real movement still requires **Execute**.
+Changing targets, tool, task mode or calibration clears the old preview.
+The flattened MTC motion preview does not simulate suction, object attachment
+or controller IO pauses.
+
+`arm_playback_validation_summary.json` records **185/185 passing native checks**,
+including playback, both planning workflows and XR menu interaction. The actual
+97-point MTC record (8.569 s) is checked at every waypoint against the Kenos SL
+TCP. Runtime compilation covers 82 sources without errors. Three inspected
+arm/tool renders and the updated menu are in `ArmPlaybackValidation/`.
+These checks use no ROS connection, robot command or headset deployment.
+
+`preview_visibility_validation_summary.json` records the later **207/207 native
+checks passing**, including 20 playback cases and both planning workflows.
+It checks the actual animated robot's renderers stay inactive until Play/Replay,
+remain visible when paused, and hide again for a new plan. Runtime compilation
+covers the current 82 sources without errors.
 
 ## Exact TCP targets and planning
 
@@ -61,15 +176,24 @@ the backend used by the headset. Unity checks the read-only
 menu. The legacy direct-TCP topics execute immediately and are never used by
 the Plan preview action.
 
-Current menu-follow proof is `menu_follow_validation_summary.json`, exercising
-comfort zones, smooth motion/facing, interaction holds, suspension recovery and
-large head turns. `task_mode_validation_summary.json` records 47 passing
+The earlier `menu_follow_validation_summary.json` covers the retired automatic
+follow behavior. The menu now stays where it is placed and faces the viewer;
+use its grab bar to move it with the controller laser.
+`task_mode_validation_summary.json` records 47 passing
 task-selection tests, including 18 new mode/MTC cases using the actual controllers and
 robot trajectory clones. Both callback arrival orders, initial ROS reset status,
 late messages, mode/target invalidation, timeout and single-use review are checked.
 `runtime_compile_summary.json` records the current runtime compilation.
 
-`tool_contact_validation_summary.json` records **93/93 passing native Unity
+`normal_target_validation_summary.json` records **85/85 passing native Unity
+tests** after replacing MTC tool copies with contact balls and normal arrows.
+The displayed arrow is checked against the exported contact normal, with the
+depth/menu, input interruption, mode, TCP and menu-follow regressions passing.
+Runtime compilation covers 80 sources with zero errors. The inspected render is
+[`NormalTargetValidation/normal-contact-context.png`](NormalTargetValidation/normal-contact-context.png).
+These checks do not build/install the headset app or access ROS/hardware.
+
+The earlier `tool_contact_validation_summary.json` records **93/93 passing native Unity
 tests** for the tool ghosts, context depth controls, input interruption recovery,
 mode switching, TCP planning and menu following, with matching source hashes.
 The inspected runtime render is
@@ -129,31 +253,28 @@ the default, and a failed Save leaves the draft open for retry or cancellation.
 **Kenos**, and **Kenos SL**. Aim the controller ray at a choice and press the
 trigger. Selection updates the robot and TCP immediately; it also clears old
 trajectory previews and invalidates previous planning. The menu starts near the
-camera and follows loosely as described below. **Recenter menu** brings it back
+camera and stays where it is placed. **Recenter menu** brings it back
 into view immediately. Selecting a button does not also place the robot or capture
 a target.
 
-### Loose menu following
+### Moving the menu with the controller
 
 The initial/recentered menu is about 1 m away, 20 degrees to the right and 15 cm
-below eye height. It stays in world space, ignoring head roll and pitch for its
-position. Small movements and glancing toward it leave its position unchanged.
-After 0.65 s outside a generous comfort zone (0.65–1.45 m distance, 50 degrees
-of horizontal angle, or 45 cm of height drift), it gently follows toward the
-peripheral position. It stops within a smaller comfort zone, so looking at the
-menu does not make it chase the user's gaze.
+below eye height. Aim the controller laser at its grab bar, hold the trigger,
+move or aim the controller to reposition the menu, then release. The menu keeps
+that world position when the viewer walks or turns; it always faces the viewer
+and stays upright. **Recenter menu** explicitly returns it to the initial offset.
 
-Automatic movement is limited to 0.6 m/s, with a 1.1 s distance half-life. Large
-turns move around the viewer rather than taking a shortcut across their face.
-Facing is kept upright, turns gradually (at most 35 degrees/s) and ignores tiny
-orientation errors. Long frames cannot produce a large position or rotation jump.
+The grab bar is separate from the buttons, so button clicks retain their usual
+behavior. Menu grabbing suppresses robot placement and target capture. Focus
+loss, pause or disabling the menu cancels an unfinished grab. QR placement and
+realignment retain the viewer's chosen menu position.
 
-Hovering/pressing a menu button, manipulating a target, or calibrating the robot
-holds both menu position and orientation. Following resumes gently after a short
-grace period. Focus loss/pause clears unfinished pointer presses. QR placement
-and realignment retain the viewer's menu position. The component's **Loose viewer
-follow** Inspector fields expose these defaults; disabling follow restores static
-placement. Calibration keeps its panel fixed until saving or cancelling.
+The task view includes **Ghost path thickness** below Plan/Execute. Its horizontal
+laser slider adjusts the shared TCP/MTC trajectory line from **5 to 50 mm** and
+shows the current width in millimetres (the existing default is **25 mm**).
+The old standalone `TrajectorySizeCanvas` is inactive in `UR16eInteraction`.
+The separate 10/20/80% ghost-count buttons retain their existing behavior.
 
 The offline choices come from the expanded ROS Xacros, including the stored arm
 calibration. `RosRobotRig` applies the same joint origins, axes, fixed frames and
@@ -240,19 +361,20 @@ The scene now starts in **TCP Preview** mode on `URInputManager`:
   editing, so selecting a handle does not also replace a target or place a robot.
   Export reads the edited orientation directly.
 - The task menu has separate **Plan TCP A/B** and **Plan MTC Pick/Place** modes.
-  Both capture tool poses with the same controller convention and show tool
-  geometry. TCP A/B constrains the complete pose. MTC captures desired pick and
+  Both capture tool poses with the same controller convention. TCP A/B shows
+  tool geometry and constrains the complete pose. MTC shows contact balls and
+  normal arrows, and captures desired pick and
   place TCP contact points and normals; ROS samples twelve rotations around
   tool +Z independently at pick and place. The trajectory preview shows the
   actual chosen rotation. The internal virtual object remains 100 x 100 x 4 mm;
   these controls do not infer a scanned object's shape.
-- Hover a captured tool or its rotation handle and press the bumper to open its
+- Hover a captured reference and press the bumper to open its
   contextual menu. For MTC targets, **+Z 5 mm** pushes the contact point through
   the suction face and **-Z 5 mm** backs off. Each click moves exactly 5 mm along
   the tool's current normal. **Reset depth** undoes these translations, including
   when the normal was changed between steps. Recapturing a target resets its
-  depth baseline. Close the menu to rotate the tool again. Opening a context
-  menu freezes the main menu's follow behavior and suppresses pose capture;
+  depth baseline. Close the menu to rotate the reference again. Opening a context
+  menu suppresses pose capture;
   focus loss, pause or lost controller tracking closes it and clears input.
   Editing either target invalidates the previous plan, so Plan is required
   again before the separate Execute action.

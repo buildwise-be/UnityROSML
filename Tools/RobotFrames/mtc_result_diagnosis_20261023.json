@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-23",
+  "scope": "Read-only Nordbo installed-source and retained-log audit for successful ROS MTC plans reported as failures in Unity.",
+  "host": "nordbo (10.200.101.144)",
+  "container": "urmir-jazzy",
+  "liveSnapshot": "mtc_success_live_20261023.json",
+  "observedLatestRetainedResult": {
+    "overallSuccess": true,
+    "executionStatus": "ready",
+    "trajectoryPoints": 97,
+    "trajectoryJoints": 6,
+    "taskRoot": "Tool contact pick/place"
+  },
+  "confirmedResetShapeFromInstalledSource": {
+    "basis": "Derived from the installed constructors, traversal implementation, and publisher; no planning request or native task execution was sent by this audit.",
+    "payload": {
+      "overall_success": false,
+      "stages": [
+        {"name": "task pipeline", "depth": 0, "solved": 0, "failed": 0}
+      ],
+      "message": ""
+    },
+    "evidence": [
+      {
+        "path": "/home/ros_ws/src/moveit_task_constructor/core/include/moveit/task_constructor/task.h",
+        "line": 83,
+        "quote": "Task(const std::string& ns = \"\", bool introspection = true, ContainerBase::pointer&& container = std::make_unique<SerialContainer>(\"task pipeline\"));",
+        "meaning": "A new default task contains one named serial root container before any real stages are built."
+      },
+      {
+        "path": "/home/ros_ws/src/moveit_task_constructor/core/src/task.cpp",
+        "line": 96,
+        "quote": "Task::Task(const std::string& ns, bool introspection, ContainerBase::pointer&& container) : WrapperBase(new TaskPrivate(this, ns), std::move(container))",
+        "meaning": "The supplied root container is retained by the task wrapper."
+      },
+      {
+        "path": "/home/ros_ws/src/moveit_task_constructor/core/src/container.cpp",
+        "line": 360,
+        "quote": "bool ContainerBase::traverseRecursively(const ContainerBase::StageCallback& processor) const { if (!processor(*this, 0)) return false; return pimpl()->traverseStages(processor, 1, UINT_MAX); }",
+        "meaning": "Traversal includes the root at depth zero even when it has no children. An empty-task summary therefore has one stage, not zero."
+      },
+      {
+        "path": "/home/ros_ws/src/ur16e_mtc_gpio_stage/src/test_task.cpp",
+        "symbol": "createTaskImpl",
+        "sequence": [
+          "discardPreparedPlan();",
+          "task_ = mtc::Task();",
+          "task_.setRobotModel(startup_model_);",
+          "publishPlanningStatus(false);",
+          "publishExecutionStatus(\"invalidated\", \"New planning request replaced the previous plan\");",
+          "buildTask(...) is performed later"
+        ],
+        "meaning": "False with an unsolved task-pipeline root is a normal reset before planning starts; it does not report the new planning attempt's failure."
+      },
+      {
+        "path": "/home/ros_ws/src/ur16e_mtc_gpio_stage/src/test_task.cpp",
+        "symbol": "publishPlanningStatus",
+        "meaning": "Serializes every traversed stage with its name/depth/solved/failed counts. Vacuum mode does not include an explicit reset phase or request ID."
+      }
+    ]
+  },
+  "retainedTaskLog": {
+    "path": "/root/.ros/log/test_task_284_1792762737260.log",
+    "latestSequenceUnixSeconds": [
+      {"time": 1792763983.705483768, "event": "Published planning status overall_success=false"},
+      {"time": 1792763983.705583631, "event": "Execution invalidated: New planning request replaced the previous plan"},
+      {"time": 1792763984.704717859, "event": "Published planned trajectory: 97 points, 6 joints"},
+      {"time": 1792763984.704790280, "event": "Published planning status overall_success=true"},
+      {"time": 1792763984.704800812, "event": "Execution ready: A successful plan is available for one execution attempt"}
+    ],
+    "previousSuccessfulPlan": {"time": 1792763814.513147438, "points": 98, "joints": 6}
+  },
+  "endpointLog": {
+    "path": "/root/.ros/log/python3_283_1792762737311.log",
+    "client": "10.200.100.121",
+    "latestConnectionUnixSeconds": 1792763721.328367941,
+    "latestDisconnectUnixSeconds": 1792764006.544371097,
+    "observedErrorsAtDisconnect": ["Connection reset by peer", "Broken pipe"],
+    "requiredMtcTopicsRegistered": true,
+    "finding": "Both successful plans were published between connection and disconnect. No endpoint serialization or registration error appears in this interval. This does not prove client-side receipt."
+  },
+  "headsetLogAvailability": {
+    "adb": "C:/Users/aca/AppData/Local/UnityAndroid/Sdk/platform-tools/adb.exe",
+    "devices": [{"serial": "emulator-5570", "state": "offline"}],
+    "magicLeapConnected": false,
+    "logcatRead": false
+  },
+  "unityDefectToRegress": "The old stages.Length == 0 reset guard misclassifies the real one-root reset as terminal failure, so later success and trajectory can be ignored. Independently verify ordering of the initial execution invalidation versus success and preview messages across topics.",
+  "changesToRemoteFilesOrRosState": false,
+  "planningOrExecutionPublishedByAudit": false,
+  "apkInstallOrRestartPerformed": false
+}

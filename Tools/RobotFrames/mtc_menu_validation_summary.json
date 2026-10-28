@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-10-23T14:15:56.278237+00:00",
+  "unityVersion": "6000.0.84f1",
+  "scope": "MTC initialization/result/preview handling and a world-fixed laser-grabbable viewer-facing menu.",
+  "diagnosis": "mtc_result_diagnosis_20261023.json",
+  "liveReplay": {
+    "snapshot": "mtc_success_live_20261023.json",
+    "sha256": "3bb65c836c16276355e569a13de1da86b4bb65057a0abe0412de15ac851ec0d3",
+    "points": 97,
+    "joints": 6,
+    "overallSuccess": true,
+    "rosExecutionStatus": "ready",
+    "bothStatusTrajectoryOrdersPass": true
+  },
+  "nativeTests": {
+    "total": 167,
+    "passed": 167,
+    "failed": 0,
+    "results": "MtcMenuValidation/unity-results.xml",
+    "fixtures": [
+      {
+        "name": "MenuFollowTests",
+        "total": "11",
+        "passed": "11",
+        "failed": "0"
+      },
+      {
+        "name": "PickPlaceToolContactTests",
+        "total": "14",
+        "passed": "14",
+        "failed": "0"
+      },
+      {
+        "name": "TargetPoseContextTests",
+        "total": "10",
+        "passed": "10",
+        "failed": "0"
+      },
+      {
+        "name": "TaskModeSwitchTests",
+        "total": "119",
+        "passed": "119",
+        "failed": "0"
+      },
+      {
+        "name": "TcpPlanningControllerTests",
+        "total": "9",
+        "passed": "9",
+        "failed": "0"
+      },
+      {
+        "name": "ToolCalibrationMenuTests",
+        "total": "4",
+        "passed": "4",
+        "failed": "0"
+      }
+    ],
+    "allThreeTopicInterleavings": 90,
+    "nativeXriGrabSelection": true,
+    "focusPauseDisableTrackingReset": true
+  },
+  "runtimeCompile": {
+    "summary": "runtime_compile_summary.json",
+    "sourceCount": 82,
+    "errorCount": 0,
+    "allCurrentSourceHashesMatch": true
+  },
+  "visualPreview": {
+    "entryPoint": "ToolCalibrationMenuTests.RenderCalibrationMenuPreviews",
+    "pipeline": "Assets/Settings/Mobile_RPAsset.asset",
+    "files": [
+      "MtcMenuValidation/tcp-menu.png",
+      "MtcMenuValidation/mtc-menu.png",
+      "MtcMenuValidation/alignment-menu.png"
+    ],
+    "visuallyInspected": true,
+    "notes": "Visible grab bar is separate from task/alignment controls; no clipping or button overlap."
+  },
+  "sources": [
+    {
+      "path": "Assets/Scripts/V3/ROS/MTCPlansManager.cs",
+      "sha256": "d0636b4a1c7aa50c2016bb0e8dcaad30c955edc21d7bf0d770d3a586922b21be",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/UR16eTrajectoryVisualizer.cs",
+      "sha256": "095645ffe57e7951ff5fb4762c56da94d0344b51ebc4788a3acaa863cfebe1f3",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "038fc3b5785fbd7fa986fdec8558e6a34e119a3c34f15d714a61693a082bd054",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/URInputManager.cs",
+      "sha256": "d3bf553b2684a09428cc9391547a1deb4cfa1ff75163b913c492ba71e68e325a",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/MenuFollowTests.cs",
+      "sha256": "befd0f754b35563d05dbb8ce765580255d7b5387c3cbb5255412bcb3019df721",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TaskModeSwitchTests.cs",
+      "sha256": "d96bcd17587249e750fe518a74ad6ffaae0838363cdb6b7ee5c3514084c58cfd",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolCalibrationMenuTests.cs",
+      "sha256": "d82fa79f8c55ed5b546b360cd168e8d89005a22281f2a15291e59fdfca434f4b",
+      "isolatedCopyMatches": true
+    }
+  ],
+  "backendChanged": false,
+  "livePlanningRequested": false,
+  "motionOrIORequested": false,
+  "deviceDeployed": false,
+  "headsetTested": false,
+  "limitations": "Read-only live ROS snapshot plus offline native Unity and graphics checks; user must rebuild and test in the headset."
+}

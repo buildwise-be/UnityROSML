@@ -1,0 +1,106 @@
+{
+  "completedUtc": "2026-10-23T09:59:16.476333+00:00",
+  "unityVersion": "6000.0.84f1",
+  "cause": "The previous full Android player data omitted the URP Unlit shader used only through Shader.Find by contact markers. Later scripts-only builds reused that data.",
+  "fix": "Bundle opaque and transparent URP Unlit materials and clone them for live/captured markers; restore marker/handle geometry on recapture.",
+  "nativeTests": {
+    "total": 80,
+    "passed": 80,
+    "failed": 0,
+    "result": "Passed",
+    "filter": "PickPlaceToolContactTests|TaskModeSwitchTests|TargetPoseContextTests|TcpTargetRotationMathTests|MenuFollowTests",
+    "results": "MarkerRenderingValidation/editmode-results.xml"
+  },
+  "runtimeCompile": {
+    "summary": "runtime_compile_summary.json",
+    "sourceCount": 82,
+    "errorCount": 0,
+    "allCurrentSourceHashesMatch": true
+  },
+  "actualControllerRender": {
+    "entryPoint": "PickPlaceToolContactTests.RenderCapturedMarkerPreview",
+    "pipeline": "Assets/Settings/Mobile_RPAsset.asset",
+    "image": "MarkerRenderingValidation/controller-preview.png",
+    "visuallyInspected": true,
+    "coloredPixelChecks": {
+      "Pick/Free rotation ball - select and turn controller": 49,
+      "Pick/Tool +Z normal shaft": 49,
+      "Pick/Tool +Z normal arrowhead": 49,
+      "Place/Free rotation ball - select and turn controller": 49,
+      "Place/Tool +Z normal shaft": 49,
+      "Place/Tool +Z normal arrowhead": 49
+    }
+  },
+  "androidPlayerDataExport": "marker_player_validation_summary.json",
+  "requiresFullAppRebuild": true,
+  "headsetTested": false,
+  "deviceDeployed": false,
+  "rosTransport": false,
+  "limitations": "Editor preview and isolated Android Mono ARMv7 export; headset/XR stereo runtime not tested.",
+  "sources": [
+    {
+      "path": "Assets/Scripts/V3/NormalTargetMarker.cs",
+      "sha256": "9eb127f70ac37f220cebe0d968bbf00351d9ffba6f13016d5d8c8653f7bc43f6",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetMarkerMaterials.cs",
+      "sha256": "aa8440da6dc4b4b0626681a09487899fe15f2187d900ba5de4926d0e3c6d3c0d",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/PickPlaceController.cs",
+      "sha256": "7d28e5c41465034392581d921c0adc674fa6bf2b446a1121747c78ee260e80e4",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetRotationHandles.cs",
+      "sha256": "0b775856b84a0a91796e8a0b3eed0a5a664a735078db6cedaaff59a07d1517e2",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetNameLabel.cs",
+      "sha256": "b0d51cb550c90d4b2ef71a08920b111e1fa91703116c8551bd59fcf5278dbb4e",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetPoseContextMenu.cs",
+      "sha256": "6909e339c00439ea8e37ba6daf83ef46dc6059685dc6b972e8548a2e6dbb6c05",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/TcpTargetPreview.cs",
+      "sha256": "03feccd990ab265b0806d564c5f76d5f92753767b8d86fefe3cc487c632089e6",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "7033f7cc426b1e0714c778fdb895511e8ef16097cb9fbe10f1a47602bfe054e7",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/PickPlaceToolContactTests.cs",
+      "sha256": "f4a645cd6ee3ea0681192237c1be17b931cae91c792c3786c6f06a2185dd9611",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TargetPoseContextTests.cs",
+      "sha256": "7559e8c9b48499f412d85a8479d980aff5fe63b573873ab365786eed5310edc0",
+      "isolatedCopyMatches": true
+    },
+    {
+      "path": "Assets/Resources/RobotTargetMarkers/Opaque.mat",
+      "sha256": "670365ccf95b394194fb02d17c491e325187d20e34e406819812521af07c311d",
+      "androidPreparedSourceMatches": true,
+      "editorImportedRenderStateMatches": true,
+      "editorImportChanges": "URP version metadata plus disabled motion-vector/shadow passes; material properties and forward-pass configuration unchanged."
+    },
+    {
+      "path": "Assets/Resources/RobotTargetMarkers/Transparent.mat",
+      "sha256": "a111d427c748daffda44d7cdf35a688520c74e1a5781c25e69d038b2c9289070",
+      "androidPreparedSourceMatches": true,
+      "editorImportedRenderStateMatches": true,
+      "editorImportChanges": "URP version metadata plus disabled motion-vector/shadow passes; material properties and forward-pass configuration unchanged."
+    }
+  ]
+}

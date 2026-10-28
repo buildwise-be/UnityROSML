@@ -1,0 +1,869 @@
+{
+  "date": "2026-10-23",
+  "taskId": "urmir_jazzy_634_110585534122496",
+  "userClarification": "Suction face stayed down; the pad twisted in its contact plane",
+  "tool": "kenos_sl",
+  "ikFrame": "tcp",
+  "liveTcpJoint": {
+    "parent": "kenos_sl_base",
+    "xyzMetres": [
+      0.034,
+      0,
+      0.08975
+    ],
+    "rpyRadians": [
+      0,
+      0,
+      0
+    ],
+    "confirmedConsumers": [
+      "robot_state_publisher",
+      "move_group",
+      "mtc_test_task_node"
+    ]
+  },
+  "twistSampling": {
+    "count": 12,
+    "stepDegrees": 30,
+    "preserves": "TCP contact position and local +Z normal"
+  },
+  "placeGoalCheck": {
+    "solution_id": 60,
+    "task_id": "urmir_jazzy_634_110585534122496",
+    "fk": {
+      "pose_stamped": [
+        {
+          "header": {
+            "stamp": {
+              "sec": 0,
+              "nanosec": 0
+            },
+            "frame_id": "ur_base_link"
+          },
+          "pose": {
+            "position": {
+              "x": -0.7741335115598793,
+              "y": -0.01798699059703296,
+              "z": 0.6789024393636347
+            },
+            "orientation": {
+              "x": -0.36461762198735653,
+              "y": 0.9006260773306294,
+              "z": 0.040925991448757304,
+              "w": -0.23291999010875994
+            }
+          }
+        }
+      ],
+      "fk_link_names": [
+        "tcp"
+      ],
+      "error_code": {
+        "val": 1,
+        "message": "",
+        "source": ""
+      }
+    },
+    "fk_tool_z": [
+      -0.44939230940612446,
+      -0.09613543553482698,
+      -0.8881466828633431
+    ],
+    "goal": {
+      "frame": "ur_base_link",
+      "position": {
+        "x": -0.774134635925293,
+        "y": -0.01798725128173828,
+        "z": 0.6789040565490723
+      },
+      "quaternion": {
+        "x": -0.3646176185760507,
+        "y": 0.9006260787061336,
+        "z": 0.040925993476235864,
+        "w": -0.23291998977401235
+      },
+      "tool_z": [
+        -0.4493923106432112,
+        -0.09613542993700669,
+        -0.8881466828433144
+      ]
+    },
+    "normal_dot": 1.0000000000000004
+  },
+  "stageStatistics": [
+    {
+      "id": 1,
+      "name": "Tool contact pick/place",
+      "solved": 0,
+      "failed": 0
+    },
+    {
+      "id": 2,
+      "name": "current",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 3,
+      "name": "move to pick",
+      "solved": 0,
+      "failed": 0
+    },
+    {
+      "id": 4,
+      "name": "pick object",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 5,
+      "name": "approach object",
+      "solved": 1,
+      "failed": 15
+    },
+    {
+      "id": 6,
+      "name": "grasp pose alternatives",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 7,
+      "name": "grasp pose IK 0",
+      "solved": 2,
+      "failed": 0
+    },
+    {
+      "id": 8,
+      "name": "grasp pose 0",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 9,
+      "name": "grasp pose IK 1",
+      "solved": 2,
+      "failed": 0
+    },
+    {
+      "id": 10,
+      "name": "grasp pose 1",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 11,
+      "name": "grasp pose IK 2",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 12,
+      "name": "grasp pose 2",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 13,
+      "name": "grasp pose IK 3",
+      "solved": 2,
+      "failed": 0
+    },
+    {
+      "id": 14,
+      "name": "grasp pose 3",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 15,
+      "name": "grasp pose IK 4",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 16,
+      "name": "grasp pose 4",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 17,
+      "name": "grasp pose IK 5",
+      "solved": 0,
+      "failed": 1
+    },
+    {
+      "id": 18,
+      "name": "grasp pose 5",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 19,
+      "name": "grasp pose IK 6",
+      "solved": 2,
+      "failed": 0
+    },
+    {
+      "id": 20,
+      "name": "grasp pose 6",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 21,
+      "name": "grasp pose IK 7",
+      "solved": 2,
+      "failed": 0
+    },
+    {
+      "id": 22,
+      "name": "grasp pose 7",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 23,
+      "name": "grasp pose IK 8",
+      "solved": 2,
+      "failed": 0
+    },
+    {
+      "id": 24,
+      "name": "grasp pose 8",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 25,
+      "name": "grasp pose IK 9",
+      "solved": 0,
+      "failed": 1
+    },
+    {
+      "id": 26,
+      "name": "grasp pose 9",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 27,
+      "name": "grasp pose IK 10",
+      "solved": 0,
+      "failed": 1
+    },
+    {
+      "id": 28,
+      "name": "grasp pose 10",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 29,
+      "name": "grasp pose IK 11",
+      "solved": 2,
+      "failed": 0
+    },
+    {
+      "id": 30,
+      "name": "grasp pose 11",
+      "solved": 1,
+      "failed": 0
+    },
+    {
+      "id": 31,
+      "name": "allow collision (hand,object)",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 32,
+      "name": "DO ON",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 33,
+      "name": "finalize approach object",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 34,
+      "name": "attach object",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 35,
+      "name": "lift object",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 36,
+      "name": "move to place",
+      "solved": 0,
+      "failed": 0
+    },
+    {
+      "id": 37,
+      "name": "place object",
+      "solved": 0,
+      "failed": 0
+    },
+    {
+      "id": 38,
+      "name": "approach place",
+      "solved": 0,
+      "failed": 88
+    },
+    {
+      "id": 39,
+      "name": "place tool twist alternatives",
+      "solved": 88,
+      "failed": 0
+    },
+    {
+      "id": 40,
+      "name": "place contact IK 0",
+      "solved": 0,
+      "failed": 16
+    },
+    {
+      "id": 41,
+      "name": "place contact 0",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 42,
+      "name": "place contact IK 1",
+      "solved": 0,
+      "failed": 16
+    },
+    {
+      "id": 43,
+      "name": "place contact 1",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 44,
+      "name": "place contact IK 2",
+      "solved": 26,
+      "failed": 2
+    },
+    {
+      "id": 45,
+      "name": "place contact 2",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 46,
+      "name": "place contact IK 3",
+      "solved": 23,
+      "failed": 2
+    },
+    {
+      "id": 47,
+      "name": "place contact 3",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 48,
+      "name": "place contact IK 4",
+      "solved": 24,
+      "failed": 3
+    },
+    {
+      "id": 49,
+      "name": "place contact 4",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 50,
+      "name": "place contact IK 5",
+      "solved": 15,
+      "failed": 4
+    },
+    {
+      "id": 51,
+      "name": "place contact 5",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 52,
+      "name": "place contact IK 6",
+      "solved": 0,
+      "failed": 16
+    },
+    {
+      "id": 53,
+      "name": "place contact 6",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 54,
+      "name": "place contact IK 7",
+      "solved": 0,
+      "failed": 16
+    },
+    {
+      "id": 55,
+      "name": "place contact 7",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 56,
+      "name": "place contact IK 8",
+      "solved": 0,
+      "failed": 16
+    },
+    {
+      "id": 57,
+      "name": "place contact 8",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 58,
+      "name": "place contact IK 9",
+      "solved": 0,
+      "failed": 16
+    },
+    {
+      "id": 59,
+      "name": "place contact 9",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 60,
+      "name": "place contact IK 10",
+      "solved": 0,
+      "failed": 16
+    },
+    {
+      "id": 61,
+      "name": "place contact 10",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 62,
+      "name": "place contact IK 11",
+      "solved": 0,
+      "failed": 16
+    },
+    {
+      "id": 63,
+      "name": "place contact 11",
+      "solved": 16,
+      "failed": 0
+    },
+    {
+      "id": 64,
+      "name": "DO OFF",
+      "solved": 88,
+      "failed": 0
+    },
+    {
+      "id": 65,
+      "name": "detach object",
+      "solved": 88,
+      "failed": 0
+    },
+    {
+      "id": 66,
+      "name": "retreat",
+      "solved": 0,
+      "failed": 88
+    },
+    {
+      "id": 67,
+      "name": "forbid collision (hand,object)",
+      "solved": 0,
+      "failed": 0
+    },
+    {
+      "id": 68,
+      "name": "return to start",
+      "solved": 0,
+      "failed": 0
+    }
+  ],
+  "sampleFailureReasons": [
+    {
+      "solutionId": "97",
+      "stage": 38,
+      "comment": "CartesianPath : CartesianPath: min_fraction not met. Achieved: 0.000000\nfailed to move full distance"
+    },
+    {
+      "solutionId": "139",
+      "stage": 38,
+      "comment": "CartesianPath : CartesianPath: min_fraction not met. Achieved: 0.000000\nfailed to move full distance"
+    },
+    {
+      "solutionId": "716",
+      "stage": 38,
+      "comment": "CartesianPath : CartesianPath: min_fraction not met. Achieved: 0.090909\nfailed to move full distance"
+    },
+    {
+      "solutionId": "90",
+      "stage": 66,
+      "comment": "CartesianPath : CartesianPath: min_fraction not met. Achieved: 0.000000\nmin_distance not reached (0 < 0.1)"
+    },
+    {
+      "solutionId": "132",
+      "stage": 66,
+      "comment": "CartesianPath : CartesianPath: min_fraction not met. Achieved: 0.000000\nmin_distance not reached (0 < 0.1)"
+    },
+    {
+      "solutionId": "24",
+      "stage": 17,
+      "comment": " no IK found"
+    },
+    {
+      "solutionId": "55",
+      "stage": 40,
+      "comment": " no IK found"
+    },
+    {
+      "solutionId": "445",
+      "stage": 44,
+      "comment": " no IK found"
+    }
+  ],
+  "operations": {
+    "parametersRead": true,
+    "retainedMtcRead": true,
+    "forwardKinematicsRead": true,
+    "planPublished": false,
+    "executePublished": false,
+    "sceneChanged": false,
+    "restarted": false
+  },
+  "limitations": [
+    "Latest retained failed task; exact headset request was not passively captured at publication.",
+    "MTC free twist explains the reported 90 degree change; this is not independent measurement of physical QR/TCP calibration.",
+    "Passing a necessary reach bound does not guarantee IK or collision feasibility; failing it proves unreachable in the configured model."
+  ],
+  "geometricBackoffCheck": {
+    "method": "Necessary reach bound from captured calibrated URDF. Maximize shoulder-to-wrist1 origin radius over shoulder/elbow angles, and bound all possible wrist1 origins for each target TCP orientation by reversing both wrist joints. Includes calibrated offsets and the eccentric 34 mm TCP offset. Exceeding the bound proves impossibility without IK search, collision assumptions or joint limits.",
+    "directions": "Before place and after release both require movement along tool -Z.",
+    "requiredMinimumBackoffMetres": 0.1,
+    "candidate": {
+      "normal_base": [
+        -0.44939230940612446,
+        -0.096135435534827,
+        -0.8881466828633429
+      ],
+      "backoff_direction_base": [
+        0.44939230940612446,
+        0.096135435534827,
+        0.8881466828633429
+      ],
+      "circle_radius_metres": 0.11986622287011955,
+      "calibration_error_bound_metres": 5.140462482699873E-05,
+      "bounds": [
+        {
+          "backoff_metres": 0,
+          "tcp_base": [
+            -0.7741335115598791,
+            -0.017986990597032654,
+            0.6789024393636349
+          ],
+          "minimum_required_wrist1_radius_metres": 0.8499830225087567,
+          "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+          "margin_metres": 0.006353934380967763,
+          "proven_unreachable": false
+        },
+        {
+          "backoff_metres": 0.01,
+          "tcp_base": [
+            -0.7696395884658178,
+            -0.017025636241684385,
+            0.6877839061922684
+          ],
+          "minimum_required_wrist1_radius_metres": 0.8542470262395281,
+          "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+          "margin_metres": 0.002089930650196359,
+          "proven_unreachable": false
+        },
+        {
+          "backoff_metres": 0.1,
+          "tcp_base": [
+            -0.7291942806192666,
+            -0.008373447043549954,
+            0.7677171076499693
+          ],
+          "minimum_required_wrist1_radius_metres": 0.8967380600557717,
+          "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+          "margin_metres": -0.04040110316604728,
+          "proven_unreachable": true
+        },
+        {
+          "backoff_metres": 0.3,
+          "tcp_base": [
+            -0.6393158187380418,
+            0.010853640063415444,
+            0.9453464442226378
+          ],
+          "minimum_required_wrist1_radius_metres": 1.0136433113827608,
+          "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+          "margin_metres": -0.15730635449303632,
+          "proven_unreachable": true
+        }
+      ],
+      "hardware": false,
+      "ros_calls": false
+    },
+    "allPermittedTwists": {
+      "anchor": "candidate 60/59 exact target marker with 50 mm visual-axis offset removed",
+      "hardware": false,
+      "ros_calls": false,
+      "fixed_orientation_at_each_twist": true,
+      "all_12_100mm_proven_unreachable": true,
+      "twists": [
+        {
+          "relative_twist_degrees": 0,
+          "bounds": [
+            {
+              "backoff_metres": 0,
+              "minimum_required_wrist1_radius_metres": 0.8499849772415312,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": 0.006351979648193229,
+              "proven_unreachable": false
+            },
+            {
+              "backoff_metres": 0.1,
+              "minimum_required_wrist1_radius_metres": 0.8967400138019926,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.0404030569122682,
+              "proven_unreachable": true
+            }
+          ]
+        },
+        {
+          "relative_twist_degrees": 30,
+          "bounds": [
+            {
+              "backoff_metres": 0,
+              "minimum_required_wrist1_radius_metres": 0.8427452471492578,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": 0.01359170974046664,
+              "proven_unreachable": false
+            },
+            {
+              "backoff_metres": 0.1,
+              "minimum_required_wrist1_radius_metres": 0.889880724196886,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.033543767307161576,
+              "proven_unreachable": true
+            }
+          ]
+        },
+        {
+          "relative_twist_degrees": 60,
+          "bounds": [
+            {
+              "backoff_metres": 0,
+              "minimum_required_wrist1_radius_metres": 0.8438767688140096,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": 0.012460188075714806,
+              "proven_unreachable": false
+            },
+            {
+              "backoff_metres": 0.1,
+              "minimum_required_wrist1_radius_metres": 0.8909523886282371,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.03461543173851267,
+              "proven_unreachable": true
+            }
+          ]
+        },
+        {
+          "relative_twist_degrees": 90,
+          "bounds": [
+            {
+              "backoff_metres": 0,
+              "minimum_required_wrist1_radius_metres": 0.8530514366561864,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": 0.0032855202335380085,
+              "proven_unreachable": false
+            },
+            {
+              "backoff_metres": 0.1,
+              "minimum_required_wrist1_radius_metres": 0.899647131257763,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.04331017436803852,
+              "proven_unreachable": true
+            }
+          ]
+        },
+        {
+          "relative_twist_degrees": 120,
+          "bounds": [
+            {
+              "backoff_metres": 0,
+              "minimum_required_wrist1_radius_metres": 0.8676456249999748,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.01130866811025033,
+              "proven_unreachable": true
+            },
+            {
+              "backoff_metres": 0.1,
+              "minimum_required_wrist1_radius_metres": 0.9134972437170344,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.05716028682731,
+              "proven_unreachable": true
+            }
+          ]
+        },
+        {
+          "relative_twist_degrees": 150,
+          "bounds": [
+            {
+              "backoff_metres": 0,
+              "minimum_required_wrist1_radius_metres": 0.8836167754291061,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.02727981853938166,
+              "proven_unreachable": true
+            },
+            {
+              "backoff_metres": 0.1,
+              "minimum_required_wrist1_radius_metres": 0.9286802305138543,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.07234327362412984,
+              "proven_unreachable": true
+            }
+          ]
+        },
+        {
+          "relative_twist_degrees": 180,
+          "bounds": [
+            {
+              "backoff_metres": 0,
+              "minimum_required_wrist1_radius_metres": 0.8967164787483922,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.04037952185866778,
+              "proven_unreachable": true
+            },
+            {
+              "backoff_metres": 0.1,
+              "minimum_required_wrist1_radius_metres": 0.9411529484873024,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.08481599159757791,
+              "proven_unreachable": true
+            }
+          ]
+        },
+        {
+          "relative_twist_degrees": 210,
+          "bounds": [
+            {
+              "backoff_metres": 0,
+              "minimum_required_wrist1_radius_metres": 0.9035900050779292,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.04725304818820475,
+              "proven_unreachable": true
+            },
+            {
+              "backoff_metres": 0.1,
+              "minimum_required_wrist1_radius_metres": 0.9477042574511757,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.09136730056145126,
+              "proven_unreachable": true
+            }
+          ]
+        },
+        {
+          "relative_twist_degrees": 240,
+          "bounds": [
+            {
+              "backoff_metres": 0,
+              "minimum_required_wrist1_radius_metres": 0.9025218816884125,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.046184924798688076,
+              "proven_unreachable": true
+            },
+            {
+              "backoff_metres": 0.1,
+              "minimum_required_wrist1_radius_metres": 0.9466859057384116,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.09034894884868716,
+              "proven_unreachable": true
+            }
+          ]
+        },
+        {
+          "relative_twist_degrees": 270,
+          "bounds": [
+            {
+              "backoff_metres": 0,
+              "minimum_required_wrist1_radius_metres": 0.8937767117063292,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.037439754816604776,
+              "proven_unreachable": true
+            },
+            {
+              "backoff_metres": 0.1,
+              "minimum_required_wrist1_radius_metres": 0.9383523992952344,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.08201544240550995,
+              "proven_unreachable": true
+            }
+          ]
+        },
+        {
+          "relative_twist_degrees": 300,
+          "bounds": [
+            {
+              "backoff_metres": 0,
+              "minimum_required_wrist1_radius_metres": 0.8795483544775394,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.023211397587814986,
+              "proven_unreachable": true
+            },
+            {
+              "backoff_metres": 0.1,
+              "minimum_required_wrist1_radius_metres": 0.9248100627747393,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.06847310588501487,
+              "proven_unreachable": true
+            }
+          ]
+        },
+        {
+          "relative_twist_degrees": 330,
+          "bounds": [
+            {
+              "backoff_metres": 0,
+              "minimum_required_wrist1_radius_metres": 0.86351390988527,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.007176952995545549,
+              "proven_unreachable": true
+            },
+            {
+              "backoff_metres": 0.1,
+              "minimum_required_wrist1_radius_metres": 0.9095738204500169,
+              "maximum_possible_wrist1_radius_metres": 0.8563369568897244,
+              "margin_metres": -0.05323686356029245,
+              "proven_unreachable": true
+            }
+          ]
+        }
+      ]
+    },
+    "hardware": false,
+    "rosCalls": false
+  }
+}
