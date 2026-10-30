@@ -6,16 +6,18 @@ public class URInputManager : MonoBehaviour
     public enum PoseCaptureMode
     {
         [InspectorName("Pick/place tool contact poses")] TileSurface,
-        [InspectorName("Exact TCP poses (plan preview)")] TcpPreview
+        [InspectorName("Exact TCP poses (plan preview)")] TcpPreview,
+        [InspectorName("Fixture regrasp tile batch")] FixtureTiling
     }
 
     [SerializeField] private URInstantiator _URInstantiator;
     [SerializeField] private PickPlaceController _pickPlaceController;
     [SerializeField] private TcpTargetPreview _tcpTargetPreview;
     [SerializeField] private TcpPlanningController _tcpPlanningController;
+    [SerializeField] private FixtureTilingController _fixtureTilingController;
     [SerializeField, Tooltip("OpenXR tracking-space transform. Automatically uses the single XR Origin's Camera Offset when empty.")]
     private Transform _trackingSpace;
-    [SerializeField, Tooltip("Both modes capture the desired tool contact pose. Exact TCP fixes full orientation; MTC pick/place allows tool twist about +Z.")]
+    [SerializeField, Tooltip("TCP fixes full tool orientation; pick/place captures contact normals; fixture tiling captures item and fixture points.")]
     private PoseCaptureMode _poseCaptureMode = PoseCaptureMode.TileSurface;
 
     private MagicLeapOpenXRInput _magicLeapInputs;
@@ -26,6 +28,16 @@ public class URInputManager : MonoBehaviour
     private RobotPointRegistration PointRegistration => _URInstantiator != null
         ? _URInstantiator.GetComponent<RobotPointRegistration>() : null;
     public bool IsTcpMode => _poseCaptureMode == PoseCaptureMode.TcpPreview;
+    public bool IsFixtureMode => _poseCaptureMode == PoseCaptureMode.FixtureTiling;
+    public FixtureTilingController FixtureController
+    {
+        get
+        {
+            if (_fixtureTilingController == null) _fixtureTilingController = GetComponent<FixtureTilingController>();
+            if (_fixtureTilingController == null) _fixtureTilingController = gameObject.AddComponent<FixtureTilingController>();
+            return _fixtureTilingController;
+        }
+    }
 
     private void Start()
     {
@@ -97,18 +109,28 @@ public class URInputManager : MonoBehaviour
         }
         if (_tcpTargetPreview != null) _tcpTargetPreview.SetTargetsVisible(IsTcpMode);
         if (_pickPlaceController != null)
-            _pickPlaceController.SetTilePlanningEnabled(!IsTcpMode);
+            _pickPlaceController.SetTilePlanningEnabled(_poseCaptureMode == PoseCaptureMode.TileSurface);
+        FixtureController.SetTaskActive(IsFixtureMode);
     }
 
-    public void UseTcpPreview() { _poseCaptureMode = PoseCaptureMode.TcpPreview; ApplyCaptureMode(); }
-    public void UseTilePickPlace() { _poseCaptureMode = PoseCaptureMode.TileSurface; ApplyCaptureMode(); }
+    public void UseTcpPreview() => SelectMode(PoseCaptureMode.TcpPreview);
+    public void UseTilePickPlace() => SelectMode(PoseCaptureMode.TileSurface);
+    public void UseFixtureTiling() => SelectMode(PoseCaptureMode.FixtureTiling);
+    private void SelectMode(PoseCaptureMode mode)
+    {
+        // A programmatic mode change revokes local review even while an earlier
+        // command awaits its outcome. Plan/Execute retain the global command lock.
+        _poseCaptureMode = mode;
+        ApplyCaptureMode();
+    }
 
     public void PlanCurrentTask()
     {
         if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
         MTCPlansManager.DismissCompletedExecutionFeedback();
         ApplyCaptureMode();
-        if (IsTcpMode)
+        if (IsFixtureMode) FixtureController.Plan();
+        else if (IsTcpMode)
         {
             if (_tcpPlanningController != null) _tcpPlanningController.Plan();
             else Debug.LogError("Exact TCP planner is missing from this scene.", this);
@@ -120,7 +142,8 @@ public class URInputManager : MonoBehaviour
     {
         if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
         ApplyCaptureMode();
-        if (IsTcpMode)
+        if (IsFixtureMode) FixtureController.Execute();
+        else if (IsTcpMode)
         {
             if (_tcpPlanningController != null) _tcpPlanningController.Execute();
         }
@@ -160,6 +183,15 @@ public class URInputManager : MonoBehaviour
                 registration.CapturePointerPose(pointerWorld, _trackingSpace);
             return;
         }
+        if (IsFixtureMode)
+        {
+            if (!RobotCoordinateService.IsCalibrationEditActive && !ToolSelectionMenu.IsHovered &&
+                !TargetPoseContextMenu.IsOpen && !TargetPoseContextMenu.IsHovered &&
+                !TargetRotationHandles.IsHovered && !TargetRotationHandles.IsInteracting &&
+                FixtureController.IsCapturing && TryGetPointerWorldPose(out Pose fixturePointer))
+                FixtureController.CapturePointerPose(fixturePointer, _trackingSpace);
+            return;
+        }
         if (!RobotCoordinateService.IsCalibrationEditActive &&
             !ToolSelectionMenu.IsHovered && !TargetPoseContextMenu.IsOpen && !TargetPoseContextMenu.IsHovered &&
             !TargetRotationHandles.IsHovered && !TargetRotationHandles.IsInteracting &&
@@ -172,6 +204,7 @@ public class URInputManager : MonoBehaviour
 
     private void HandleOnBumper(InputAction.CallbackContext context)
     {
+        if (IsFixtureMode) return;
         if (PointRegistration != null && PointRegistration.IsCollecting) return;
         if (TargetPoseContextMenu.TryOpenHovered() || TargetPoseContextMenu.IsOpen || TargetPoseContextMenu.IsHovered)
             _contextBumperConsumedUntil = float.PositiveInfinity;
@@ -186,6 +219,7 @@ public class URInputManager : MonoBehaviour
 
     private void Capture(bool isPick)
     {
+        if (IsFixtureMode) return;
         if (Time.realtimeSinceStartup < _contextBumperConsumedUntil ||
             TargetPoseContextMenu.IsOpen || TargetPoseContextMenu.IsHovered ||
             RobotCoordinateService.IsCalibrationEditActive || ToolSelectionMenu.IsHovered ||
@@ -213,17 +247,26 @@ public class URInputManager : MonoBehaviour
     {
         // Disabling an action can synchronously report a canceled bumper; clear its latch afterwards.
         _magicLeapInputs?.Disable();
+        if (_fixtureTilingController != null) _fixtureTilingController.CancelCapture();
         ResetPendingInteraction();
     }
 
     private void OnApplicationFocus(bool hasFocus)
     {
-        if (!hasFocus) ResetPendingInteraction();
+        if (!hasFocus)
+        {
+            if (_fixtureTilingController != null) _fixtureTilingController.CancelCapture();
+            ResetPendingInteraction();
+        }
     }
 
     private void OnApplicationPause(bool isPaused)
     {
-        if (isPaused) ResetPendingInteraction();
+        if (isPaused)
+        {
+            if (_fixtureTilingController != null) _fixtureTilingController.CancelCapture();
+            ResetPendingInteraction();
+        }
     }
 
     private void ResetPendingInteraction()

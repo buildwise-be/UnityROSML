@@ -1,0 +1,336 @@
+{
+  "source": "Read-only schema extraction from exact fixture-build image",
+  "fixtureBuildImage": "sha256:752aa09527488fce5baaa35ebbff1aad52c6e82e72a302db4f14ded79f2f615b",
+  "fixtureBuildComparison": "All original 23 MoveIt/MTC dependency schemas also byte-identical to installed Nordbo backend",
+  "messages": [
+    {
+      "package": "builtin_interfaces",
+      "name": "Duration",
+      "sha256": "57da13a4201e7d258a2931323145b953e47e46967494e62ba66c2faca4fbade2",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "builtin_interfaces",
+      "name": "Time",
+      "sha256": "dc5a01ddde3aecffee21eb24974fe77cc969f873218a2b1811aa0ac8a456b8bd",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "geometry_msgs",
+      "name": "Point",
+      "sha256": "eb4c07e591cf0269ccb17245dcd4f998162feb09cc8add85fa082c8a30bfc91d",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "geometry_msgs",
+      "name": "Point32",
+      "sha256": "acade2dacb4f1f7988f34e8221079eb1c757f51e8ef48adb5651f7dc478fed59",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "geometry_msgs",
+      "name": "Polygon",
+      "sha256": "43679118501e3b294349c9ad73af9f03b476ef77c7096cd79b4ce46646823056",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "geometry_msgs",
+      "name": "Pose",
+      "sha256": "3eceb77c63ebbb544c11d7f991e475e9819e0cf534deb1a879392c1b3dc997de",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "geometry_msgs",
+      "name": "Quaternion",
+      "sha256": "298495eb67a139642ffd37cc9029eae085e6c39a8789828b7517868a487939ed",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "geometry_msgs",
+      "name": "Transform",
+      "sha256": "c8916279f0a429dd9561158bd2133bc4e2d780277c3c594116b240a27e7a2993",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "geometry_msgs",
+      "name": "TransformStamped",
+      "sha256": "f6e137c205e9187ac1dafdfbace7435de58bb3779a55e9c6b52c2cb513785c42",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "geometry_msgs",
+      "name": "Twist",
+      "sha256": "ed471ef861f65af991b1f64d66ef941dd41dd4c0702f6222512b1a16c62d58b0",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "geometry_msgs",
+      "name": "Vector3",
+      "sha256": "d8b9ea9aad1f424faf4d2b94dae1e1368af1e5d59de11aeed019399cff7f9e1d",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "geometry_msgs",
+      "name": "Wrench",
+      "sha256": "d9667abd3d2a67d5624113fa07a647b0d4806bf89d21c8a5cf914905a036bf25",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_msgs",
+      "name": "AllowedCollisionEntry",
+      "sha256": "c96a79384228f21735e8bc27f128271a1c021a3cda1100fd5d6bb6267c0d780d",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_msgs",
+      "name": "AllowedCollisionMatrix",
+      "sha256": "004c222011cbe98027c07e7f15dc87238f9ea928fc5e5c0095651a8adf5c25aa",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_msgs",
+      "name": "AttachedCollisionObject",
+      "sha256": "fb2e7c3c30cb985338ac09582f199192b9355c54ee34b11574db20c78dd59b55",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_msgs",
+      "name": "CollisionObject",
+      "sha256": "c9faee76867a7cc3e647527ab016a0732015895901bba8af534a73ec6c614372",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_msgs",
+      "name": "LinkPadding",
+      "sha256": "36f9d9834f6ea69ace1d52d711070aab4c94dc2de02b61f985e81b79166936a4",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_msgs",
+      "name": "LinkScale",
+      "sha256": "bd467fb6419fb6f60a97b6b6fd7d0dbde24f7bba37f07b1cdc49fe29645e9c6c",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_msgs",
+      "name": "ObjectColor",
+      "sha256": "c59f00694bc1598dfaad7a46397a89c20a421d4defdb438808468eb1295ae468",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_msgs",
+      "name": "PlanningScene",
+      "sha256": "73905b7fe1c5000b9682d0993867add96074391c2231f0d797d5238c3be43ab6",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_msgs",
+      "name": "PlanningSceneWorld",
+      "sha256": "1a4745a3a7a3a2683e7a2379752a1e8495c5a27170788037f0057e99be7bf3a5",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_msgs",
+      "name": "RobotState",
+      "sha256": "1ee53024ce4b6871dcf7fbeda5b3903671cb8c4b9247d6281f062d52d9c01843",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_msgs",
+      "name": "RobotTrajectory",
+      "sha256": "06cde3ff99c2465ecab3ffabc6110db225b9d28a305910f8450395d8bc0e4e49",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_task_constructor_msgs",
+      "name": "Solution",
+      "sha256": "8648afe66cf677b57c085f4ddbb52f2a26f8def07826a076f2a559cc7a16e349",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_task_constructor_msgs",
+      "name": "SolutionInfo",
+      "sha256": "8c8952160321f2130fb2905d9f4fb7815fec25a6350083ad277e6d38b05b8f40",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_task_constructor_msgs",
+      "name": "SubSolution",
+      "sha256": "afb94304179ab31b6624c7df8230c46fdc865ad72208629dc36be7b1927ef2ed",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_task_constructor_msgs",
+      "name": "SubTrajectory",
+      "sha256": "ccf10ef8bfc599f58cbfc78846d184bf2128b5f56453a22e563904c56187335e",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "moveit_task_constructor_msgs",
+      "name": "TrajectoryExecutionInfo",
+      "sha256": "b9b136326285dc5db18da22ea5cf93af642e2c51c3c5340aaea7eedbbc57542c",
+      "generate": true,
+      "privateNamespace": null
+    },
+    {
+      "package": "object_recognition_msgs",
+      "name": "ObjectType",
+      "sha256": "3b8475e2c581514b922841eb9812d8d44f89d83eadae0df5ef0005c6a770f00c",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "octomap_msgs",
+      "name": "Octomap",
+      "sha256": "0c86ce8664b62f5af8df8350d4735cd2848040e76ffd13a09d85b07c5c652d9b",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "octomap_msgs",
+      "name": "OctomapWithPose",
+      "sha256": "b1814ea2d5387b6bb8bfcd1bf139bf62894b354314825955d62dd416a797ebdd",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "sensor_msgs",
+      "name": "CompressedImage",
+      "sha256": "75ca1003981c407148ff94a3470760985dd69233b8287a5d52848d45a312f144",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "sensor_msgs",
+      "name": "JointState",
+      "sha256": "711d1771a002c7190e5bbe746a163a67477c1e2a45482a64f1fe339815ca6f5d",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "sensor_msgs",
+      "name": "MultiDOFJointState",
+      "sha256": "bb707259b63ea52101697daf624ff7ad73a1f9977117ce3798a36cc1858d99fd",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "shape_msgs",
+      "name": "Mesh",
+      "sha256": "29507f9817d335be2f43addd1997e032f73aeeff156d13931b92db62715dfe01",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "shape_msgs",
+      "name": "MeshTriangle",
+      "sha256": "2beff414354278b465ec50b0526756317a641c2165ca1d6938028ed630445b96",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "shape_msgs",
+      "name": "Plane",
+      "sha256": "b3d30ea44df5e4cdd40eda15239e19e6b18d5bccdb227d8cea45c7875b8c6fd0",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "shape_msgs",
+      "name": "SolidPrimitive",
+      "sha256": "b3ec61569b2b4e2c37428e0625d4a360c00c95fc9ad4c94f9c8399225b98b2d8",
+      "generate": true,
+      "privateNamespace": "FixtureShape"
+    },
+    {
+      "package": "std_msgs",
+      "name": "ColorRGBA",
+      "sha256": "6a2ce596d968f23d8456ff1e0b1218dec75ce2542614e004c99d29aceb3be697",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "std_msgs",
+      "name": "Header",
+      "sha256": "d2cea14630e39ed0fa5b432ba9160a7c38855b9427d3344f99e83e83facb53c2",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "trajectory_msgs",
+      "name": "JointTrajectory",
+      "sha256": "d63cda4a5ec81824ed4acd737e6b5903449fb1a7e2f5cdcdcc4c49285f01117c",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "trajectory_msgs",
+      "name": "JointTrajectoryPoint",
+      "sha256": "2358055d26d27c0c302e921f90d5aa59cb5feb3e22937f8ac98314b0c52ba8f4",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "trajectory_msgs",
+      "name": "MultiDOFJointTrajectory",
+      "sha256": "070af6b4c9f4238d9de36621105d78c999dbad2045d0cb2a633f86a17f73f6b7",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "trajectory_msgs",
+      "name": "MultiDOFJointTrajectoryPoint",
+      "sha256": "7e3a4b150ff7ce8d7d897a480d8d324a244a0afb4a07fdf6241074071170ac7a",
+      "generate": false,
+      "privateNamespace": null
+    },
+    {
+      "package": "visualization_msgs",
+      "name": "Marker",
+      "sha256": "136042d6ddb4589159f23fe1d7a469420c556c0a37fa712d4fff9c2dd74e9239",
+      "generate": true,
+      "privateNamespace": "FixtureVisualization"
+    },
+    {
+      "package": "visualization_msgs",
+      "name": "MeshFile",
+      "sha256": "6c5393590d3765a6da1bc815f0dba8962b55efad40ab4fb1346673cf89c294ed",
+      "generate": true,
+      "privateNamespace": "FixtureVisualization"
+    },
+    {
+      "package": "visualization_msgs",
+      "name": "UVCoordinate",
+      "sha256": "544f2580cfb42e1e28dcb27856572abd52ad348d8f6197526f51f6d15acec1f0",
+      "generate": true,
+      "privateNamespace": "FixtureVisualization"
+    }
+  ]
+}

@@ -11,7 +11,7 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 /// <summary>Shared XR controls for tool matching, TCP planning and marker alignment.</summary>
-public sealed class ToolSelectionMenu : MonoBehaviour
+public sealed partial class ToolSelectionMenu : MonoBehaviour
 {
     [SerializeField] private ToolSelectionController _controller;
     [SerializeField] private URInputManager _input;
@@ -129,6 +129,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private float _grabDistance;
     private readonly Color _grabColor = new Color(0.08f, 0.34f, 0.43f, 1f);
     private bool? _lastTcpMode;
+    private bool? _lastFixtureMode;
     private bool? _lastQrValidated;
     private bool? _lastTargetRotation;
     private string _localNotice;
@@ -272,7 +273,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         if (_input == null || _tcpPlanning == null || _qrDetector == null || _instantiator == null || _pointRegistration == null) BindTaskControls();
         bool tcp = _input == null || _input.IsTcpMode;
         bool qr = _qrDetector != null && _qrDetector.HasValidatedPose;
-        if (_lastTcpMode != tcp || _lastQrValidated != qr || _lastTargetRotation != TargetRotationHandles.IsInteracting) RefreshTask();
+        if (_lastTcpMode != tcp || _lastFixtureMode != (_input != null && _input.IsFixtureMode) || _lastQrValidated != qr || _lastTargetRotation != TargetRotationHandles.IsInteracting) RefreshTask();
         RefreshPlayback();
         RefreshPathThickness();
         if (_pointGuide != null && _pointGuidePose != null && IsPointCollecting)
@@ -447,11 +448,19 @@ public sealed class ToolSelectionMenu : MonoBehaviour
 
     public void SelectTcpTask() => SelectTaskMode(true);
     public void SelectPickPlaceTask() => SelectTaskMode(false);
+    public void SelectFixtureTask()
+    {
+        BindTaskControls();
+        if (IsPlacementBusy || TargetRotationHandles.IsInteracting || RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
+        if (_input != null) _input.UseFixtureTiling();
+        _localNotice = null;
+        RefreshTask();
+    }
 
     private void SelectTaskMode(bool tcp)
     {
         BindTaskControls();
-        if (IsPlacementBusy || TargetRotationHandles.IsInteracting) return;
+        if (IsPlacementBusy || TargetRotationHandles.IsInteracting || RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
         if (_input == null)
         {
             _localNotice = "Task controls are unavailable. Open the robot interaction scene.";
@@ -636,6 +645,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private void BindTaskControls()
     {
         if (_input == null) _input = FindFirstObjectByType<URInputManager>();
+        BindFixtureControls();
         if (_tcpPlanning == null) _tcpPlanning = _input != null ? _input.GetComponent<TcpPlanningController>() : FindFirstObjectByType<TcpPlanningController>();
         if (_qrDetector == null) _qrDetector = FindFirstObjectByType<QRDetector>();
         if (_instantiator == null) _instantiator = FindFirstObjectByType<URInstantiator>();
@@ -684,31 +694,42 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private void RefreshTask()
     {
         bool tcp = _input == null || _input.IsTcpMode;
+        bool fixture = _input != null && _input.IsFixtureMode;
         MTCPlansManager execution = MTCPlansManager.ActiveExecution;
         TcpPlanningController tcpExecution = TcpPlanningController.ActiveExecution;
         bool executionBusy = RobotExecutionState.IsBusy;
         _lastTcpMode = tcp;
+        _lastFixtureMode = fixture;
         _lastQrValidated = _qrDetector != null && _qrDetector.HasValidatedPose;
         _lastTargetRotation = TargetRotationHandles.IsInteracting;
-        bool canSelectMode = _input != null && !IsPlacementBusy && !TargetRotationHandles.IsInteracting;
+        bool canSelectMode = _input != null && !IsPlacementBusy && !TargetRotationHandles.IsInteracting && !executionBusy && execution == null;
         RefreshTaskChoice(_tcpTaskButton, tcp, canSelectMode);
-        RefreshTaskChoice(_pickPlaceTaskButton, !tcp, canSelectMode);
-        if (_taskHelp != null) _taskHelp.text = tcp
+        RefreshTaskChoice(_pickPlaceTaskButton, !tcp && !fixture, canSelectMode);
+        RefreshTaskChoice(_fixtureTaskButton, fixture, canSelectMode);
+        if (_fixtureSetupButton != null) _fixtureSetupButton.gameObject.SetActive(fixture);
+        if (_taskHelp != null) _taskHelp.rectTransform.sizeDelta = new Vector2(fixture ? 268f : 408f, 45f);
+        if (_taskHelp != null) _taskHelp.text = fixture
+            ? "Set tile, stack, pattern and fixture.\nChoose a point, then trigger to capture."
+            : tcp
             ? "Hold bumper: TCP A. Double press: TCP B.\nPlace the tool preview; drag it to set exact orientation."
             : "Hold/double bumper: pick/place contact balls.\nArrow = normal. Drag ball to turn; bumper: depth ±5 mm.";
         if (_taskStatus != null)
-            _taskStatus.text = execution != null ? execution.StatusText : tcpExecution != null ? tcpExecution.StatusText : _localNotice ?? (tcp
+            _taskStatus.text = _fixtureTiling != null && _fixtureTiling.IsExecuting ? _fixtureTiling.StatusText : execution != null ? execution.StatusText : tcpExecution != null ? tcpExecution.StatusText : _localNotice ?? (tcp
                 ? (_tcpPlanning != null ? _tcpPlanning.StatusText : "Capture TCP A and B to prepare a preview.")
+                : fixture ? (_fixtureTiling != null ? _fixtureTiling.StatusText : "Open fixture setup to prepare a tile batch.")
                 : (_legacyPlans != null ? _legacyPlans.StatusText : "Capture pick and place tool contacts, then Plan preview."));
-        if (_planButton != null) _planButton.interactable = !IsPlacementBusy && !executionBusy && execution == null;
-        if (_executeButton != null) _executeButton.interactable = !IsPlacementBusy && !executionBusy && execution == null && (tcp
+        // Keep Plan available for incomplete measurements so the controller can
+        // explain exactly which input or calibration needs attention.
+        if (_planButton != null) _planButton.interactable = !IsPlacementBusy && !executionBusy && execution == null &&
+            (!fixture || (_fixtureTiling != null && !_fixtureTiling.IsPlanning));
+        if (_executeButton != null) _executeButton.interactable = !IsPlacementBusy && !executionBusy && execution == null && (fixture ? _fixtureTiling != null && _fixtureTiling.CanExecute : tcp
             ? _tcpPlanning != null && _tcpPlanning.CanExecute
             : _legacyPlans != null && _legacyPlans.CanExecute && ToolSelectionController.CanPlanPickPlace);
         if (_executeButton != null)
         {
             TextMeshProUGUI label = _executeButton.GetComponentInChildren<TextMeshProUGUI>();
-            if (label != null) label.text = (tcp ? _tcpPlanning != null && _tcpPlanning.HasRepeatablePlan :
-                _legacyPlans != null && _legacyPlans.HasRepeatablePlan) ? "Execute again" : "Execute plan";
+            if (label != null) label.text = (!fixture && (tcp ? _tcpPlanning != null && _tcpPlanning.HasRepeatablePlan :
+                _legacyPlans != null && _legacyPlans.HasRepeatablePlan)) ? "Execute again" : "Execute plan";
         }
         if (_rescanButton != null) _rescanButton.interactable = _qrDetector != null && !IsPlacementBusy;
         if (_pointPlacementButton != null) _pointPlacementButton.interactable = _pointRegistration != null && !IsCalibrating && !executionBusy && execution == null;
@@ -733,6 +754,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         RefreshPlayback();
         RefreshAlignmentControls();
         RefreshPointPlacementControls();
+        RefreshFixtureMenu();
     }
 
     private static void RefreshTaskChoice(Button button, bool selected, bool enabled)
@@ -745,7 +767,8 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private void RefreshAlignmentControls()
     {
         bool editing = IsCalibrating;
-        if (_taskView != null) _taskView.gameObject.SetActive(!editing && !IsPointCollecting);
+        if (_taskView != null) _taskView.gameObject.SetActive(!editing && !IsPointCollecting &&
+            !(_showFixtureSetup && _input != null && _input.IsFixtureMode));
         if (_alignmentView != null) _alignmentView.gameObject.SetActive(editing && !IsPointCollecting);
         if (_alignmentStatus != null)
             _alignmentStatus.text = _instantiator != null
@@ -906,12 +929,13 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         CreateChoice("kenos_sl", "Kenos SL", 294f);
         _status = Text("Tool status", _taskView, new Vector2(16f, -138f), new Vector2(408f, 55f), string.Empty, 15f);
         _status.color = new Color(0.83f, 0.9f, 0.94f);
-        _tcpTaskButton = CreateButton("TCP A → B", _taskView, new Vector2(16f, -204f), new Vector2(198f, 32f), out TextMeshProUGUI tcpLabel);
+        _tcpTaskButton = CreateButton("TCP A → B", _taskView, new Vector2(16f, -204f), new Vector2(130f, 32f), out TextMeshProUGUI tcpLabel);
         tcpLabel.fontSize = 16f;
         _tcpTaskButton.onClick.AddListener(SelectTcpTask);
-        _pickPlaceTaskButton = CreateButton("MTC pick / place", _taskView, new Vector2(226f, -204f), new Vector2(198f, 32f), out TextMeshProUGUI pickPlaceLabel);
-        pickPlaceLabel.fontSize = 16f;
+        _pickPlaceTaskButton = CreateButton("MTC pick / place", _taskView, new Vector2(155f, -204f), new Vector2(130f, 32f), out TextMeshProUGUI pickPlaceLabel);
+        pickPlaceLabel.fontSize = 13f;
         _pickPlaceTaskButton.onClick.AddListener(SelectPickPlaceTask);
+        BuildFixtureEntry();
         _taskHelp = Text("Target instructions", _taskView, new Vector2(16f, -239f), new Vector2(408f, 45f), string.Empty, 14f);
         _taskHelp.color = new Color(0.73f, 0.81f, 0.87f);
         _taskStatus = Text("Task request status", _taskView, new Vector2(16f, -292f), new Vector2(408f, 94f), string.Empty, 17f);
@@ -946,6 +970,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         _qrStatus.fontSizeMax = 12f;
         BuildAlignmentView();
         BuildPointPlacementView();
+        BuildFixtureView();
         BuildGrabHandle(canvasRect);
         RefreshAlignmentControls();
         RefreshPointPlacementControls();
@@ -1457,6 +1482,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
 
     private void UnsubscribeTaskControls()
     {
+        UnbindFixtureControls();
         if (_subscribedPointRegistration != null) _subscribedPointRegistration.StateChanged -= OnPointRegistrationChanged;
         _subscribedPointRegistration = null;
         if (_subscribedPlanning != null) _subscribedPlanning.StateChanged -= OnPlanningStateChanged;
@@ -1511,6 +1537,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         UnsubscribeTaskControls();
         if (IsCalibrating) _instantiator.CancelCalibration();
         if (IsPointCollecting) _pointRegistration.CancelRegistration();
+        if (_fixtureTiling != null) _fixtureTiling.CancelCapture();
         if (_pointGuide != null) _pointGuide.Hide();
         ClearPointerState();
         if (_panel != null) _panel.gameObject.SetActive(false);
@@ -1556,6 +1583,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
             if (_playbackSpeedButtons[index] != null) _playbackSpeedButtons[index].onClick.RemoveListener(_playbackSpeedActions[index]);
         if (_tcpTaskButton != null) _tcpTaskButton.onClick.RemoveListener(SelectTcpTask);
         if (_pickPlaceTaskButton != null) _pickPlaceTaskButton.onClick.RemoveListener(SelectPickPlaceTask);
+        if (_fixtureTaskButton != null) _fixtureTaskButton.onClick.RemoveListener(SelectFixtureTask);
         foreach (Button button in _alignmentActionButtons) if (button != null) button.onClick.RemoveAllListeners();
         foreach (Button button in _translationStepButtons) if (button != null) button.onClick.RemoveAllListeners();
         foreach (Button button in _rotationStepButtons) if (button != null) button.onClick.RemoveAllListeners();

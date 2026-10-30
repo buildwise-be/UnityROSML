@@ -1,0 +1,327 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-10-30 15:15:44Z",
+  "scope": "Square-tile fixture setup, identified complete-batch review and single-use execution admission",
+  "unityVersion": "6000.0.84f1",
+  "editorTests": {
+    "total": 586,
+    "passed": 586,
+    "failed": 0,
+    "skipped": 0
+  },
+  "newFixtureTests": {
+    "total": 54,
+    "fixtures": {
+      "FixtureSolutionMessageTests": 2,
+      "FixtureSolutionPreviewTests": 5,
+      "FixtureTilingGeometryTests": 9,
+      "FixtureTilingMenuTests": 12,
+      "FixtureTilingSceneReviewTests": 7,
+      "FixtureTilingWorkflowTests": 19
+    }
+  },
+  "testResults": {
+    "path": "Library/FixtureTilingValidation/fixture-final-results.xml",
+    "sha256": "bccfbeb0c1bad062993281bb2738bfd85090b61ea0fa962d2891d95c8b8d77b0"
+  },
+  "runtimeCompile": {
+    "compiler": "C:\\Program Files\\Unity 6000.0.84f1\\Editor\\Data\\DotNetSdkRoslyn\\csc.dll",
+    "helperSources": 9,
+    "mainSources": 109,
+    "errors": 0,
+    "warnings": [
+      "Assets\\Samples\\Magic Leap SDK\\2.6.0\\ML Rig & OpenXR Input\\MagicLeapController.cs(45,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'",
+      "Assets\\Scripts\\PickAndPlaceScriptableObject.cs(29,26): warning CS0618: 'CoordinatesConverter' is obsolete: 'Use RobotCoordinateService instead'",
+      "Assets\\Scripts\\UR16eServiceCaller.cs(55,18): warning CS0414: The field 'Ur16EServiceCaller.debugEnabled' is assigned but its value is never used"
+    ],
+    "evidence": {
+      "path": "Library/FixtureTilingValidationSupport/runtime_compile_summary.json",
+      "sha256": "921cb227ba11b453239871dbe13acff231457ec9635b13bf260157abcfd6141b"
+    }
+  },
+  "schemas": {
+    "manifest": {
+      "path": "Tools/RobotFrames/RosMessageSchemas/manifest.json",
+      "sha256": "b076df08450ab124abd60e9d741b690a6fb780e302df63a7425082e0ced57056"
+    },
+    "closureMessages": 47,
+    "generatedMessages": 19,
+    "fixtureBuildImage": "sha256:752aa09527488fce5baaa35ebbff1aad52c6e82e72a302db4f14ded79f2f615b",
+    "installedBackendComparison": "All original 23 MoveIt/MTC dependency schemas also byte-identical to installed Nordbo backend",
+    "cdrFixture": {
+      "path": "Assets/Tests/RobotFrames/Resources/FixtureSolutionCdr.json",
+      "sha256": "83c64961630f9261838f12739376fa9145520a564afb299fc38b0223a24e2a4a"
+    },
+    "cdrVerification": "Independent ROS Python CDR with polygon, texture, UV and mesh-file extensions; Unity parses fields and reproduces all meaningful bytes with only schema-derived padding normalized",
+    "privateNestedRegistrations": "No global registry hooks; compatible standard messages use connector types"
+  },
+  "menuVisualQa": {
+    "renderedViews": 9,
+    "textOverflowWarnings": 0,
+    "log": {
+      "path": "Library/FixtureTilingValidation/fixture-menu-preview.log",
+      "sha256": "a44a1e82ffc94f7007c6ed2ae2da5577a97dfc8e74d6219069cf38c941372076"
+    },
+    "previews": [
+      {
+        "path": "Library/FixtureTilingValidation/FixtureTilingPreviews/fixture-menu-contact-sheet.png",
+        "sha256": "1c28cfcbf4c3370689277a04c2a79d3c62786ed46b067e67ed4c529f7efb8ae5"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FixtureTilingPreviews/fixture-page-1.png",
+        "sha256": "43d6828fd54f6098dbef4a88f5d135b5bcd528dd5b34eb7f16b6c879d0892283"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FixtureTilingPreviews/fixture-page-2.png",
+        "sha256": "6aebaa5553afef6fd2dc0129115b72a7e2e4ee728741af00af240aeec05d1b23"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FixtureTilingPreviews/fixture-page-3.png",
+        "sha256": "99912b735e533cb49aba06399a9b26d1061eab3c020452f87370187c46e91fe9"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FixtureTilingPreviews/fixture-page-4.png",
+        "sha256": "a7b3081496cd71b0567dbde724b26597d17193a7c41837048960d29a73ff6eb8"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FixtureTilingPreviews/fixture-page-5.png",
+        "sha256": "0d8da985a1991cf7ce5b8c024d4a6b5b224f583bfd4530ce1336043542d4ca57"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FixtureTilingPreviews/fixture-page-6.png",
+        "sha256": "ed7918932f84d937efb469ab826ae2dea2a56e823070d7f08557399b11aa3031"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FixtureTilingPreviews/fixture-page-7.png",
+        "sha256": "73142473640670e106fd3bc9a99d5737db4af9e399eddd289470d23c69364753"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FixtureTilingPreviews/fixture-page-8.png",
+        "sha256": "0292d0575046b5a0373cb6cda958d8f7d53e682d186142162edbb5d0064a9a22"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FixtureTilingPreviews/fixture-task-entry.png",
+        "sha256": "7dd114c2ab290ea9df126c932d42033d75a9cd1e62b2ab9a333e95d1e6a19c06"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "path": "Assets/Scripts/V3/ROS/FixtureSolutionPreview.cs",
+      "sha256": "9b583044e62bc9eda091894bad3c0d10110c629bc4c26daa07630c30290cc49e"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/FixtureTilingController.cs",
+      "sha256": "bb35e0b885fae90ded5796b1b2183973922323178d3ed54b65ab722780699acf"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/FixtureTilingGeometry.cs",
+      "sha256": "02bc7d79c118729ce6c7866027a7b320939e47cdb422f52513035f6a37039ad6"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/FixtureTilingPreview.cs",
+      "sha256": "6fea5c8afc3dbfb2faa9738652c65765ea6118fd7c7fdd99cd75bfeb3525e6de"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/FixtureTilingSettings.cs",
+      "sha256": "138dca8f28897037cffed1a7d4b296a84081d609fb7b99aabc8d5166b4d8d4f1"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/MTCPlanUIManager.cs",
+      "sha256": "264b632b1a3373854a97cace352758492be217f324ae9c5235d2c2333d557ca5"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "0e5ce8842c247c6a67471dedb08800b1524a3d3d111ce6d891cd623e0bc50701"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.Fixture.cs",
+      "sha256": "f13ab2711931e7c58e47d1a7d24e5bcef9f802e7c770c97a84a35d82dc6bb215"
+    },
+    {
+      "path": "Assets/Scripts/V3/URInputManager.cs",
+      "sha256": "a2144c76857d1e5a6a18ae501d07bb36970c473c6b644ed6a556aba78dd848cd"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/FixtureSolutionMessageTests.cs",
+      "sha256": "01d9e3b9138e2750a288d78e1fa24496f74fde1330dba0d2b5e0adce8cd6a7ce"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/FixtureSolutionPreviewTests.cs",
+      "sha256": "d71c810985d33da75d519c6f11d4f0aa0c980c57ca537ae9a8e78b419a155e92"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/FixtureTilingGeometryTests.cs",
+      "sha256": "ed1bfe64be39310f466ae584953a9cf649b1447ba3feda0cbd3d8d5c583e20a0"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/FixtureTilingMenuTests.cs",
+      "sha256": "1e5cc33eb0af7dea91b4a5a3f263ecfc11f2a367a21aafcced30624a8be34722"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/FixtureTilingSceneReviewTests.cs",
+      "sha256": "e6c3070fd1d5905c1e7bbb65db8956411bc029356b27b329aab7e1920f504154"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/FixtureTilingWorkflowTests.cs",
+      "sha256": "2e691e20b0cb81fdfffc348efb1bfe940e9f2d9983846df70e96a1c5b8d1ead3"
+    }
+  ],
+  "rosMessageSources": [
+    {
+      "path": "Assets/RosMessages/FixtureShape/msg/SolidPrimitiveMsg.cs",
+      "sha256": "eb7267f914fd9fdf5873fe430fc25501bf9e24e9c6bb4b33729e16d1c848b535"
+    },
+    {
+      "path": "Assets/RosMessages/FixtureVisualization/msg/MarkerMsg.cs",
+      "sha256": "07584dd7ef2c00b6f15f61e07bfcdc2fde307dd53fd3df3f06913ee8c53747f4"
+    },
+    {
+      "path": "Assets/RosMessages/FixtureVisualization/msg/MeshFileMsg.cs",
+      "sha256": "94cf6e07dc6adb0dde37c767cdf62d250844b3209358279926f7c8cb74d8722e"
+    },
+    {
+      "path": "Assets/RosMessages/FixtureVisualization/msg/UVCoordinateMsg.cs",
+      "sha256": "7b0b52bb4b5a6780847ccb7f75f818e0c58c3b2557c838b3fd26bccc61746590"
+    },
+    {
+      "path": "Assets/RosMessages/Moveit/msg/AllowedCollisionEntryMsg.cs",
+      "sha256": "fccae120f6a0d985e7b40ff95b8320fde7a6f254d07c8f1ceb723b01058f4a63"
+    },
+    {
+      "path": "Assets/RosMessages/Moveit/msg/AllowedCollisionMatrixMsg.cs",
+      "sha256": "4d3ccd6ea50b66febd4163199f7a127d76002356dca63892876216cb749eb3cf"
+    },
+    {
+      "path": "Assets/RosMessages/Moveit/msg/AttachedCollisionObjectMsg.cs",
+      "sha256": "283c12404a73637eba681da237dac9ee701f00f420c8dc77735c3d4cb244753a"
+    },
+    {
+      "path": "Assets/RosMessages/Moveit/msg/CollisionObjectMsg.cs",
+      "sha256": "26ba1b2715d097d88de81d40ad557106eb2e495ac932d0c9a8efe226c05a4cb1"
+    },
+    {
+      "path": "Assets/RosMessages/Moveit/msg/LinkPaddingMsg.cs",
+      "sha256": "6e241700ef508a5b5af2e1c642351f545201e76e5d63b3d7681c152b5c54c683"
+    },
+    {
+      "path": "Assets/RosMessages/Moveit/msg/LinkScaleMsg.cs",
+      "sha256": "7a04884ed020e07588202b987bb8c0b125c1053539059fed51970ef099f1b5d9"
+    },
+    {
+      "path": "Assets/RosMessages/Moveit/msg/ObjectColorMsg.cs",
+      "sha256": "b7b90917b52a9748d19623cb0589eb16d044fac77c18a5becdd709d2624a17f9"
+    },
+    {
+      "path": "Assets/RosMessages/Moveit/msg/PlanningSceneMsg.cs",
+      "sha256": "1d9968c67e82a20ecedd856c1766d00d144642ac8a67a20ecce062d49cefe104"
+    },
+    {
+      "path": "Assets/RosMessages/Moveit/msg/PlanningSceneWorldMsg.cs",
+      "sha256": "18442b86b751eb21cbac0a60914456673e5f43fb5cc522cf3ed45b0b91d7ddf5"
+    },
+    {
+      "path": "Assets/RosMessages/Moveit/msg/RobotStateMsg.cs",
+      "sha256": "917e28c744f37ba4a3c00aee8741a44372f7b383cf333f5571473436711e439f"
+    },
+    {
+      "path": "Assets/RosMessages/Moveit/msg/RobotTrajectoryMsg.cs",
+      "sha256": "6459a8271681b0d5db6d7ba1c4955349f278d9f8dfda43200fe83cb27aa3bbde"
+    },
+    {
+      "path": "Assets/RosMessages/MoveitTaskConstructor/msg/SolutionInfoMsg.cs",
+      "sha256": "385dcac0e127b9b895a9d931b5bcba31fb688f726d2ccaa87eae8957bdee1d3e"
+    },
+    {
+      "path": "Assets/RosMessages/MoveitTaskConstructor/msg/SolutionMsg.cs",
+      "sha256": "6f877176b1734f70b6b3bb097e6b319c9cac4df54cb304f9fbfb235594a8ce8b"
+    },
+    {
+      "path": "Assets/RosMessages/MoveitTaskConstructor/msg/SubSolutionMsg.cs",
+      "sha256": "4c58b3ff468e224b7b6ecf4487245b718469cb5cef41b25aaa22ed3522aca314"
+    },
+    {
+      "path": "Assets/RosMessages/MoveitTaskConstructor/msg/SubTrajectoryMsg.cs",
+      "sha256": "b769408b53891f1ececd9eadb362ddc3ae7723409bfb59d619ad364fa9b27e05"
+    },
+    {
+      "path": "Assets/RosMessages/MoveitTaskConstructor/msg/TrajectoryExecutionInfoMsg.cs",
+      "sha256": "797e04d893df27c563e3f39a6bb58f987d416ae5a813efd804cb7347a1f4fa86"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eInterfaces/msg/BoxMsg.cs",
+      "sha256": "bedcac3c807c9000a79b6d95acf2084f54fd317b36a32d1b2b6a0676bbd708de"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eInterfaces/msg/FixtureTilingTaskMsg.cs",
+      "sha256": "262668c14e75a745bda99592885e96b33b4c2ba2859d127736d2ea34b649abfe"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eInterfaces/msg/PickPlacePosesMsg.cs",
+      "sha256": "0ceaef005b1d7027733289e8862c7bcd924d54031913ea203ada5471ad19b105"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eInterfaces/srv/SaveFixtureCalibrationRequest.cs",
+      "sha256": "7497e26efa719b089b927d35d1c5c802a9d596a5d486530a04eab0d9ebea7eff"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eInterfaces/srv/SaveFixtureCalibrationResponse.cs",
+      "sha256": "c81803932f7bd3790fdbaa5e78485f693a8c95840daaa7822e9880d2c51e6bd3"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/AddPrimitiveRequest.cs",
+      "sha256": "455bcf3c1ab15086b6f56a2689fdc5cbb6111a777e9f2407059576160da8f702"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/AddPrimitiveResponse.cs",
+      "sha256": "11211fe1018df9c85f27aecfe6eb174512c0dd5b39d97cf04de29e4278c274e6"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UpdatePlanningSceneRequest.cs",
+      "sha256": "d62870df53a72c21449b8ebdc4b6a63cfeaa2ef7c1e866cbebe6b85535e1e884"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UpdatePlanningSceneResponse.cs",
+      "sha256": "c22bcdcf91113e500ef6bc29ff1e7f1a93ae54f1a9ca8e9c665f928d4bf7699a"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16eMoverServiceRequest.cs",
+      "sha256": "3c54a5cd340b267ec35d9aecc0c6bfcc4bb2b594bb8186f8faac9254e5f70fff"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16eMoverServiceResponse.cs",
+      "sha256": "4ef43838e21b822a77e7d0b1ddd45a2189df6c14841201bfd877e5207d3ad2be"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16ePathPlanRequest.cs",
+      "sha256": "1a7827b3938407cf82bcaddfadb81f9b871a49e9dbc98aaca62df33c4775c263"
+    },
+    {
+      "path": "Assets/RosMessages/Ur16eUnityInterfaces/srv/UR16ePathPlanResponse.cs",
+      "sha256": "8a08465f9a66bccb30ee37055d69a1a3f4eae24d06971ed119fe75198c1c4eac"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "Tools/RobotFrames/prepare_fixture_tiling_validation.py",
+      "sha256": "bc6e45b019feefaf696e6f8f5d46dc9a835b55411c71241b9a849e23aacee9ec"
+    },
+    {
+      "path": "Tools/RobotFrames/generate_fixture_preview_messages.ps1",
+      "sha256": "fc042f5caf6bbc481edc1fb67041c1cad5359ea600debe08d40e57eb4b8846de"
+    },
+    {
+      "path": "Tools/RobotFrames/generate_fixture_solution_cdr.py",
+      "sha256": "a961fc2f1ead675add1b8b2add4f17dae7fb06b39c8bbce37ebfd0677a0c186a"
+    },
+    {
+      "path": "Tools/RobotFrames/record_fixture_tiling_validation.py",
+      "sha256": "68a22d0ed135d66255d3cc22e0a94972ddb9f3f3a713e0d6f62fa0ed32371464"
+    }
+  ],
+  "editorRosTransport": false,
+  "hardwareExercised": false,
+  "robotMotionRequested": false,
+  "deploymentPerformed": false,
+  "testIsolation": "Actual controllers, menu, scene reviewer, rig and models in a separate project; ROS factory throws and publication overrides record requests without transport"
+}

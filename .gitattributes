@@ -1,3 +1,8 @@
 Assets/Prefabs/ur16e.prefab filter=lfs diff=lfs merge=lfs -text
 Assets/Prefabs/ur16e_scan/RealityScan/UR16e_realityScan.obj filter=lfs diff=lfs merge=lfs -text
 Assets/**/*.obj filter=lfs diff=lfs merge=lfs -text
+
+# Keep vendored ROS schemas byte-identical to the fixture-build hash manifest.
+Tools/RobotFrames/RosMessageSchemas/** -text whitespace=-blank-at-eol
+# Preserve the upstream message generator's comments verbatim.
+Assets/RosMessages/FixtureVisualization/msg/MarkerMsg.cs whitespace=-blank-at-eol
