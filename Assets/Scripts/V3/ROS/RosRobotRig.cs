@@ -24,10 +24,24 @@ public sealed class RosRobotRig : MonoBehaviour
     private Material _materialTemplate;
     private ArticulationBody _baseBody;
     private float _opacityLimit = 1f;
+    [SerializeField, Range(0f, 0.1f), Tooltip("Maximum robot opacity while a real execution request is unresolved. Normal appearance returns after its terminal outcome.")]
+    private float _executionOpacity = 0.03f;
+    private readonly Dictionary<Renderer, ExecutionAppearance> _executionAppearances = new Dictionary<Renderer, ExecutionAppearance>();
+    private readonly Dictionary<Material, Material> _executionMaterials = new Dictionary<Material, Material>();
+
+    private sealed class ExecutionAppearance
+    {
+        public Material[] Materials;
+        public ShadowCastingMode ShadowCasting;
+        public bool ReceiveShadows;
+        public bool Enabled;
+        public bool HiddenForExecution;
+    }
 
     public RosRobotModel Model { get; private set; }
     public bool IsGhost { get; set; }
     public string LastError { get; private set; }
+    public bool IsExecutionTransparent => _executionAppearances.Count > 0;
     public Transform BaseLink => _links.TryGetValue("ur_base_link", out Transform link) ? link : null;
     public Transform Tcp => _links.TryGetValue("tcp", out Transform link) ? link : null;
     public event Action ModelChanged;
@@ -47,6 +61,8 @@ public sealed class RosRobotRig : MonoBehaviour
                 throw new ArgumentException("The imported robot needs base_link and flange frames.");
             if (baseLink.GetComponent<ArticulationBody>() == null)
                 throw new ArgumentException("The robot base needs an articulation body.");
+            // Never let a temporary execution tint become the template for a new tool/model.
+            RestoreExecutionAppearance();
             CacheToolTemplates(flange);
             HashSet<string> toolLinks = ToolLinks(model);
             RosRobotModel reference = _meshReference ?? (_meshReference = RosRobotModelCatalog.Load().Find("kenos"));
@@ -133,11 +149,13 @@ public sealed class RosRobotRig : MonoBehaviour
             ApplyJointCoordinates();
             LastError = null;
             ModelChanged?.Invoke();
+            RefreshExecutionAppearance();
             return true;
         }
         catch (Exception exception)
         {
             gameObject.SetActive(wasActive);
+            RefreshExecutionAppearance();
             LastError = exception.Message;
             Debug.LogError("RosRobotRig: " + LastError, this);
             return false;
@@ -176,6 +194,107 @@ public sealed class RosRobotRig : MonoBehaviour
     private void OnEnable()
     {
         if (Model != null) ApplyJointCoordinates();
+        RobotExecutionState.Changed -= RefreshExecutionAppearance;
+        RobotExecutionState.Changed += RefreshExecutionAppearance;
+        RefreshExecutionAppearance();
+    }
+
+    private void OnDisable()
+    {
+        RobotExecutionState.Changed -= RefreshExecutionAppearance;
+        RestoreExecutionAppearance();
+    }
+
+    private void RefreshExecutionAppearance()
+    {
+        // Offline fixtures can explicitly enter the lifecycle on an inactive rig;
+        // Unity does not promise OnDestroy for an object that was never active.
+        // A retained static delegate must not touch a destroyed native Behaviour.
+        if (this == null)
+        {
+            RobotExecutionState.Changed -= RefreshExecutionAppearance;
+            RestoreExecutionAppearance();
+            return;
+        }
+        if (!isActiveAndEnabled || !RobotExecutionState.IsBusy)
+        { RestoreExecutionAppearance(); return; }
+        // The live replica and all trajectory ghosts share this policy so none
+        // can cover the physical arm while its real execution is in progress.
+        foreach (GameObject visual in _generatedVisuals)
+        {
+            if (visual == null) continue;
+            foreach (Renderer renderer in visual.GetComponentsInChildren<Renderer>(true))
+            {
+                if (_executionAppearances.ContainsKey(renderer)) continue;
+                Material[] original = renderer.sharedMaterials;
+                _executionAppearances.Add(renderer, new ExecutionAppearance
+                {
+                    Materials = original,
+                    ShadowCasting = renderer.shadowCastingMode,
+                    ReceiveShadows = renderer.receiveShadows,
+                    Enabled = renderer.enabled
+                });
+                try
+                {
+                    Material[] transparent = new Material[original.Length];
+                    for (int index = 0; index < original.Length; index++)
+                    {
+                        Material source = original[index];
+                        if (source == null) continue;
+                        if (!_executionMaterials.TryGetValue(source, out Material material))
+                        {
+                            Color color = MaterialColor(source);
+                            color.a = Mathf.Min(color.a, Mathf.Clamp(_executionOpacity, 0f, 0.1f));
+                            // This bundled resource retains the actual transparent URP/XR
+                            // shader variant in Android player data, unlike Shader.Find.
+                            material = TargetMarkerMaterials.Create(color, true);
+                            material.name = "Robot during execution: " + source.name;
+                            string sourceMap = source.HasProperty("_BaseMap") ? "_BaseMap" : source.HasProperty("_MainTex") ? "_MainTex" : null;
+                            if (sourceMap != null)
+                                foreach (string destinationMap in new[] { "_BaseMap", "_MainTex" })
+                                    if (material.HasProperty(destinationMap))
+                                    {
+                                        material.SetTexture(destinationMap, source.GetTexture(sourceMap));
+                                        material.SetTextureScale(destinationMap, source.GetTextureScale(sourceMap));
+                                        material.SetTextureOffset(destinationMap, source.GetTextureOffset(sourceMap));
+                                    }
+                            if (source.HasProperty("_Cull") && material.HasProperty("_Cull"))
+                                material.SetFloat("_Cull", source.GetFloat("_Cull"));
+                            _executionMaterials.Add(source, material);
+                        }
+                        transparent[index] = material;
+                    }
+                    renderer.sharedMaterials = transparent;
+                    renderer.shadowCastingMode = ShadowCastingMode.Off;
+                    renderer.receiveShadows = false;
+                }
+                catch (Exception exception)
+                {
+                    // If player resources are incomplete, preserve sight of the real
+                    // robot. The saved renderer/material state is restored on completion.
+                    renderer.enabled = false;
+                    _executionAppearances[renderer].HiddenForExecution = true;
+                    Debug.LogWarning("RosRobotRig: Execution transparency unavailable; hiding this replica renderer. " + exception.Message, this);
+                }
+            }
+        }
+    }
+
+    private void RestoreExecutionAppearance()
+    {
+        foreach (KeyValuePair<Renderer, ExecutionAppearance> entry in _executionAppearances)
+        {
+            if (entry.Key == null) continue;
+            entry.Key.sharedMaterials = entry.Value.Materials;
+            entry.Key.shadowCastingMode = entry.Value.ShadowCasting;
+            entry.Key.receiveShadows = entry.Value.ReceiveShadows;
+            // Ordinary transparency does not own renderer visibility. A registration
+            // picker or preview can hide it while the execution is unresolved.
+            if (entry.Value.HiddenForExecution) entry.Key.enabled = entry.Value.Enabled;
+        }
+        _executionAppearances.Clear();
+        foreach (Material material in _executionMaterials.Values) Dispose(material);
+        _executionMaterials.Clear();
     }
 
     private void ApplyJointCoordinates()
@@ -482,6 +601,7 @@ public sealed class RosRobotRig : MonoBehaviour
 
     private void ClearGeneratedTool()
     {
+        RestoreExecutionAppearance();
         foreach (GameObject visual in _generatedVisuals)
         {
             if (visual == null) continue;
@@ -528,6 +648,8 @@ public sealed class RosRobotRig : MonoBehaviour
 
     private void OnDestroy()
     {
+        RobotExecutionState.Changed -= RefreshExecutionAppearance;
+        RestoreExecutionAppearance();
         foreach (Material material in _ownedMaterials) Dispose(material);
         ModelChanged = null;
     }

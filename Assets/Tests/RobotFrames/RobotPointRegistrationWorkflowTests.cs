@@ -321,6 +321,109 @@ public sealed class RobotPointRegistrationWorkflowTests
         AssertCoordinatesBlocked();
     }
 
+    [Test]
+    public void CapturedSpheresMarkTheMeasuredTipAndRemainAttachedToTrackingSpace()
+    {
+        Vector3 offset = new Vector3(0.01f, -0.02f, 0.045f);
+        Call(_registration, "SetTipOffset", offset);
+        BeginWithFeedback();
+        Pose pointer = ContactPose(0);
+        pointer.rotation = Quaternion.Euler(22f, -31f, 64f);
+        pointer.position -= pointer.rotation * offset;
+        Call(_registration, "SetPointerPose", pointer, _tracking);
+        Assert.That(Call(_registration, "CapturePointerPose", pointer, _tracking), Is.EqualTo(true), Status);
+        GameObject sphere = CapturedSpheres[0];
+        Vector3 measuredInTracking = _tracking.InverseTransformPoint(ContactPose(0).position);
+        Assert.That(sphere.transform.parent, Is.SameAs(_tracking));
+        Assert.That(Vector3.Distance(sphere.transform.localPosition, measuredInTracking), Is.LessThan(0.000001f));
+        Assert.That(sphere.transform.localScale.x, Is.EqualTo(0.012f).Within(0.000001f));
+        Assert.That(sphere.GetComponent<Collider>().enabled, Is.False);
+        Material template = Resources.Load<Material>("RobotTargetMarkers/Opaque");
+        Assert.That(sphere.GetComponent<Renderer>().sharedMaterial.shader, Is.SameAs(template.shader));
+        GameObject tip = Field<GameObject>(_registration, "_tipVisual");
+        Assert.That(tip.GetComponent<Renderer>().sharedMaterial.shader, Is.SameAs(template.shader));
+        Assert.That(Capture(1), Is.True, Status);
+        Assert.That(CapturedSpheres[0].GetComponent<Renderer>().sharedMaterial.GetColor("_BaseColor"),
+            Is.Not.EqualTo(CapturedSpheres[1].GetComponent<Renderer>().sharedMaterial.GetColor("_BaseColor")));
+        _tracking.SetPositionAndRotation(new Vector3(-1f, 0.8f, 2f), Quaternion.Euler(0f, -80f, 0f));
+        Assert.That(Vector3.Distance(sphere.transform.position, _tracking.TransformPoint(measuredInTracking)), Is.LessThan(0.000001f));
+    }
+
+    [Test]
+    public void DuplicateTouchesDoNotAddSpheresAndUndoRemovesOnlyTheLastSphere()
+    {
+        BeginWithFeedback();
+        Assert.That(Capture(0), Is.True, Status);
+        GameObject first = CapturedSpheres[0];
+        Assert.That(Capture(0), Is.False, "A repeated contact must not produce extra feedback.");
+        Assert.That(CapturedSpheres.Count, Is.EqualTo(1));
+        Assert.That(Capture(1), Is.True, Status);
+        GameObject second = CapturedSpheres[1];
+        Material secondMaterial = second.GetComponent<Renderer>().sharedMaterial;
+        Call(_registration, "UndoLastPoint");
+        Assert.That(CapturedSpheres.Count, Is.EqualTo(1));
+        Assert.That(CapturedSpheres[0], Is.SameAs(first));
+        Assert.That(second == null, Is.True);
+        Assert.That(secondMaterial == null, Is.True);
+        Call(_registration, "CancelRegistration");
+        Assert.That(CapturedSpheres, Is.Empty);
+        Assert.That(first == null, Is.True);
+    }
+
+    [Test]
+    public void CapturedSpheresSurviveTheFourthTouchAndClearForQrOrANewRegistration()
+    {
+        PlaceAllFour();
+        Assert.That(CapturedSpheres.Count, Is.EqualTo(4));
+        foreach (GameObject sphere in CapturedSpheres) Assert.That(sphere.activeSelf, Is.True);
+        GameObject[] completed = CapturedSpheres.ToArray();
+        Call(_registration, "BeginRegistration");
+        Assert.That(CapturedSpheres, Is.Empty);
+        foreach (GameObject sphere in completed) Assert.That(sphere == null, Is.True);
+        for (int i = 0; i < 4; i++) Assert.That(Capture(i), Is.True, Status);
+        Assert.That(CapturedSpheres.Count, Is.EqualTo(4));
+        Call(_registration, "UseQrPlacement");
+        Assert.That(CapturedSpheres, Is.Empty);
+        Assert.That(Get<int>(_registration, "CapturedPointCount"), Is.Zero);
+    }
+
+    [Test]
+    public void RejectedFitKeepsItsFourFeedbackSpheresAndTrackingResetClearsThem()
+    {
+        BeginWithFeedback();
+        for (int i = 0; i < 3; i++) Assert.That(Capture(i), Is.True, Status);
+        Pose badFourth = ContactPose(3);
+        badFourth.position += new Vector3(0.17f, -0.11f, 0.14f);
+        Assert.That(Call(_registration, "CapturePointerPose", badFourth, _tracking), Is.EqualTo(false));
+        Assert.That(CapturedSpheres.Count, Is.EqualTo(4), "All sampled contacts must remain inspectable after a rejected fit.");
+        GameObject[] rejected = CapturedSpheres.ToArray();
+        Call(_registration, "InvalidateTrackingSession", "Synthetic tracking reset");
+        Assert.That(CapturedSpheres, Is.Empty);
+        foreach (GameObject sphere in rejected) Assert.That(sphere == null, Is.True);
+    }
+
+    [Test]
+    public void OwnedVisualCleanupDisposesCapturedAndLiveTipObjectsAndMaterials()
+    {
+        BeginWithFeedback();
+        Call(_registration, "SetPointerPose", ContactPose(0), _tracking);
+        Assert.That(Capture(0), Is.True, Status);
+        GameObject sphere = CapturedSpheres[0];
+        Material sphereMaterial = sphere.GetComponent<Renderer>().sharedMaterial;
+        GameObject tip = Field<GameObject>(_registration, "_tipVisual");
+        Material tipMaterial = tip.GetComponent<Renderer>().sharedMaterial;
+        // This inactive EditMode fixture deliberately never enters the player lifecycle.
+        // Invoke its resource-cleanup callback explicitly, as with Awake elsewhere in this fixture.
+        InvokePrivate(_registration, "OnDestroy");
+        UnityEngine.Object.DestroyImmediate(_registration);
+        Assert.That(sphere == null, Is.True);
+        Assert.That(tip == null, Is.True);
+        Assert.That(sphereMaterial == null, Is.True);
+        Assert.That(tipMaterial == null, Is.True);
+        Assert.That(Resources.Load<Material>("RobotTargetMarkers/Opaque"), Is.Not.Null);
+    }
+
+    private List<GameObject> CapturedSpheres => Field<List<GameObject>>(_registration, "_capturedPointVisuals");
     private void BeginWithFeedback() { Feed(); Call(_registration, "BeginRegistration"); }
     private void Feed() => Assert.That(Call(_feedback, "ObserveJointState", _jointNames, _angles), Is.EqualTo(true));
     private void PlaceAllFour()

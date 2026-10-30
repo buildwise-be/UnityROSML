@@ -17,8 +17,15 @@ public sealed class RobotPointRegistration : MonoBehaviour
     [SerializeField, Min(0.001f)] private float _maximumPointErrorMeters = 0.02f;
     [SerializeField, Min(0.1f)] private float _maximumJointAgeSeconds = 1f;
     [SerializeField, Min(0.01f)] private float _maximumJointMovementDegrees = 0.5f;
+    [SerializeField, Min(0.001f)] private float _capturedPointDiameterMeters = 0.012f;
 
     private readonly List<Vector3> _measuredInTracking = new List<Vector3>();
+    private readonly List<GameObject> _capturedPointVisuals = new List<GameObject>();
+    private readonly List<Material> _capturedPointMaterials = new List<Material>();
+    private static readonly Color[] CapturedPointColors = {
+        new Color(0.3f, 1f, 0.5f), new Color(1f, 0.5f, 0.1f),
+        new Color(0.85f, 0.4f, 1f), new Color(0.2f, 0.85f, 1f)
+    };
     private readonly Dictionary<Renderer, bool> _hiddenRenderers = new Dictionary<Renderer, bool>();
     private Dictionary<string, double> _referenceJoints;
     private RosRobotModel _referenceModel;
@@ -31,6 +38,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
     private Pose _previousBaseInTracking;
     private Transform _previousTrackingSpace;
     private GameObject _tipVisual;
+    private Material _tipMaterial;
     private RosRobotRig _hiddenRig;
     private readonly List<XRInputSubsystem> _inputSubsystems = new List<XRInputSubsystem>();
 
@@ -64,7 +72,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
     {
         if (_instantiator == null) _instantiator = GetComponent<URInstantiator>();
         if (_instantiator == null) { SetStatus("Robot placement component is missing."); return; }
-        if (_instantiator.IsCalibrating || MTCPlansManager.ActiveExecution != null)
+        if (_instantiator.IsCalibrating || RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null)
         { SetStatus("Finish the current alignment or robot execution before picking points."); return; }
         if (_landmarks == null || _landmarks.Length != 4)
         { SetStatus("Configure four rear-cover landmarks before point placement."); return; }
@@ -129,6 +137,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
             if (Vector3.Distance(previous, measured) < 0.015f)
             { SetStatus("This point is too close to an earlier pick. Touch " + CurrentPointName + "."); return false; }
         _measuredInTracking.Add(measured);
+        AddCapturedPointVisual(trackingSpace, measured, CapturedPointCount - 1);
         if (CapturedPointCount < 4)
         { SetStatus("Touch " + (CapturedPointCount + 1) + "/4: " + CurrentPointName + "; press trigger."); return true; }
         return TryFinish();
@@ -186,6 +195,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
     {
         if (!IsCollecting || CapturedPointCount == 0) return;
         _measuredInTracking.RemoveAt(CapturedPointCount - 1);
+        RemoveLastCapturedPointVisual();
         if (CapturedPointCount == 0) ClearPicks();
         SetStatus("Touch " + (CapturedPointCount + 1) + "/4: " + CurrentPointName + "; press trigger.");
     }
@@ -215,6 +225,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
     public void UseQrPlacement()
     {
         CancelRegistration();
+        ClearPicks();
         HasPlacement = false;
         if (_instantiator == null) _instantiator = GetComponent<URInstantiator>();
         if (_instantiator != null) _instantiator.SelectQrPlacement();
@@ -223,7 +234,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
         SetStatus("QR placement selected. Scan the marker, then trigger to place the robot.");
     }
 
-    public void NotifyQrPlacement() { HasPlacement = false; StateChanged?.Invoke(); }
+    public void NotifyQrPlacement() { ClearPicks(); HideTip(); HasPlacement = false; StateChanged?.Invoke(); }
 
     /// <summary>Native reference-space changes invalidate saved contacts; moving the XR Origin transform does not.</summary>
     public void InvalidateTrackingSession(string reason)
@@ -260,6 +271,8 @@ public sealed class RobotPointRegistration : MonoBehaviour
             Collider collider = _tipVisual.GetComponent<Collider>();
             collider.enabled = false;
             _tipVisual.transform.localScale = Vector3.one * 0.006f;
+            _tipMaterial = TargetMarkerMaterials.Create(new Color(0.55f, 0.95f, 1f));
+            _tipVisual.GetComponent<Renderer>().sharedMaterial = _tipMaterial;
         }
         _tipVisual.SetActive(true);
         _tipVisual.transform.SetParent(trackingSpace, true);
@@ -271,12 +284,49 @@ public sealed class RobotPointRegistration : MonoBehaviour
     private void RestartPicks(string reason) { ClearPicks(); SetStatus(reason + " Start at " + CurrentPointName + "."); }
     private void ClearPicks()
     {
+        ClearCapturedPointVisuals();
         _measuredInTracking.Clear();
         _referenceJoints = null;
         _referenceModel = null;
         _modelPoints = null;
         _captureTrackingSpace = null;
         RmsErrorMeters = MaxErrorMeters = 0f;
+    }
+    private void AddCapturedPointVisual(Transform trackingSpace, Vector3 measured, int index)
+    {
+        Material material = TargetMarkerMaterials.Create(CapturedPointColors[index % CapturedPointColors.Length]);
+        GameObject marker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        marker.name = "Registration point " + (index + 1) + " - " + _landmarks[index].displayName;
+        marker.GetComponent<Collider>().enabled = false;
+        marker.GetComponent<Renderer>().sharedMaterial = material;
+        marker.transform.SetParent(trackingSpace, false);
+        marker.transform.localPosition = measured;
+        marker.transform.localRotation = Quaternion.identity;
+        float diameter = _capturedPointDiameterMeters > 0f && !float.IsInfinity(_capturedPointDiameterMeters)
+            ? _capturedPointDiameterMeters : 0.012f;
+        marker.transform.localScale = Vector3.one * diameter;
+        _capturedPointVisuals.Add(marker);
+        _capturedPointMaterials.Add(material);
+    }
+    private void RemoveLastCapturedPointVisual()
+    {
+        if (_capturedPointVisuals.Count == 0) return;
+        int index = _capturedPointVisuals.Count - 1;
+        GameObject marker = _capturedPointVisuals[index];
+        if (marker != null) marker.SetActive(false);
+        DisposeVisual(marker);
+        DisposeVisual(_capturedPointMaterials[index]);
+        _capturedPointVisuals.RemoveAt(index);
+        _capturedPointMaterials.RemoveAt(index);
+    }
+    private void ClearCapturedPointVisuals()
+    {
+        while (_capturedPointVisuals.Count != 0) RemoveLastCapturedPointVisual();
+    }
+    private static void DisposeVisual(UnityEngine.Object value)
+    {
+        if (value == null) return;
+        if (Application.isPlaying) Destroy(value); else DestroyImmediate(value);
     }
     private void HideRobot()
     {
@@ -313,8 +363,9 @@ public sealed class RobotPointRegistration : MonoBehaviour
     }
     private void OnDestroy()
     {
-        if (_tipVisual == null) return;
-        if (Application.isPlaying) Destroy(_tipVisual); else DestroyImmediate(_tipVisual);
+        ClearCapturedPointVisuals();
+        DisposeVisual(_tipVisual);
+        DisposeVisual(_tipMaterial);
     }
     private void OnApplicationPause(bool paused) { if (paused) InvalidateTrackingSession("App paused."); }
     private void OnApplicationFocus(bool focus) { if (!focus && IsCollecting) RestartPicks("App lost focus; pick all four points again."); }

@@ -71,7 +71,7 @@ public class JointStateSubscriber : MonoBehaviour
             { error = "Waiting for fresh ROS joint feedback: " + link.jointName + "."; return false; }
             positions.Add(link.jointName, value);
         }
-        if (positions.Count != 6) { error = "Point placement requires the six UR arm joints."; return false; }
+        if (positions.Count != 6) { error = "Fresh feedback for all six UR arm joints is required."; return false; }
         return true;
     }
 

@@ -9,6 +9,11 @@ each indicated blue rear cover with the controller contact tip and press trigger
 photo. The XR robot appears after the fourth accepted touch. Undo, Restart,
 Cancel, and Use QR instead are available in the placement menu.
 
+Each captured contact leaves a coloured 12 mm sphere at the sampled physical
+tip position. The four colours follow the point order. Spheres stay attached to
+tracking space, remain visible after a successful fit, and follow undo/restart,
+cancel, QR switching and tracking-reset cleanup. They have no active colliders.
+
 `RobotPointRegistration` fits a rigid rotation and translation using all four
 ordered correspondences and the calibrated model at the first touch's live joint
 pose. It estimates no scale. Incomplete/stale feedback, robot movement over
@@ -103,6 +108,38 @@ The original surface-pose API remains compatible for older clients; this Unity
 workflow does not use it. Neither endpoint adds a hidden compression distance.
 
 Both tasks use **Plan preview** followed by a separate **Execute plan**.
+While an execution is awaiting a terminal ROS outcome, the live XR robot and
+trajectory robots use at most **3% opacity**, preserving the view of the moving
+physical arm. Original materials return after success/rejection/failure. An
+unknown acknowledgement outcome remains dim and never triggers an automatic
+retry. Changing the tool/model during execution preserves this appearance policy.
+
+With the updated ROS backend, a confirmed successful plan can be run again via
+**Execute again**. Unity enables this only when the unchanged reviewed targets,
+tool, mode, calibration and preview remain valid, and fresh feedback reports all
+six arm joints within **0.01 rad** of the original start (feedback age at most
+one second). Bounded joint winding is preserved; an extra complete turn does not
+match. The button sends a new explicit attempt ID for the retained plan, and ROS
+rechecks the complete original scene, attachments, models and start state. A
+moved object must also be restored, or a new plan made. The app does not command
+the robot to return automatically. New planning/context edits or a failed repeat
+revoke eligibility. Old backend versions keep their existing single-use behavior.
+
+This requires rebuilding/deploying the new backend source as well as rebuilding
+the Unity app. [Repeat protocol, patch and offline validation](RepeatExecution/README.md)
+describe the local source change; preparing/testing it does not update the running
+ROS stack or request motion. The original Execute endpoints remain single-use;
+repeats use the separately identified `/repeat_reviewed_plan` action.
+
+`execution_improvements_validation_summary.json` records **480/480 passing
+isolated Unity checks**, compilation of 87 current runtime/helper sources with
+zero errors, and matching tested source hashes (with recorded URP material-import
+normalization) for these changes. The ROS
+package also compiles offline; its repeat-protocol and original start/scene
+validation checks pass. Its documented pre-existing scene-effects assertion
+still fails (10/11 CTest targets pass). Headset rendering and actual ROS/robot
+execution were not exercised, and no application was deployed.
+
 MTC keeps listening after Execute consumes the reviewed permission: ROS
 acknowledgement, progress, success or rejection now appears in the main menu.
 No acknowledgement after 10 seconds reports an unknown outcome and keeps the

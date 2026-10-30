@@ -1,0 +1,493 @@
+--- a/ros_ws/src/ur16e_mtc_gpio_stage/src/test_task.cpp
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/src/test_task.cpp
+@@ -18,6 +18,7 @@
+ #include "ur16e_mtc_gpio_stage/set_io_stage.hpp"
+ #include "ur16e_mtc_gpio_stage/custom_executor.hpp"
+ #include "ur16e_mtc_gpio_stage/plan_gate.hpp"
++#include "ur16e_mtc_gpio_stage/repeat_execution.hpp"
+ #include "ur16e_mtc_gpio_stage/plan_validation.hpp"
+ #include "ur16e_mtc_gpio_stage/tool_definition.hpp"
+ #include "ur16e_mtc_gpio_stage/tool_model_validation.hpp"
+@@ -54,6 +55,9 @@
+ #include <memory>
+ #include <stdexcept>
+ #include <optional>
++#include <atomic>
++#include <cstdint>
++#include <random>
+ 
+ static const rclcpp::Logger LOGGER = rclcpp::get_logger("mtc_test_task");
+ namespace mtc = moveit::task_constructor;
+@@ -120,6 +124,9 @@
+         execute_task_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
+             "execute_task", 10, std::bind(&MTCTestTask::doTask, this, _1), command_options);
+ 
++        repeat_plan_sub_ = node_->create_subscription<std_msgs::msg::String>(
++            "repeat_reviewed_plan", 10, std::bind(&MTCTestTask::repeatReviewedPlan, this, _1), command_options);
++
+         // Cache the latest joint state so we can capture the arm configuration at planning
+         // time and use it as the task's "return to start" goal (see createTask). Use a
+         // best-effort QoS, which is compatible with both reliable and best-effort publishers.
+@@ -169,6 +176,7 @@
+     {
+         TaskMode mode = TaskMode::VacuumPickPlace;
+         std::string request_id;
++        std::string plan_id;
+         moveit_task_constructor_msgs::msg::Solution solution;
+         moveit_msgs::msg::PlanningScene start_scene;
+         std::string robot_description;
+@@ -192,6 +200,9 @@
+     std::mutex task_mutex_;
+     ur16e_mtc_gpio_stage::PlanGate gate_;
+     std::unique_ptr<const PreparedPlan> prepared_plan_;
++    // Only a confirmed successful execution can populate this immutable repeat source.
++    std::unique_ptr<const PreparedPlan> completed_plan_;
++    ur16e_mtc_gpio_stage::RepeatExecutionGate repeat_gate_;
+     rclcpp::CallbackGroup::SharedPtr command_cb_group_;
+     rclcpp::CallbackGroup::SharedPtr scene_client_cb_group_;
+     rclcpp::Client<GetPlanningScene>::SharedPtr scene_query_client_;
+@@ -207,6 +218,7 @@
+     rclcpp::Subscription<geometry_msgs::msg::PoseArray>::SharedPtr tcp_poses_plan_sub_;
+     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr execute_tcp_plan_sub_;
+     rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr execute_task_sub_;
++    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr repeat_plan_sub_;
+     rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_sub_;
+     rclcpp::CallbackGroup::SharedPtr joint_state_cb_group_;
+     sensor_msgs::msg::JointState::SharedPtr latest_joint_state_;
+@@ -225,29 +237,45 @@
+     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr tcp_planning_status_pub_;
+     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr tcp_execution_status_pub_;
+ 
+-    void publishExecutionStatus(const std::string &status, const std::string &reason)
+-    {
+-        try
+-        {
+-            std_msgs::msg::String message;
+-            message.data = "{\"status\":\"" + jsonEscape(status) + "\",\"reason\":\"" + jsonEscape(reason) + "\"}";
+-            execution_status_pub_->publish(message);
+-        }
+-        catch (const std::exception &error)
+-        {
+-            RCLCPP_ERROR(LOGGER, "Could not publish execution status: %s", error.what());
+-        }
+-        RCLCPP_INFO(LOGGER, "Execution %s: %s", status.c_str(), reason.c_str());
+-    }
+-
+-    void publishTcpExecutionStatus(const std::string &status, const std::string &reason,
+-                                   const std::string &request_id)
++    static std::string newPlanId()
++    {
++        static const std::string session = [] {
++            std::random_device random;
++            return std::string("plan-") + std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) +
++                "-" + std::to_string(random()) + "-" + std::to_string(random());
++        }();
++        static std::atomic<std::uint64_t> sequence{0};
++        return session + "-" + std::to_string(++sequence);
++    }
++
++    void publishExecutionStatus(const std::string &status, const std::string &reason,
++                                const std::string &plan_id = "", const std::string &attempt_id = "", bool repeatable = false)
+     {
+         try
+         {
+             std_msgs::msg::String message;
+             message.data = "{\"status\":\"" + jsonEscape(status) + "\",\"reason\":\"" + jsonEscape(reason) +
+-                "\",\"request_id\":\"" + jsonEscape(request_id) + "\"}";
++                "\",\"plan_id\":\"" + jsonEscape(plan_id) + "\",\"attempt_id\":\"" + jsonEscape(attempt_id) +
++                "\",\"repeatable\":" + (repeatable ? "true" : "false") + "}";
++            execution_status_pub_->publish(message);
++        }
++        catch (const std::exception &error)
++        {
++            RCLCPP_ERROR(LOGGER, "Could not publish execution status: %s", error.what());
++        }
++        RCLCPP_INFO(LOGGER, "Execution %s: %s", status.c_str(), reason.c_str());
++    }
++
++    void publishTcpExecutionStatus(const std::string &status, const std::string &reason,
++                                   const std::string &request_id, const std::string &plan_id = "",
++                                   const std::string &attempt_id = "", bool repeatable = false)
++    {
++        try
++        {
++            std_msgs::msg::String message;
++            message.data = "{\"status\":\"" + jsonEscape(status) + "\",\"reason\":\"" + jsonEscape(reason) +
++                "\",\"request_id\":\"" + jsonEscape(request_id) + "\",\"plan_id\":\"" + jsonEscape(plan_id) +
++                "\",\"attempt_id\":\"" + jsonEscape(attempt_id) + "\",\"repeatable\":" + (repeatable ? "true" : "false") + "}";
+             tcp_execution_status_pub_->publish(message);
+         }
+         catch (const std::exception &error)
+@@ -260,6 +288,13 @@
+     void discardPreparedPlan()
+     {
+         prepared_plan_.reset();
++        completed_plan_.reset();
++        repeat_gate_.invalidate();
++        clearPlanPreview();
++    }
++
++    void clearPlanPreview()
++    {
+         planned_trajectory_pub_->publish(moveit_msgs::msg::RobotTrajectory{});
+         moveit_msgs::msg::RobotTrajectory empty_tcp;
+         empty_tcp.joint_trajectory.header.stamp = active_tcp_request_stamp_;
+@@ -537,39 +572,112 @@
+             return;
+         }
+ 
+-        // Consume readiness BEFORE constructing clients or validating. Any failed
+-        // attempt requires fresh planning; the immutable message stays alive locally.
++        // Legacy commands remain consumed after their first execution attempt.
+         auto plan = std::move(prepared_plan_);
++        completed_plan_.reset();
++        repeat_gate_.invalidate();
++        runPreparedPlan(std::move(plan), tcp_request, request_id, "", false);
++    }
++
++    void reportUnknownRepeat(const ur16e_mtc_gpio_stage::RepeatExecutionRequest &request, const std::string &reason)
++    {
++        // A missing/obsolete token has no task mode. Both topics carry the exact
++        // identifiers so only the requesting client can consume its rejection.
++        publishExecutionStatus("rejected", reason, request.plan_id, request.attempt_id);
++        publishTcpExecutionStatus("rejected", reason, "", request.plan_id, request.attempt_id);
++    }
++
++    void repeatReviewedPlan(std_msgs::msg::String message)
++    {
++        ur16e_mtc_gpio_stage::RepeatExecutionRequest request;
++        if (!ur16e_mtc_gpio_stage::parseRepeatExecutionRequest(message.data, request))
++        {
++            RCLCPP_WARN(LOGGER, "Malformed repeat execution request ignored");
++            return;
++        }
++        std::unique_lock<std::mutex> lock(task_mutex_, std::try_to_lock);
++        if (!lock.owns_lock())
++        {
++            // A duplicate can arrive while its execution owns the task mutex.
++            // Publishing a terminal rejection for that ID would race its real
++            // outcome. No busy repeat callback changes state or sends hardware IO.
++            RCLCPP_WARN(LOGGER, "Repeat request ignored while task is busy");
++            return;
++        }
++        if (repeat_gate_.isDuplicate(request)) return;
++        if (!completed_plan_)
++        {
++            reportUnknownRepeat(request, "No retained successful plan; request a new plan");
++            return;
++        }
++        const auto admission_error = repeat_gate_.begin(request);
++        if (!admission_error.empty())
++        {
++            reportUnknownRepeat(request, admission_error);
++            return;
++        }
++        if (!gate_.beginRepeatExecution(static_cast<bool>(completed_plan_)))
++        {
++            completed_plan_.reset();
++            repeat_gate_.finish(false);
++            reportUnknownRepeat(request, "Repeat admission was invalidated; request a new plan");
++            return;
++        }
++        auto plan = std::move(completed_plan_);
++        const bool tcp_request = plan->mode == TaskMode::TcpWaypoints;
++        const std::string request_id = plan->request_id;
++        runPreparedPlan(std::move(plan), tcp_request, request_id, request.attempt_id, true);
++    }
++
++    // Caller owns task_mutex_ for this whole operation. Every explicit repeat
++    // repeats the complete preflight against the ORIGINAL frozen start scene.
++    void runPreparedPlan(std::unique_ptr<const PreparedPlan> plan, bool tcp_request,
++                         const std::string &request_id, const std::string &attempt_id, bool repeated)
++    {
++        const std::string plan_id = plan->plan_id;
++        const auto report = [&](const std::string &status, const std::string &reason, bool repeatable = false) {
++            if (tcp_request) publishTcpExecutionStatus(status, reason, request_id, plan_id, attempt_id, repeatable);
++            else publishExecutionStatus(status, reason, plan_id, attempt_id, repeatable);
++        };
+         try
+         {
+-            discardPreparedPlan();
++            clearPlanPreview();
+             const bool vacuum_task = plan->mode == TaskMode::VacuumPickPlace;
+-            // After any vacuum execution attempt, the object may be physical or
+-            // moved/attached. Never automatically remove it as a preview again.
++            const auto tool_error = toolConfigurationError(vacuum_task);
++            if (!tool_error.empty()) throw std::runtime_error(tool_error);
+             if (vacuum_task) owned_preview_object_.reset();
+             const std::string io_service = vacuum_task
+                 ? ur16e_mtc_gpio_stage::requireVacuumCapability(tool_).io_service
+                 : "/io_and_status_controller/set_io";
+-            // TCP plans have no IO stages; the executor also forbids IO explicitly.
+             ur16e_mtc_gpio_stage::CustomExecutor exec(node_, "ur_arm", io_service, vacuum_task);
+             const auto reason = validatePreparedPlan(*plan);
+             if (!reason.empty())
+             {
+                 gate_.finishExecution(false);
++                repeat_gate_.finish(false);
+                 report("rejected", reason);
+                 return;
+             }
+-            report("executing", "Start state and scene validated; plan consumed");
++            report("executing", "Start state and scene validated; explicit execution attempt admitted");
+             const bool success = exec.executeSolution(plan->solution);
+             gate_.finishExecution(success);
+-            report(success ? "succeeded" : "failed",
+-                success ? "Task completed; a new plan is required for another execution" :
+-                          "Execution stopped; inspect robot and scene before planning again");
++            if (success)
++            {
++                if (repeated) repeat_gate_.finish(true);
++                else repeat_gate_.retainSuccessful(plan_id);
++                completed_plan_ = std::move(plan);
++            }
++            else repeat_gate_.finish(false);
++            report(success ? "succeeded" : "failed", success
++                ? "Task completed. Return robot and scene to the recorded start before an explicit repeat"
++                : "Execution stopped; inspect robot and scene before planning again", success);
+         }
+         catch (const std::exception &error)
+         {
+             gate_.finishExecution(false);
+-            report("failed", std::string("Execution attempt stopped; plan consumed: ") + error.what());
++            repeat_gate_.finish(false);
++            completed_plan_.reset();
++            report("failed", std::string("Execution attempt stopped; request a new plan: ") + error.what());
+         }
+     }
+ 
+@@ -596,6 +704,7 @@
+             throw std::runtime_error("Robot/tool description changed during planning; restart with consistent inputs");
+         auto prepared = std::make_unique<PreparedPlan>();
+         prepared->mode = active_task_mode_;
++        prepared->plan_id = newPlanId();
+         prepared->request_id = active_task_mode_ == TaskMode::TcpWaypoints ? active_tcp_request_id_ : "";
+         best.toMsg(prepared->solution);
+         if (prepared->solution.sub_trajectory.empty())
+@@ -611,7 +720,10 @@
+         publishPlanningStatus(true, active_task_mode_ == TaskMode::TcpWaypoints ?
+             "Exact TCP A then B plan ready; no motion or IO sent" :
+             "Pick/place plan ready; no motion or IO sent");
+-        publishExecutionStatus("ready", "A successful plan is available for one execution attempt");
++        if (active_task_mode_ == TaskMode::TcpWaypoints)
++            publishTcpExecutionStatus("ready", "A successful plan is available for one execution attempt", active_tcp_request_id_, prepared_plan_->plan_id);
++        else
++            publishExecutionStatus("ready", "A successful plan is available for one execution attempt", prepared_plan_->plan_id);
+         gate_.finishPlanning(true);
+     }
+ 
+@@ -665,6 +777,8 @@
+                 });
+         }
+         oss << "],\"message\":\"" << jsonEscape(message) << "\"";
++        if (prepared_plan_)
++            oss << ",\"plan_id\":\"" << jsonEscape(prepared_plan_->plan_id) << "\"";
+         if (active_task_mode_ == TaskMode::TcpWaypoints)
+             oss << ",\"request_id\":\"" << jsonEscape(active_tcp_request_id_)
+                 << "\",\"phase\":\"" << jsonEscape(phase.empty() ? (overall_success ? "ready" : "failed") : phase) << "\"}";
+@@ -1299,7 +1413,7 @@
+ 
+                 // Return to the arm configuration captured at planning time, so the robot
+                 // ends where the planned trajectory begins. The object/scene still change;
+-                // execution consumes the plan, so another request needs fresh planning.
++                // replay additionally requires the original scene, including the object, to be restored.
+                 static const std::vector<std::string> arm_joint_names = {
+                     "ur_shoulder_pan_joint", "ur_shoulder_lift_joint", "ur_elbow_joint",
+                     "ur_wrist_1_joint", "ur_wrist_2_joint", "ur_wrist_3_joint"};
+--- a/ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_gate.hpp
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_gate.hpp
+@@ -48,6 +48,15 @@
+     return true;
+   }
+ 
++  // Only the separate identified Repeat endpoint may call this. Ordinary
++  // beginExecution remains one-shot even when a completed solution is retained.
++  bool beginRepeatExecution(bool has_successfully_completed_plan) noexcept
++  {
++    if (state_ != State::Idle || !has_successfully_completed_plan) return false;
++    state_ = State::Executing;
++    return true;
++  }
++
+   void finishExecution(bool success) noexcept
+   {
+     if (state_ == State::Executing)
+--- a/ros_ws/src/ur16e_mtc_gpio_stage/CMakeLists.txt
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/CMakeLists.txt
+@@ -93,6 +93,11 @@
+   target_compile_features(test_plan_gate PRIVATE cxx_std_17)
+   add_test(NAME plan_gate COMMAND test_plan_gate)
+ 
++  add_executable(test_repeat_execution test/test_repeat_execution.cpp)
++  target_include_directories(test_repeat_execution PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
++  target_compile_features(test_repeat_execution PRIVATE cxx_std_17)
++  add_test(NAME repeat_execution COMMAND test_repeat_execution)
++
+   ament_add_gtest(test_plan_validation test/test_plan_validation.cpp)
+   target_include_directories(test_plan_validation PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+   target_compile_features(test_plan_validation PRIVATE cxx_std_17)
+--- /dev/null
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/repeat_execution.hpp
+@@ -0,0 +1,92 @@
++#pragma once
++
++#include <cctype>
++#include <set>
++#include <string>
++
++namespace ur16e_mtc_gpio_stage
++{
++struct RepeatExecutionRequest
++{
++  std::string plan_id;
++  std::string attempt_id;
++};
++
++inline bool validExecutionToken(const std::string& token)
++{
++  if (token.empty() || token.size() > 128) return false;
++  for (unsigned char ch : token)
++    if (!std::isalnum(ch) && ch != '-' && ch != '_' && ch != '.' && ch != ':') return false;
++  return true;
++}
++
++// Deliberately narrow JSON contract: exactly two token strings, no nested data,
++// escapes, duplicate fields or unknown fields. JsonUtility GUID payloads fit it.
++inline bool parseRepeatExecutionRequest(const std::string& json, RepeatExecutionRequest& request)
++{
++  request = {};
++  if (json.size() > 512) return false;
++  std::size_t index = 0;
++  const auto skip = [&]() { while (index < json.size() && std::isspace(static_cast<unsigned char>(json[index]))) ++index; };
++  const auto take = [&](char ch) { skip(); if (index >= json.size() || json[index] != ch) return false; ++index; return true; };
++  const auto token = [&](std::string& result) {
++    if (!take('"')) return false;
++    const auto begin = index;
++    while (index < json.size() && json[index] != '"') ++index;
++    if (index == json.size()) return false;
++    result = json.substr(begin, index++ - begin);
++    return validExecutionToken(result);
++  };
++  if (!take('{')) return false;
++  bool plan = false, attempt = false;
++  for (int field = 0; field < 2; ++field)
++  {
++    std::string key, value;
++    if (!token(key) || !take(':') || !token(value)) return false;
++    if (key == "plan_id" && !plan) { request.plan_id = value; plan = true; }
++    else if (key == "attempt_id" && !attempt) { request.attempt_id = value; attempt = true; }
++    else return false;
++    if (field == 0 && !take(',')) return false;
++  }
++  if (!take('}')) return false;
++  skip();
++  return plan && attempt && index == json.size();
++}
++
++// The caller holds the task mutex. Original legacy Execute remains one-shot;
++// this additional admission requires an explicitly identified completed plan.
++class RepeatExecutionGate
++{
++public:
++  void retainSuccessful(const std::string& plan_id)
++  {
++    plan_id_ = plan_id;
++    completed_ = validExecutionToken(plan_id);
++    attempts_.clear();
++  }
++  void invalidate() { plan_id_.clear(); completed_ = false; attempts_.clear(); }
++  bool repeatable() const { return completed_; }
++  bool isDuplicate(const RepeatExecutionRequest& request) const
++  {
++    return request.plan_id == plan_id_ && attempts_.count(request.attempt_id) != 0;
++  }
++  std::string begin(const RepeatExecutionRequest& request)
++  {
++    if (!validExecutionToken(request.plan_id) || !validExecutionToken(request.attempt_id)) return "Invalid repeat request identifiers";
++    if (request.plan_id != plan_id_) return "Repeat plan ID does not match the retained successful plan";
++    if (isDuplicate(request)) return "Duplicate repeat attempt ignored";
++    if (!completed_) return "The retained plan has no confirmed successful completion";
++    // Never evict IDs: forgetting a token could admit a delayed duplicate.
++    if (attempts_.size() >= 1024) return "Repeat attempt limit reached; request a new plan";
++    attempts_.insert(request.attempt_id);
++    completed_ = false;
++    return {};
++  }
++  void finish(bool success) { completed_ = success && !plan_id_.empty(); }
++
++private:
++  std::string plan_id_;
++  bool completed_ = false;
++  std::set<std::string> attempts_;
++};
++}  // namespace ur16e_mtc_gpio_stage
+--- /dev/null
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/test/test_repeat_execution.cpp
+@@ -0,0 +1,67 @@
++#include "ur16e_mtc_gpio_stage/plan_gate.hpp"
++#include "ur16e_mtc_gpio_stage/repeat_execution.hpp"
++#include <cstdlib>
++#include <iostream>
++#include <stdexcept>
++#include <string>
++
++using ur16e_mtc_gpio_stage::PlanGate;
++using ur16e_mtc_gpio_stage::RepeatExecutionGate;
++using ur16e_mtc_gpio_stage::RepeatExecutionRequest;
++using ur16e_mtc_gpio_stage::parseRepeatExecutionRequest;
++
++void require(bool value, const std::string& message) { if (!value) throw std::runtime_error(message); }
++
++int main()
++{
++  int checks = 0;
++  const auto check = [&](bool value, const std::string& message) { require(value, message); ++checks; };
++  RepeatExecutionRequest request;
++  check(parseRepeatExecutionRequest("{\"plan_id\":\"plan-123\",\"attempt_id\":\"74d20825-5044-4a99-963e-8d16a3c2be5f\"}", request), "Parse production GUID request");
++  check(parseRepeatExecutionRequest(" { \"attempt_id\" : \"attempt-1\", \"plan_id\": \"plan-1\" } ", request), "Accept field order and JSON whitespace");
++  for (const std::string malformed : {"", "{}", "[]", "null", "{\"plan_id\":\"p\"}",
++       "{\"plan_id\":\"p\",\"plan_id\":\"q\"}", "{\"plan_id\":\"p\",\"attempt_id\":\"a\",\"extra\":\"x\"}",
++       "{\"plan_id\":\"p\",\"attempt_id\":true}", "{\"plan_id\":\"p\",\"attempt_id\":\"\"}",
++       "{\"plan_id\":\"p\",\"attempt_id\":\"a\\n\"}", "{\"plan_id\":\"p\",\"attempt_id\":\"a\"}x"})
++    check(!parseRepeatExecutionRequest(malformed, request), "Reject malformed JSON: " + malformed);
++  check(!parseRepeatExecutionRequest(std::string(513, ' '), request), "Bound parser input");
++  RepeatExecutionGate repeat;
++  const RepeatExecutionRequest first{"plan-1", "attempt-1"};
++  check(!repeat.begin(first).empty(), "No completed plan cannot repeat");
++  repeat.retainSuccessful("plan-1");
++  check(repeat.repeatable(), "Confirmed success advertises repeat");
++  check(!repeat.begin({"other-plan", "attempt-1"}).empty() && repeat.repeatable(), "Wrong plan does not consume retained completion");
++  check(repeat.begin(first).empty() && !repeat.repeatable(), "Explicit new attempt consumes eligibility before hardware");
++  check(repeat.isDuplicate(first), "Record attempt before hardware");
++  check(!repeat.begin(first).empty(), "In-flight duplicate cannot execute");
++  repeat.finish(true);
++  check(repeat.repeatable() && repeat.isDuplicate(first), "Success retains permanent deduplication history");
++  check(!repeat.begin(first).empty(), "Delayed duplicate after return to start cannot execute");
++  check(repeat.begin({"plan-1", "attempt-2"}).empty(), "New explicit attempt can repeat the same solution");
++  repeat.finish(false);
++  check(!repeat.repeatable() && !repeat.begin({"plan-1", "attempt-3"}).empty(), "Rejected/failed attempt cannot retry automatically");
++  repeat.retainSuccessful("plan-2");
++  check(!repeat.isDuplicate(first) && !repeat.begin(first).empty(), "Replacement plan rejects old IDs");
++  repeat.invalidate();
++  check(!repeat.repeatable() && !repeat.begin({"plan-2", "attempt-4"}).empty(), "Scene/plan invalidation revokes repeat");
++  repeat.retainSuccessful("plan-limit");
++  for (int i = 0; i < 1024; ++i) { require(repeat.begin({"plan-limit", "attempt-" + std::to_string(i)}).empty(), "Admission below bound"); repeat.finish(true); }
++  check(!repeat.begin({"plan-limit", "attempt-overflow"}).empty(), "Attempt capacity fails closed without evicting tokens");
++  check(repeat.isDuplicate({"plan-limit", "attempt-0"}), "Oldest duplicate remains remembered at capacity");
++
++  PlanGate gate;
++  check(!gate.beginExecution(true), "Legacy Execute cannot use idle cached storage");
++  check(!gate.beginRepeatExecution(false), "Repeat requires retained successful solution");
++  check(gate.beginPlanning(), "Admit first plan");
++  gate.finishPlanning(true);
++  check(!gate.beginRepeatExecution(true), "Unexecuted plan cannot enter repeat from Planned");
++  check(gate.beginExecution(true), "First Execute stays one-shot");
++  gate.finishExecution(true);
++  check(!gate.beginExecution(true), "Original Execute remains consumed after success");
++  check(gate.beginRepeatExecution(true), "Explicit completed-plan repeat admits from Idle");
++  check(!gate.beginExecution(true) && !gate.beginRepeatExecution(true) && !gate.beginPlanning(), "Repeat serializes against all commands");
++  gate.finishExecution(false);
++  check(!gate.beginRepeatExecution(true), "Failure faults repeat admission");
++  std::cout << checks << " repeat protocol/admission checks passed; no ROS runtime or hardware calls\n";
++  return EXIT_SUCCESS;
++}

@@ -105,7 +105,7 @@ public class URInputManager : MonoBehaviour
 
     public void PlanCurrentTask()
     {
-        if (MTCPlansManager.ActiveExecution != null) return;
+        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
         MTCPlansManager.DismissCompletedExecutionFeedback();
         ApplyCaptureMode();
         if (IsTcpMode)
@@ -118,7 +118,7 @@ public class URInputManager : MonoBehaviour
 
     public void ExecuteCurrentTask()
     {
-        if (MTCPlansManager.ActiveExecution != null) return;
+        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
         ApplyCaptureMode();
         if (IsTcpMode)
         {

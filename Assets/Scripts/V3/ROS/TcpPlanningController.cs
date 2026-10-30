@@ -8,7 +8,7 @@ using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
 
 /// <summary>Exact TCP A/B planning. Plan never sends a motion or vacuum command.</summary>
-public sealed class TcpPlanningController : MonoBehaviour
+public class TcpPlanningController : MonoBehaviour
 {
     private const string PlanTopic = "/tcp_poses_plan_target";
     private const string ExecuteTopic = "/execute_tcp_plan";
@@ -28,10 +28,34 @@ public sealed class TcpPlanningController : MonoBehaviour
     private float _deadline;
     private int _generation;
     private static long _lastRequestTicks;
+    private readonly RobotPlanRepeatReview _repeat = new RobotPlanRepeatReview();
+    [SerializeField] private JointStateSubscriber _jointFeedback;
+    private bool _isExecuting;
+    private bool _awaitingExecutionAcknowledgement;
+    private float _executionDeadline;
+    private string _executionPlanId;
+    private string _reviewedPlanId;
+    private string _executionAttemptId = "";
+    private bool? _repeatStartReady;
+    public bool IsExecuting => _isExecuting;
+    public bool HasExecutionFeedback { get; private set; }
+    public bool HasRepeatablePlan => _repeat.HasRetainedPlan;
+    public bool CanRepeat => !RobotExecutionState.IsBusy && _repeat.HasRetainedPlan &&
+        _visualizer != null && _visualizer.IsShowingTrajectory(_pendingPreview) &&
+        TryValidate(out _) && TargetsMatchRequest() && RepeatStartMatches(out _);
+    public static TcpPlanningController ActiveExecution
+    {
+        get
+        {
+            foreach (TcpPlanningController planner in FindObjectsByType<TcpPlanningController>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                if (planner.IsExecuting) return planner;
+            return null;
+        }
+    }
     public string StatusText { get; private set; } = "Capture TCP A (hold bumper) and B (double bumper), then Plan.";
     public bool IsPlanning => _checkingCapability || (_review.IsPending && !_review.CanExecute);
-    public bool CanExecute => _review.CanExecute && _visualizer != null && _visualizer.IsShowingTrajectory(_pendingPreview) &&
-        TryValidate(out _) && TargetsMatchRequest();
+    public bool CanExecute => CanRepeat || (!RobotExecutionState.IsBusy && _review.CanExecute && _visualizer != null && _visualizer.IsShowingTrajectory(_pendingPreview) &&
+        TryValidate(out _) && TargetsMatchRequest());
     public event Action StateChanged;
 
     private void Start()
@@ -44,6 +68,7 @@ public sealed class TcpPlanningController : MonoBehaviour
         _connection = ROSService.Instance.GetROSConnection();
         _connection.RegisterPublisher<PoseArrayMsg>(PlanTopic);
         _connection.RegisterPublisher<StringMsg>(ExecuteTopic);
+        _connection.RegisterPublisher<StringMsg>("/repeat_reviewed_plan");
         _connection.RegisterRosService<GetParametersRequest, GetParametersResponse>(CapabilityService);
         _connection.Subscribe<StringMsg>("/mtc/tcp_planning_status", OnStatus);
         _connection.Subscribe<RobotTrajectoryMsg>("/mtc/tcp_planned_trajectory", OnTrajectory);
@@ -52,6 +77,24 @@ public sealed class TcpPlanningController : MonoBehaviour
 
     private void Update()
     {
+        if (_isExecuting)
+        {
+            if (_awaitingExecutionAcknowledgement && Time.realtimeSinceStartup > _executionDeadline)
+            {
+                _awaitingExecutionAcknowledgement = false;
+                SetStatus("TCP execution acknowledgement timed out. Outcome unknown; inspect ROS and the robot. No automatic retry.");
+            }
+            return;
+        }
+        if (_repeat.HasRetainedPlan)
+        {
+            if (!TryValidate(out string blocked) || !TargetsMatchRequest() || _visualizer == null || !_visualizer.IsShowingTrajectory(_pendingPreview))
+            { InvalidatePlan(blocked ?? "The reviewed TCP context changed. Plan again."); return; }
+            bool ready = RepeatStartMatches(out string repeatReason);
+            if (_repeatStartReady != ready)
+            { _repeatStartReady = ready; SetStatus(ready ? "TCP ready to execute again. Initial joints match; ROS will recheck the full scene." : repeatReason); }
+            return;
+        }
         if (!_checkingCapability && !_review.IsPending) return;
         if (!TryValidate(out string reason)) { InvalidatePlan(reason); return; }
         if (!TargetsMatchRequest()) { InvalidatePlan("Targets or calibration changed. Plan again."); return; }
@@ -65,7 +108,7 @@ public sealed class TcpPlanningController : MonoBehaviour
 
     public void Plan()
     {
-        if (MTCPlansManager.ActiveExecution != null)
+        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null)
         { SetStatus("An MTC execution request is unresolved. Wait for its ROS outcome before planning another task."); return; }
         MTCPlansManager.DismissCompletedExecutionFeedback();
         if (IsPlanning) { SetStatus("A TCP plan is already pending. Change a target to cancel it, or wait for the result."); return; }
@@ -101,28 +144,87 @@ public sealed class TcpPlanningController : MonoBehaviour
 
     public void Execute()
     {
+        if (RobotExecutionState.IsBusy) return;
         if (!TryValidate(out string reason)) { InvalidatePlan(reason); return; }
         if (!TargetsMatchRequest()) { InvalidatePlan("Targets or calibration changed. Plan again."); return; }
-        if (_review.CanExecute && (_visualizer == null || !_visualizer.IsShowingTrajectory(_pendingPreview)))
+        if ((_review.CanExecute || _repeat.HasRetainedPlan) && (_visualizer == null || !_visualizer.IsShowingTrajectory(_pendingPreview)))
         { InvalidatePlan("The reviewed trajectory is no longer displayed. Plan again."); return; }
-        if (!_review.TryConsume(out string requestId))
-        { SetStatus("Execute requires a successful TCP plan and its visible trajectory preview."); return; }
+        string topic = ExecuteTopic;
+        string payload;
+        _executionPlanId = _reviewedPlanId;
+        _executionAttemptId = "";
+        if (_repeat.HasRetainedPlan)
+        {
+            if (!RepeatStartMatches(out reason)) { SetStatus(reason); return; }
+            if (!_repeat.TryBeginAttempt(out _executionPlanId, out _executionAttemptId)) return;
+            topic = "/repeat_reviewed_plan";
+            payload = JsonUtility.ToJson(new RepeatRequest { plan_id = _executionPlanId, attempt_id = _executionAttemptId });
+        }
+        else
+        {
+            if (!_review.TryConsume(out string requestId))
+            { SetStatus("Execute requires a successful TCP plan and its visible trajectory preview."); return; }
+            _executionRequestId = requestId;
+            payload = requestId;
+        }
         // A token names the reviewed frozen ROS solution; it cannot execute another client's plan.
-        _executionRequestId = requestId;
-        _connection.Publish(ExecuteTopic, new StringMsg(requestId));
-        SetStatus("Execution requested for the reviewed TCP plan. Plan again before another execution.");
+        _isExecuting = true;
+        _awaitingExecutionAcknowledgement = true;
+        _executionDeadline = Time.realtimeSinceStartup + 10f;
+        HasExecutionFeedback = true;
+        RobotExecutionState.SetBusy(this, true);
+        SetStatus("TCP execution requested. Waiting for ROS acknowledgement...");
+        try
+        {
+            if (!TryPublishExecution(topic, payload, out reason)) FinishExecution("request failed", reason);
+        }
+        catch (Exception exception) { FinishExecution("request failed", exception.Message); }
+    }
+
+    protected virtual bool IsConnected => _connection != null && _connection.HasConnectionThread && !_connection.HasConnectionError;
+    protected virtual bool TryPublishExecution(string topic, string payload, out string reason)
+    {
+        reason = null;
+        if (!IsConnected) { reason = "ROS is disconnected. Plan again after reconnecting."; return false; }
+        _connection.Publish(topic, new StringMsg(payload));
+        return true;
+    }
+
+    private bool RepeatStartMatches(out string reason)
+    {
+        reason = null;
+        if (_jointFeedback == null) _jointFeedback = FindFirstObjectByType<JointStateSubscriber>();
+        if (_jointFeedback == null) { reason = "Waiting for fresh ROS joint feedback before repeating."; return false; }
+        RosRobotModel model = ToolSelectionController.Instance != null ? ToolSelectionController.Instance.CurrentModel : null;
+        if (!_jointFeedback.TryGetFreshJointPositions(model, 1f, out var positions, out reason)) return false;
+        return _repeat.TryMatchStart(positions, 0.01d, out reason);
+    }
+
+    private void FinishExecution(string status, string reason, bool repeatable = false, string planId = null, string attemptId = null)
+    {
+        _isExecuting = false;
+        _awaitingExecutionAcknowledgement = false;
+        RobotExecutionState.SetBusy(this, false);
+        _repeat.Complete(status == "succeeded", repeatable && !string.IsNullOrEmpty(_executionPlanId) && _executionPlanId == planId, planId, attemptId);
+        if (_pendingPreview == null || !RobotCoordinateService.Instance.IsInitialized || !TargetsMatchRequest()) _repeat.Invalidate();
+        _repeatStartReady = null;
+        SetStatus("TCP execution " + status + ": " + reason +
+            (_repeat.HasRetainedPlan ? " Return to the initial joints to execute again; ROS will recheck the scene." : " Plan again before another execution."));
     }
 
     public void InvalidatePlan(string reason = "Robot model or calibration changed. Plan again.")
     {
+        _repeat.Invalidate();
+        _repeatStartReady = null;
+        _reviewedPlanId = null;
         _generation++;
         _checkingCapability = false;
         _review.Invalidate();
         _pendingPreview = null;
-        _executionRequestId = null;
+        if (!_isExecuting) { _executionRequestId = null; HasExecutionFeedback = false; }
         _requestedA = _requestedB = null;
         if (_visualizer != null) _visualizer.SetTrajectory(null);
-        if (reason != null) SetStatus(reason);
+        if (reason != null && !_isExecuting) SetStatus(reason);
     }
 
     private void OnTargetsChanged() => InvalidatePlan("TCP target changed. Plan again to preview its new pose.");
@@ -136,6 +238,7 @@ public sealed class TcpPlanningController : MonoBehaviour
         if (status != null && _review.IsPending && status.phase == "planning" && status.request_id == _review.RequestId)
         { SetStatus("Planning exact TCP A → B. No motion requested."); return; }
         if (status == null || !_review.AcceptResult(status.request_id, status.overall_success)) return;
+        if (status.overall_success && !string.IsNullOrEmpty(status.plan_id)) _reviewedPlanId = status.plan_id;
         if (!status.overall_success)
         { InvalidatePlan("TCP planning failed or invalidated. " + status.message); return; }
         ShowPreviewIfComplete();
@@ -155,8 +258,17 @@ public sealed class TcpPlanningController : MonoBehaviour
         ExecutionStatus status;
         try { status = JsonUtility.FromJson<ExecutionStatus>(message.data); }
         catch (Exception) { return; }
-        if (status == null || _executionRequestId == null || status.request_id != _executionRequestId) return;
-        SetStatus("TCP execution " + status.status + ": " + status.reason);
+        if (status == null || !_isExecuting || _executionRequestId == null ||
+            (_executionAttemptId ?? "") != (status.attempt_id ?? "") ||
+            (!string.IsNullOrEmpty(_executionPlanId) && _executionPlanId != status.plan_id)) return;
+        // A replaced/expired repeat token can be rejected without a retained TCP
+        // request id. Its exact plan+attempt pair still correlates that rejection.
+        bool repeatAttempt = !string.IsNullOrEmpty(_executionAttemptId);
+        if ((!repeatAttempt || !string.IsNullOrEmpty(status.request_id)) && status.request_id != _executionRequestId) return;
+        if (status.status == "executing")
+        { _awaitingExecutionAcknowledgement = false; SetStatus("TCP executing: " + status.reason); }
+        else if (status.status == "succeeded" || status.status == "failed" || status.status == "rejected" || status.status == "invalidated")
+            FinishExecution(status.status, status.reason, status.repeatable, status.plan_id, status.attempt_id);
     }
 
     private void ShowPreviewIfComplete()
@@ -174,6 +286,7 @@ public sealed class TcpPlanningController : MonoBehaviour
         _visualizer.SetTrajectory(_pendingPreview);
         if (!_visualizer.HasVisiblePreview)
         { InvalidatePlan("The returned trajectory could not be displayed. Execution is blocked; check Unity logs."); return; }
+        _repeat.CaptureStart(_pendingPreview.joint_trajectory.joint_names, _pendingPreview.joint_trajectory.points[0].positions);
         SetStatus("TCP plan ready. Inspect the ghost path and A/B orientations, then Execute when ready.");
     }
 
@@ -182,9 +295,10 @@ public sealed class TcpPlanningController : MonoBehaviour
         reason = null;
         if (MTCPlansManager.ActiveExecution != null)
             reason = "An MTC execution request is unresolved. Wait for its ROS outcome before planning or executing another task.";
+        else if (RobotExecutionState.IsBusy) reason = "A robot execution request is unresolved. Wait for its ROS outcome.";
         else if (RobotCoordinateService.IsCalibrationEditActive)
             reason = "Finish or cancel robot alignment before planning or executing.";
-        else if (_connection == null || !_connection.HasConnectionThread || _connection.HasConnectionError)
+        else if (!IsConnected)
             reason = "ROS is disconnected. Start the ROS stack and reconnect.";
         else if (TargetPoseContextMenu.IsOpen) reason = "Close the target menu before planning or executing.";
         else if (TargetRotationHandles.IsInteracting) reason = "Release the tool rotation handle first.";
@@ -235,13 +349,15 @@ public sealed class TcpPlanningController : MonoBehaviour
 
     private static string RequestId(TimeMsg stamp) => stamp.sec + ":" + stamp.nanosec;
     [Serializable] private sealed class TcpStatus
-    { public string request_id; public bool overall_success; public string message; public string phase; }
+    { public string request_id; public bool overall_success; public string message; public string phase; public string plan_id; }
     [Serializable] private sealed class ExecutionStatus
-    { public string request_id; public string status; public string reason; }
+    { public string request_id; public string status; public string reason; public string plan_id; public string attempt_id; public bool repeatable; }
+    [Serializable] private sealed class RepeatRequest { public string plan_id; public string attempt_id; }
 
     private void OnDisable() { InvalidatePlan("TCP planning paused. Plan again after enabling it."); }
     private void OnDestroy()
     {
+        RobotExecutionState.SetBusy(this, false);
         _generation++;
         if (_targets != null) _targets.TargetsChanged -= OnTargetsChanged;
         if (_coordinates != null) _coordinates.CalibrationChanged -= OnCalibrationChanged;

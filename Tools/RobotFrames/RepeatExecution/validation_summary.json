@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-10-29T13:52:33.847141+00:00",
+  "sourceAppliedLocally": true,
+  "sourceRepository": "C:\\Users\\aca\\source\\UR16UnityControl",
+  "packageCompilation": "passed, including test_task",
+  "portableProtocolChecksPassed": 37,
+  "legacyPlanGateCasesPassed": 10,
+  "ctest": {
+    "total": 11,
+    "failed": 1,
+    "passed": 10,
+    "knownUnchangedFailure": "SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder at test_scene_effects.cpp:166"
+  },
+  "startSceneValidationCasesPassed": 14,
+  "executableSha256": "dbbb939cb0ed5525ca78bbd55603d4fdbed6c93fe6f8dd1e0a8fe36febcf2887",
+  "previousPrecisionFixPreservedSha256": "838ab6d4573d60ec3a704a2b000a8ad2988fb7c0bc8ee30cf8708d935fd7fadf",
+  "validatedSourceChanges": [
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/src/test_task.cpp",
+      "beforeSha256": "2f59de67d9a62120ec8daa212ac69e74d0c892f9be097ebebc8a860f3f6c1c7b",
+      "afterSha256": "345511f1158fc5942aebb4b3adeb3cc61423b5b29f6fdbfe67967d0d9275fa74"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_gate.hpp",
+      "beforeSha256": "dedfe783471a04af25c37cdc279de6b3221fc1dba0b820e4b269405b611b9cdd",
+      "afterSha256": "234667e426f1da91bebd248a2f7f557e297135fc392857b81c3111ec06a82a7c"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/CMakeLists.txt",
+      "beforeSha256": "07ebaae1a286c3bfd156d44776bcbd2881660068b7c52a1dfc89a4dc7bb7af34",
+      "afterSha256": "5658a6236a4eea0794200d3835c19b718ec356ac62cdbdfd7dd6c5ac8fd8571d"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/repeat_execution.hpp",
+      "beforeSha256": null,
+      "afterSha256": "b61ccd01ab0139d578aa580f4871ea496f0a92a0279f5882c0e4b9b040a878d9"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_repeat_execution.cpp",
+      "beforeSha256": null,
+      "afterSha256": "c5a0a8ac41cbad942812c9cb4708dd0a74738777ab401e529d54a4a4367b8f65"
+    }
+  ],
+  "resultFile": {
+    "path": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\RepeatExecutionValidation\\results\\result.json",
+    "sha256": "ea0b6cb2b71ed53278a193f77430f648808abd91db602e868d14b6ae1ff55042"
+  },
+  "ctestLog": {
+    "path": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\RepeatExecutionValidation\\results\\ctest.log",
+    "sha256": "49ffc4f7218fc3018381d897823d2e5e68a71845d31a8259fadfc5917792d71d"
+  },
+  "containerNetwork": "none",
+  "deployment": false,
+  "applicationStarted": false,
+  "hardwareExercised": false,
+  "limits": [
+    "No actual ROS-TCP repeat request or physical robot/IO execution was tested.",
+    "Returning joints alone does not restore MTC object/world state; unchanged full original scene is still required.",
+    "Failed admitted repeats consume eligibility and require new planning; unknown outcomes must never be retried automatically."
+  ]
+}

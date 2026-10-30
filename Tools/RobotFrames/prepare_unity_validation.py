@@ -87,7 +87,7 @@ def main():
             if not stale.resolve().is_relative_to(DESTINATION.resolve()):
                 raise ValueError("Refusing to remove a file outside the isolated project")
             stale.unlink()
-    for runtime in ("Assets/Scripts/V3/ROS/RosRobotRig.cs", "Assets/Scripts/V3/ROS/RobotDescriptionMessages.cs",
+    for runtime in ("Assets/Scripts/V3/ROS/RosRobotRig.cs", "Assets/Scripts/V3/ROS/RobotExecutionState.cs", "Assets/Scripts/V3/ROS/RobotDescriptionMessages.cs",
                     "Assets/Scripts/V3/ROS/ToolSelectionController.cs", "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
                     "Assets/Scripts/V3/ROS/TcpPlanningController.cs", "Assets/Scripts/V3/TcpTargetPreview.cs",
                     "Assets/Scripts/V3/URInputManager.cs", "Assets/Scripts/V3/TargetRotationHandles.cs",
@@ -187,10 +187,33 @@ public sealed class URInstantiator : MonoBehaviour {
 // Exercises the actual public Execute path without constructing ROS transport.
 public sealed class OfflineMtcExecutionController : PickPlaceController {
     public int PublishCount;
+    public int RepeatPublishCount;
+    public string LastRepeatPayload;
     public bool PublishSucceeds = true;
     protected override bool TryPublishExecutionRequest(out string reason) {
         PublishCount++;
         reason = PublishSucceeds ? null : "Offline transport refused request";
+        return PublishSucceeds;
+    }
+    protected override bool TryPublishRepeatExecutionRequest(string payload, out string reason) {
+        PublishCount++;
+        RepeatPublishCount++;
+        LastRepeatPayload = payload;
+        reason = PublishSucceeds ? null : "Offline repeat transport refused request";
+        return PublishSucceeds;
+    }
+}
+public sealed class OfflineTcpExecutionController : TcpPlanningController {
+    public int PublishCount;
+    public string LastTopic;
+    public string LastPayload;
+    public bool PublishSucceeds = true;
+    protected override bool IsConnected => true;
+    protected override bool TryPublishExecution(string topic, string payload, out string reason) {
+        PublishCount++;
+        LastTopic = topic;
+        LastPayload = payload;
+        reason = PublishSucceeds ? null : "Offline TCP transport refused request";
         return PublishSucceeds;
     }
 }

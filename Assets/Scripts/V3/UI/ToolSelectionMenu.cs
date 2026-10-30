@@ -627,6 +627,8 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     {
         bool tcp = _input == null || _input.IsTcpMode;
         MTCPlansManager execution = MTCPlansManager.ActiveExecution;
+        TcpPlanningController tcpExecution = TcpPlanningController.ActiveExecution;
+        bool executionBusy = RobotExecutionState.IsBusy;
         _lastTcpMode = tcp;
         _lastQrValidated = _qrDetector != null && _qrDetector.HasValidatedPose;
         _lastTargetRotation = TargetRotationHandles.IsInteracting;
@@ -637,17 +639,23 @@ public sealed class ToolSelectionMenu : MonoBehaviour
             ? "Hold bumper: TCP A. Double press: TCP B.\nPlace the tool preview; drag it to set exact orientation."
             : "Hold/double bumper: pick/place contact balls.\nArrow = normal. Drag ball to turn; bumper: depth ±5 mm.";
         if (_taskStatus != null)
-            _taskStatus.text = execution != null ? execution.StatusText : _localNotice ?? (tcp
+            _taskStatus.text = execution != null ? execution.StatusText : tcpExecution != null ? tcpExecution.StatusText : _localNotice ?? (tcp
                 ? (_tcpPlanning != null ? _tcpPlanning.StatusText : "Capture TCP A and B to prepare a preview.")
                 : (_legacyPlans != null ? _legacyPlans.StatusText : "Capture pick and place tool contacts, then Plan preview."));
-        if (_planButton != null) _planButton.interactable = !IsPlacementBusy && execution == null;
-        if (_executeButton != null) _executeButton.interactable = !IsPlacementBusy && execution == null && (tcp
+        if (_planButton != null) _planButton.interactable = !IsPlacementBusy && !executionBusy && execution == null;
+        if (_executeButton != null) _executeButton.interactable = !IsPlacementBusy && !executionBusy && execution == null && (tcp
             ? _tcpPlanning != null && _tcpPlanning.CanExecute
             : _legacyPlans != null && _legacyPlans.CanExecute && ToolSelectionController.CanPlanPickPlace);
+        if (_executeButton != null)
+        {
+            TextMeshProUGUI label = _executeButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (label != null) label.text = (tcp ? _tcpPlanning != null && _tcpPlanning.HasRepeatablePlan :
+                _legacyPlans != null && _legacyPlans.HasRepeatablePlan) ? "Execute again" : "Execute plan";
+        }
         if (_rescanButton != null) _rescanButton.interactable = _qrDetector != null && !IsPlacementBusy;
-        if (_pointPlacementButton != null) _pointPlacementButton.interactable = _pointRegistration != null && !IsCalibrating && execution == null;
+        if (_pointPlacementButton != null) _pointPlacementButton.interactable = _pointRegistration != null && !IsCalibrating && !executionBusy && execution == null;
         // Keep the entry usable so the core can explain which placement is missing.
-        if (_alignButton != null) _alignButton.interactable = !IsPlacementBusy && execution == null;
+        if (_alignButton != null) _alignButton.interactable = !IsPlacementBusy && !executionBusy && execution == null;
         if (_qrStatus != null)
         {
             string qr = _qrDetector != null ? _qrDetector.StatusText : "QR scanner unavailable.";

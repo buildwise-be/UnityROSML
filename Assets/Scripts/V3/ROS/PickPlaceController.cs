@@ -46,6 +46,7 @@ public class PickPlaceController : MonoBehaviour
         _pickPlaceTopicName = ContactPlanTopic;
         _connection.RegisterPublisher<PickPlacePosesMsg>(_pickPlaceTopicName);
         _connection.RegisterPublisher<BoolMsg>("execute_task");
+        _connection.RegisterPublisher<StringMsg>("/repeat_reviewed_plan");
         _connection.RegisterRosService<GetParametersRequest, GetParametersResponse>(CapabilityService);
         if (_pickPointPrefab != null || _placePointPrefab != null)
             Debug.Log("PickPlaceController: Using contact balls and normal arrows instead of legacy plane markers.", this);
@@ -182,7 +183,7 @@ public class PickPlaceController : MonoBehaviour
 
     public void SendPickAndPlacePlanningRequest()
     {
-        if (MTCPlansManager.ActiveExecution != null) return;
+        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
         if (!ValidatePlanningRequest() || IsPlanning) return;
         InvalidatePlanningRequest();
         if (!TryGetContactPoses(out PickPlacePosesMsg message))
@@ -272,7 +273,7 @@ public class PickPlaceController : MonoBehaviour
 
     public void SendFakePickAndPlacePlanningRequest()
     {
-        if (MTCPlansManager.ActiveExecution != null) return;
+        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
         if (!_tilePlanningEnabled || TargetRotationHandles.IsInteracting || !ToolSelectionController.CanPlanPickPlace ||
             !RobotCoordinateService.Instance.IsInitialized)
         { RejectPlanningRequest("Fake MTC planning requires pick/place mode, a matching suction tool and valid robot alignment."); return; }
@@ -291,18 +292,22 @@ public class PickPlaceController : MonoBehaviour
     {
         // Repeated clicks must not clear the acknowledgement/outcome window or
         // publish another command while the first request is unresolved.
-        if (MTCPlansManager.ActiveExecution != null) return;
+        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
         if (TargetPoseContextMenu.IsOpen)
         { RejectPlanningRequest("Close the target menu before executing MTC pick/place."); return; }
         if (_checkingCapability || TargetRotationHandles.IsInteracting || !ToolSelectionController.CanPlanPickPlace ||
-            !_tilePlanningEnabled || !RobotCoordinateService.Instance.IsInitialized || !_hasPlanningRequestBeenSent ||
+            !_tilePlanningEnabled || !RobotCoordinateService.Instance.IsInitialized ||
+            (!_hasPlanningRequestBeenSent && !(PlansManager != null && PlansManager.CanRepeat)) ||
             !TargetsMatchRequest() || PlansManager == null || !PlansManager.CanExecute)
         { RejectPlanningRequest("MTC Execute requires a new successful pick/place plan and its visible trajectory preview."); return; }
         try
         {
             if (!PlansManager.ConsumePlanForExecution()) return;
             _hasPlanningRequestBeenSent = false;
-            if (!TryPublishExecutionRequest(out string reason)) PlansManager.RejectExecutionRequest(reason);
+            string repeat = PlansManager.RepeatExecutionPayload;
+            string reason;
+            bool published = repeat == null ? TryPublishExecutionRequest(out reason) : TryPublishRepeatExecutionRequest(repeat, out reason);
+            if (!published) PlansManager.RejectExecutionRequest(reason);
         }
         catch (Exception exception)
         {
@@ -323,6 +328,15 @@ public class PickPlaceController : MonoBehaviour
         }
         _connection.Publish("execute_task", new BoolMsg(true));
         Debug.Log("MTC execution command sent on execute_task; waiting for /mtc/execution_status.", this);
+        reason = null;
+        return true;
+    }
+    protected virtual bool TryPublishRepeatExecutionRequest(string payload, out string reason)
+    {
+        if (_connection == null) _connection = ROSService.Instance.GetROSConnection();
+        if (_connection == null || !_connection.HasConnectionThread || _connection.HasConnectionError)
+        { reason = "ROS is disconnected. Plan again after reconnecting."; return false; }
+        _connection.Publish("/repeat_reviewed_plan", new StringMsg(payload));
         reason = null;
         return true;
     }

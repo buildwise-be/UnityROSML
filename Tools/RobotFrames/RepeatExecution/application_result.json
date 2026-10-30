@@ -1,0 +1,12 @@
+{
+  "sourceApplied": true,
+  "files": [
+    "ros_ws/src/ur16e_mtc_gpio_stage/src/test_task.cpp",
+    "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_gate.hpp",
+    "ros_ws/src/ur16e_mtc_gpio_stage/CMakeLists.txt",
+    "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/repeat_execution.hpp",
+    "ros_ws/src/ur16e_mtc_gpio_stage/test/test_repeat_execution.cpp"
+  ],
+  "deployment": false,
+  "hardware": false
+}

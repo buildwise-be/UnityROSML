@@ -104,3 +104,6 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Captured external assistant context; implementation and validation evidence are versioned separately.
+/Tools/RobotFrames/ExecutePrecisionValidation_20261028/remote-context.json

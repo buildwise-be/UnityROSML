@@ -307,6 +307,7 @@ public class URInstantiator : MonoBehaviour
 
     public void BeginCalibration()
     {
+        if (RobotExecutionState.IsBusy) return;
         RobotPointRegistration points = GetComponent<RobotPointRegistration>();
         if (points != null && points.IsCollecting) return;
         if (IsCalibrating) return;
