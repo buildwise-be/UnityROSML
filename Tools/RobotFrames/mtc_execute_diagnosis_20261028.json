@@ -1,0 +1,28 @@
+{
+  "date_utc": "2026-10-28T13:29:55.7482128Z",
+  "scope": "Read-only fresh Nordbo audit; no remote source changes, planning, execution, restart, build, deployment or IO",
+  "snapshot": "mtc_execute_scene_live_20261028.json",
+  "snapshot_sha256": "a22315d845861708cf915c98a41ed1bc1cb54fdd74931292d37c20f28525593f",
+  "provenance": "mtc_execute_provenance_20261028.json",
+  "planning_success": true,
+  "execution_status": {
+    "status": "rejected",
+    "reason": "world collision geometry or octomap changed"
+  },
+  "world_differences": [
+    {
+      "absolute_difference": 6.938893903907228E-18,
+      "current": -0.04806732815334035,
+      "path": "world.collision_objects[1].pose.orientation.w",
+      "planned": -0.048067328153340354
+    }
+  ],
+  "world_only_quaternion_roundoff": true,
+  "deployed_validator_precision_fix_absent": true,
+  "deployed_header_sha256": "f301530268a84578af0494d8a5f6ece06499770cbc690a670e0eacb78f0c72c8",
+  "running_executable_sha256": "292b9f8d6301825b549b44f2366e8ea4cf62695650ed417936990f89a94c61d9",
+  "actual_execute_reached_backend": true,
+  "plan_points_from_task_log": 96,
+  "plan_ready_unix": 1793193287.49471,
+  "rejected_unix": 1793193315.2428074
+}

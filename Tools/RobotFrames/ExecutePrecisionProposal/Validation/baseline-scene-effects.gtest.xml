@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="1" disabled="0" errors="0" time="0.009" timestamp="2026-10-23T15:09:41.592" name="AllTests">
+  <testsuite name="SceneEffectsTest" tests="1" failures="1" disabled="0" skipped="0" errors="0" time="0.009" timestamp="2026-10-23T15:09:41.592">
+    <testcase name="SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder" file="/tmp/baseline-source/test/test_scene_effects.cpp" line="96" status="run" result="completed" time="0.009" timestamp="2026-10-23T15:09:41.592" classname="SceneEffectsTest">
+      <failure message="/tmp/baseline-source/test/test_scene_effects.cpp:166&#x0A;Value of: live_-&gt;getAllowedCollisionMatrix().getEntry(&quot;tile&quot;, &quot;hand&quot;, permission)&#x0A;  Actual: false&#x0A;Expected: true&#x0A;" type=""><![CDATA[/tmp/baseline-source/test/test_scene_effects.cpp:166
+Value of: live_->getAllowedCollisionMatrix().getEntry("tile", "hand", permission)
+  Actual: false
+Expected: true
+]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

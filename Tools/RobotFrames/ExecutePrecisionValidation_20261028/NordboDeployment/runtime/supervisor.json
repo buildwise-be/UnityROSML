@@ -1,0 +1,7 @@
+{
+  "supervisor_pid": 1387,
+  "child_pid": 1399,
+  "original_launch_pid": 416,
+  "original_launch_start_ticks": "250827752",
+  "policy": "Send SIGINT only to owned MTC child when original launch exits; never respawn"
+}

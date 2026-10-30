@@ -1,0 +1,271 @@
+{
+  "date": "2026-10-23T15:11:48.5128654Z",
+  "approval": "Apply and build/test",
+  "repository": "C:/Users/aca/source/UR16UnityControl",
+  "branch": "codex/architecture-review",
+  "head_before_apply": "040e1eb1df863938324d791a5e1927dea6efc1aa",
+  "image": "urmir-jazzy:latest",
+  "image_id": "sha256:752aa09527488fce5baaa35ebbff1aad52c6e82e72a302db4f14ded79f2f615b",
+  "compiler": "GCC 13.3.0",
+  "ros": "Jazzy",
+  "mtc": "0.1.4",
+  "full_package_and_application_build": "passed",
+  "plan_validation_cases_passed": 14,
+  "plan_validation_new_cases": 5,
+  "ctest_targets_passed": 9,
+  "ctest_targets_total": 10,
+  "gtest_results": [
+    {
+      "file": "test_pick_place_targets.gtest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "file": "test_plan_validation.gtest.xml",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "file": "test_scene_effects.gtest.xml",
+      "tests": 4,
+      "failures": 1,
+      "errors": 0
+    },
+    {
+      "file": "test_startup_parameter.gtest.xml",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "file": "test_startup_robot_model.gtest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "file": "test_tcp_waypoints.gtest.xml",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "file": "test_tool_model_validation.gtest.xml",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0
+    }
+  ],
+  "run_exit_codes": {
+    "configure_exit": 0,
+    "build_exit": 0,
+    "ctest_exit": 8,
+    "baseline_configure_exit": 0,
+    "baseline_build_exit": 0,
+    "baseline_recorded_exit": 1,
+    "baseline_scene_effects_exit": 1,
+    "hardware": false,
+    "deployment": false,
+    "container_network": "none",
+    "application_started": false
+  },
+  "source_files": [
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp",
+      "source_sha256": "f301530268a84578af0494d8a5f6ece06499770cbc690a670e0eacb78f0c72c8",
+      "initial_reviewed_proposal_sha256": "60cf660bf21f02584f87b2e92b6cbeabab0a1b532c4c9570d5aa8cbb6a554515",
+      "proposal_sha256": "60cf660bf21f02584f87b2e92b6cbeabab0a1b532c4c9570d5aa8cbb6a554515",
+      "applied_sha256": "838ab6d4573d60ec3a704a2b000a8ad2988fb7c0bc8ee30cf8708d935fd7fadf",
+      "tested_sha256": "838ab6d4573d60ec3a704a2b000a8ad2988fb7c0bc8ee30cf8708d935fd7fadf",
+      "normalized_applied_equals_proposal": true
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp",
+      "source_sha256": "dec6f19637341a6e2595df4c0a6bae7eec1814e6d29fe3c58cb65b5ac1b897a2",
+      "initial_reviewed_proposal_sha256": "0c4524231c7d742370abe842fd4e35b9c6de91bad9d9430fef8aab9e6f899030",
+      "proposal_sha256": "bc1a08eac8daf50e81c91eb425a20c2ab0359d878a45bfd88bbc646a90252e81",
+      "applied_sha256": "541a4effde99112d26f8ebe37833dc01a70c0d5b5197fe36fcb00ba0218749b5",
+      "tested_sha256": "541a4effde99112d26f8ebe37833dc01a70c0d5b5197fe36fcb00ba0218749b5",
+      "normalized_applied_equals_proposal": true
+    }
+  ],
+  "all_tested_package_files": [
+    {
+      "path": "CMakeLists.txt",
+      "applied_and_tested_sha256": "07ebaae1a286c3bfd156d44776bcbd2881660068b7c52a1dfc89a4dc7bb7af34"
+    },
+    {
+      "path": "package.xml",
+      "applied_and_tested_sha256": "f5e7e3e10ff549342ebf3e144475218f19bc723602e7537ece5b7a102bbca5c1"
+    },
+    {
+      "path": "include/ur16e_mtc_gpio_stage/custom_executor.hpp",
+      "applied_and_tested_sha256": "6bdee9b7d8a4a83da919d88e93ed0e67d6018c8a312799e5fe51fdfbcf027982"
+    },
+    {
+      "path": "include/ur16e_mtc_gpio_stage/execution_sequence.hpp",
+      "applied_and_tested_sha256": "a87bc8ffa92c1c93adf8bb7dca618831a06e7349c1b19ef092719aed44e1457a"
+    },
+    {
+      "path": "include/ur16e_mtc_gpio_stage/pick_place_targets.hpp",
+      "applied_and_tested_sha256": "af1d52afc8d68fa796aa731d9d0d820cc2c56594e99c80654a71cb02fffc35b8"
+    },
+    {
+      "path": "include/ur16e_mtc_gpio_stage/plan_gate.hpp",
+      "applied_and_tested_sha256": "dedfe783471a04af25c37cdc279de6b3221fc1dba0b820e4b269405b611b9cdd"
+    },
+    {
+      "path": "include/ur16e_mtc_gpio_stage/plan_validation.hpp",
+      "applied_and_tested_sha256": "838ab6d4573d60ec3a704a2b000a8ad2988fb7c0bc8ee30cf8708d935fd7fadf"
+    },
+    {
+      "path": "include/ur16e_mtc_gpio_stage/scene_effects.hpp",
+      "applied_and_tested_sha256": "32cdfbf1f338a7f9808d0ffc1676a07e9b255ea30126956afa3e1bf6793dac05"
+    },
+    {
+      "path": "include/ur16e_mtc_gpio_stage/set_io_stage.hpp",
+      "applied_and_tested_sha256": "3b9de7566df0f47bb00256d201b07a55dc041203ce1f2b71364e0aa0e9336494"
+    },
+    {
+      "path": "include/ur16e_mtc_gpio_stage/startup_parameter.hpp",
+      "applied_and_tested_sha256": "4d88228dbfdf4c3ffcde94d4b05da842d309f2258db71e25cd7821105e4b5664"
+    },
+    {
+      "path": "include/ur16e_mtc_gpio_stage/startup_robot_model.hpp",
+      "applied_and_tested_sha256": "b6c7fb5b5fcd32c45a21775c0c34db3aeed6885651485574f5e18beec8be769c"
+    },
+    {
+      "path": "include/ur16e_mtc_gpio_stage/tcp_waypoints.hpp",
+      "applied_and_tested_sha256": "a25b9764ea6ddd6879d815338bc05d203521c1d5368a306f79f5e8df1b8f4c4e"
+    },
+    {
+      "path": "include/ur16e_mtc_gpio_stage/tool_definition.hpp",
+      "applied_and_tested_sha256": "592a3e92905e87b8adfa9920947747f2270f578689dabecf5d10ee50e6e397d4"
+    },
+    {
+      "path": "include/ur16e_mtc_gpio_stage/tool_model_validation.hpp",
+      "applied_and_tested_sha256": "0d525ebb4ffd9418841d44f01b24d7420a0766e08169af73c97441a5b9db7dff"
+    },
+    {
+      "path": "launch/mtc_commander.launch.py",
+      "applied_and_tested_sha256": "77fe009bb826f1213c7f694644e41eb7f7bb51a5c87487f1540b4382008073d7"
+    },
+    {
+      "path": "scripts/execute_task.sh",
+      "applied_and_tested_sha256": "e59ff9df6f202a2c72c2b97588fc2006450994980c0d9471b40a372fbcd24b50"
+    },
+    {
+      "path": "scripts/publish_pick_place_poses.sh",
+      "applied_and_tested_sha256": "dfbfd76df338697f43cef09acc4e0073e55d33adcfddff1ab5f2f2615a197e6d"
+    },
+    {
+      "path": "src/test_task.cpp",
+      "applied_and_tested_sha256": "2f59de67d9a62120ec8daa212ac69e74d0c892f9be097ebebc8a860f3f6c1c7b"
+    },
+    {
+      "path": "test/planning_regression_replay.py",
+      "applied_and_tested_sha256": "09143ea7e70a2fd79b62300bee47b31964877b424db899da4532fe241c949b04"
+    },
+    {
+      "path": "test/test_execution_sequence.cpp",
+      "applied_and_tested_sha256": "291e4092eb91036907e94e261b0f279a5b4abdd5f5ac66411fc2900fd52302d4"
+    },
+    {
+      "path": "test/test_pick_place_targets.cpp",
+      "applied_and_tested_sha256": "17644b69fd2336051f3055bb83e5cc911c1b9530eae64a6b1056fc9ca7d22dbc"
+    },
+    {
+      "path": "test/test_plan_gate.cpp",
+      "applied_and_tested_sha256": "2cae790efda749275824d843706bfe4a90ed2d2c351150222b24f63c34c320ba"
+    },
+    {
+      "path": "test/test_plan_validation.cpp",
+      "applied_and_tested_sha256": "541a4effde99112d26f8ebe37833dc01a70c0d5b5197fe36fcb00ba0218749b5"
+    },
+    {
+      "path": "test/test_scene_effects.cpp",
+      "applied_and_tested_sha256": "f79e3f3bd1837d044ac9ee76b667b2d958905cb2f7b6524cc949b7f481aeecb6"
+    },
+    {
+      "path": "test/test_startup_parameter.cpp",
+      "applied_and_tested_sha256": "76dbe49766b847f41eb779714c9346f24ad595ca4080782890a83d57b28a79f6"
+    },
+    {
+      "path": "test/test_startup_robot_model.cpp",
+      "applied_and_tested_sha256": "0ad42218624fec55b574a1b2779cef8b5ab399371c3726924518ee97db2252e9"
+    },
+    {
+      "path": "test/test_tcp_waypoints.cpp",
+      "applied_and_tested_sha256": "75e502b18b5861f0a9a6060ade3749dceb183c2b8a5ae4cb6857afd1998fce22"
+    },
+    {
+      "path": "test/test_tool_definition.cpp",
+      "applied_and_tested_sha256": "d5daee1f8cdfdc51a06feb79ade1b2d6d4fdb14d492445769d9ba7789ced8f90"
+    },
+    {
+      "path": "test/test_tool_model_validation.cpp",
+      "applied_and_tested_sha256": "c57651e09dc22e6581b7904abc0e771eb4b69bb321b03de8c0538d00d31be2c1"
+    }
+  ],
+  "baseline_header_sha256": "f301530268a84578af0494d8a5f6ece06499770cbc690a670e0eacb78f0c72c8",
+  "baseline_regression_test_sha256": "541a4effde99112d26f8ebe37833dc01a70c0d5b5197fe36fcb00ba0218749b5",
+  "baseline_scene_effect_test_sha256": "f79e3f3bd1837d044ac9ee76b667b2d958905cb2f7b6524cc949b7f481aeecb6",
+  "baseline_description": "Untouched HEAD header compiled with final new regression tests; scene-effect source/test unchanged in both builds",
+  "recorded_quaternion_regression": "fails on untouched HEAD header; passes with applied fix",
+  "unchanged_baseline_failure": {
+    "test": "SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder",
+    "line": "test_scene_effects.cpp:166",
+    "expression": "live_->getAllowedCollisionMatrix().getEntry(\"tile\", \"hand\", permission)",
+    "actual": false,
+    "expected": true,
+    "reproduced_on_baseline": true,
+    "baseline_log": "baseline-scene-effects.log"
+  },
+  "fixture_correction": "Initial zero-quaternion fixture used Quaternion() which initializes w=1 in ROS; corrected to set w=0 explicitly. Initial logs retained in initial-fixture-run.",
+  "application_sha256": "0504e19e0cbcc6b58fda33e1edb7c96ee07a1e7d8ee1ffc07e5d12ebca05703c",
+  "container_network": "none",
+  "container_rootfs": "read-only",
+  "source_mounts": "read-only",
+  "temporary_container_removed": true,
+  "application_started": false,
+  "planning_published": false,
+  "execute_published": false,
+  "robot_or_io_operation": false,
+  "deployed": false,
+  "committed": false,
+  "pushed": false,
+  "line_endings": "Git applied CRLF in checkout; normalized contents match mirrored proposal. Exact applied byte hashes match read-only staged build input.",
+  "git_whitespace": "passed",
+  "final_patch_matches_applied_source": "git apply --reverse --check passed",
+  "captured_full_scene_replay": {
+    "result": {
+      "patched_validation_exit": 0,
+      "baseline_validation_exit": 1,
+      "snapshot": "mtc_execute_scene_live_20261023.json",
+      "ros_nodes_started": false,
+      "network": "none"
+    },
+    "patched_reason": "PASS",
+    "baseline_reason": "world collision geometry or octomap changed",
+    "serialization": "Actual installed moveit_msgs PlanningScene and rclpy.serialization; no rclpy.init or nodes",
+    "planned_cdr_bytes": 3865,
+    "current_cdr_bytes": 3865,
+    "planned_cdr_sha256": "4f7e0eb9e489ddbb9c5402c990f3e269d4b0847f02660ac0b2daad1d9a3a058f",
+    "current_cdr_sha256": "9b1f0aaddb0c1617bac0abcd65ab607c91d74d181b8048824501607e643468e7",
+    "snapshot_sha256": "afb73828949f2709a06884e2b509c329810ed9037c4dd90d709fab3e765cff87",
+    "log": "captured-scene-replay.log",
+    "all_scene_guards_checked": true
+  },
+  "relative_documentation_links_checked": 119,
+  "documentation_updated": [
+    "docs/wiki/API.md",
+    "docs/wiki/TASK_EXECUTION.md",
+    "docs/wiki/BUILD_AND_TESTING.md",
+    "docs/ai-context/CURRENT_STATE.md",
+    "docs/ai-context/DECISIONS.md",
+    "docs/ai-context/KNOWN_ISSUES.md",
+    "docs/ai-context/CHANGELOG_AI.md"
+  ]
+}

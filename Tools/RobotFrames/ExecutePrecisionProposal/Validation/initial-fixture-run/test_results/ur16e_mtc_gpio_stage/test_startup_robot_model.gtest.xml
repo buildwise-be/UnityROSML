@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" disabled="0" errors="0" time="0.053" timestamp="2026-10-23T15:07:35.474" name="AllTests">
+  <testsuite name="StartupRobotModelTest" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.048" timestamp="2026-10-23T15:07:35.479">
+    <testcase name="ReplacedTasksRetainWorkingSolverAndAllocator" file="/tmp/source/test/test_startup_robot_model.cpp" line="73" status="run" result="completed" time="0.048" timestamp="2026-10-23T15:07:35.479" classname="ur16e_mtc_gpio_stage.StartupRobotModelTest" />
+  </testsuite>
+</testsuites>

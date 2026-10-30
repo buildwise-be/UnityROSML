@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="4" failures="0" disabled="0" errors="0" time="0." timestamp="2026-10-23T15:07:35.224" name="AllTests">
+  <testsuite name="PickPlaceContacts" tests="4" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-10-23T15:07:35.224">
+    <testcase name="ObjectCentreFollowsToolNormalNotBaseVertical" file="/tmp/source/test/test_pick_place_targets.cpp" line="19" status="run" result="completed" time="0." timestamp="2026-10-23T15:07:35.224" classname="ur16e_mtc_gpio_stage.PickPlaceContacts" />
+    <testcase name="FreeTwistPreservesContactAndNormal" file="/tmp/source/test/test_pick_place_targets.cpp" line="32" status="run" result="completed" time="0." timestamp="2026-10-23T15:07:35.224" classname="ur16e_mtc_gpio_stage.PickPlaceContacts" />
+    <testcase name="BothTargetsValidateBeforeAnySceneMutation" file="/tmp/source/test/test_pick_place_targets.cpp" line="46" status="run" result="completed" time="0." timestamp="2026-10-23T15:07:35.224" classname="ur16e_mtc_gpio_stage.PickPlaceContacts" />
+    <testcase name="NormalizeWithoutMovingContact" file="/tmp/source/test/test_pick_place_targets.cpp" line="57" status="run" result="completed" time="0." timestamp="2026-10-23T15:07:35.224" classname="ur16e_mtc_gpio_stage.PickPlaceContacts" />
+  </testsuite>
+</testsuites>

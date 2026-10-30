@@ -1,0 +1,225 @@
+diff --git a/ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp b/ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp
+index e2bfa64..ee70f1c 100644
+--- a/ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp
+@@ -125,6 +125,62 @@ inline bool normalizeObject(moveit_msgs::msg::CollisionObject &object)
+          sortNamedValues(object.subframe_names, object.subframe_poses);
+ }
+ 
++// MoveIt round-trips world poses through rotation matrices. The resulting unit
++// quaternion can differ in its last bits even when collision geometry did not
++// move. Align only those representations, on the local comparison copy; all
++// positions, shapes, frame names and other scene data remain exact.
++inline bool alignQuaternionRoundoff(const geometry_msgs::msg::Quaternion &expected,
++                                   geometry_msgs::msg::Quaternion &current)
++{
++  constexpr double epsilon = 1e-12;
++  const auto valid_unit = [=](const auto &q) {
++    return std::isfinite(q.x) && std::isfinite(q.y) && std::isfinite(q.z) && std::isfinite(q.w) &&
++           std::abs(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w - 1.0) <= epsilon;
++  };
++  if (!valid_unit(expected) || !valid_unit(current))
++    return false;
++  const auto near = [=](double a, double b) { return std::abs(a - b) <= epsilon; };
++  const bool same = near(expected.x, current.x) && near(expected.y, current.y) &&
++                    near(expected.z, current.z) && near(expected.w, current.w);
++  // q and -q encode the same rotation; apply the same bound to either sign.
++  const bool opposite = near(expected.x, -current.x) && near(expected.y, -current.y) &&
++                        near(expected.z, -current.z) && near(expected.w, -current.w);
++  if (same || opposite)
++    current = expected;
++  return true;
++}
++
++template <class Poses>
++bool alignPoseQuaternionRoundoff(const Poses &expected, Poses &current)
++{
++  if (expected.size() != current.size())
++    return false;
++  for (std::size_t i = 0; i < expected.size(); ++i)
++    if (!alignQuaternionRoundoff(expected[i].orientation, current[i].orientation))
++      return false;
++  return true;
++}
++
++inline bool alignWorldQuaternionRoundoff(const moveit_msgs::msg::PlanningSceneWorld &expected,
++                                        moveit_msgs::msg::PlanningSceneWorld &current)
++{
++  if (expected.collision_objects.size() != current.collision_objects.size())
++    return false;
++  for (std::size_t i = 0; i < expected.collision_objects.size(); ++i)
++  {
++    const auto &planned = expected.collision_objects[i];
++    auto &measured = current.collision_objects[i];
++    if (planned.id != measured.id ||
++        !alignQuaternionRoundoff(planned.pose.orientation, measured.pose.orientation) ||
++        !alignPoseQuaternionRoundoff(planned.primitive_poses, measured.primitive_poses) ||
++        !alignPoseQuaternionRoundoff(planned.mesh_poses, measured.mesh_poses) ||
++        !alignPoseQuaternionRoundoff(planned.plane_poses, measured.plane_poses) ||
++        !alignPoseQuaternionRoundoff(planned.subframe_poses, measured.subframe_poses))
++      return false;
++  }
++  return true;
++}
++
+ inline std::string normalizeScene(moveit_msgs::msg::PlanningScene &scene)
+ {
+   if (scene.is_diff || scene.robot_state.is_diff)
+@@ -201,8 +257,8 @@ inline std::string normalizeScene(moveit_msgs::msg::PlanningScene &scene)
+ } // namespace plan_validation_detail
+ 
+ // Compare full snapshots from the chosen MTC solution and GetPlanningScene.
+-// Geometry is intentionally exact after key ordering and timestamp removal:
+-// harmless alternate shape/quaternion representations may require replanning.
++// Geometry is exact after key ordering, timestamp removal, and bounded unit
++// quaternion representation alignment for world object poses only.
+ // This is a point-in-time preflight, not a lock against later scene writers.
+ inline std::string validatePlanStart(const moveit_msgs::msg::PlanningScene &expected,
+                                     const moveit_msgs::msg::PlanningScene &current,
+@@ -221,7 +277,8 @@ inline std::string validatePlanStart(const moveit_msgs::msg::PlanningScene &expe
+     return "current scene: " + error;
+   if (planned.robot_model_name != measured.robot_model_name)
+     return "robot model changed";
+-  if (planned.world != measured.world)
++  if (!plan_validation_detail::alignWorldQuaternionRoundoff(planned.world, measured.world) ||
++      planned.world != measured.world)
+     return "world collision geometry or octomap changed";
+   if (planned.robot_state.attached_collision_objects != measured.robot_state.attached_collision_objects)
+     return "attached collision objects changed";
+diff --git a/ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp b/ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp
+index efe11aa..6788311 100644
+--- a/ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp
++++ b/ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp
+@@ -254,6 +254,132 @@ TEST(PlanValidation, AttachmentAndNonemptyOctomapFramesRemainProtected)
+ 
+ using Mutation = std::pair<std::string, std::function<void(Scene &)>>;
+ 
++geometry_msgs::msg::Quaternion recordedObjectOrientation(bool round_tripped)
++{
++  geometry_msgs::msg::Quaternion orientation;
++  orientation.x = round_tripped ? -0.026589287582891495 : -0.02658928758289149;
++  orientation.y = 0.998217888270063;
++  orientation.z = round_tripped ? -0.04993929412406223 : -0.04993929412406222;
++  orientation.w = round_tripped ? -0.018976939318051812 : -0.01897693931805181;
++  return orientation;
++}
++
++TEST(PlanValidation, RecordedMoveItQuaternionRoundoffDoesNotRejectExecution)
++{
++  // Retained /solution.start_scene versus GetPlanningScene on 2026-10-23.
++  // The old exact comparison rejected these 3 differences (3.47-6.94e-18).
++  auto expected = snapshot();
++  expected.world.collision_objects[0].pose.orientation = recordedObjectOrientation(false);
++  auto current = expected;
++  current.world.collision_objects[0].pose.orientation = recordedObjectOrientation(true);
++  const auto expected_before = expected;
++  const auto current_before = current;
++  EXPECT_NE(expected.world, current.world);
++  EXPECT_TRUE(validatePlanStart(expected, current, TOLERANCE).empty());
++  EXPECT_EQ(expected, expected_before);
++  EXPECT_EQ(current, current_before);
++}
++
++TEST(PlanValidation, WorldPoseQuaternionRepresentationsAlignWithoutMovingGeometry)
++{
++  auto scene = snapshot();
++  auto &object = scene.world.collision_objects[0];
++  object.meshes.resize(1);
++  object.mesh_poses.resize(1);
++  object.mesh_poses[0].orientation.w = 1.0;
++  object.planes.resize(1);
++  object.planes[0].coef = {0.0, 0.0, 1.0, 0.0};
++  object.plane_poses.resize(1);
++  object.plane_poses[0].orientation.w = 1.0;
++  using Orientation = std::function<geometry_msgs::msg::Quaternion &(Scene &)>;
++  const std::vector<std::pair<std::string, Orientation>> orientations{
++      {"object", [](auto &s) -> auto & { return s.world.collision_objects[0].pose.orientation; }},
++      {"primitive", [](auto &s) -> auto & { return s.world.collision_objects[0].primitive_poses[0].orientation; }},
++      {"mesh", [](auto &s) -> auto & { return s.world.collision_objects[0].mesh_poses[0].orientation; }},
++      {"plane", [](auto &s) -> auto & { return s.world.collision_objects[0].plane_poses[0].orientation; }},
++      {"subframe", [](auto &s) -> auto & { return s.world.collision_objects[0].subframe_poses[0].orientation; }},
++  };
++  for (const auto &[name, orientation] : orientations)
++  {
++    SCOPED_TRACE(name);
++    auto expected = scene;
++    orientation(expected) = recordedObjectOrientation(false);
++    auto current = expected;
++    auto &q = orientation(current);
++    q = recordedObjectOrientation(true);
++    EXPECT_TRUE(validatePlanStart(expected, current, TOLERANCE).empty());
++    q.x = -q.x; q.y = -q.y; q.z = -q.z; q.w = -q.w;
++    EXPECT_TRUE(validatePlanStart(expected, current, TOLERANCE).empty());
++    // A different unit rotation must still reject, including in shape poses.
++    q = geometry_msgs::msg::Quaternion();
++    q.w = 1.0;
++    EXPECT_FALSE(validatePlanStart(expected, current, TOLERANCE).empty());
++  }
++}
++
++TEST(PlanValidation, WorldQuaternionAlignmentRequiresFiniteUnitRotations)
++{
++  const auto expected = snapshot();
++  const std::vector<Mutation> mutations{
++      {"NaN", [](auto &s) { s.world.collision_objects[0].pose.orientation.x = std::numeric_limits<double>::quiet_NaN(); }},
++      {"infinite", [](auto &s) { s.world.collision_objects[0].pose.orientation.z = std::numeric_limits<double>::infinity(); }},
++      {"zero", [](auto &s) {
++         s.world.collision_objects[0].pose.orientation = geometry_msgs::msg::Quaternion();
++         s.world.collision_objects[0].pose.orientation.w = 0.0;
++       }},
++      {"nonunit", [](auto &s) { s.world.collision_objects[0].pose.orientation.w = 2.0; }},
++      {"malformed shape rotation", [](auto &s) { s.world.collision_objects[0].primitive_poses[0].orientation.w = 0.0; }},
++  };
++  for (const auto &[name, mutate] : mutations)
++  {
++    SCOPED_TRACE(name);
++    auto invalid = expected;
++    mutate(invalid);
++    EXPECT_FALSE(validatePlanStart(expected, invalid, TOLERANCE).empty());
++    EXPECT_FALSE(validatePlanStart(invalid, expected, TOLERANCE).empty());
++    EXPECT_FALSE(validatePlanStart(invalid, invalid, TOLERANCE).empty());
++  }
++}
++
++TEST(PlanValidation, QuaternionAlignmentKeepsOtherWorldDataExact)
++{
++  auto expected = snapshot();
++  expected.world.collision_objects[0].pose.orientation = recordedObjectOrientation(false);
++  const std::vector<Mutation> mutations{
++      {"tiny object movement", [](auto &s) { s.world.collision_objects[0].pose.position.x += 1e-13; }},
++      {"tiny shape change", [](auto &s) { s.world.collision_objects[0].primitives[0].dimensions[0] += 1e-13; }},
++      {"tiny primitive movement", [](auto &s) { s.world.collision_objects[0].primitive_poses[0].position.z += 1e-13; }},
++      {"tiny subframe movement", [](auto &s) { s.world.collision_objects[0].subframe_poses[0].position.z += 1e-13; }},
++      {"object ID", [](auto &s) { s.world.collision_objects[0].id = "another_object"; }},
++      {"octomap cells", [](auto &s) { s.world.octomap.octomap.data[0] = 3; }},
++      {"tiny octomap movement", [](auto &s) { s.world.octomap.origin.position.x += 1e-13; }},
++      {"octomap rotation", [](auto &s) { s.world.octomap.origin.orientation.x = 1e-13; }},
++      {"attached object rotation", [](auto &s) { s.robot_state.attached_collision_objects[0].object.pose.orientation.x = 1e-13; }},
++      {"referenced fixed frame rotation", [](auto &s) { s.fixed_frame_transforms[0].transform.rotation.x = 1e-13; }},
++  };
++  for (const auto &[name, mutate] : mutations)
++  {
++    SCOPED_TRACE(name);
++    auto current = expected;
++    current.world.collision_objects[0].pose.orientation = recordedObjectOrientation(true);
++    mutate(current);
++    EXPECT_FALSE(validatePlanStart(expected, current, TOLERANCE).empty());
++  }
++}
++
++TEST(PlanValidation, WorldRotationsBeyondRoundoffBoundStillReject)
++{
++  const auto expected = snapshot();
++  auto current = expected;
++  auto &q = current.world.collision_objects[0].pose.orientation;
++  q.x = 0.5e-12;
++  q.w = std::sqrt(1.0 - q.x*q.x);
++  EXPECT_TRUE(validatePlanStart(expected, current, TOLERANCE).empty());
++  q.x = 2e-12;
++  q.w = std::sqrt(1.0 - q.x*q.x);
++  EXPECT_FALSE(validatePlanStart(expected, current, TOLERANCE).empty());
++}
++
+ TEST(PlanValidation, CollisionRelevantChangesRejectThePlan)
+ {
+   const auto expected = snapshot();

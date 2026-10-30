@@ -1,0 +1,18 @@
+{
+  "pid": 416,
+  "start_ticks": "250827752",
+  "args": [
+    "/usr/bin/python3",
+    "/opt/ros/jazzy/bin/ros2",
+    "launch",
+    "ur16e_bringup",
+    "ur16e_start.launch.py",
+    "ur_type:=ur16e",
+    "tool:=kenos_sl",
+    "robot_ip:=192.168.125.101",
+    "use_mock_hardware:=false",
+    "launch_moveit_rviz:=true"
+  ],
+  "cwd": "/home/ros_ws",
+  "child_pid": 632
+}

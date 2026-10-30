@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="8" failures="0" disabled="0" errors="0" time="0.039" timestamp="2026-10-23T15:07:35.270" name="AllTests">
+  <testsuite name="StartupParameterTest" tests="8" failures="0" disabled="0" skipped="0" errors="0" time="0.034" timestamp="2026-10-23T15:07:35.274">
+    <testcase name="MissingValueUsesReadOnlyDefault" file="/tmp/source/test/test_startup_parameter.cpp" line="50" status="run" result="completed" time="0.018" timestamp="2026-10-23T15:07:35.274" classname="ur16e_mtc_gpio_stage.StartupParameterTest" />
+    <testcase name="AutoDeclaredOverrideRetainsValueAndBecomesReadOnly" file="/tmp/source/test/test_startup_parameter.cpp" line="59" status="run" result="completed" time="0.002" timestamp="2026-10-23T15:07:35.293" classname="ur16e_mtc_gpio_stage.StartupParameterTest" />
+    <testcase name="UndeclaredOverrideIsHonoredWithoutAutomaticDeclaration" file="/tmp/source/test/test_startup_parameter.cpp" line="73" status="run" result="completed" time="0.002" timestamp="2026-10-23T15:07:35.296" classname="ur16e_mtc_gpio_stage.StartupParameterTest" />
+    <testcase name="ExistingReadOnlyValueAndDescriptorArePreserved" file="/tmp/source/test/test_startup_parameter.cpp" line="81" status="run" result="completed" time="0.002" timestamp="2026-10-23T15:07:35.298" classname="ur16e_mtc_gpio_stage.StartupParameterTest" />
+    <testcase name="WrongTypeIsRejectedWithoutRemovingTheOverride" file="/tmp/source/test/test_startup_parameter.cpp" line="95" status="run" result="completed" time="0.001" timestamp="2026-10-23T15:07:35.300" classname="ur16e_mtc_gpio_stage.StartupParameterTest" />
+    <testcase name="ExistingStaticMutableValueIsRejectedWithoutMutation" file="/tmp/source/test/test_startup_parameter.cpp" line="105" status="run" result="completed" time="0.001" timestamp="2026-10-23T15:07:35.302" classname="ur16e_mtc_gpio_stage.StartupParameterTest" />
+    <testcase name="BooleanCapabilityDefaultAndOverrideAreImmutable" file="/tmp/source/test/test_startup_parameter.cpp" line="114" status="run" result="completed" time="0.002" timestamp="2026-10-23T15:07:35.304" classname="ur16e_mtc_gpio_stage.StartupParameterTest" />
+    <testcase name="BooleanCapabilityRejectsWrongTypeAndStaticMutableDeclaration" file="/tmp/source/test/test_startup_parameter.cpp" line="125" status="run" result="completed" time="0.002" timestamp="2026-10-23T15:07:35.306" classname="ur16e_mtc_gpio_stage.StartupParameterTest" />
+  </testsuite>
+</testsuites>

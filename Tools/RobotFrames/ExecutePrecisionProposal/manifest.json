@@ -1,0 +1,38 @@
+{
+  "created_utc": "2026-10-23T14:59:25.7968307Z",
+  "updated_utc": "2026-10-23T15:11:48.5669022Z",
+  "backend_root": "C:/Users/aca/source/UR16UnityControl",
+  "status": "Applied with explicit approval and verified offline",
+  "approval": "Apply and build/test",
+  "files": [
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp",
+      "source_sha256": "f301530268a84578af0494d8a5f6ece06499770cbc690a670e0eacb78f0c72c8",
+      "initial_reviewed_proposal_sha256": "60cf660bf21f02584f87b2e92b6cbeabab0a1b532c4c9570d5aa8cbb6a554515",
+      "proposal_sha256": "60cf660bf21f02584f87b2e92b6cbeabab0a1b532c4c9570d5aa8cbb6a554515",
+      "applied_sha256": "838ab6d4573d60ec3a704a2b000a8ad2988fb7c0bc8ee30cf8708d935fd7fadf",
+      "tested_sha256": "838ab6d4573d60ec3a704a2b000a8ad2988fb7c0bc8ee30cf8708d935fd7fadf",
+      "normalized_applied_equals_proposal": true
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp",
+      "source_sha256": "dec6f19637341a6e2595df4c0a6bae7eec1814e6d29fe3c58cb65b5ac1b897a2",
+      "initial_reviewed_proposal_sha256": "0c4524231c7d742370abe842fd4e35b9c6de91bad9d9430fef8aab9e6f899030",
+      "proposal_sha256": "bc1a08eac8daf50e81c91eb425a20c2ab0359d878a45bfd88bbc646a90252e81",
+      "applied_sha256": "541a4effde99112d26f8ebe37833dc01a70c0d5b5197fe36fcb00ba0218749b5",
+      "tested_sha256": "541a4effde99112d26f8ebe37833dc01a70c0d5b5197fe36fcb00ba0218749b5",
+      "normalized_applied_equals_proposal": true
+    }
+  ],
+  "patch": "execute-world-quaternion-roundoff.patch",
+  "initial_reviewed_patch_sha256": "5b1af016ad181eefb36242c0959a7ee5ac3a262d48a0f7aa4d486e25d6d7606c",
+  "patch_sha256": "e40bbc22685a383a3053ac4a7e37eb162da5e247d1da9df87e6061cb4e8ad00b",
+  "final_patch_note": "Includes the verified w=0 test-fixture correction; production fix is unchanged from reviewed proposal",
+  "diagnosis": "../mtc_execute_scene_diagnosis_20261023.json",
+  "snapshot": "../mtc_execute_scene_live_20261023.json",
+  "snapshot_sha256": "afb73828949f2709a06884e2b509c329810ed9037c4dd90d709fab3e765cff87",
+  "validation": "Validation/summary.json",
+  "no_deployment": true,
+  "no_hardware": true,
+  "no_commit_or_push": true
+}

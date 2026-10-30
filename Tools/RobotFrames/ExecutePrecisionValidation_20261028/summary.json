@@ -1,0 +1,128 @@
+{
+  "date_utc": "2026-10-28T14:06:05.6115873Z",
+  "approval": "Deploy fix and restart MTC only",
+  "success": true,
+  "root_cause": "Old deployed validator rejected one quaternion coefficient differing by 6.94e-18; other world geometry and octomap were identical",
+  "diagnosis": "../mtc_execute_diagnosis_20261028.json",
+  "old_header_sha256": "f301530268a84578af0494d8a5f6ece06499770cbc690a670e0eacb78f0c72c8",
+  "fixed_header_sha256": "60cf660bf21f02584f87b2e92b6cbeabab0a1b532c4c9570d5aa8cbb6a554515",
+  "fixed_binary_sha256": "bec77269336bc42849fc5ebf68f31f2ac1925744e4ae7bf2681b6965ea6f9e09",
+  "old_mtc_pid": 632,
+  "new_mtc_pid": 1399,
+  "supervisor": {
+    "supervisor_pid": 1387,
+    "child_pid": 1399,
+    "original_launch_pid": 416,
+    "original_launch_start_ticks": "250827752",
+    "policy": "Send SIGINT only to owned MTC child when original launch exits; never respawn"
+  },
+  "other_original_processes_unchanged": true,
+  "driver_pid": 420,
+  "moveit_pid": 723,
+  "endpoint_pid": 631,
+  "exact_parameters_models_and_tool_preserved": true,
+  "fresh_joint_feedback": true,
+  "full_package_and_application_build": "passed against exact production image",
+  "validator_cases_passed": 14,
+  "ctest_targets_passed": 9,
+  "ctest_targets_total": 10,
+  "known_baseline_failure": "SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder test_scene_effects.cpp:166",
+  "full_fresh_scene_replay": "fixed PASS; old deployed header rejects",
+  "image": {
+    "old_image": "sha256:c99f27ef4f81a3f991ff7845219dc8e69d5329d355dce8b9993d853a6d8a68aa",
+    "backup_tag": "urmir-jazzy:before-mtc-precision-20261028",
+    "fixed_tag": "urmir-jazzy:mtc-precision-20261028",
+    "compose_alias": "urmir-jazzy:latest",
+    "new_image": "sha256:5cd92eb4c3e4a3ddcd6482c7656fd5349d277cd02db6185c1c0cb9632a242656",
+    "verified_files": {
+      "binary": "bec77269336bc42849fc5ebf68f31f2ac1925744e4ae7bf2681b6965ea6f9e09",
+      "source_header": "60cf660bf21f02584f87b2e92b6cbeabab0a1b532c4c9570d5aa8cbb6a554515",
+      "installed_header": "60cf660bf21f02584f87b2e92b6cbeabab0a1b532c4c9570d5aa8cbb6a554515",
+      "test_source": "1d838f780c24621684137c454c3bc0c56fda6cf9b15ffd7d8c158c9c6aa9148f"
+    },
+    "live_container_base_unchanged": true,
+    "live_container_restarted": false,
+    "live_container_recreated": false,
+    "verification_container_started": false,
+    "dependency_or_workspace_rebuild": false,
+    "registry_push": false
+  },
+  "final_verification": {
+    "processes": {
+      "420": {
+        "start_ticks": "250827802",
+        "unchanged": true
+      },
+      "421": {
+        "start_ticks": "250827802",
+        "unchanged": true
+      },
+      "422": {
+        "start_ticks": "250827802",
+        "unchanged": true
+      },
+      "423": {
+        "start_ticks": "250827802",
+        "unchanged": true
+      },
+      "424": {
+        "start_ticks": "250827802",
+        "unchanged": true
+      },
+      "425": {
+        "start_ticks": "250827802",
+        "unchanged": true
+      },
+      "426": {
+        "start_ticks": "250827802",
+        "unchanged": true
+      },
+      "629": {
+        "start_ticks": "250828816",
+        "unchanged": true
+      },
+      "630": {
+        "start_ticks": "250828816",
+        "unchanged": true
+      },
+      "631": {
+        "start_ticks": "250828816",
+        "unchanged": true
+      },
+      "723": {
+        "start_ticks": "250828902",
+        "unchanged": true
+      },
+      "724": {
+        "start_ticks": "250828902",
+        "unchanged": true
+      },
+      "416": {
+        "start_ticks": "250827752",
+        "unchanged": true
+      }
+    },
+    "files": {
+      "/proc/1399/exe": "bec77269336bc42849fc5ebf68f31f2ac1925744e4ae7bf2681b6965ea6f9e09",
+      "/home/ros_ws/install/ur16e_mtc_gpio_stage/lib/ur16e_mtc_gpio_stage/test_task": "bec77269336bc42849fc5ebf68f31f2ac1925744e4ae7bf2681b6965ea6f9e09",
+      "/home/ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp": "60cf660bf21f02584f87b2e92b6cbeabab0a1b532c4c9570d5aa8cbb6a554515",
+      "/home/ros_ws/install/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp": "60cf660bf21f02584f87b2e92b6cbeabab0a1b532c4c9570d5aa8cbb6a554515",
+      "/home/ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp": "1d838f780c24621684137c454c3bc0c56fda6cf9b15ffd7d8c158c9c6aa9148f"
+    },
+    "compose_image": "sha256:5cd92eb4c3e4a3ddcd6482c7656fd5349d277cd02db6185c1c0cb9632a242656",
+    "success": true
+  },
+  "backup_root": "/home/nordbo/.cache/codex/mtc-precision-20261028",
+  "source_checkout": "/home/nordbo/Unity/UR16UnityControlV2/UR16UnityControl",
+  "no_plan_or_execute_published": true,
+  "no_motion_or_io_commands": true,
+  "container_restarted": false,
+  "container_recreated": false,
+  "dependency_rebuild": false,
+  "committed": false,
+  "pushed": false,
+  "hardware_execution_tested": false,
+  "unity_rebuild_required": false,
+  "next_operator_action": "Create a fresh plan, review preview, then use the separate Execute action when ready",
+  "documentation": "Nordbo operational/API notes updated; Git whitespace passed"
+}

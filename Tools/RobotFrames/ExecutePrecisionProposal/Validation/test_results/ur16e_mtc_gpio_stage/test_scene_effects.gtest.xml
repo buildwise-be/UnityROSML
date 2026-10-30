@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="4" failures="1" disabled="0" errors="0" time="0.018" timestamp="2026-10-23T15:09:21.295" name="AllTests">
+  <testsuite name="SceneEffectsTest" tests="4" failures="1" disabled="0" skipped="0" errors="0" time="0.018" timestamp="2026-10-23T15:09:21.295">
+    <testcase name="SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder" file="/tmp/source/test/test_scene_effects.cpp" line="96" status="run" result="completed" time="0.018" timestamp="2026-10-23T15:09:21.295" classname="ur16e_mtc_gpio_stage.SceneEffectsTest">
+      <failure message="/tmp/source/test/test_scene_effects.cpp:166&#x0A;Value of: live_-&gt;getAllowedCollisionMatrix().getEntry(&quot;tile&quot;, &quot;hand&quot;, permission)&#x0A;  Actual: false&#x0A;Expected: true&#x0A;" type=""><![CDATA[/tmp/source/test/test_scene_effects.cpp:166
+Value of: live_->getAllowedCollisionMatrix().getEntry("tile", "hand", permission)
+  Actual: false
+Expected: true
+]]></failure>
+    </testcase>
+    <testcase name="SanitizingJointMessagesPreservesAttachmentAndSceneMetadata" file="/tmp/source/test/test_scene_effects.cpp" line="170" status="run" result="completed" time="0." timestamp="2026-10-23T15:09:21.313" classname="ur16e_mtc_gpio_stage.SceneEffectsTest" />
+    <testcase name="FullSceneSerializationRemainsAFullReplacementWithoutChangingMeasuredJoints" file="/tmp/source/test/test_scene_effects.cpp" line="222" status="run" result="completed" time="0." timestamp="2026-10-23T15:09:21.313" classname="ur16e_mtc_gpio_stage.SceneEffectsTest" />
+    <testcase name="EmptyFullSnapshotClearsTheWorldWhileEmptyDiffPreservesIt" file="/tmp/source/test/test_scene_effects.cpp" line="241" status="run" result="completed" time="0." timestamp="2026-10-23T15:09:21.313" classname="ur16e_mtc_gpio_stage.SceneEffectsTest" />
+  </testsuite>
+</testsuites>

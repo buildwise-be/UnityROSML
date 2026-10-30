@@ -1,0 +1,687 @@
+{
+  "sources_applied": true,
+  "old_mtc_stopped": true,
+  "new_binary_installed": true,
+  "rollback": false,
+  "image_rebuilt": false,
+  "container_restarted": false,
+  "plan_execute_or_io_published": false,
+  "staged_binary_dependencies_resolved": true,
+  "preactivation_probe": {
+    "execution": {
+      "status": "rejected",
+      "reason": "world collision geometry or octomap changed"
+    },
+    "tcp_execution": null,
+    "planning": {
+      "overall_success": true,
+      "message": "Pick/place plan ready; no motion or IO sent"
+    },
+    "actions": {},
+    "joint_feedback": {
+      "names": [
+        "ur_elbow_joint",
+        "ur_shoulder_lift_joint",
+        "ur_shoulder_pan_joint",
+        "ur_wrist_1_joint",
+        "ur_wrist_2_joint",
+        "ur_wrist_3_joint"
+      ],
+      "positions": [
+        0.7567508856402796,
+        -2.4573923550047816,
+        0.14240241050720215,
+        -1.9357897243895472,
+        0.65147864818573,
+        -1.6974757353412073
+      ],
+      "stamp": [
+        1793195793,
+        288529514
+      ]
+    },
+    "controllers": [
+      {
+        "name": "tool_contact_controller",
+        "state": "inactive",
+        "type": "ur_controllers/ToolContactController"
+      },
+      {
+        "name": "freedrive_mode_controller",
+        "state": "inactive",
+        "type": "ur_controllers/FreedriveModeController"
+      },
+      {
+        "name": "force_torque_sensor_broadcaster",
+        "state": "active",
+        "type": "force_torque_sensor_broadcaster/ForceTorqueSensorBroadcaster"
+      },
+      {
+        "name": "joint_state_broadcaster",
+        "state": "active",
+        "type": "joint_state_broadcaster/JointStateBroadcaster"
+      },
+      {
+        "name": "forward_velocity_controller",
+        "state": "inactive",
+        "type": "velocity_controllers/JointGroupVelocityController"
+      },
+      {
+        "name": "io_and_status_controller",
+        "state": "active",
+        "type": "ur_controllers/GPIOController"
+      },
+      {
+        "name": "speed_scaling_state_broadcaster",
+        "state": "active",
+        "type": "ur_controllers/SpeedScalingStateBroadcaster"
+      },
+      {
+        "name": "tcp_pose_broadcaster",
+        "state": "active",
+        "type": "pose_broadcaster/PoseBroadcaster"
+      },
+      {
+        "name": "force_mode_controller",
+        "state": "inactive",
+        "type": "ur_controllers/ForceModeController"
+      },
+      {
+        "name": "ur_configuration_controller",
+        "state": "active",
+        "type": "ur_controllers/URConfigurationController"
+      },
+      {
+        "name": "joint_trajectory_controller",
+        "state": "inactive",
+        "type": "joint_trajectory_controller/JointTrajectoryController"
+      },
+      {
+        "name": "forward_position_controller",
+        "state": "inactive",
+        "type": "position_controllers/JointGroupPositionController"
+      },
+      {
+        "name": "scaled_joint_trajectory_controller",
+        "state": "active",
+        "type": "ur_controllers/ScaledJointTrajectoryController"
+      },
+      {
+        "name": "passthrough_trajectory_controller",
+        "state": "inactive",
+        "type": "ur_controllers/PassthroughTrajectoryController"
+      },
+      {
+        "name": "forward_effort_controller",
+        "state": "inactive",
+        "type": "effort_controllers/JointGroupEffortController"
+      }
+    ],
+    "parameters": {
+      "robot_description_sha256": "083ce46e0dd388fa661917740cd4157daa5fcf07081f417f8714d30f20b3ce78",
+      "robot_description_semantic_sha256": "aa1842d3554992ecae5bff31ade2fa5ccad6c4a4fff469bf66a5c6b4d1d72232",
+      "tool": "kenos_sl",
+      "ik_frame": "tcp",
+      "execution_start_tolerance": 0.01,
+      "execution_joint_state_max_age": 1.0
+    },
+    "action_topics": [
+      "/execute_task_solution/_action/status",
+      "/execute_trajectory/_action/status",
+      "/joint_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/move_action/_action/status",
+      "/passthrough_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/sequence_move_group/_action/status",
+      "/tool_contact_controller/detect_tool_contact/_action/status",
+      "/trajectory_until_node/execute/_action/status",
+      "/ur_robot_state_helper/set_mode/_action/status"
+    ],
+    "required_action_topics": [
+      "/execute_task_solution/_action/status",
+      "/execute_trajectory/_action/status",
+      "/move_action/_action/status",
+      "/sequence_move_group/_action/status",
+      "/trajectory_until_node/execute/_action/status",
+      "/ur_robot_state_helper/set_mode/_action/status",
+      "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/status"
+    ],
+    "missing_action_topics": [],
+    "missing_action_status": [
+      "/execute_task_solution/_action/status",
+      "/execute_trajectory/_action/status",
+      "/joint_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/move_action/_action/status",
+      "/passthrough_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/sequence_move_group/_action/status",
+      "/tool_contact_controller/detect_tool_contact/_action/status",
+      "/trajectory_until_node/execute/_action/status",
+      "/ur_robot_state_helper/set_mode/_action/status"
+    ],
+    "active_goals": [],
+    "joint_age_seconds": 6.336439400911331e-05,
+    "valid_fresh_joints": true,
+    "idle": true
+  },
+  "immediate_idle_probe": {
+    "execution": {
+      "status": "rejected",
+      "reason": "world collision geometry or octomap changed"
+    },
+    "tcp_execution": null,
+    "planning": {
+      "overall_success": true,
+      "message": "Pick/place plan ready; no motion or IO sent"
+    },
+    "actions": {},
+    "joint_feedback": {
+      "names": [
+        "ur_elbow_joint",
+        "ur_shoulder_lift_joint",
+        "ur_shoulder_pan_joint",
+        "ur_wrist_1_joint",
+        "ur_wrist_2_joint",
+        "ur_wrist_3_joint"
+      ],
+      "positions": [
+        0.756721321736471,
+        -2.457320829431051,
+        0.14240795373916626,
+        -1.9357277355589808,
+        0.6514873504638672,
+        -1.6974623839007776
+      ],
+      "stamp": [
+        1793195800,
+        898523312
+      ]
+    },
+    "controllers": [
+      {
+        "name": "tool_contact_controller",
+        "state": "inactive",
+        "type": "ur_controllers/ToolContactController"
+      },
+      {
+        "name": "freedrive_mode_controller",
+        "state": "inactive",
+        "type": "ur_controllers/FreedriveModeController"
+      },
+      {
+        "name": "force_torque_sensor_broadcaster",
+        "state": "active",
+        "type": "force_torque_sensor_broadcaster/ForceTorqueSensorBroadcaster"
+      },
+      {
+        "name": "joint_state_broadcaster",
+        "state": "active",
+        "type": "joint_state_broadcaster/JointStateBroadcaster"
+      },
+      {
+        "name": "forward_velocity_controller",
+        "state": "inactive",
+        "type": "velocity_controllers/JointGroupVelocityController"
+      },
+      {
+        "name": "io_and_status_controller",
+        "state": "active",
+        "type": "ur_controllers/GPIOController"
+      },
+      {
+        "name": "speed_scaling_state_broadcaster",
+        "state": "active",
+        "type": "ur_controllers/SpeedScalingStateBroadcaster"
+      },
+      {
+        "name": "tcp_pose_broadcaster",
+        "state": "active",
+        "type": "pose_broadcaster/PoseBroadcaster"
+      },
+      {
+        "name": "force_mode_controller",
+        "state": "inactive",
+        "type": "ur_controllers/ForceModeController"
+      },
+      {
+        "name": "ur_configuration_controller",
+        "state": "active",
+        "type": "ur_controllers/URConfigurationController"
+      },
+      {
+        "name": "joint_trajectory_controller",
+        "state": "inactive",
+        "type": "joint_trajectory_controller/JointTrajectoryController"
+      },
+      {
+        "name": "forward_position_controller",
+        "state": "inactive",
+        "type": "position_controllers/JointGroupPositionController"
+      },
+      {
+        "name": "scaled_joint_trajectory_controller",
+        "state": "active",
+        "type": "ur_controllers/ScaledJointTrajectoryController"
+      },
+      {
+        "name": "passthrough_trajectory_controller",
+        "state": "inactive",
+        "type": "ur_controllers/PassthroughTrajectoryController"
+      },
+      {
+        "name": "forward_effort_controller",
+        "state": "inactive",
+        "type": "effort_controllers/JointGroupEffortController"
+      }
+    ],
+    "parameters": {
+      "robot_description_sha256": "083ce46e0dd388fa661917740cd4157daa5fcf07081f417f8714d30f20b3ce78",
+      "robot_description_semantic_sha256": "aa1842d3554992ecae5bff31ade2fa5ccad6c4a4fff469bf66a5c6b4d1d72232",
+      "tool": "kenos_sl",
+      "ik_frame": "tcp",
+      "execution_start_tolerance": 0.01,
+      "execution_joint_state_max_age": 1.0
+    },
+    "action_topics": [
+      "/execute_task_solution/_action/status",
+      "/execute_trajectory/_action/status",
+      "/joint_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/move_action/_action/status",
+      "/passthrough_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/sequence_move_group/_action/status",
+      "/tool_contact_controller/detect_tool_contact/_action/status",
+      "/trajectory_until_node/execute/_action/status",
+      "/ur_robot_state_helper/set_mode/_action/status"
+    ],
+    "required_action_topics": [
+      "/execute_task_solution/_action/status",
+      "/execute_trajectory/_action/status",
+      "/move_action/_action/status",
+      "/sequence_move_group/_action/status",
+      "/trajectory_until_node/execute/_action/status",
+      "/ur_robot_state_helper/set_mode/_action/status",
+      "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/status"
+    ],
+    "missing_action_topics": [],
+    "missing_action_status": [
+      "/execute_task_solution/_action/status",
+      "/execute_trajectory/_action/status",
+      "/joint_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/move_action/_action/status",
+      "/passthrough_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/sequence_move_group/_action/status",
+      "/tool_contact_controller/detect_tool_contact/_action/status",
+      "/trajectory_until_node/execute/_action/status",
+      "/ur_robot_state_helper/set_mode/_action/status"
+    ],
+    "active_goals": [],
+    "joint_age_seconds": 8.392380550503731e-05,
+    "valid_fresh_joints": true,
+    "idle": true
+  },
+  "new_process": {
+    "pid": 1399,
+    "sha256": "bec77269336bc42849fc5ebf68f31f2ac1925744e4ae7bf2681b6965ea6f9e09",
+    "args": [
+      "/home/ros_ws/install/ur16e_mtc_gpio_stage/lib/ur16e_mtc_gpio_stage/test_task",
+      "--ros-args",
+      "--log-level",
+      "info",
+      "--ros-args",
+      "--params-file",
+      "/tmp/codex-mtc-precision-20261028/params/launch_params_gtl6q512",
+      "--params-file",
+      "/tmp/codex-mtc-precision-20261028/params/launch_params_9l_f8_3a",
+      "--params-file",
+      "/tmp/codex-mtc-precision-20261028/params/launch_params_l2sssfvw",
+      "--params-file",
+      "/tmp/codex-mtc-precision-20261028/params/launch_params_2hxm1gkf",
+      "--params-file",
+      "/tmp/codex-mtc-precision-20261028/params/launch_params_wus14y0i",
+      "--params-file",
+      "/tmp/codex-mtc-precision-20261028/params/launch_params_0hghwdqv",
+      "--params-file",
+      "/tmp/codex-mtc-precision-20261028/params/launch_params_hao4are2",
+      "--params-file",
+      "/tmp/codex-mtc-precision-20261028/params/launch_params_jpt_en4p",
+      "--params-file",
+      "/tmp/codex-mtc-precision-20261028/params/launch_params_2r432qmb"
+    ],
+    "cwd": "/home/ros_ws",
+    "environment_sha256": "88044bb99ad5f5a01ee049e976d24bb5c14708bb819bdc9841605e5fd917f3f2"
+  },
+  "supervision": {
+    "supervisor_pid": 1387,
+    "child_pid": 1399,
+    "original_launch_pid": 416,
+    "original_launch_start_ticks": "250827752",
+    "policy": "Send SIGINT only to owned MTC child when original launch exits; never respawn"
+  },
+  "postactivation_probe": {
+    "execution": null,
+    "tcp_execution": null,
+    "planning": null,
+    "actions": {},
+    "joint_feedback": {
+      "names": [
+        "ur_elbow_joint",
+        "ur_shoulder_lift_joint",
+        "ur_shoulder_pan_joint",
+        "ur_wrist_1_joint",
+        "ur_wrist_2_joint",
+        "ur_wrist_3_joint"
+      ],
+      "positions": [
+        0.7567465941058558,
+        -2.4573193989195765,
+        0.14241093397140503,
+        -1.9357897243895472,
+        0.6515542268753052,
+        -1.6974828878985804
+      ],
+      "stamp": [
+        1793195808,
+        658582606
+      ]
+    },
+    "controllers": [
+      {
+        "name": "tool_contact_controller",
+        "state": "inactive",
+        "type": "ur_controllers/ToolContactController"
+      },
+      {
+        "name": "freedrive_mode_controller",
+        "state": "inactive",
+        "type": "ur_controllers/FreedriveModeController"
+      },
+      {
+        "name": "force_torque_sensor_broadcaster",
+        "state": "active",
+        "type": "force_torque_sensor_broadcaster/ForceTorqueSensorBroadcaster"
+      },
+      {
+        "name": "joint_state_broadcaster",
+        "state": "active",
+        "type": "joint_state_broadcaster/JointStateBroadcaster"
+      },
+      {
+        "name": "forward_velocity_controller",
+        "state": "inactive",
+        "type": "velocity_controllers/JointGroupVelocityController"
+      },
+      {
+        "name": "io_and_status_controller",
+        "state": "active",
+        "type": "ur_controllers/GPIOController"
+      },
+      {
+        "name": "speed_scaling_state_broadcaster",
+        "state": "active",
+        "type": "ur_controllers/SpeedScalingStateBroadcaster"
+      },
+      {
+        "name": "tcp_pose_broadcaster",
+        "state": "active",
+        "type": "pose_broadcaster/PoseBroadcaster"
+      },
+      {
+        "name": "force_mode_controller",
+        "state": "inactive",
+        "type": "ur_controllers/ForceModeController"
+      },
+      {
+        "name": "ur_configuration_controller",
+        "state": "active",
+        "type": "ur_controllers/URConfigurationController"
+      },
+      {
+        "name": "joint_trajectory_controller",
+        "state": "inactive",
+        "type": "joint_trajectory_controller/JointTrajectoryController"
+      },
+      {
+        "name": "forward_position_controller",
+        "state": "inactive",
+        "type": "position_controllers/JointGroupPositionController"
+      },
+      {
+        "name": "scaled_joint_trajectory_controller",
+        "state": "active",
+        "type": "ur_controllers/ScaledJointTrajectoryController"
+      },
+      {
+        "name": "passthrough_trajectory_controller",
+        "state": "inactive",
+        "type": "ur_controllers/PassthroughTrajectoryController"
+      },
+      {
+        "name": "forward_effort_controller",
+        "state": "inactive",
+        "type": "effort_controllers/JointGroupEffortController"
+      }
+    ],
+    "parameters": {
+      "robot_description_sha256": "083ce46e0dd388fa661917740cd4157daa5fcf07081f417f8714d30f20b3ce78",
+      "robot_description_semantic_sha256": "aa1842d3554992ecae5bff31ade2fa5ccad6c4a4fff469bf66a5c6b4d1d72232",
+      "tool": "kenos_sl",
+      "ik_frame": "tcp",
+      "execution_start_tolerance": 0.01,
+      "execution_joint_state_max_age": 1.0
+    },
+    "action_topics": [
+      "/execute_task_solution/_action/status",
+      "/execute_trajectory/_action/status",
+      "/joint_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/move_action/_action/status",
+      "/passthrough_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/sequence_move_group/_action/status",
+      "/tool_contact_controller/detect_tool_contact/_action/status",
+      "/trajectory_until_node/execute/_action/status",
+      "/ur_robot_state_helper/set_mode/_action/status"
+    ],
+    "required_action_topics": [
+      "/execute_task_solution/_action/status",
+      "/execute_trajectory/_action/status",
+      "/move_action/_action/status",
+      "/sequence_move_group/_action/status",
+      "/trajectory_until_node/execute/_action/status",
+      "/ur_robot_state_helper/set_mode/_action/status",
+      "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/status"
+    ],
+    "missing_action_topics": [],
+    "missing_action_status": [
+      "/execute_task_solution/_action/status",
+      "/execute_trajectory/_action/status",
+      "/joint_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/move_action/_action/status",
+      "/passthrough_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/status",
+      "/sequence_move_group/_action/status",
+      "/tool_contact_controller/detect_tool_contact/_action/status",
+      "/trajectory_until_node/execute/_action/status",
+      "/ur_robot_state_helper/set_mode/_action/status"
+    ],
+    "active_goals": [],
+    "joint_age_seconds": 9.95188020169735e-05,
+    "valid_fresh_joints": true,
+    "idle": false
+  },
+  "processes_after": {
+    "420": {
+      "start_ticks": "250827802",
+      "args": [
+        "/opt/ros/jazzy/lib/controller_manager/ros2_control_node",
+        "--ros-args",
+        "--params-file",
+        "/home/ros_ws/install/ur16e_mir250_control/share/ur16e_mir250_control/config/ur16e_update_rate.yaml",
+        "--params-file",
+        "/tmp/launch_params_rbwp3wwp"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    "421": {
+      "start_ticks": "250827802",
+      "args": [
+        "/opt/ros/jazzy/lib/ur_robot_driver/dashboard_client",
+        "--ros-args",
+        "-r",
+        "__node:=dashboard_client",
+        "--params-file",
+        "/tmp/launch_params__j_w02ma",
+        "--params-file",
+        "/tmp/launch_params_98dlb2t5"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    "422": {
+      "start_ticks": "250827802",
+      "args": [
+        "/opt/ros/jazzy/lib/ur_robot_driver/robot_state_helper",
+        "--ros-args",
+        "-r",
+        "__node:=ur_robot_state_helper",
+        "--params-file",
+        "/tmp/launch_params_up_g0qpn",
+        "--params-file",
+        "/tmp/launch_params_6jbi16ly"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    "423": {
+      "start_ticks": "250827802",
+      "args": [
+        "/opt/ros/jazzy/lib/ur_robot_driver/controller_stopper_node",
+        "--ros-args",
+        "-r",
+        "__node:=controller_stopper",
+        "--params-file",
+        "/tmp/launch_params_3hvrfc3g",
+        "--params-file",
+        "/tmp/launch_params_6lhlh0rh",
+        "--params-file",
+        "/tmp/launch_params_k9ndlbuo"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    "424": {
+      "start_ticks": "250827802",
+      "args": [
+        "/opt/ros/jazzy/lib/ur_robot_driver/urscript_interface",
+        "--ros-args",
+        "--params-file",
+        "/tmp/launch_params_1tq8tzqd"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    "425": {
+      "start_ticks": "250827802",
+      "args": [
+        "/opt/ros/jazzy/lib/robot_state_publisher/robot_state_publisher",
+        "--ros-args",
+        "--params-file",
+        "/tmp/launch_params_tcek_hlo"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    "426": {
+      "start_ticks": "250827802",
+      "args": [
+        "/opt/ros/jazzy/lib/ur_robot_driver/trajectory_until_node",
+        "--ros-args",
+        "-r",
+        "__node:=trajectory_until_node",
+        "--params-file",
+        "/tmp/launch_params_k_bgak23"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    "629": {
+      "start_ticks": "250828816",
+      "args": [
+        "/home/ros_ws/install/ur16e_commander/lib/ur16e_commander/ur16e_commander",
+        "--ros-args",
+        "--params-file",
+        "/tmp/launch_params_o_r8zfrb"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    "630": {
+      "start_ticks": "250828816",
+      "args": [
+        "/home/ros_ws/install/ur16e_environment/lib/ur16e_environment/ur16e_environment_updater",
+        "--ros-args"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    "631": {
+      "start_ticks": "250828816",
+      "args": [
+        "/usr/bin/python3",
+        "/home/ros_ws/install/ros_tcp_endpoint/lib/ros_tcp_endpoint/default_server_endpoint",
+        "--ros-args",
+        "--params-file",
+        "/tmp/launch_params_k7yokbdl",
+        "--params-file",
+        "/tmp/launch_params_1mmbvwe5"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    "632": null,
+    "723": {
+      "start_ticks": "250828902",
+      "args": [
+        "/home/ros_ws/install/moveit_ros_move_group/lib/moveit_ros_move_group/move_group",
+        "--ros-args",
+        "--params-file",
+        "/tmp/launch_params_damg9lg6",
+        "--params-file",
+        "/tmp/launch_params_bgiy344e"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    "724": {
+      "start_ticks": "250828902",
+      "args": [
+        "/opt/ros/jazzy/lib/rviz2/rviz2",
+        "-d",
+        "/home/ros_ws/install/ur16e_mir250_moveit_config/share/ur16e_mir250_moveit_config/config/moveit.rviz",
+        "--ros-args",
+        "-r",
+        "__node:=rviz2_moveit",
+        "--params-file",
+        "/tmp/launch_params_vqhmrhtj",
+        "--params-file",
+        "/tmp/launch_params_pcujoq6c",
+        "--params-file",
+        "/tmp/launch_params_vxy1d3xl",
+        "--params-file",
+        "/tmp/launch_params_lk216_yo",
+        "--params-file",
+        "/tmp/launch_params_u3ly9pmi"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    "416": {
+      "start_ticks": "250827752",
+      "args": [
+        "/usr/bin/python3",
+        "/opt/ros/jazzy/bin/ros2",
+        "launch",
+        "ur16e_bringup",
+        "ur16e_start.launch.py",
+        "ur_type:=ur16e",
+        "tool:=kenos_sl",
+        "robot_ip:=192.168.125.101",
+        "use_mock_hardware:=false",
+        "launch_moveit_rviz:=true"
+      ],
+      "cwd": "/home/ros_ws"
+    }
+  },
+  "binary_sha256": "bec77269336bc42849fc5ebf68f31f2ac1925744e4ae7bf2681b6965ea6f9e09",
+  "success": true
+}
