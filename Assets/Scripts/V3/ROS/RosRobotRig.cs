@@ -42,6 +42,8 @@ public sealed class RosRobotRig : MonoBehaviour
     public bool IsGhost { get; set; }
     public string LastError { get; private set; }
     public bool IsExecutionTransparent => _executionAppearances.Count > 0;
+    /// <summary>Only visuals generated from the active model, excluding imported helper/template geometry.</summary>
+    public IReadOnlyList<GameObject> VisualRoots => _generatedVisuals;
     public Transform BaseLink => _links.TryGetValue("ur_base_link", out Transform link) ? link : null;
     public Transform Tcp => _links.TryGetValue("tcp", out Transform link) ? link : null;
     public event Action ModelChanged;
@@ -197,10 +199,12 @@ public sealed class RosRobotRig : MonoBehaviour
         RobotExecutionState.Changed -= RefreshExecutionAppearance;
         RobotExecutionState.Changed += RefreshExecutionAppearance;
         RefreshExecutionAppearance();
+        RobotContourDisplay.OnRigEnabled(this);
     }
 
     private void OnDisable()
     {
+        RobotContourDisplay.OnRigDisabled(this);
         RobotExecutionState.Changed -= RefreshExecutionAppearance;
         RestoreExecutionAppearance();
     }
@@ -648,6 +652,7 @@ public sealed class RosRobotRig : MonoBehaviour
 
     private void OnDestroy()
     {
+        RobotContourDisplay.OnRigDestroyed(this);
         RobotExecutionState.Changed -= RefreshExecutionAppearance;
         RestoreExecutionAppearance();
         foreach (Material material in _ownedMaterials) Dispose(material);

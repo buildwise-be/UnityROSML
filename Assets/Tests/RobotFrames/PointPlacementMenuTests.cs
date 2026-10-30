@@ -12,6 +12,7 @@ public sealed class PointPlacementMenuTests
 {
     private GameObject _owner;
     private Component _menu;
+    private Component _guideRegistration;
 
     [SetUp]
     public void CreateWithoutRuntimeStart() => CreateMenu(false);
@@ -33,10 +34,101 @@ public sealed class PointPlacementMenuTests
     [TearDown]
     public void Cleanup()
     {
+        if (_guideRegistration != null) SetCollecting(_guideRegistration, false);
         Canvas canvas = Field<Canvas>("_canvas");
         if (canvas != null) UnityEngine.Object.DestroyImmediate(canvas.gameObject);
         if (_owner != null) UnityEngine.Object.DestroyImmediate(_owner);
     }
+
+    [TestCase(0, "Shoulder")]
+    [TestCase(1, "Elbow")]
+    [TestCase(2, "Wrist 2")]
+    [TestCase(3, "Wrist 3")]
+    public void MiniatureFollowsTheCurrentCaptureStepAndHidesAfterLeavingPlacement(int step, string cover)
+    {
+        Component guide = Field<Component>("_pointGuide");
+        Assert.That(guide, Is.Not.Null);
+        Assert.That((bool)guide.GetType().GetProperty("HasVisual").GetValue(guide), Is.False);
+        ShowGuideForStep(step);
+        Assert.That((bool)guide.GetType().GetProperty("HasVisual").GetValue(guide), Is.True);
+        Assert.That((int)guide.GetType().GetProperty("SelectedPointIndex").GetValue(guide), Is.EqualTo(step));
+        Assert.That((string)guide.GetType().GetProperty("CurrentPointName").GetValue(guide), Is.EqualTo(cover));
+        Assert.That(Field<object>("_pointGuideTitle").GetType().GetProperty("text")
+            .GetValue(Field<object>("_pointGuideTitle")), Is.EqualTo((step + 1) + " / 4 · " + cover));
+        Assert.That(guide.GetComponentInParent<Canvas>(), Is.SameAs(Field<Canvas>("_canvas")));
+        Assert.That(guide.transform.IsChildOf(Field<RectTransform>("_pointView")), Is.True);
+
+        SetCollecting(_guideRegistration, false);
+        Call("RefreshPointPlacementControls");
+        Assert.That(Field<RectTransform>("_pointView").gameObject.activeSelf, Is.False);
+        Assert.That((bool)guide.GetType().GetProperty("HasVisual").GetValue(guide), Is.False);
+        Assert.That(Resources.FindObjectsOfTypeAll(RuntimeType("Unity.Robotics.ROSTCPConnector.ROSConnection")), Is.Empty);
+    }
+
+    private void ShowGuideForStep(int step)
+    {
+        Field<RectTransform>("_panel").gameObject.SetActive(true);
+        Field<RectTransform>("_taskView").gameObject.SetActive(false);
+        Field<RectTransform>("_alignmentView").gameObject.SetActive(false);
+        if (_guideRegistration == null)
+        {
+            Component instantiator = _owner.AddComponent(RuntimeType("URInstantiator"));
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/ur16e_kenos/ur16e_kenos.prefab");
+            instantiator.GetType().GetField("_URPrefab", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(instantiator, prefab);
+            _guideRegistration = _owner.AddComponent(RuntimeType("RobotPointRegistration"));
+            _guideRegistration.GetType().GetField("_instantiator", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(_guideRegistration, instantiator);
+            SetMenuField("_instantiator", instantiator);
+            SetMenuField("_pointRegistration", _guideRegistration);
+        }
+        var points = (System.Collections.IList)_guideRegistration.GetType()
+            .GetField("_measuredInTracking", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_guideRegistration);
+        points.Clear();
+        for (int index = 0; index < step; index++) points.Add(Vector3.right * index * 0.1f);
+        SetCollecting(_guideRegistration, true);
+        Call("RefreshPointPlacementControls");
+    }
+
+    [Test]
+    public void FloatingMiniatureStaysCenteredOnItsCardForPerspectiveViewers()
+    {
+        GameObject cameraOwner = new GameObject("Miniature perspective viewer", typeof(Camera));
+        try
+        {
+            Camera camera = cameraOwner.GetComponent<Camera>();
+            camera.enabled = false;
+            camera.orthographic = false;
+            camera.fieldOfView = 46f;
+            Vector3[] viewpoints = { new Vector3(0f, 0f, -1f), new Vector3(-0.15f, 0.1f, -1f), new Vector3(0.2f, -0.08f, -0.8f) };
+            for (int step = 0; step < 4; step++)
+            {
+                ShowGuideForStep(step);
+                Component guide = Field<Component>("_pointGuide");
+                Transform anchor = Field<Transform>("_pointGuideAnchor");
+                foreach (Vector3 viewpoint in viewpoints)
+                {
+                    camera.transform.position = viewpoint;
+                    camera.transform.LookAt(Vector3.zero);
+                    _menu.GetType().GetMethod("PositionPointGuide", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .Invoke(_menu, new object[] { camera });
+                    Vector3 onCard = camera.WorldToViewportPoint(anchor.position);
+                    Vector3 floating = camera.WorldToViewportPoint(guide.transform.position);
+                    Assert.That(Vector2.Distance(onCard, floating), Is.LessThan(0.00001f),
+                        "Forward depth must not push the guide sideways away from its sidebar.");
+                    Assert.That(guide.transform.localScale.x, Is.LessThan(1f),
+                        "Compensate perspective magnification of the floating model.");
+                    Assert.That(floating.z, Is.LessThan(onCard.z));
+                }
+            }
+        }
+        finally { UnityEngine.Object.DestroyImmediate(cameraOwner); }
+    }
+
+    private static void SetCollecting(Component registration, bool collecting) => registration.GetType()
+        .GetField("<IsCollecting>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(registration, collecting);
+
+    private void SetMenuField(string name, object value) => _menu.GetType()
+        .GetField(name, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(_menu, value);
 
     [Test]
     public void PointViewGivesOrderedPhysicalCaptureInstructionsAndAllActionsFit()
@@ -69,6 +161,15 @@ public sealed class PointPlacementMenuTests
         }
     }
 
+    /// <summary>One offline entry point for the contour fix, loop menu and miniature guide images.</summary>
+    public static void RenderInteractionPreviews()
+    {
+        RobotContourRenderingTests.RenderRobotContourPreviews();
+        RenderPointPlacementPreview();
+        RobotRegistrationGuideTests.RenderRegistrationGuidePreviews();
+        Debug.Log("RobotInteractionPreviews passed: contours, playback menu and four registration guide steps.");
+    }
+
     /// <summary>Graphics-enabled, connection-free preview of the actual generated placement UI.</summary>
     public static void RenderPointPlacementPreview()
     {
@@ -83,9 +184,9 @@ public sealed class PointPlacementMenuTests
             preview.CreateMenu(true);
             cameraOwner = new GameObject("Offline point menu preview camera", typeof(Camera));
             Camera camera = cameraOwner.GetComponent<Camera>();
-            camera.transform.position = new Vector3(0f, 0f, -1f);
-            camera.orthographic = true;
-            camera.orthographicSize = 0.41f;
+            camera.transform.position = new Vector3(0.1185f, 0f, -1f);
+            camera.orthographic = false;
+            camera.fieldOfView = 46f;
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.08f, 0.11f, 0.15f, 1f);
             Canvas canvas = preview.Field<Canvas>("_canvas");
@@ -95,6 +196,9 @@ public sealed class PointPlacementMenuTests
             preview.Field<RectTransform>("_taskView").gameObject.SetActive(false);
             preview.Field<RectTransform>("_alignmentView").gameObject.SetActive(false);
             preview.Field<RectTransform>("_pointView").gameObject.SetActive(true);
+            preview.ShowGuideForStep(1);
+            preview._menu.GetType().GetMethod("PositionPointGuide", BindingFlags.NonPublic | BindingFlags.Instance)
+                .Invoke(preview._menu, new object[] { camera });
             preview.Field<Component>("_grabHandle").gameObject.SetActive(true);
             preview.SetText("_pointProgress", "1 / 4 points captured\nNext: Elbow rear blue cover");
             preview.SetText("_pointStatus", "Keep the robot still. Touch 2/4: the elbow cover center, then press trigger.");
@@ -117,9 +221,9 @@ public sealed class PointPlacementMenuTests
                 label.GetType().GetProperty("color").SetValue(label, index == 0
                     ? new Color(0.45f, 0.92f, 0.68f) : index == 1 ? new Color(0.55f, 0.91f, 1f) : new Color(0.73f, 0.81f, 0.87f));
             }
-            target = new RenderTexture(880, 1512, 24, RenderTextureFormat.ARGB32);
+            target = new RenderTexture(1600, 1600, 24, RenderTextureFormat.ARGB32);
             camera.targetTexture = target;
-            pixels = new Texture2D(880, 1512, TextureFormat.RGB24, false);
+            pixels = new Texture2D(1600, 1600, TextureFormat.RGB24, false);
             Canvas.ForceUpdateCanvases();
             foreach (Component text in canvas.GetComponentsInChildren(textType, true))
                 text.GetType().GetMethod("ForceMeshUpdate").Invoke(text, new object[] { true, true });

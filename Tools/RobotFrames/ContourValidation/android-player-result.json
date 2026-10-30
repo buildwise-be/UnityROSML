@@ -1,0 +1,84 @@
+{
+    "success": true,
+    "completedUtc": "2026-10-30T09:52:39.4652456Z",
+    "unityVersion": "6000.0.84f1",
+    "urpVersion": "17.0.4",
+    "buildResult": "Succeeded",
+    "buildOptions": "ForceOptimizeScriptCompilation, Il2CPP, CompressTextures, StripDebugSymbols, ShaderLivelinkSupport, AcceptExternalModificationsToPlayer, CleanBuildCache, DetailedBuildReport",
+    "exportPath": "C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\RobotContourPlayerValidation\\contour-export",
+    "error": "",
+    "mobileRenderer": "Assets/Settings/Mobile_Renderer.asset",
+    "graphicsApi": "Vulkan",
+    "scriptingBackend": "Mono2x",
+    "architecture": "ARMv7",
+    "materials": [
+        {
+            "path": "Assets/Resources/RobotContours/DepthNormalsMaterial.mat",
+            "resourcePath": "RobotContours/DepthNormalsMaterial",
+            "shader": "UnityROSML/RobotContourDepthNormals",
+            "shaderPath": "Assets/Resources/RobotContours/RobotContourDepthNormals.shader",
+            "instancing": true,
+            "loadedByResources": true,
+            "queue": 2000,
+            "passes": 1
+        },
+        {
+            "path": "Assets/Resources/RobotContours/CompositeMaterial.mat",
+            "resourcePath": "RobotContours/CompositeMaterial",
+            "shader": "UnityROSML/RobotContourComposite",
+            "shaderPath": "Assets/Resources/RobotContours/RobotContourComposite.shader",
+            "instancing": true,
+            "loadedByResources": true,
+            "queue": 3000,
+            "passes": 1
+        }
+    ],
+    "packed": [
+        {
+            "path": "Assets/Resources/RobotContours/CompositeMaterial.mat",
+            "type": "UnityEngine.Material",
+            "bytes": 180
+        },
+        {
+            "path": "Assets/Resources/RobotContours/DepthNormalsMaterial.mat",
+            "type": "UnityEngine.Material",
+            "bytes": 96
+        },
+        {
+            "path": "Assets/Resources/RobotContours/RobotContourComposite.shader",
+            "type": "UnityEngine.Shader",
+            "bytes": 10660
+        },
+        {
+            "path": "Assets/Resources/RobotContours/RobotContourDepthNormals.shader",
+            "type": "UnityEngine.Shader",
+            "bytes": 5972
+        }
+    ],
+    "shaderPasses": [
+        {
+            "shader": "UnityROSML/RobotContourComposite",
+            "pass": "Visible robot contours only",
+            "stage": "Vertex",
+            "platform": "Vulkan",
+            "count": 2,
+            "instanced": 1,
+            "stereo": 0
+        },
+        {
+            "shader": "UnityROSML/RobotContourDepthNormals",
+            "pass": "Private robot normals and depth",
+            "stage": "Vertex",
+            "platform": "Vulkan",
+            "count": 2,
+            "instanced": 1,
+            "stereo": 0
+        }
+    ],
+    "scriptsOnly": false,
+    "gradleInvoked": false,
+    "deviceDeployed": false,
+    "xrRuntimeTested": false,
+    "shaderStageConvention": "Vulkan includes all stages in the Vertex program type; each retained program contains the vertex and fragment stages.",
+    "limitation": "Full isolated Android Vulkan player-data/Gradle project export using the actual contour shaders, Resources materials and mobile URP renderer. Mono ARMv7 avoids IL2CPP and Gradle. No ML2, stereo runtime rendering, full application behavior or robot operation is exercised."
+}

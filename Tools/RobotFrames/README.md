@@ -9,6 +9,14 @@ each indicated blue rear cover with the controller contact tip and press trigger
 photo. The XR robot appears after the fourth accepted touch. Undo, Restart,
 Cancel, and Use QR instead are available in the placement menu.
 
+A floating UR16e miniature beside the picker highlights the current link and
+marks the exact cover center in orange. It turns that cover toward the viewer;
+the shoulder and elbow share a link but have separate touch markers. The guide
+uses live joint feedback before the first touch and the locked first-touch pose
+afterwards. Without fresh joints it shows an explicitly labeled bent example.
+Undo/restart updates the highlight, and leaving placement hides the guide. This
+is mesh-only guidance: it cannot become a live robot, ghost, or physics target.
+
 Each captured contact leaves a coloured 12 mm sphere at the sampled physical
 tip position. The four colours follow the point order. Spheres stay attached to
 tracking space, remain visible after a successful fit, and follow undo/restart,
@@ -46,6 +54,47 @@ subscriber, input, menu and rig code. QR hardware is inert and obtaining a ROS
 connection throws. Run its EditMode fixtures `RobotPointRegistrationMathTests`,
 `RobotCoverLandmarkTests`, `RobotPointRegistrationWorkflowTests` and
 `PointPlacementMenuTests`; the menu fixture can also render an offline preview.
+
+## Live robot contours
+
+The main menu's **Robot contours** checkbox starts off. Enable it to display
+silhouettes and visible sharp edges of the placed live robot and its selected
+tool, with transparent interiors. It follows the current joint feedback and
+placement. Animated and static trajectory ghosts keep their existing appearance;
+changing this option preserves captured targets and reviewed plans.
+
+The contour renderer uses private robot depth to remove hidden lines without
+adding an opaque surface or writing into scene depth. Both PC and mobile URP
+renderers include the feature. During execution, contour opacity drops to **3%**
+under the existing execution-dimming policy. If contour rendering is unavailable,
+the live robot returns to its normal filled appearance while the checkbox keeps
+the selected option.
+
+Contour vertices use URP's native tracked stereo matrices, including XR late
+latching. Contour mode requests an intermediate color target so its private
+buffer and camera image share their orientation; URP handles the final headset
+or backbuffer mapping. Camera-motion and late-view GPU regressions compare the
+contours against the filled model while the robot's world transform stays fixed.
+
+Use `prepare_point_registration_validation.py` for the offline EditMode suite.
+Run it with a graphics device to include `RobotContourRenderingTests`, or invoke
+`PointPlacementMenuTests.RenderInteractionPreviews` to save robot, menu and
+four-step guide images. Checks cover both renderer assets and
+RenderGraph/compatibility modes.
+`prepare_contour_player_validation.py` creates a separate project for
+`RobotContourPlayerValidation.Export`: a full Android Vulkan player-data export
+that compiles and retains both contour shaders and resource materials without
+running Gradle or installing an app. These checks do not test ML2 stereo display
+or headset performance.
+
+`contour_validation_summary.json` records 529 passing Unity checks, including
+tracked-view alignment, ghost looping and registration guidance, plus both render
+modes and retained Vulkan shader programs in a successful Android export. The
+previous shader fails the new render-time view regression as an expected
+negative control.
+See the [contour and ghost preview](ContourValidation/Mobile-RenderGraph-ur16e-contours-and-path-ghost.png)
+and [main-menu preview](ContourValidation/calibration-menu-task.png), plus the
+[placement guide](ContourValidation/point-placement-menu.png).
 
 ## Choosing TCP or MTC pick/place in XR
 
@@ -210,6 +259,11 @@ The path and static waypoint previews remain available for plan review.
 In the main menu, **Play/Pause** controls virtual
 playback, **Replay** restarts it, and the timeline inspects any point while
 pausing playback. Speed choices are **0.25x**, **0.5x**, **1x** and **2x**.
+The **Loop** checkbox repeats this ghost animation after Play/Replay. It starts
+off and keeps the chosen setting for new previews. Selecting Loop alone does
+not start playback; Pause, scrubbing and app suspension still pause it. Turning
+Loop off finishes the current pass. Each repetition jumps back to the reviewed
+first pose; it does not add a return motion or execute the real robot.
 
 Playback follows ROS waypoint timestamps and interpolates joint positions
 between samples, preserving the supplied joint winding. The live robot replica

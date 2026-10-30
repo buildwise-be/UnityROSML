@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Failed(Child)" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-30 09:41:58Z" end-time="2026-10-30 09:41:58Z" duration="0,3563388">
+  <test-suite type="TestSuite" id="1000" name="PointRegistrationValidation" fullname="PointRegistrationValidation" runstate="Runnable" testcasecount="507" result="Failed" site="Child" start-time="2026-10-30 09:41:58Z" end-time="2026-10-30 09:41:58Z" duration="0.356339" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1588" name="UnityROSML.RobotFrames.EditorTests.dll" fullname="C:/Users/aca/unity-source/UnityROSML/Library/PointRegistrationValidation/Library/ScriptAssemblies/UnityROSML.RobotFrames.EditorTests.dll" runstate="Runnable" testcasecount="507" result="Failed" site="Child" start-time="2026-10-30 09:41:58Z" end-time="2026-10-30 09:41:58Z" duration="0.349641" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="18736" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestFixture" id="1128" name="RobotContourRenderingTests" fullname="RobotContourRenderingTests" classname="RobotContourRenderingTests" runstate="Runnable" testcasecount="9" result="Failed" site="Child" start-time="2026-10-30 09:41:58Z" end-time="2026-10-30 09:41:58Z" duration="0.341827" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-case id="1139" name="DepthShaderUsesTheRenderTimeNativeViewInsteadOfPreparedMaterialMatrices" fullname="RobotContourRenderingTests.DepthShaderUsesTheRenderTimeNativeViewInsteadOfPreparedMaterialMatrices" methodname="DepthShaderUsesTheRenderTimeNativeViewInsteadOfPreparedMaterialMatrices" classname="RobotContourRenderingTests" runstate="Runnable" seed="941627794" result="Failed" start-time="2026-10-30 09:41:58Z" end-time="2026-10-30 09:41:58Z" duration="0.333616" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[  Updating native camera matrices after CPU pass preparation must move the projected robot. Stale material matrices produce a head-relative image.
+  Expected: greater than 200
+  But was:  0
+]]></message>
+            <stack-trace><![CDATA[at RobotContourRenderingTests+Fixture.ValidateLateNativeView (UnityEngine.Vector3 preparedPosition, UnityEngine.Quaternion preparedRotation, UnityEngine.Vector3 trackedPosition, UnityEngine.Quaternion trackedRotation) [0x000d5] in C:\Users\aca\unity-source\UnityROSML\Library\PointRegistrationValidation\Assets\Tests\RobotFrames\RobotContourRenderingTests.cs:278
+at RobotContourRenderingTests+Fixture.ValidateRenderTimeView () [0x0001c] in C:\Users\aca\unity-source\UnityROSML\Library\PointRegistrationValidation\Assets\Tests\RobotFrames\RobotContourRenderingTests.cs:260
+at RobotContourRenderingTests.DepthShaderUsesTheRenderTimeNativeViewInsteadOfPreparedMaterialMatrices () [0x0001e] in C:\Users\aca\unity-source\UnityROSML\Library\PointRegistrationValidation\Assets\Tests\RobotFrames\RobotContourRenderingTests.cs:41
+]]></stack-trace>
+          </failure>
+          <output><![CDATA[Saving results to: C:/Users/aca/AppData/LocalLow/DefaultCompany/PointRegistrationValidation\TestResults.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -24,8 +24,9 @@ MonoBehaviour:
     probeSamplingDebugMesh: {fileID: 0}
     probeSamplingDebugTexture: {fileID: 0}
     probeVolumeBlendStatesCS: {fileID: 0}
-  m_RendererFeatures: []
-  m_RendererFeatureMap: 
+  m_RendererFeatures:
+  - {fileID: 11400001}
+  m_RendererFeatureMap: 41f3ad0000000000
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 0}
@@ -51,3 +52,18 @@ MonoBehaviour:
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
+--- !u!114 &11400001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43dd7c31e3b3469799f3546acbd0ccfb, type: 3}
+  m_Name: Live robot visible contours
+  m_EditorClassIdentifier:
+  m_Active: 1
+  _depthNormalsMaterial: {fileID: 2100000, guid: 6fd925fb4dbf48e98b08fddf06af8f7c, type: 2}
+  _compositeMaterial: {fileID: 2100000, guid: 4ef6691d4ab74d6098ed34917d512b20, type: 2}

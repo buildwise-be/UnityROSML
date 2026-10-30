@@ -47,6 +47,7 @@ public class URInstantiator : MonoBehaviour
     private float _editingMarkerSize;
     private bool _placedWithPoints;
     public GameObject RobotInstance => _robotInstance;
+    public GameObject RobotPrefab => _URPrefab;
     public bool IsPointPlaced => _placedWithPoints;
     public QRDetector MarkerDetector => _QRDetector;
 

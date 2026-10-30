@@ -27,6 +27,7 @@ public class UR16eTrajectoryVisualizer : MonoBehaviour
     private double[] _interpolatedAngles = Array.Empty<double>();
     private double _playbackTime;
     private float _playbackSpeed = 1f;
+    [SerializeField] private bool _loopPlayback;
     private bool _isPlaying;
     private float _previousPercentage = -1f;
 
@@ -37,6 +38,7 @@ public class UR16eTrajectoryVisualizer : MonoBehaviour
     public float DurationSeconds => _sampleTimes.Length > 0 ? (float)_sampleTimes[_sampleTimes.Length - 1] : 0f;
     public float PlaybackNormalized => DurationSeconds > 0f ? Mathf.Clamp01(PlaybackTimeSeconds / DurationSeconds) : 0f;
     public float PlaybackSpeed => _playbackSpeed;
+    public bool LoopPlayback => _loopPlayback;
     public bool HasVisiblePreview => _trajectory != null && _plannedTcp.Count > 0 && (_clones.Count > 0 || HasPlayback);
     public bool IsShowingTrajectory(RobotTrajectoryMsg trajectory) => HasVisiblePreview && ReferenceEquals(_trajectory, trajectory);
 
@@ -128,13 +130,19 @@ public class UR16eTrajectoryVisualizer : MonoBehaviour
         if (Finite(speed)) _playbackSpeed = Mathf.Clamp(speed, 0.25f, 2f);
     }
 
+    /// <summary>Preview preference only. Selecting a loop never starts playback or sends a robot command.</summary>
+    public void SetLoopPlayback(bool loop) => _loopPlayback = loop;
+
     private void AdvancePlayback(float deltaSeconds)
     {
         if (!IsPlaying || !Finite(deltaSeconds) || deltaSeconds <= 0f) return;
         double end = _sampleTimes[_sampleTimes.Length - 1];
-        _playbackTime = Math.Min(end, _playbackTime + deltaSeconds * (double)_playbackSpeed);
+        double next = _playbackTime + deltaSeconds * (double)_playbackSpeed;
+        // Preserve elapsed time across the seam, including long frames and speed changes.
+        // The replay jumps to the reviewed first pose; it invents no return trajectory.
+        _playbackTime = _loopPlayback && end > 0d ? next % end : Math.Min(end, next);
         ApplyPlaybackPose();
-        if (_playbackTime >= end) Pause();
+        if (!_loopPlayback && _playbackTime >= end) Pause();
     }
 
     private void ApplyPlaybackPose()

@@ -1,0 +1,661 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-10-30T09:57:14.376365+00:00",
+  "scope": "Tracked contour alignment with private hidden-line depth, optional ghost playback loop and step-by-step UR16e cover miniature.",
+  "unityVersion": "6000.0.84f1",
+  "unityTests": {
+    "total": 529,
+    "passed": 529,
+    "failed": 0,
+    "skipped": 0
+  },
+  "fixtures": [
+    "CalibrationCommandGateTests",
+    "CalibrationProfileTests",
+    "ExecutionVisibilityTests",
+    "MenuFollowTests",
+    "MtcExecutionWorkflowTests",
+    "PickPlaceToolContactTests",
+    "PointPlacementMenuTests",
+    "RepeatExecutionWorkflowTests",
+    "RobotContourDisplayTests",
+    "RobotContourMenuTests",
+    "RobotContourRenderingTests",
+    "RobotCoverLandmarkTests",
+    "RobotDescriptionMessageTests",
+    "RobotFrameMathTests",
+    "RobotPlanRepeatReviewTests",
+    "RobotPointRegistrationMathTests",
+    "RobotPointRegistrationWorkflowTests",
+    "RobotRegistrationGuideTests",
+    "RosRobotModelTests",
+    "RosRobotRigPrefabTests",
+    "TargetPoseContextTests",
+    "TaskModeSwitchTests",
+    "TcpPlanReviewTests",
+    "TcpPlanningControllerTests",
+    "TcpTargetRotationMathTests",
+    "ToolCalibrationMenuTests",
+    "ToolPoseVisualTests",
+    "ToolSelectionControllerTests",
+    "TrajectoryPlaybackTests"
+  ],
+  "testResults": {
+    "path": "Library/PointRegistrationValidation/contour-graphics-results.xml",
+    "sha256": "48827c6e96dca45935f3d74593f1732f5723c19335e12ea0472d807770de4f8a"
+  },
+  "graphics": {
+    "log": "Library/PointRegistrationValidation/contour-previews.log",
+    "sha256": "f0fbdda57601b35580eaddd96b4b16328b55ce5ed24259570ba5558e51a611f0",
+    "pixelChecks": [
+      "RobotContourPixels Mobile-RenderGraph: silhouettePixels=3252, hiddenRearPixelDifference=0, ghostInteriorPixelDifference=0, revealedRearChangedPixels=1321",
+      "RobotContourPixels Mobile-Compatibility: silhouettePixels=3252, hiddenRearPixelDifference=0, ghostInteriorPixelDifference=0, revealedRearChangedPixels=1321",
+      "RobotContourPixels PC-RenderGraph: silhouettePixels=2176, hiddenRearPixelDifference=0, ghostInteriorPixelDifference=0, revealedRearChangedPixels=696",
+      "RobotContourPixels PC-Compatibility: silhouettePixels=2176, hiddenRearPixelDifference=0, ghostInteriorPixelDifference=0, revealedRearChangedPixels=696"
+    ],
+    "cameraMotionChecks": [
+      "RobotContourWorldAnchoring Mobile-RenderGraph: perspectiveCameraPoses=3, filledContourBoundsMatch=true, lateNativeViewUpdate=true",
+      "RobotContourWorldAnchoring Mobile-Compatibility: perspectiveCameraPoses=3, filledContourBoundsMatch=true, lateNativeViewUpdate=true",
+      "RobotContourWorldAnchoring PC-RenderGraph: perspectiveCameraPoses=3, filledContourBoundsMatch=true, lateNativeViewUpdate=true",
+      "RobotContourWorldAnchoring PC-Compatibility: perspectiveCameraPoses=3, filledContourBoundsMatch=true, lateNativeViewUpdate=true"
+    ],
+    "guideChecks": [
+      "RegistrationGuidePreview: step=1, orangeTargetPixels=592, C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\PointRegistrationValidation\\RegistrationGuidePreviews\\step-1.png",
+      "RegistrationGuidePreview: step=2, orangeTargetPixels=590, C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\PointRegistrationValidation\\RegistrationGuidePreviews\\step-2.png",
+      "RegistrationGuidePreview: step=3, orangeTargetPixels=461, C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\PointRegistrationValidation\\RegistrationGuidePreviews\\step-3.png",
+      "RegistrationGuidePreview: step=4, orangeTargetPixels=470, C:\\Users\\aca\\unity-source\\UnityROSML\\Library\\PointRegistrationValidation\\RegistrationGuidePreviews\\step-4.png"
+    ],
+    "oldShaderNegativeControl": {
+      "result": "ContourValidation/old-shader-negative-results.xml",
+      "resultSha256": "879933a07b85279c51eee2ddcd2d38233399f42e55d180f175eea6da147796f9",
+      "expectedFailures": 1
+    },
+    "images": [
+      {
+        "path": "Tools/RobotFrames/ContourValidation/calibration-menu-pick-place.png",
+        "sha256": "14b42d83737dfdca68d81fc24078efa8f0e6b198bb27fe5381c6d2e1a3580d2d"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/calibration-menu-task.png",
+        "sha256": "19bff5767d6c9f9c9502c3f654c18eaf5252b09230d184a074929ee6a78049f1"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/point-placement-menu.png",
+        "sha256": "473f137d91ecb94dec5c0d6725782d96c43093b0d1315934d25d6c576cf22426"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/registration-step-1.png",
+        "sha256": "02b345a58e22d9512906b7db873a56f300e5e804334e10924d174816ad3bfd23"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/registration-step-2.png",
+        "sha256": "ab80f7964e9885f0e6b9d027fc857ab0cc5fdcca92a1623391d8ceb60faff903"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/registration-step-3.png",
+        "sha256": "0a65476bd24e55d552e174ce5a92e9e39177d4374d8eb8a3e05856c4108acc34"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/registration-step-4.png",
+        "sha256": "7b4da9005fb3f0879bf3a0a18a4f341d52dcedaaf035a314b96376be8913a5e4"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-Compatibility-disabled-feature-fallback.png",
+        "sha256": "c5ccb6c5764e5f4b08f8d4813ff52575a469ec155571207a01f3ddc014bf47ca"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-Compatibility-execution.png",
+        "sha256": "af010a2936fd3337135e32a68bd18852ff96f6da11c658db9d4e7a37eca6ee68"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-Compatibility-hidden-rear.png",
+        "sha256": "3bf2f921c43dcf229fa30c5649ce09f111ad19f820c579b8b1a53f7cf73e7094"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-Compatibility-ur16e-contours-and-path-ghost.png",
+        "sha256": "fab47a0a27986d961b3cb095d9ebc0b103ee22f78ee05974dc43d7ecebefca9e"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-Compatibility-ur16e-contours.png",
+        "sha256": "1b1204b30909ff896ef481bbdd0ee01c2c978858fec9be1579e229cf7a742c14"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-Compatibility-ur16e-normal.png",
+        "sha256": "98854912dd9d5eba35a559740e52bee5520b4390f2109aba328e7e5e0c8a5fd1"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-Compatibility-visible-rear.png",
+        "sha256": "442cca3bec13fa0009557ddb532e698a29531130e47e563bd68a21c8126be466"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-RenderGraph-disabled-feature-fallback.png",
+        "sha256": "c5ccb6c5764e5f4b08f8d4813ff52575a469ec155571207a01f3ddc014bf47ca"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-RenderGraph-execution.png",
+        "sha256": "af010a2936fd3337135e32a68bd18852ff96f6da11c658db9d4e7a37eca6ee68"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-RenderGraph-hidden-rear.png",
+        "sha256": "3bf2f921c43dcf229fa30c5649ce09f111ad19f820c579b8b1a53f7cf73e7094"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-RenderGraph-ur16e-contours-and-path-ghost.png",
+        "sha256": "2a737ec3ef35836a28205cae3bb72b45e8544c83fd89e23f3cac2ea62f632bcc"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-RenderGraph-ur16e-contours.png",
+        "sha256": "1b1204b30909ff896ef481bbdd0ee01c2c978858fec9be1579e229cf7a742c14"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-RenderGraph-ur16e-normal.png",
+        "sha256": "07b2fdf1850433c9a98dd343c6cd376190e62bde84d40366c7f89e7de5e88e4b"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/Mobile-RenderGraph-visible-rear.png",
+        "sha256": "442cca3bec13fa0009557ddb532e698a29531130e47e563bd68a21c8126be466"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-Compatibility-disabled-feature-fallback.png",
+        "sha256": "c5ccb6c5764e5f4b08f8d4813ff52575a469ec155571207a01f3ddc014bf47ca"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-Compatibility-execution.png",
+        "sha256": "bbba6ddb0499299ef5791f4ae378711b4c4b98453b49ded679210a338eea2550"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-Compatibility-hidden-rear.png",
+        "sha256": "efcfdc659489d785c69f2213a8630f17ced072880a5f0e82d89e09303fea06c0"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-Compatibility-ur16e-contours-and-path-ghost.png",
+        "sha256": "8ba57fffbcaa024a5af890b8b87474daa9e906038227a3ade637f091dafe9bb9"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-Compatibility-ur16e-contours.png",
+        "sha256": "7762f06829e9efa4468b73019c23aec6454811efca85069b6bc6d662a015188b"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-Compatibility-ur16e-normal.png",
+        "sha256": "98854912dd9d5eba35a559740e52bee5520b4390f2109aba328e7e5e0c8a5fd1"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-Compatibility-visible-rear.png",
+        "sha256": "f6e6d3914071ec137b7f2b41e442d696f1a1913306cdc34d8ce2a7b91ac079ee"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-RenderGraph-disabled-feature-fallback.png",
+        "sha256": "c5ccb6c5764e5f4b08f8d4813ff52575a469ec155571207a01f3ddc014bf47ca"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-RenderGraph-execution.png",
+        "sha256": "bbba6ddb0499299ef5791f4ae378711b4c4b98453b49ded679210a338eea2550"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-RenderGraph-hidden-rear.png",
+        "sha256": "efcfdc659489d785c69f2213a8630f17ced072880a5f0e82d89e09303fea06c0"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-RenderGraph-ur16e-contours-and-path-ghost.png",
+        "sha256": "8ba57fffbcaa024a5af890b8b87474daa9e906038227a3ade637f091dafe9bb9"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-RenderGraph-ur16e-contours.png",
+        "sha256": "7762f06829e9efa4468b73019c23aec6454811efca85069b6bc6d662a015188b"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-RenderGraph-ur16e-normal.png",
+        "sha256": "98854912dd9d5eba35a559740e52bee5520b4390f2109aba328e7e5e0c8a5fd1"
+      },
+      {
+        "path": "Tools/RobotFrames/ContourValidation/PC-RenderGraph-visible-rear.png",
+        "sha256": "f6e6d3914071ec137b7f2b41e442d696f1a1913306cdc34d8ce2a7b91ac079ee"
+      }
+    ]
+  },
+  "validatedSources": [
+    {
+      "path": "Assets/Prefabs/ur16e_kenos/ur16e_kenos.prefab",
+      "sha256": "78427e1fbd1d84f807d06937df1b7f265963ba867c3a1c7e0ee8bd3d7e19c2f3"
+    },
+    {
+      "path": "Assets/Resources/RobotContours/CompositeMaterial.mat",
+      "sha256": "19983f8afabb365af8e886e72771451da82a62d2dbf5856664e35b063e15538c"
+    },
+    {
+      "path": "Assets/Resources/RobotContours/CompositeMaterial.mat.meta",
+      "sha256": "6bd73b8cc4c78b8f4cd3faefd942f08367ab7788b92a691a5998000537f4fa2f"
+    },
+    {
+      "path": "Assets/Resources/RobotContours/DepthNormalsMaterial.mat",
+      "sha256": "a5721ed8fa82f02c23fb7469870284fed947e516af3a927caa0189034670ee10"
+    },
+    {
+      "path": "Assets/Resources/RobotContours/DepthNormalsMaterial.mat.meta",
+      "sha256": "783ab9c43661bbe80e815413cc7d38252abd10303ec894ca4abdd948ca1b9f68"
+    },
+    {
+      "path": "Assets/Resources/RobotContours/RobotContourComposite.shader",
+      "sha256": "db424ff9964a655a316f84ec395e759289364dda916c3c90ce00a26e389ef36a"
+    },
+    {
+      "path": "Assets/Resources/RobotContours/RobotContourComposite.shader.meta",
+      "sha256": "3e2c217cb0e8fb233245b043780d72811a0d3ea6fbb8bc06ff141554f670a2dd"
+    },
+    {
+      "path": "Assets/Resources/RobotContours/RobotContourDepthNormals.shader",
+      "sha256": "66d80b118fb2bab6d1ee4ea3039b7e4f05055166874312b41cb27dcc0a6b8ac9"
+    },
+    {
+      "path": "Assets/Resources/RobotContours/RobotContourDepthNormals.shader.meta",
+      "sha256": "39451f74d0ca87abd436c50b19648a38e425a5bb5145f6367e9e14113f10f28c"
+    },
+    {
+      "path": "Assets/Resources/RobotModels/Models.json",
+      "sha256": "f5ffba5bdee22bae41595cbd7fb6f70f9f1019dfa5a18ea51665f7e6f3708bec"
+    },
+    {
+      "path": "Assets/Resources/RobotTargetMarkers/Opaque.mat",
+      "sha256": "6b010148324c8cf16570dc6fa07deea17070a4dcdedae07fa5ebbdec7cbc4afc",
+      "testedSha256": "c4a71a81bdf189627cad264b9d314c80d094abf653d0db16108c5e95453946ed",
+      "importNormalization": "Only URP importer-added disabled MOTIONVECTORS/SHADOWCASTER passes differ."
+    },
+    {
+      "path": "Assets/Resources/RobotTargetMarkers/Opaque.mat.meta",
+      "sha256": "3a7a77839812536479566d479c85498a137172f05462af26063ed59970eb6772"
+    },
+    {
+      "path": "Assets/Resources/RobotTargetMarkers/Transparent.mat",
+      "sha256": "b489baad53c515570cd0db300c4c848ad0db89f9258fe9ef32a698294e29fa29",
+      "testedSha256": "55ab81d6b7a25e0f034f1f74f69d3d6313f0f2367ff8f283175fc53b21f35d95",
+      "importNormalization": "Only URP importer-added disabled MOTIONVECTORS/SHADOWCASTER passes differ."
+    },
+    {
+      "path": "Assets/Resources/RobotTargetMarkers/Transparent.mat.meta",
+      "sha256": "ec17e21fc1fe3cb7f2fda09a6c1c574dd5c8b0c59d8b2370a7980ad991eb88a5"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotCalibrationStore.cs",
+      "sha256": "09a84795fb0983bb1cf4239fb1a345e983b1941bb1d5b7fe4201975f0ac3ee36"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotCoverLandmarks.cs",
+      "sha256": "09bddfc70b57bf3755f9259cdb1bc0851d01fd33723f660212b7024432c169ef"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotFrameMath.cs",
+      "sha256": "9776aa4a05be4d8db0d463283f666bb15b156bf5f9f615d5251fc6df084dac31"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotPlanRepeatReview.cs",
+      "sha256": "189b01800e5a1c8b30917d5269ca0a6f5cdcce431f7d9e508168fc0f7bdb56fb"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotPointRegistrationMath.cs",
+      "sha256": "ff52bc68b9bbd513c3f067092301e291ff5224f66b5c7eba28bca59c34720034"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotDescription.cs",
+      "sha256": "ff33d874821b402e9f7a27b6abcd24dbbe23fa5902bc55fca8d2657961fb12b1"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotModel.cs",
+      "sha256": "7fbfe618978cc0d3c78ab69660ffa56ca7f2c233ef97a1f5033bca133ea42fb0"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpPlanReview.cs",
+      "sha256": "dd853d13d85e81a1783452140d717dc64250620c35dcb4957f06807e9a02899a"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpTargetRotationMath.cs",
+      "sha256": "c087c5e2656cfe4ff8ac9a01bcf726c05c3e0125e6a0714d234e3ee99c7032ae"
+    },
+    {
+      "path": "Assets/Scripts/V3/NormalTargetMarker.cs",
+      "sha256": "a5547890fd4047965034d9497c555885b5dd4e708f1afdeab93595032c1b9bd6"
+    },
+    {
+      "path": "Assets/Scripts/V3/Rendering/RobotContourDisplay.cs",
+      "sha256": "f651950e1f3e6b27e674b0b88ea21a16b4d82e20e2462c42b67cd13b137be1ea"
+    },
+    {
+      "path": "Assets/Scripts/V3/Rendering/RobotContourRendererFeature.cs",
+      "sha256": "e37cb3f48fd3681182a6d061245f9eafee1197f5aadf7b9741d64c046e498b96"
+    },
+    {
+      "path": "Assets/Scripts/V3/RobotPointRegistration.cs",
+      "sha256": "b031f7b2099e90c29560a8b36615cc028efa6f2d18ba92fa499fc367a0f11ab8"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/JointStateSubscriber.cs",
+      "sha256": "2943ef249a49a39b689272b65698cde01bde856e3868b6450f2b23793736d16b"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/MTCPlansManager.cs",
+      "sha256": "0b435c5acba5b3d7c21dc67d93953ee55864595e78f8bc431cf15a43ab5504a1"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/PickPlaceController.cs",
+      "sha256": "864f3bea7ec7b3a7ad47e947f4ce2e908be38c5bfe8cd2eba3192910b20dc271"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotCoordinateService.cs",
+      "sha256": "bb32afe25c3da91131027ac663e65b0b6b1bbab698cc6e20276fc004011face7"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotDescriptionMessages.cs",
+      "sha256": "99b4f62dfbf19e575e5e703ff72f237bc3bc1e04c904e3ee4e7357a63242888f"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotExecutionState.cs",
+      "sha256": "9b54b5ce0109bcbfdc84fedbfbf74af58c1c09f51629d527558f24d79082d68b"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotStateService.cs",
+      "sha256": "9ae256b60a937fd56c49e27e63b38b3b4e199e08cc4b168359e5bdbcc5503ae5"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RosRobotRig.cs",
+      "sha256": "ac6865a741503b42657c1bfa21d93c9813e085680b89b5119ed4979bd25244ca"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/TcpPlanningController.cs",
+      "sha256": "e3ca109037ce0e198f1aeaa566820258086c0a6b37b6c3008cf0889641d2b55c"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/ToolSelectionController.cs",
+      "sha256": "dbbdc371e679b8243da1730b46a26b93bd94b533f50992db4731b035479394c1"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/UR16eTrajectoryVisualizer.cs",
+      "sha256": "cc17b0c135884184a711a38fee90ce29af0d4047604176a4cb1449f3481c1749"
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetMarkerMaterials.cs",
+      "sha256": "00e559f332523099b428dc7c5881c8722db25642472b49cda925948ef58d2bb0"
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetNameLabel.cs",
+      "sha256": "bf8dd0ea66133da2324680d90009cb3b55763245b72b19fef573d5215ab0e0fa"
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetPoseContextMenu.cs",
+      "sha256": "6909e339c00439ea8e37ba6daf83ef46dc6059685dc6b972e8548a2e6dbb6c05"
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetRotationHandles.cs",
+      "sha256": "0b775856b84a0a91796e8a0b3eed0a5a664a735078db6cedaaff59a07d1517e2"
+    },
+    {
+      "path": "Assets/Scripts/V3/TcpTargetPreview.cs",
+      "sha256": "03feccd990ab265b0806d564c5f76d5f92753767b8d86fefe3cc487c632089e6"
+    },
+    {
+      "path": "Assets/Scripts/V3/ToolPoseVisual.cs",
+      "sha256": "4558b0d7e3acb58dfb69c77b8874a88bbf60dca9730480b189bd9a2c99b28717"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/MTCPlanUIManager.cs",
+      "sha256": "eb0a8dc42d6411d4d7adc55ad7625643b6935d268a8f29cfe0e1357c78463b07"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/RobotRegistrationGuide.cs",
+      "sha256": "3d672342742af8486d750bb51abf950ea8a24c8aa6656ab26e67b6fddcf4754b"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "d42cf78e688d8175e816511b22ffe1a867e0d08cb4f7c17a966c6e4bef9eb9ad"
+    },
+    {
+      "path": "Assets/Scripts/V3/URInputManager.cs",
+      "sha256": "12c0eef2af07926b32beeec324450285437083a77c9ef10fe6f0d4844ab79765"
+    },
+    {
+      "path": "Assets/Scripts/V3/URInstantiator.cs",
+      "sha256": "da637b7011402bca879f6e53ad2fcf8a8474903f552d148d1c3eb4f51f7c80ff"
+    },
+    {
+      "path": "Assets/Scripts/V3/XRTrackingSpaceResolver.cs",
+      "sha256": "e4dc37e18c299e5d26d697792476254c8048b945aa60e664fb6926045d9af2de"
+    },
+    {
+      "path": "Assets/Settings/Mobile_Renderer.asset",
+      "sha256": "9c8140aec0f80702ef5e2c954b8ec27e5f780c643f00bd48d7b7d8df5ce65396"
+    },
+    {
+      "path": "Assets/Settings/Mobile_Renderer.asset.meta",
+      "sha256": "a148ee2b4987b05b8ff7ae5f9bf84916184f77aefddc821dceb551f5a69f8179"
+    },
+    {
+      "path": "Assets/Settings/Mobile_RPAsset.asset",
+      "sha256": "0e61458b51d0f54f636f5b665046d40d564ddc7b06e90ff4560167e3a0d1716d"
+    },
+    {
+      "path": "Assets/Settings/Mobile_RPAsset.asset.meta",
+      "sha256": "53ea46647712c615fd1a3f2e0dddfa8559eeedc649e9a1dbf93ff913de28544c"
+    },
+    {
+      "path": "Assets/Settings/PC_Renderer.asset",
+      "sha256": "b0632d88d141155af06d06090a932e635a7a8fc177a9346440d77879229ff477"
+    },
+    {
+      "path": "Assets/Settings/PC_Renderer.asset.meta",
+      "sha256": "b5df8ddb2708c6ed4c133a5ff9ee95a75cc20e4ee3ed6181366a61aedbaf31ec"
+    },
+    {
+      "path": "Assets/Settings/PC_RPAsset.asset",
+      "sha256": "4a07dfe4fc14f29e58a5412c3ceb8f0b63670e392da1324f9281dcb285c2fd2b"
+    },
+    {
+      "path": "Assets/Settings/PC_RPAsset.asset.meta",
+      "sha256": "bb469b9b6f318e9e9bed29c3b2e73e79371c04743c6f95dd6603941f1cd3e53e"
+    },
+    {
+      "path": "Assets/Settings/UniversalRenderPipelineGlobalSettings.asset",
+      "sha256": "ab4ffdc9e4fa53dafbe795ddcfeccdcca64c6d87d374847ebcb9f6d823988f8a",
+      "testedSha256": "0690e63f9866f6bc76b5bc0db333114a8faa554ac17a817d5b765264b74d011b",
+      "importNormalization": "Only Unity's regenerated m_RuntimeSettings reference list differs; actual settings match."
+    },
+    {
+      "path": "Assets/Settings/UniversalRenderPipelineGlobalSettings.asset.meta",
+      "sha256": "f61661d8bc8dbe531daf09f6211ef978c7ba145c9207c8e76524396ae0722d7c"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/CalibrationCommandGateTests.cs",
+      "sha256": "b3a515ba44b3adcc8879380a05ac67ae63670028a01ed72102ba3c5c3dbeb8c2"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/CalibrationProfileTests.cs",
+      "sha256": "f011b9a934e79f4b8fe93f4aabfed221b9c58b7764d4129e976d1f017614f989"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ExecutionVisibilityTests.cs",
+      "sha256": "17e696f9e9ca68f770f382f6a1f71024bd4c44abb4f0aa48c28af788b23fd670"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/MenuFollowTests.cs",
+      "sha256": "66823bd479369caa290367f80e6508b9c4092d5f3c739d0e9ad26cc770a2a737"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/MtcExecutionWorkflowTests.cs",
+      "sha256": "d8d0c5397b15678ade95fb567f8d3490b7df1996d2fd4069c229d18bee311198"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/PickPlaceToolContactTests.cs",
+      "sha256": "f4a645cd6ee3ea0681192237c1be17b931cae91c792c3786c6f06a2185dd9611"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/PointPlacementMenuTests.cs",
+      "sha256": "6bc750554736b9fcd043565dae5b8a8dc442dccd5c62e404f4ed86aad3c2b06e"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RepeatExecutionWorkflowTests.cs",
+      "sha256": "6b0c377f6cc13e6ff3dd45266bf14664c9a21526860842c29da3c67348eb0766"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotContourDisplayTests.cs",
+      "sha256": "ecf8e1d2263ee0f35d9423b0a7158fbededfaa56143f362618e450543117e2b1"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotContourMenuTests.cs",
+      "sha256": "a2d25388392b7089de43f8a59250f08247b8e830e19a36ea16b79410b8e3ac30"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotContourRenderingTests.cs",
+      "sha256": "9a48e49147b314fbe566d0538c4992e3f64bcba6197c8a392eee238f63abcac8"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotCoverLandmarkTests.cs",
+      "sha256": "efd2a4e4fb28840064591a3b0901d92aa62c915eddccb669fa3e2a6956295c7b"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotDescriptionMessageTests.cs",
+      "sha256": "ad8c370da3bff1805281448341ef06be8e1a2830323d48f8e68c33803511e2e8"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotFrameMathTests.cs",
+      "sha256": "a3df440bf6120fece0d94691c67679e73d2830aecf38033622e440cca2a95fb9"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotPlanRepeatReviewTests.cs",
+      "sha256": "7305aefac59817c877f4619b8972ff32a7ae4048b5032a57ecc6e054013e0590"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotPointRegistrationMathTests.cs",
+      "sha256": "90126cd899f1c9770d705c68901c5fcf70554274e92e641d9ca1aac8431d5b69"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotPointRegistrationWorkflowTests.cs",
+      "sha256": "1361761eaba8e625d1e72603d325f8735a4a29d64f834e205a132f9c1838635f"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotRegistrationGuideTests.cs",
+      "sha256": "d9fd4f3fa3c5360a5dcaeda175f0f74116bf727b8235ed370f336e1023682a8b"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotModelTests.cs",
+      "sha256": "577cf737541a51202c4764c0f4b54ab1d5aabbbbc9aa74525a649b4e143cfe67"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotRigPrefabTests.cs",
+      "sha256": "030d39943498bab3325272551980b0e50f2388db50dd5ef8280736084752ece5"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TargetPoseContextTests.cs",
+      "sha256": "7559e8c9b48499f412d85a8479d980aff5fe63b573873ab365786eed5310edc0"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TaskModeSwitchTests.cs",
+      "sha256": "b35b2e96a151c325da504d764310d5c2eaa9987511d8ee23e24cca0a595781a3"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpPlanningControllerTests.cs",
+      "sha256": "647c38a5ab06ad680eb5cbce01c26dcaddc30b5b0f31b91e30d5afdeae249668"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpPlanReviewTests.cs",
+      "sha256": "267e72eb1a89e67c2821593c396f69d7c64c02121e7551b4f82caa214dcd3070"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TcpTargetRotationMathTests.cs",
+      "sha256": "51fccecb55868bca24b688046cd9e74d4a645b3b3554dc8d4eae70a017ea67b8"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolCalibrationMenuTests.cs",
+      "sha256": "20ef7116c4851285f112823a1e79081e0c92d8bc22559c39fe71b8c66967a99c"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolPoseVisualTests.cs",
+      "sha256": "7e7415bb54fe83f3fac4e131d19eaf994d7f310f31ecaa1765d08e535d482229"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ToolSelectionControllerTests.cs",
+      "sha256": "51b6af35c2b2e14e33e1bed8468e017a6363227a18a14cfa54416a1b0afba9fb"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/TrajectoryPlaybackTests.cs",
+      "sha256": "e2dac9770ad9e281ba3be8c7e3e376671a38497d746e2bd70d9b676dd226e0ba"
+    }
+  ],
+  "runtimeCompile": {
+    "sourceCount": 90,
+    "errors": 0,
+    "summarySha256": "964b8999cfcd1f181a5399a4995482df972b10e3a2929a4df49042e29e9038cb"
+  },
+  "android": {
+    "result": "ContourValidation/android-player-result.json",
+    "sha256": "11b4c8cb8b6d13743b69b984c499f0c3b7e0c8bfaaeb02967354a2fbea960529",
+    "validatedSources": [
+      {
+        "path": "Assets/Resources/RobotContours/CompositeMaterial.mat",
+        "sha256": "19983f8afabb365af8e886e72771451da82a62d2dbf5856664e35b063e15538c"
+      },
+      {
+        "path": "Assets/Resources/RobotContours/CompositeMaterial.mat.meta",
+        "sha256": "6bd73b8cc4c78b8f4cd3faefd942f08367ab7788b92a691a5998000537f4fa2f"
+      },
+      {
+        "path": "Assets/Resources/RobotContours/DepthNormalsMaterial.mat",
+        "sha256": "a5721ed8fa82f02c23fb7469870284fed947e516af3a927caa0189034670ee10"
+      },
+      {
+        "path": "Assets/Resources/RobotContours/DepthNormalsMaterial.mat.meta",
+        "sha256": "783ab9c43661bbe80e815413cc7d38252abd10303ec894ca4abdd948ca1b9f68"
+      },
+      {
+        "path": "Assets/Resources/RobotContours/RobotContourComposite.shader",
+        "sha256": "db424ff9964a655a316f84ec395e759289364dda916c3c90ce00a26e389ef36a"
+      },
+      {
+        "path": "Assets/Resources/RobotContours/RobotContourComposite.shader.meta",
+        "sha256": "3e2c217cb0e8fb233245b043780d72811a0d3ea6fbb8bc06ff141554f670a2dd"
+      },
+      {
+        "path": "Assets/Resources/RobotContours/RobotContourDepthNormals.shader",
+        "sha256": "66d80b118fb2bab6d1ee4ea3039b7e4f05055166874312b41cb27dcc0a6b8ac9"
+      },
+      {
+        "path": "Assets/Resources/RobotContours/RobotContourDepthNormals.shader.meta",
+        "sha256": "39451f74d0ca87abd436c50b19648a38e425a5bb5145f6367e9e14113f10f28c"
+      },
+      {
+        "path": "Assets/Scripts/V3/Rendering/RobotContourDisplay.cs",
+        "sha256": "f651950e1f3e6b27e674b0b88ea21a16b4d82e20e2462c42b67cd13b137be1ea"
+      },
+      {
+        "path": "Assets/Scripts/V3/Rendering/RobotContourRendererFeature.cs",
+        "sha256": "e37cb3f48fd3681182a6d061245f9eafee1197f5aadf7b9741d64c046e498b96"
+      },
+      {
+        "path": "Assets/Settings/Mobile_Renderer.asset",
+        "sha256": "9c8140aec0f80702ef5e2c954b8ec27e5f780c643f00bd48d7b7d8df5ce65396"
+      },
+      {
+        "path": "Assets/Settings/Mobile_RPAsset.asset",
+        "sha256": "0e61458b51d0f54f636f5b665046d40d564ddc7b06e90ff4560167e3a0d1716d",
+        "buildGeneratedPrefilters": {
+          "source": {
+            "m_PrefilteringModeAdditionalLight": "4",
+            "m_PrefilterXRKeywords": "0"
+          },
+          "tested": {
+            "m_PrefilteringModeAdditionalLight": "3",
+            "m_PrefilterXRKeywords": "1"
+          }
+        },
+        "testedSha256": "af547a7081fc83daa2186e0f637392a8e8336328ab454e690338fc438ecf243e",
+        "importNormalization": "Only URP-generated additional-light/XR keyword prefilters differ for the isolated non-XR Android export."
+      }
+    ],
+    "helperSha256": "bcecfcae298b2e92e767d8118f00d94aaba5beea0857845568e59f5a4c2f6de0"
+  },
+  "limits": [
+    "Pixel checks use desktop D3D11 through both installed URP renderer assets, not an ML2 display.",
+    "Android Vulkan player-data export compiles and retains shaders; it does not exercise headset stereo or device performance.",
+    "Contours remove lines hidden by other live-robot surfaces using private depth. They do not reconstruct real-world occlusion.",
+    "ROS transport, hardware motion, deployment and app installation were not exercised."
+  ],
+  "hardwareExercised": false,
+  "robotCommandsSent": false,
+  "deployed": false
+}

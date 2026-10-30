@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "completedUtc":  "2026-10-29T13:59:17.5217724Z",
+    "completedUtc":  "2026-10-30T09:51:11.1109911Z",
     "unityVersion":  "6000.0.84f1",
     "command":  "powershell -NoProfile -File Tools/RobotFrames/compile_runtime.ps1",
     "compiler":  "C:\\Program Files\\Unity 6000.0.84f1\\Editor\\Data\\DotNetSdkRoslyn\\csc.dll",
@@ -8,7 +8,7 @@
     "settingsResponseFile":  "Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.rsp",
     "responseSha256":  "9c2e3b9483a0b732212ed8c3291306800e2fdae77069e602ad1c1d19ce9b6cb3",
     "helperSourceCount":  9,
-    "mainSourceCount":  78,
+    "mainSourceCount":  81,
     "exitCode":  0,
     "errorCount":  0,
     "warnings":  [
@@ -199,7 +199,7 @@
                                  "path":  "Assets/Scripts/V3/Frames/RobotCalibrationStore.cs"
                              },
                              {
-                                 "sha256":  "b780ecdb48ca45bb64c6d04a2263f46242ecdce2cf7a12a0a08f94bf4c408ce3",
+                                 "sha256":  "09bddfc70b57bf3755f9259cdb1bc0851d01fd33723f660212b7024432c169ef",
                                  "path":  "Assets/Scripts/V3/Frames/RobotCoverLandmarks.cs"
                              },
                              {
@@ -207,11 +207,11 @@
                                  "path":  "Assets/Scripts/V3/Frames/RobotFrameMath.cs"
                              },
                              {
-                                 "sha256":  "4a2273fa179846060374c9ee7192b20cc7b110a71a00c698131a7dcc007739f2",
+                                 "sha256":  "189b01800e5a1c8b30917d5269ca0a6f5cdcce431f7d9e508168fc0f7bdb56fb",
                                  "path":  "Assets/Scripts/V3/Frames/RobotPlanRepeatReview.cs"
                              },
                              {
-                                 "sha256":  "09187b4d0558af7da57bd39aaeff82720486148f18085b3c74bd19f7241616ec",
+                                 "sha256":  "ff52bc68b9bbd513c3f067092301e291ff5224f66b5c7eba28bca59c34720034",
                                  "path":  "Assets/Scripts/V3/Frames/RobotPointRegistrationMath.cs"
                              },
                              {
@@ -231,7 +231,7 @@
                                  "path":  "Assets/Scripts/V3/Frames/TcpTargetRotationMath.cs"
                              },
                              {
-                                 "sha256":  "9eb127f70ac37f220cebe0d968bbf00351d9ffba6f13016d5d8c8653f7bc43f6",
+                                 "sha256":  "a5547890fd4047965034d9497c555885b5dd4e708f1afdeab93595032c1b9bd6",
                                  "path":  "Assets/Scripts/V3/NormalTargetMarker.cs"
                              },
                              {
@@ -263,7 +263,15 @@
                                  "path":  "Assets/Scripts/V3/RemoteExecution/RemotePoseMessages.cs"
                              },
                              {
-                                 "sha256":  "2a9b89481f0a59d9de825ad063b9a3cbdd40017f135684105e14a546bda3da77",
+                                 "sha256":  "f651950e1f3e6b27e674b0b88ea21a16b4d82e20e2462c42b67cd13b137be1ea",
+                                 "path":  "Assets/Scripts/V3/Rendering/RobotContourDisplay.cs"
+                             },
+                             {
+                                 "sha256":  "e37cb3f48fd3681182a6d061245f9eafee1197f5aadf7b9741d64c046e498b96",
+                                 "path":  "Assets/Scripts/V3/Rendering/RobotContourRendererFeature.cs"
+                             },
+                             {
+                                 "sha256":  "b031f7b2099e90c29560a8b36615cc028efa6f2d18ba92fa499fc367a0f11ab8",
                                  "path":  "Assets/Scripts/V3/RobotPointRegistration.cs"
                              },
                              {
@@ -287,15 +295,15 @@
                                  "path":  "Assets/Scripts/V3/ROS/RobotDescriptionMessages.cs"
                              },
                              {
-                                 "sha256":  "0b20f95da5d01fcf948258638cad20bb8428bba10cc84d00b140a2989813379a",
+                                 "sha256":  "9b54b5ce0109bcbfdc84fedbfbf74af58c1c09f51629d527558f24d79082d68b",
                                  "path":  "Assets/Scripts/V3/ROS/RobotExecutionState.cs"
                              },
                              {
-                                 "sha256":  "66340d3293f2a8339a62908979ea5d71543d3dfd66fd7d5d81a28c5d2b0cceb7",
+                                 "sha256":  "9ae256b60a937fd56c49e27e63b38b3b4e199e08cc4b168359e5bdbcc5503ae5",
                                  "path":  "Assets/Scripts/V3/ROS/RobotStateService.cs"
                              },
                              {
-                                 "sha256":  "a81627492230bab8654fce23cf56e91dcd7439993eb1240e467fd91d77d816a4",
+                                 "sha256":  "ac6865a741503b42657c1bfa21d93c9813e085680b89b5119ed4979bd25244ca",
                                  "path":  "Assets/Scripts/V3/ROS/RosRobotRig.cs"
                              },
                              {
@@ -311,15 +319,15 @@
                                  "path":  "Assets/Scripts/V3/ROS/ToolSelectionController.cs"
                              },
                              {
-                                 "sha256":  "9482390245df2318af713ca7be3227ffbc12ca1d26a222f170dc9d41e106c36a",
+                                 "sha256":  "cc17b0c135884184a711a38fee90ce29af0d4047604176a4cb1449f3481c1749",
                                  "path":  "Assets/Scripts/V3/ROS/UR16eTrajectoryVisualizer.cs"
                              },
                              {
-                                 "sha256":  "aa8440da6dc4b4b0626681a09487899fe15f2187d900ba5de4926d0e3c6d3c0d",
+                                 "sha256":  "00e559f332523099b428dc7c5881c8722db25642472b49cda925948ef58d2bb0",
                                  "path":  "Assets/Scripts/V3/TargetMarkerMaterials.cs"
                              },
                              {
-                                 "sha256":  "b0d51cb550c90d4b2ef71a08920b111e1fa91703116c8551bd59fcf5278dbb4e",
+                                 "sha256":  "bf8dd0ea66133da2324680d90009cb3b55763245b72b19fef573d5215ab0e0fa",
                                  "path":  "Assets/Scripts/V3/TargetNameLabel.cs"
                              },
                              {
@@ -347,7 +355,11 @@
                                  "path":  "Assets/Scripts/V3/UI/MTCPlanUIManager.cs"
                              },
                              {
-                                 "sha256":  "a0cc33c3a61ca4c50e6e8870c5e4d117f4485ae59c83dfd3e91f68f8d2da7412",
+                                 "sha256":  "3d672342742af8486d750bb51abf950ea8a24c8aa6656ab26e67b6fddcf4754b",
+                                 "path":  "Assets/Scripts/V3/UI/RobotRegistrationGuide.cs"
+                             },
+                             {
+                                 "sha256":  "d42cf78e688d8175e816511b22ffe1a867e0d08cb4f7c17a966c6e4bef9eb9ad",
                                  "path":  "Assets/Scripts/V3/UI/ToolSelectionMenu.cs"
                              },
                              {
@@ -355,7 +367,7 @@
                                  "path":  "Assets/Scripts/V3/URInputManager.cs"
                              },
                              {
-                                 "sha256":  "16103e15d3b6e8cb1c8ccb46304d396bc91844356589bcaaa944c1519bebe47c",
+                                 "sha256":  "da637b7011402bca879f6e53ad2fcf8a8474903f552d148d1c3eb4f51f7c80ff",
                                  "path":  "Assets/Scripts/V3/URInstantiator.cs"
                              },
                              {

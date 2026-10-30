@@ -62,6 +62,25 @@ public sealed class RobotPointRegistration : MonoBehaviour
     public string CurrentPointName => _landmarks != null && CapturedPointCount < _landmarks.Length
         ? _landmarks[CapturedPointCount].displayName : "All four points collected";
 
+    /// <summary>Read-only miniature inputs. A captured registration always uses its first-touch joint pose.</summary>
+    public bool GetGuideState(out RosRobotModel model, out Dictionary<string, double> joints,
+        out RobotCoverLandmark[] landmarks, out bool poseLocked)
+    {
+        model = _referenceModel ?? CurrentModel();
+        landmarks = _landmarks;
+        poseLocked = _referenceJoints != null;
+        if (poseLocked)
+        {
+            joints = new Dictionary<string, double>(_referenceJoints);
+            return true;
+        }
+        if (_jointFeedback == null) _jointFeedback = FindFirstObjectByType<JointStateSubscriber>();
+        if (_jointFeedback != null && _jointFeedback.TryGetFreshJointPositions(model,
+            _maximumJointAgeSeconds, out joints, out _)) return true;
+        joints = null;
+        return false;
+    }
+
     public void SetTipOffset(Vector3 offsetInPointer)
     {
         if (IsCollecting || !RobotFrameMath.IsValidPose(new Pose(offsetInPointer, Quaternion.identity))) return;

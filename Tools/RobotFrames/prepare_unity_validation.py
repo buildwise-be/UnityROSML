@@ -65,7 +65,7 @@ def main():
                 elif not guid.startswith("0000000000000000"):
                     missing.add(guid)
 
-    for folder in ("Assets/Scripts/V3/Frames", "Assets/Tests/RobotFrames", "Assets/Resources/RobotModels", "Assets/Resources/RobotTargetMarkers", "Assets/RosMessages",
+    for folder in ("Assets/Scripts/V3/Frames", "Assets/Scripts/V3/Rendering", "Assets/Tests/RobotFrames", "Assets/Resources/RobotModels", "Assets/Resources/RobotTargetMarkers", "Assets/Resources/RobotContours", "Assets/RosMessages",
                    "Assets/Branding/UnityROSML"):
         for source in (PROJECT / folder).rglob("*"):
             if source.is_file() and source.suffix != ".meta":
@@ -89,6 +89,7 @@ def main():
             stale.unlink()
     for runtime in ("Assets/Scripts/V3/ROS/RosRobotRig.cs", "Assets/Scripts/V3/ROS/RobotExecutionState.cs", "Assets/Scripts/V3/ROS/RobotDescriptionMessages.cs",
                     "Assets/Scripts/V3/ROS/ToolSelectionController.cs", "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+                    "Assets/Scripts/V3/UI/RobotRegistrationGuide.cs",
                     "Assets/Scripts/V3/ROS/TcpPlanningController.cs", "Assets/Scripts/V3/TcpTargetPreview.cs",
                     "Assets/Scripts/V3/URInputManager.cs", "Assets/Scripts/V3/TargetRotationHandles.cs",
                     "Assets/Scripts/V3/TargetPoseContextMenu.cs", "Assets/Scripts/V3/ToolPoseVisual.cs",
@@ -170,6 +171,7 @@ public sealed class QRDetector : MonoBehaviour {
 }
 public sealed class URInstantiator : MonoBehaviour {
     public UnityEvent<GameObject, Pose> OnURInstantiated = new UnityEvent<GameObject, Pose>();
+    public GameObject RobotPrefab { get; set; }
     public string CalibrationSummary => "Offline placement validation";
     public bool IsCalibrating { get; private set; }
     public bool HasSavedCalibration => false;
@@ -221,7 +223,7 @@ public sealed class OfflineTcpExecutionController : TcpPlanningController {
     settings = DESTINATION / "ProjectSettings"
     settings.mkdir(parents=True, exist_ok=True)
     shutil.copy2(PROJECT / "ProjectSettings/ProjectVersion.txt", settings / "ProjectVersion.txt")
-    for asset in ("Mobile_RPAsset.asset", "Mobile_Renderer.asset", "UniversalRenderPipelineGlobalSettings.asset"):
+    for asset in ("Mobile_RPAsset.asset", "Mobile_Renderer.asset", "PC_RPAsset.asset", "PC_Renderer.asset", "UniversalRenderPipelineGlobalSettings.asset"):
         copy_file(PROJECT / "Assets/Settings" / asset)
     graphics = (PROJECT / "ProjectSettings/GraphicsSettings.asset").read_text(encoding="utf-8-sig")
     mobile_guid = GUID.search((PROJECT / "Assets/Settings/Mobile_RPAsset.asset.meta").read_text()).group(1)

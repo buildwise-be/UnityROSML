@@ -85,6 +85,7 @@ public class RobotStateService : MonoBehaviour
         if (trackingSpace != null) RobotCoordinateService.Instance.Initialize(_robotRootArticulation, trackingSpace);
         else RobotCoordinateService.Instance.Initialize(_robotRootArticulation);
         _isInitialized = RobotCoordinateService.Instance.IsInitialized;
+        if (_isInitialized) RobotContourDisplay.SetLiveRobot(_robotInstance.GetComponent<RosRobotRig>());
     }
 
     /// <summary>

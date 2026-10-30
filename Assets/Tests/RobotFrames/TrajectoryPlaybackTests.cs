@@ -150,6 +150,131 @@ public sealed class TrajectoryPlaybackTests
     }
 
     [Test]
+    public void LoopPreservesOvershootAndSelectedSpeedWithoutChangingStaticGhostsOrTheReviewedPlan()
+    {
+        object trajectory = Trajectory(new[] { 0d, 1d, 4d }, _initial, Offset(0.4), Offset(1.0));
+        Call(_visualizer, "SetTrajectory", trajectory);
+        Assert.That(Get<bool>(_visualizer, "LoopPlayback"), Is.False);
+        Component[] staticGhosts = ((IList)Field(_visualizer, "_clones").GetValue(_visualizer)).Cast<Component>().ToArray();
+        Pose[] staticPoses = staticGhosts.Select(rig => PoseOf(Get<Transform>(rig, "Tcp"))).ToArray();
+        Call(_visualizer, "SetLoopPlayback", true);
+        Call(_visualizer, "SetPlaybackSpeed", 2f);
+        Call(_visualizer, "Play");
+        Advance(6.75f); // 13.5 seconds crosses three four-second loops, retaining t=1.5.
+
+        AssertTime(1.5d);
+        AssertPreviewJoints(Offset(0.5));
+        AssertPreviewTcp(Offset(0.5));
+        Assert.That(Get<bool>(_visualizer, "IsPlaying"), Is.True);
+        Assert.That(Get<bool>(_visualizer, "IsShowingTrajectory", trajectory), Is.True);
+        IList remaining = (IList)Field(_visualizer, "_clones").GetValue(_visualizer);
+        Assert.That(remaining.Count, Is.EqualTo(staticGhosts.Length));
+        for (int index = 0; index < staticGhosts.Length; index++)
+        {
+            Assert.That(remaining[index], Is.SameAs(staticGhosts[index]));
+            AssertPose(PoseOf(Get<Transform>(staticGhosts[index], "Tcp")), staticPoses[index]);
+        }
+        AssertLiveJoints();
+    }
+
+    [Test]
+    public void LoopStillAllowsPauseSeekReplayAndFinishingTheCurrentPassWhenDisabled()
+    {
+        Call(_visualizer, "SetTrajectory", Trajectory(new[] { 0d, 4d }, _initial, Offset(0.8)));
+        Call(_visualizer, "SetLoopPlayback", true);
+        Call(_visualizer, "Replay");
+        Advance(4f);
+        AssertTime(0d);
+        AssertPreviewJoints(_initial);
+        Assert.That(Get<bool>(_visualizer, "IsPlaying"), Is.True);
+        Call(_visualizer, "Seek", 0.75f);
+        Advance(20f);
+        AssertTime(3d);
+        Assert.That(Get<bool>(_visualizer, "IsPlaying"), Is.False, "Scrubbing pauses a loop until Play.");
+        Call(_visualizer, "Play");
+        Advance(0.5f);
+        AssertTime(3.5d);
+        Call(_visualizer, "Pause");
+        Advance(20f);
+        AssertTime(3.5d);
+        Call(_visualizer, "Play");
+        Call(_visualizer, "SetLoopPlayback", false);
+        Assert.That(Get<bool>(_visualizer, "IsPlaying"), Is.True, "Disabling loop finishes this pass.");
+        Advance(1f);
+        AssertTime(4d);
+        AssertPreviewJoints(Offset(0.8));
+        Assert.That(Get<bool>(_visualizer, "IsPlaying"), Is.False);
+        AssertLiveJoints();
+    }
+
+    [Test]
+    public void SelectingLoopAtCompletionWaitsForPlayAndAReplacementPlanStillStartsHidden()
+    {
+        object first = Trajectory(new[] { 0d, 4d }, _initial, Offset(0.8));
+        Call(_visualizer, "SetTrajectory", first);
+        Call(_visualizer, "Play");
+        Advance(5f);
+        AssertTime(4d);
+        Assert.That(Get<bool>(_visualizer, "IsPlaying"), Is.False);
+        Call(_visualizer, "SetLoopPlayback", true);
+        Advance(1f);
+        AssertTime(4d);
+        Assert.That(Get<bool>(_visualizer, "IsPlaying"), Is.False, "The checkbox must not start animation.");
+        Call(_visualizer, "Play");
+        Advance(0.5f);
+        AssertTime(0.5d);
+        Component retained = PlaybackRig;
+        Call(_visualizer, "SetTrajectory", first);
+        Assert.That(PlaybackRig, Is.SameAs(retained));
+        AssertTime(0.5d);
+        Assert.That(Get<bool>(_visualizer, "LoopPlayback"), Is.True);
+
+        Call(_visualizer, "SetTrajectory", Trajectory(new[] { 0d, 2d }, _initial, Offset(0.4)));
+        Assert.That(Get<bool>(_visualizer, "LoopPlayback"), Is.True, "Loop is a presentation preference, like playback speed.");
+        Assert.That(Get<bool>(_visualizer, "IsPlaying"), Is.False);
+        AssertAnimatedRobotVisible(false);
+        AssertTime(0d);
+        Call(_visualizer, "Replay");
+        Advance(2.5f);
+        AssertTime(0.5d);
+        AssertPreviewJoints(Offset(0.1));
+        AssertLiveJoints();
+    }
+
+    [TestCase("Play")]
+    [TestCase("Replay")]
+    public void LoopDoesNotTurnAZeroDurationPlanIntoRunningPlayback(string action)
+    {
+        Call(_visualizer, "SetLoopPlayback", true);
+        Call(_visualizer, "SetTrajectory", Trajectory(new[] { 0d }, Offset(0.5)));
+        Call(_visualizer, action);
+        Advance(100f);
+        AssertTime(0d);
+        Assert.That(Get<bool>(_visualizer, "IsPlaying"), Is.False);
+        AssertAnimatedRobotVisible(true);
+        AssertPreviewJoints(Offset(0.5));
+    }
+
+    [TestCase("focus")]
+    [TestCase("pause")]
+    [TestCase("disable")]
+    public void LosingFocusSuspendingOrDisablingStillPausesAnActiveLoop(string cause)
+    {
+        Call(_visualizer, "SetTrajectory", Trajectory(new[] { 0d, 4d }, _initial, Offset(0.8)));
+        Call(_visualizer, "SetLoopPlayback", true);
+        Call(_visualizer, "Play");
+        Advance(1f);
+        if (cause == "focus") Private(_visualizer, "OnApplicationFocus", false);
+        else if (cause == "pause") Private(_visualizer, "OnApplicationPause", true);
+        else Private(_visualizer, "OnDisable");
+        Advance(12f);
+        AssertTime(1d);
+        Assert.That(Get<bool>(_visualizer, "IsPlaying"), Is.False);
+        Assert.That(Get<bool>(_visualizer, "LoopPlayback"), Is.True);
+        AssertLiveJoints();
+    }
+
+    [Test]
     public void HoldsAndDuplicateTimestampsHaveDeterministicSampling()
     {
         Call(_visualizer, "SetTrajectory", Trajectory(new[] { 0d, 1d, 1d, 3d, 4d },
@@ -213,6 +338,7 @@ public sealed class TrajectoryPlaybackTests
     public void ClearingOrChangingTheRobotModelStopsAndDisposesTheOwnedPreview(string reason)
     {
         Call(_visualizer, "SetTrajectory", Trajectory(new[] { 0d, 2d }, _initial, Offset(0.5)));
+        Call(_visualizer, "SetLoopPlayback", true);
         Call(_visualizer, "Play");
         Component preview = PlaybackRig;
         if (reason == "model") Assert.That(Call(_live, "ApplyModel", RosRobotModelCatalog.Load().Find("none")), Is.EqualTo(true));
@@ -227,6 +353,7 @@ public sealed class TrajectoryPlaybackTests
         }
         else Call(_visualizer, "SetTrajectory", new object[] { null });
         Assert.That(Get<bool>(_visualizer, "HasPlayback") || Get<bool>(_visualizer, "IsPlaying"), Is.False);
+        Assert.That(Get<bool>(_visualizer, "LoopPlayback"), Is.True, "Clearing a plan preserves only the loop preference, never its animation.");
         Assert.That(preview == null, Is.True, "The preview owns and disposes its separate cloned robot.");
         Assert.That(Field(_visualizer, "_playbackRig").GetValue(_visualizer), Is.Null);
     }
@@ -323,6 +450,146 @@ public sealed class TrajectoryPlaybackTests
         Private(menu, "RefreshPlayback");
         Assert.That(Get<bool>(play, "interactable") || Get<bool>(timeline, "interactable"), Is.False);
         instantiator.GetType().GetProperty("IsCalibrating").GetSetMethod(true).Invoke(instantiator, new object[] { false });
+    }
+
+    [Test]
+    public void ActualLoopCheckboxRequiresAPlanAndChangesOnlyItsPreviewPreference()
+    {
+        Component menu = CreatePlaybackMenu();
+        Component loop = (Component)Field(menu, "_playbackLoopToggle").GetValue(menu);
+        Assert.That(loop.GetType(), Is.EqualTo(TypeOf("UnityEngine.UI.Toggle")));
+        Assert.That(Get<bool>(loop, "interactable"), Is.False);
+        ClickLoop(loop);
+        Private(menu, "SetPlaybackLoop", true);
+        Assert.That(Get<bool>(_visualizer, "LoopPlayback"), Is.False, "No plan means no active loop control.");
+
+        object trajectory = Trajectory(new[] { 0d, 4d }, _initial, Offset(0.8));
+        Call(_visualizer, "SetTrajectory", trajectory);
+        Call(_visualizer, "Seek", 0.5f);
+        Component preview = PlaybackRig;
+        Component planner = Add("Loop-test reviewed TCP plan", "TcpPlanningController");
+        Set(menu, "_tcpPlanning", planner);
+        Set(planner, "_pendingPreview", trajectory);
+        Set(planner, "_reviewedPlanId", "retained-loop-plan");
+        var review = (TcpPlanReview)Field(planner, "_review").GetValue(planner);
+        review.Begin("loop-review");
+        review.AcceptPreview("loop-review");
+        review.AcceptResult("loop-review", true);
+        int revision = Get<int>(_coordinates, "CalibrationRevision");
+        Private(menu, "RefreshPlayback");
+        Assert.That(Get<bool>(loop, "interactable"), Is.True);
+        Assert.That(Get<bool>(loop, "isOn"), Is.False);
+
+        ClickLoop(loop);
+
+        Assert.That(Get<bool>(_visualizer, "LoopPlayback"), Is.True);
+        Assert.That(Get<bool>(loop, "isOn"), Is.True);
+        Assert.That(Get<bool>(_visualizer, "IsPlaying"), Is.False, "A checkbox must not start the ghost.");
+        AssertTime(2d);
+        Assert.That(PlaybackRig, Is.SameAs(preview));
+        Assert.That(Get<bool>(_visualizer, "IsShowingTrajectory", trajectory), Is.True);
+        Assert.That(Field(planner, "_pendingPreview").GetValue(planner), Is.SameAs(trajectory));
+        Assert.That(Field(planner, "_reviewedPlanId").GetValue(planner), Is.EqualTo("retained-loop-plan"));
+        Assert.That(review.RequestId, Is.EqualTo("loop-review"));
+        Assert.That(review.CanExecute, Is.True, "Loop selection must neither revoke nor consume reviewed plan permission.");
+        Assert.That(Get<bool>(planner, "IsExecuting"), Is.False);
+        Assert.That(Get<int>(_coordinates, "CalibrationRevision"), Is.EqualTo(revision));
+        AssertPreviewJoints(Offset(0.4));
+        AssertLiveJoints();
+
+        Call(_visualizer, "SetLoopPlayback", false);
+        Private(menu, "RefreshPlayback");
+        Assert.That(Get<bool>(loop, "isOn"), Is.False, "The checkbox follows external presentation changes.");
+        Call(_visualizer, "SetLoopPlayback", true);
+        Private(menu, "RefreshPlayback");
+        Assert.That(Get<bool>(loop, "isOn"), Is.True);
+    }
+
+    [TestCase("QR alignment")]
+    [TestCase("point placement")]
+    public void LoopCheckboxIsDisabledAndItsCallbackRejectsChangesDuringPlacement(string placement)
+    {
+        Component menu = CreatePlaybackMenu();
+        Component loop = (Component)Field(menu, "_playbackLoopToggle").GetValue(menu);
+        Call(_visualizer, "SetTrajectory", Trajectory(new[] { 0d, 4d }, _initial, Offset(0.8)));
+        Component state = Add("Loop-test " + placement, placement == "QR alignment" ? "URInstantiator" : "RobotPointRegistration");
+        Set(menu, placement == "QR alignment" ? "_instantiator" : "_pointRegistration", state);
+        PropertyInfo property = state.GetType().GetProperty(placement == "QR alignment" ? "IsCalibrating" : "IsCollecting");
+        property.GetSetMethod(true).Invoke(state, new object[] { true });
+        try
+        {
+            Private(menu, "RefreshPlayback");
+            Assert.That(Get<bool>(loop, "interactable"), Is.False);
+            ClickLoop(loop);
+            Private(menu, "SetPlaybackLoop", true);
+            Assert.That(Get<bool>(_visualizer, "LoopPlayback"), Is.False);
+            Assert.That(Get<bool>(_visualizer, "IsPlaying"), Is.False);
+            AssertTime(0d);
+            AssertLiveJoints();
+        }
+        finally { property.GetSetMethod(true).Invoke(state, new object[] { false }); }
+        Private(menu, "RefreshPlayback");
+        Assert.That(Get<bool>(loop, "interactable"), Is.True);
+    }
+
+    [Test]
+    public void LoopCheckboxFitsItsPreviewHeadingAndConsumesTheXrPress()
+    {
+        Component menu = CreatePlaybackMenu();
+        Component loop = (Component)Field(menu, "_playbackLoopToggle").GetValue(menu);
+        RectTransform rect = (RectTransform)loop.transform;
+        Assert.That(rect.anchoredPosition, Is.EqualTo(new Vector2(166f, -445f)));
+        Assert.That(rect.sizeDelta, Is.EqualTo(new Vector2(82f, 30f)));
+        RectTransform task = (RectTransform)Field(menu, "_taskView").GetValue(menu);
+        Assert.That(rect.anchoredPosition.x + rect.sizeDelta.x, Is.LessThanOrEqualTo(task.sizeDelta.x));
+        Assert.That(-rect.anchoredPosition.y + rect.sizeDelta.y, Is.LessThan(478f), "Loop must not overlap Play/Replay.");
+        var time = (Component)Field(menu, "_playbackTime").GetValue(menu);
+        Assert.That(rect.anchoredPosition.x + rect.sizeDelta.x, Is.LessThan(((RectTransform)time.transform).anchoredPosition.x));
+        Assert.That(task.GetComponentsInChildren(TypeOf("TMPro.TextMeshProUGUI"), true)
+            .Any(label => Get<string>(label, "text") == "Loop"), Is.True);
+        Component trigger = rect.GetComponent(TypeOf("UnityEngine.EventSystems.EventTrigger"));
+        Assert.That(trigger, Is.Not.Null);
+        IList entries = (IList)trigger.GetType().GetProperty("triggers").GetValue(trigger);
+        object pointer = Activator.CreateInstance(TypeOf("UnityEngine.EventSystems.PointerEventData"), new object[] { null });
+        object press = entries.Cast<object>().Single(entry => Field(entry, "eventID").GetValue(entry).ToString() == "PointerDown");
+        object release = entries.Cast<object>().Single(entry => Field(entry, "eventID").GetValue(entry).ToString() == "PointerUp");
+        // Native press tracking intentionally ignores a disabled menu owner.
+        // Enable its real lifecycle for this synchronous EditMode interaction;
+        // no player Start or ROS transport runs in this fixture.
+        ((Behaviour)menu).enabled = true;
+        Private(menu, "OnEnable");
+        try
+        {
+            Assert.That(Get<bool>(menu, "IsVisible"), Is.True);
+            Call(Field(press, "callback").GetValue(press), "Invoke", pointer);
+            object pointers = Field(menu, "_pressedPointers").GetValue(menu);
+            Assert.That(Get<int>(pointers, "Count"), Is.EqualTo(1), "The menu must consume this XR press.");
+            Call(Field(release, "callback").GetValue(release), "Invoke", pointer);
+            Assert.That(Get<int>(pointers, "Count"), Is.Zero);
+        }
+        finally
+        {
+            Private(menu, "OnDisable");
+            ((Behaviour)menu).enabled = false;
+        }
+    }
+
+    private Component CreatePlaybackMenu()
+    {
+        Component menu = Add("Playback loop test menu", "ToolSelectionMenu");
+        Set(menu, "_trajectoryVisualizer", _visualizer);
+        Private(menu, "BuildMenu");
+        Canvas canvas = (Canvas)Field(menu, "_canvas").GetValue(menu);
+        _owned.Add(canvas.gameObject);
+        ((RectTransform)Field(menu, "_panel").GetValue(menu)).gameObject.SetActive(true);
+        Private(menu, "RefreshPlayback");
+        return menu;
+    }
+
+    private static void ClickLoop(Component loop)
+    {
+        object pointer = Activator.CreateInstance(TypeOf("UnityEngine.EventSystems.PointerEventData"), new object[] { null });
+        loop.GetType().GetMethod("OnPointerClick").Invoke(loop, new[] { pointer });
     }
 
     /// <summary>Render the real arm/tool preview at three recorded plan times using the mobile URP project.</summary>

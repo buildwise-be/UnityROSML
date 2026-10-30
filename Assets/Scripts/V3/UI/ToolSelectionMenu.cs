@@ -71,8 +71,14 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private Button _pointQrButton;
     private TextMeshProUGUI _pointProgress;
     private TextMeshProUGUI _pointStatus;
+    private RobotRegistrationGuide _pointGuide;
+    private Transform _pointGuideAnchor;
+    private TextMeshProUGUI _pointGuideTitle;
+    private TextMeshProUGUI _pointGuidePose;
     private readonly List<TextMeshProUGUI> _pointLabels = new List<TextMeshProUGUI>();
     private TextMeshProUGUI _status;
+    private Toggle _robotContoursToggle;
+    private bool _contourStateSubscribed;
     private Button _tcpTaskButton;
     private Button _pickPlaceTaskButton;
     private TextMeshProUGUI _taskHelp;
@@ -86,6 +92,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private Button _playbackPlayPauseButton;
     private TextMeshProUGUI _playbackPlayPauseLabel;
     private Button _playbackReplayButton;
+    private Toggle _playbackLoopToggle;
     private Slider _playbackTimeline;
     private TextMeshProUGUI _playbackTime;
     private readonly List<Button> _playbackSpeedButtons = new List<Button>();
@@ -146,6 +153,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
             _canvas.worldCamera = viewer;
             if (!_hasPositioned) RecenterMenu();
             FaceCamera(viewer.transform);
+            PositionPointGuide(viewer);
         }
         if (!_draggingMenu || _grabInteractor == null) return;
         if (!InteractorIsTracked(_grabInteractor) || !TryInteractorPose(_grabInteractor, out Pose pointer))
@@ -154,6 +162,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
             return;
         }
         MoveMenuDrag(pointer);
+        if (viewer != null) PositionPointGuide(viewer);
     }
 
     private Vector3 InitialPosition(Transform camera)
@@ -266,6 +275,8 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         if (_lastTcpMode != tcp || _lastQrValidated != qr || _lastTargetRotation != TargetRotationHandles.IsInteracting) RefreshTask();
         RefreshPlayback();
         RefreshPathThickness();
+        if (_pointGuide != null && _pointGuidePose != null && IsPointCollecting)
+            _pointGuidePose.text = _pointGuide.PoseStatus;
     }
 
     private void RefreshPlayback()
@@ -275,6 +286,11 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         bool available = _trajectoryVisualizer != null && _trajectoryVisualizer.HasPlayback && !IsPlacementBusy;
         _playbackPlayPauseButton.interactable = available;
         _playbackReplayButton.interactable = available;
+        if (_playbackLoopToggle != null)
+        {
+            _playbackLoopToggle.interactable = available;
+            _playbackLoopToggle.SetIsOnWithoutNotify(_trajectoryVisualizer != null && _trajectoryVisualizer.LoopPlayback);
+        }
         _playbackTimeline.interactable = available;
         _playbackPlayPauseLabel.text = available && _trajectoryVisualizer.IsPlaying ? "Pause" : "Play";
         _playbackTime.text = available
@@ -312,6 +328,13 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     {
         if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsPlacementBusy) return;
         _trajectoryVisualizer.Seek(normalized);
+        RefreshPlayback();
+    }
+
+    private void SetPlaybackLoop(bool loop)
+    {
+        if (_trajectoryVisualizer == null || !_trajectoryVisualizer.HasPlayback || IsPlacementBusy) return;
+        _trajectoryVisualizer.SetLoopPlayback(loop);
         RefreshPlayback();
     }
 
@@ -353,6 +376,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
 
     public void RefreshMenu()
     {
+        RefreshContourToggle();
         string selected = _controller != null ? _controller.SelectedTool : string.Empty;
         foreach (Choice choice in _choices)
         {
@@ -371,6 +395,40 @@ public sealed class ToolSelectionMenu : MonoBehaviour
                 ? _controller.StatusText : "Tool profiles are not available yet.";
         }
         RefreshTask();
+    }
+
+    private void BindContourControls()
+    {
+        if (!_contourStateSubscribed)
+        {
+            RobotContourDisplay.StateChanged += RefreshContourToggle;
+            _contourStateSubscribed = true;
+        }
+        RefreshContourToggle();
+    }
+
+    private void UnbindContourControls()
+    {
+        RobotContourDisplay.StateChanged -= RefreshContourToggle;
+        _contourStateSubscribed = false;
+    }
+
+    private void RefreshContourToggle()
+    {
+        if (this == null)
+        {
+            RobotContourDisplay.StateChanged -= RefreshContourToggle;
+            return;
+        }
+        if (_robotContoursToggle != null)
+            _robotContoursToggle.SetIsOnWithoutNotify(RobotContourDisplay.Enabled);
+    }
+
+    private void SetRobotContours(bool enabled)
+    {
+        // Presentation only: the live robot coordinator leaves planned ghosts,
+        // captured targets and reviewed robot commands untouched.
+        RobotContourDisplay.SetEnabled(enabled);
     }
 
     public void PlanTask()
@@ -706,6 +764,16 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         bool collecting = IsPointCollecting;
         if (_pointView != null) _pointView.gameObject.SetActive(collecting);
         int count = _pointRegistration != null ? _pointRegistration.CapturedPointCount : 0;
+        if (_pointGuide != null)
+        {
+            if (collecting)
+                _pointGuide.Refresh(_pointRegistration, _instantiator != null ? _instantiator.RobotPrefab : null, 180f);
+            else _pointGuide.Hide();
+        }
+        if (_pointGuideTitle != null)
+            _pointGuideTitle.text = collecting ? (Mathf.Min(count + 1, 4)) + " / 4 · " + _pointRegistration.CurrentPointName : "Cover guide";
+        if (_pointGuidePose != null) _pointGuidePose.text = _pointGuide != null ? _pointGuide.PoseStatus : string.Empty;
+        PositionPointGuide(Camera.main);
         if (_pointProgress != null)
             _pointProgress.text = count + " / 4 points captured\n" +
                 (collecting ? "Next: " + _pointRegistration.CurrentPointName : "Choose Place with 4 points to begin.");
@@ -830,8 +898,9 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         _alignmentView = Rect("Alignment view", _panel, Vector2.zero, new Vector2(440f, 756f));
         _pointView = Rect("Four-point placement view", _panel, Vector2.zero, new Vector2(440f, 756f));
         BuildHeader(_taskView, "Title", "Robot tool");
-        Text("Subtitle", _taskView, new Vector2(16f, -44f), new Vector2(408f, 29f),
-            "Match the mounted tool and ROS setup.", 14f).color = new Color(0.73f, 0.81f, 0.87f);
+        Text("Subtitle", _taskView, new Vector2(16f, -44f), new Vector2(216f, 29f),
+            "Match mounted tool and ROS.", 13f).color = new Color(0.73f, 0.81f, 0.87f);
+        BuildContourToggle();
         CreateChoice("none", "No tool", 16f);
         CreateChoice("kenos", "Kenos", 155f);
         CreateChoice("kenos_sl", "Kenos SL", 294f);
@@ -883,6 +952,43 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         _panel.gameObject.SetActive(isActiveAndEnabled);
     }
 
+    private void BuildContourToggle()
+    {
+        RectTransform row = Rect("Robot contours", _taskView, new Vector2(252f, -44f), new Vector2(172f, 29f));
+        Image background = row.gameObject.AddComponent<Image>();
+        background.color = new Color(0.12f, 0.17f, 0.23f, 1f);
+        _robotContoursToggle = row.gameObject.AddComponent<Toggle>();
+        _robotContoursToggle.targetGraphic = background;
+        _robotContoursToggle.toggleTransition = Toggle.ToggleTransition.None;
+        Navigation navigation = _robotContoursToggle.navigation;
+        navigation.mode = Navigation.Mode.None;
+        _robotContoursToggle.navigation = navigation;
+        ColorBlock colors = _robotContoursToggle.colors;
+        colors.normalColor = Color.white;
+        colors.highlightedColor = new Color(0.8f, 0.95f, 1f);
+        colors.pressedColor = new Color(0.55f, 0.8f, 0.95f);
+        colors.selectedColor = Color.white;
+        _robotContoursToggle.colors = colors;
+        RectTransform box = Rect("Contour checkbox", row, new Vector2(6f, -4f), new Vector2(21f, 21f));
+        Image border = box.gameObject.AddComponent<Image>();
+        border.color = new Color(0.4f, 0.55f, 0.63f);
+        border.raycastTarget = false;
+        RectTransform interior = Rect("Contour checkbox interior", box, new Vector2(2f, -2f), new Vector2(17f, 17f));
+        Image interiorImage = interior.gameObject.AddComponent<Image>();
+        interiorImage.color = new Color(0.045f, 0.08f, 0.11f);
+        interiorImage.raycastTarget = false;
+        RectTransform mark = Rect("Contours enabled mark", box, new Vector2(5f, -5f), new Vector2(11f, 11f));
+        Image markImage = mark.gameObject.AddComponent<Image>();
+        markImage.color = new Color(0.4f, 0.9f, 1f);
+        markImage.raycastTarget = false;
+        _robotContoursToggle.graphic = markImage;
+        Text("Robot contours label", row, new Vector2(35f, 0f), new Vector2(133f, 29f), "Robot contours", 13f);
+        _robotContoursToggle.SetIsOnWithoutNotify(RobotContourDisplay.Enabled);
+        _robotContoursToggle.onValueChanged.AddListener(SetRobotContours);
+        AddPressTracking(row.gameObject);
+        BindContourControls();
+    }
+
     private void BuildPointPlacementView()
     {
         BuildHeader(_pointView, "Four-point placement title", "Place robot with 4 points");
@@ -920,12 +1026,95 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         recenterLabel.text = "Recenter menu";
         recenterLabel.fontSize = 14f;
         recenter.onClick.AddListener(RecenterMenu);
+        BuildPointGuide();
+    }
+
+    private void BuildPointGuide()
+    {
+        RectTransform sidebar = Rect("Four-point miniature guide", _pointView, new Vector2(457f, -170f), new Vector2(220f, 350f));
+        Image background = sidebar.gameObject.AddComponent<Image>();
+        background.color = new Color(0.035f, 0.06f, 0.09f, 0.97f);
+        Outline border = sidebar.gameObject.AddComponent<Outline>();
+        border.effectColor = new Color(0.2f, 0.44f, 0.53f, 0.8f);
+        border.effectDistance = new Vector2(1f, -1f);
+        // Looking/pressing at the illustrative robot is menu interaction too.
+        AddHoverTracking(sidebar.gameObject);
+        AddPressTracking(sidebar.gameObject);
+        _pointGuideTitle = Text("Miniature current cover", sidebar, new Vector2(12f, -12f), new Vector2(196f, 28f), "Cover guide", 18f);
+        _pointGuideTitle.color = new Color(0.55f, 0.91f, 1f);
+        _pointGuidePose = Text("Miniature pose status", sidebar, new Vector2(12f, -44f), new Vector2(196f, 42f), string.Empty, 12f);
+        _pointGuidePose.color = new Color(0.73f, 0.81f, 0.87f);
+        _pointGuideAnchor = new GameObject("Miniature view anchor").transform;
+        _pointGuideAnchor.SetParent(sidebar, false);
+        _pointGuideAnchor.localPosition = new Vector3(110f, -194f, 0f);
+        GameObject mount = new GameObject("UR16e registration miniature");
+        mount.transform.SetParent(_pointGuideAnchor, false);
+        mount.transform.localPosition = new Vector3(0f, 0f, -125f);
+        _pointGuide = mount.AddComponent<RobotRegistrationGuide>();
+        Text("Miniature touch hint", sidebar, new Vector2(12f, -305f), new Vector2(196f, 37f),
+            "Touch the orange center\non the highlighted link.", 13f);
+    }
+
+    private void PositionPointGuide(Camera viewer)
+    {
+        if (_pointGuide == null || _pointGuideAnchor == null || !_pointGuide.HasVisual || viewer == null) return;
+        if (viewer.orthographic)
+        {
+            _pointGuide.transform.localPosition = new Vector3(0f, 0f, -125f);
+            _pointGuide.transform.localScale = Vector3.one;
+            return;
+        }
+        Vector3 towardViewer = viewer.transform.position - _pointGuideAnchor.position;
+        float distance = towardViewer.magnitude;
+        if (distance < 0.05f || !RobotFrameMath.IsValidPose(new Pose(viewer.transform.position, viewer.transform.rotation))) return;
+        float offset = Mathf.Min(0.125f, distance * 0.2f);
+        float fraction = offset / distance;
+        // Move toward the viewer along the card's viewing ray and compensate
+        // perspective magnification so the floating robot stays inside its card.
+        _pointGuide.transform.position = _pointGuideAnchor.position + towardViewer * fraction;
+        _pointGuide.transform.localScale = Vector3.one * (1f - fraction);
+    }
+
+    private void BuildPlaybackLoopToggle()
+    {
+        RectTransform row = Rect("Loop ghost preview", _taskView, new Vector2(166f, -445f), new Vector2(82f, 30f));
+        Image background = row.gameObject.AddComponent<Image>();
+        background.color = new Color(0.12f, 0.17f, 0.23f, 1f);
+        _playbackLoopToggle = row.gameObject.AddComponent<Toggle>();
+        _playbackLoopToggle.targetGraphic = background;
+        _playbackLoopToggle.toggleTransition = Toggle.ToggleTransition.None;
+        Navigation navigation = _playbackLoopToggle.navigation;
+        navigation.mode = Navigation.Mode.None;
+        _playbackLoopToggle.navigation = navigation;
+        ColorBlock colors = _playbackLoopToggle.colors;
+        colors.highlightedColor = new Color(0.8f, 0.95f, 1f);
+        colors.pressedColor = new Color(0.55f, 0.8f, 0.95f);
+        colors.selectedColor = Color.white;
+        _playbackLoopToggle.colors = colors;
+        RectTransform box = Rect("Loop checkbox", row, new Vector2(6f, -6f), new Vector2(18f, 18f));
+        Image border = box.gameObject.AddComponent<Image>();
+        border.color = new Color(0.4f, 0.55f, 0.63f);
+        border.raycastTarget = false;
+        RectTransform interior = Rect("Loop checkbox interior", box, new Vector2(2f, -2f), new Vector2(14f, 14f));
+        Image interiorImage = interior.gameObject.AddComponent<Image>();
+        interiorImage.color = new Color(0.045f, 0.08f, 0.11f);
+        interiorImage.raycastTarget = false;
+        RectTransform mark = Rect("Loop enabled mark", box, new Vector2(4f, -4f), new Vector2(10f, 10f));
+        Image markImage = mark.gameObject.AddComponent<Image>();
+        markImage.color = new Color(0.4f, 0.9f, 1f);
+        markImage.raycastTarget = false;
+        _playbackLoopToggle.graphic = markImage;
+        Text("Loop ghost preview label", row, new Vector2(31f, 0f), new Vector2(47f, 30f), "Loop", 13f);
+        _playbackLoopToggle.SetIsOnWithoutNotify(_trajectoryVisualizer != null && _trajectoryVisualizer.LoopPlayback);
+        _playbackLoopToggle.onValueChanged.AddListener(SetPlaybackLoop);
+        AddPressTracking(row.gameObject);
     }
 
     private void BuildPlaybackControls()
     {
-        Text("Arm preview heading", _taskView, new Vector2(16f, -448f), new Vector2(236f, 24f),
-            "Arm + tool preview", 14f).color = new Color(0.73f, 0.81f, 0.87f);
+        Text("Arm preview heading", _taskView, new Vector2(16f, -448f), new Vector2(144f, 24f),
+            "Ghost preview", 14f).color = new Color(0.73f, 0.81f, 0.87f);
+        BuildPlaybackLoopToggle();
         _playbackTime = Text("Arm preview time", _taskView, new Vector2(254f, -448f), new Vector2(170f, 24f),
             "Plan to enable", 13f);
         _playbackTime.alignment = TextAlignmentOptions.MidlineRight;
@@ -1283,6 +1472,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private void OnEnable()
     {
         ActiveMenus.Add(this);
+        BindContourControls();
         BindController();
         if (_panel != null) BindTaskControls();
         if (_panel != null) _panel.gameObject.SetActive(true);
@@ -1316,10 +1506,12 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private void OnDisable()
     {
         ActiveMenus.Remove(this);
+        UnbindContourControls();
         Unsubscribe();
         UnsubscribeTaskControls();
         if (IsCalibrating) _instantiator.CancelCalibration();
         if (IsPointCollecting) _pointRegistration.CancelRegistration();
+        if (_pointGuide != null) _pointGuide.Hide();
         ClearPointerState();
         if (_panel != null) _panel.gameObject.SetActive(false);
         if (_grabHandle != null) _grabHandle.gameObject.SetActive(false);
@@ -1328,6 +1520,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
     private void OnDestroy()
     {
         ActiveMenus.Remove(this);
+        UnbindContourControls();
         Unsubscribe();
         UnsubscribeTaskControls();
         HoveredMenus.Remove(this);
@@ -1346,6 +1539,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         if (_recenterButton != null) _recenterButton.onClick.RemoveListener(RecenterMenu);
         if (_planButton != null) _planButton.onClick.RemoveListener(PlanTask);
         if (_executeButton != null) _executeButton.onClick.RemoveListener(ExecuteTask);
+        if (_robotContoursToggle != null) _robotContoursToggle.onValueChanged.RemoveListener(SetRobotContours);
         if (_rescanButton != null) _rescanButton.onClick.RemoveListener(RescanQr);
         if (_alignButton != null) _alignButton.onClick.RemoveListener(BeginAlignment);
         if (_pointPlacementButton != null) _pointPlacementButton.onClick.RemoveListener(BeginPointPlacement);
@@ -1356,6 +1550,7 @@ public sealed class ToolSelectionMenu : MonoBehaviour
         if (_pathThicknessSlider != null) _pathThicknessSlider.onValueChanged.RemoveListener(SetPathThickness);
         if (_playbackPlayPauseButton != null) _playbackPlayPauseButton.onClick.RemoveListener(TogglePlayback);
         if (_playbackReplayButton != null) _playbackReplayButton.onClick.RemoveListener(ReplayPlayback);
+        if (_playbackLoopToggle != null) _playbackLoopToggle.onValueChanged.RemoveListener(SetPlaybackLoop);
         if (_playbackTimeline != null) _playbackTimeline.onValueChanged.RemoveListener(SeekPlayback);
         for (int index = 0; index < _playbackSpeedButtons.Count; index++)
             if (_playbackSpeedButtons[index] != null) _playbackSpeedButtons[index].onClick.RemoveListener(_playbackSpeedActions[index]);
