@@ -1,0 +1,397 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-11-02 09:57:25Z",
+  "unityVersion": "6000.0.84f1",
+  "scope": "Five physical registration contacts, rotating miniature, explicit failures and bounded robot-local XYZ overlay correction",
+  "editorTests": {
+    "total": 637,
+    "passed": 636,
+    "failed": 0,
+    "skipped": 1
+  },
+  "skippedCases": [
+    {
+      "name": "WorkflowServiceLifecycleTests.ServiceReusesTheConnectorPreservesHudEditsAndRecoversAReplacement",
+      "reason": "Run the scene workflow harness to exercise the real ROSService; the baseline harness deliberately stubs it."
+    }
+  ],
+  "registrationTests": {
+    "total": 78,
+    "fixtures": {
+      "PointPlacementMenuTests": 10,
+      "RobotCoverLandmarkTests": 10,
+      "RobotPointRegistrationMathTests": 13,
+      "RobotPointRegistrationWorkflowTests": 30,
+      "RobotRegistrationGuideTests": 15
+    }
+  },
+  "testResults": {
+    "path": "Library/FixtureTilingValidation/five-point-results.xml",
+    "sha256": "47bed50a8ab52bc93f7d59d3f9b9b9d820bd27906b8ad0926d3341393f8f57b5"
+  },
+  "landmarks": {
+    "orderedNames": [
+      "Shoulder",
+      "Elbow",
+      "Wrist 2",
+      "Wrist 3",
+      "Base rear"
+    ],
+    "fifthOwningLink": "ur_base_link_inertia",
+    "fifthSurface": "Fixed gray base housing, upstream of shoulder pan",
+    "provenance": "CAD-derived default contact; independently checked against the actual base.dae surface and fixed-link FK"
+  },
+  "miniature": {
+    "turnPeriodSeconds": 10,
+    "checks": "Deterministic orbit, stable geometry/centering, all five highlighted contacts and unchanged live/locked joint inputs"
+  },
+  "positionCorrection": {
+    "axes": "ROS robot-local XYZ",
+    "maximumTotalOffsetMeters": 0.02,
+    "bound": "Euclidean displacement from the original fit across repeated adjustments",
+    "orientationChanged": false,
+    "fitResidualsRecomputedAsAccuracy": false
+  },
+  "runtimeCompile": {
+    "helperSources": 9,
+    "mainSources": 113,
+    "errors": 0,
+    "warnings": [
+      "Assets\\Scripts\\PickAndPlaceScriptableObject.cs(29,26): warning CS0618: 'CoordinatesConverter' is obsolete: 'Use RobotCoordinateService instead'",
+      "Assets\\Samples\\Magic Leap SDK\\2.6.0\\ML Rig & OpenXR Input\\MagicLeapController.cs(45,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'",
+      "Assets\\Scripts\\UR16eServiceCaller.cs(55,18): warning CS0414: The field 'Ur16EServiceCaller.debugEnabled' is assigned but its value is never used"
+    ],
+    "evidence": {
+      "path": "Library/FivePointRegistrationValidationSupport/runtime_compile_summary.json",
+      "sha256": "14eb74e7d0508a402c65771dacf745fa22da9fe7bb1cce189ba6104469d553ad"
+    }
+  },
+  "visualQa": {
+    "log": {
+      "path": "Library/FixtureTilingValidation/five-point-previews.log",
+      "sha256": "7ccb0de3d4f598261452f54c8125cc58aa024cd930486e6eb8b73b96b1bb49a1"
+    },
+    "previews": [
+      {
+        "path": "Library/FixtureTilingValidation/FivePointRegistrationPreviews/adjustment.png",
+        "sha256": "aec7e695864d8c761e8fcecc7d20d598b17d60faf52ab49deb8bb8a8fd29064b"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FivePointRegistrationPreviews/failure.png",
+        "sha256": "7a53d35fd3595358e1f6c12dc4699aa797b8907248b894f8e77dc54ecc2c98c0"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FivePointRegistrationPreviews/Guide/step-1.png",
+        "sha256": "bf5789e8bd1c0c5c7bce30d9e1590f57ff1b407602869b41f070782c561ce2ca"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FivePointRegistrationPreviews/Guide/step-2.png",
+        "sha256": "8cea2bcc579140547f6bdac285a57fabb45b585ae2e6c01df1124744548cff56"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FivePointRegistrationPreviews/Guide/step-3.png",
+        "sha256": "1353e0430aadaa65b49c1da8674c9be33741b3b65257a1b7f9b65c04f0cd0210"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FivePointRegistrationPreviews/Guide/step-4.png",
+        "sha256": "b39f1e5a7f6f42101bf5b4b6b116db182b5997158c8ebd740699802da2ad5676"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FivePointRegistrationPreviews/Guide/step-5.png",
+        "sha256": "e38ea56492bca61dda1475f7e70aeb0c8d8c70a248239e02462b9050cb4b9df3"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/FivePointRegistrationPreviews/placement.png",
+        "sha256": "3295ac92f84ef507e9f76a0fc1e6bd2187de42390c60f911f2f91e96a7c23326"
+      }
+    ],
+    "markerPixelChecks": "All five current contact markers remain visible using the bundled XR-aware overlay shader/material",
+    "orangeMarkerPixelsByStep": {
+      "1": 278,
+      "2": 282,
+      "3": 275,
+      "4": 279,
+      "5": 278
+    },
+    "shaderValidation": "Graphics-enabled mobile URP D3D11 render; no shader compilation errors; native headset rendering not exercised"
+  },
+  "sources": [
+    {
+      "path": "Assets/Prefabs/ur16e_kenos/meshes/ur_description/meshes/ur10e/visual/base.dae",
+      "sha256": "f39d15630605cb2959d33db68545c8e75048d67e88c592b752be0e77f4eee8d3"
+    },
+    {
+      "path": "Assets/Prefabs/ur16e_kenos/meshes/ur_description/meshes/ur10e/visual/base.dae.meta",
+      "sha256": "4b171b8b0bdf263cdf148fde05e3e78dc2125255dbaf55f024483f3f7548571e"
+    },
+    {
+      "path": "Assets/Prefabs/ur16e_kenos/ur16e_kenos.prefab",
+      "sha256": "78427e1fbd1d84f807d06937df1b7f265963ba867c3a1c7e0ee8bd3d7e19c2f3"
+    },
+    {
+      "path": "Assets/Prefabs/ur16e_kenos/ur16e_kenos.prefab.meta",
+      "sha256": "60101d8eb4c5c46b34b48df1b2b746f49f7c398532eeead2206d54c1011b593e"
+    },
+    {
+      "path": "Assets/Resources/RobotModels/Models.json",
+      "sha256": "04f054fb7d1e9828f7fb6a4ff543508499e6c43b9a59f3e08d5ecffbf005ab2b"
+    },
+    {
+      "path": "Assets/Resources/RobotModels/Models.json.meta",
+      "sha256": "c30c9e0c2de6d7bbe0802c3c84bb294c90342ccc4b6fa66975c81e9c04792775"
+    },
+    {
+      "path": "Assets/Resources/RobotTargetMarkers/RegistrationGuideTarget.mat",
+      "sha256": "12e4698c8f57f187ec9a307dc959d50ec69c03dbfd8701e3fb406c33602c5f49"
+    },
+    {
+      "path": "Assets/Resources/RobotTargetMarkers/RegistrationGuideTarget.mat.meta",
+      "sha256": "28392d8acd74e8ad09346231ce4096300c200d7e4190a095e2421433f80726d3"
+    },
+    {
+      "path": "Assets/Resources/RobotTargetMarkers/RegistrationGuideTarget.shader",
+      "sha256": "4f4d248c02a766394f7ad992c1eb12d97f10055394e851f5e1cdcdf91ff04487"
+    },
+    {
+      "path": "Assets/Resources/RobotTargetMarkers/RegistrationGuideTarget.shader.meta",
+      "sha256": "1f59f8f13355ac069ed51f17b8522165705f7172d75d293bb8beebe21573f429"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotCalibrationStore.cs",
+      "sha256": "09a84795fb0983bb1cf4239fb1a345e983b1941bb1d5b7fe4201975f0ac3ee36"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotCalibrationStore.cs.meta",
+      "sha256": "bc49c27e522cee89944965ee4f914c9b676fcf378a708384ec9f222bf71c1d6a"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotCoverLandmarks.cs",
+      "sha256": "b1fa3b5d3a3cd553231b3fb8ea32bbeb8c950ef5fb5978f458bd57e17810612e"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotCoverLandmarks.cs.meta",
+      "sha256": "dd37f973a706650affdb756c863fbfbd9619c7e0243061485934a5c97812be57"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotFrameMath.cs",
+      "sha256": "9776aa4a05be4d8db0d463283f666bb15b156bf5f9f615d5251fc6df084dac31"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotFrameMath.cs.meta",
+      "sha256": "38063f9c98709de308b237ed9f757a82ec3844538fdea97a9a812dbbbbd35be7"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotPlanRepeatReview.cs",
+      "sha256": "189b01800e5a1c8b30917d5269ca0a6f5cdcce431f7d9e508168fc0f7bdb56fb"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotPlanRepeatReview.cs.meta",
+      "sha256": "523cd8bce5a4fa9d58191ac1454c71ee312d0d609696a1fa15063d56aa0f3ffe"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotPointRegistrationMath.cs",
+      "sha256": "ff52bc68b9bbd513c3f067092301e291ff5224f66b5c7eba28bca59c34720034"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotPointRegistrationMath.cs.meta",
+      "sha256": "0c887adf514962994b34b2bf9b876548cd31f3c253769386b56ba52d9ae99313"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotDescription.cs",
+      "sha256": "ff33d874821b402e9f7a27b6abcd24dbbe23fa5902bc55fca8d2657961fb12b1"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotDescription.cs.meta",
+      "sha256": "6ae6a16af3525ffd81011d48d1b8f7f68f92af3f04b9244d6aeeaaa850af35b5"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotModel.cs",
+      "sha256": "7fbfe618978cc0d3c78ab69660ffa56ca7f2c233ef97a1f5033bca133ea42fb0"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotModel.cs.meta",
+      "sha256": "aabb3c430ab3af1746eb119d7628bbad13b1f4cc4cee8ed92a002f3c2e034cb5"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpPlanReview.cs",
+      "sha256": "dd853d13d85e81a1783452140d717dc64250620c35dcb4957f06807e9a02899a"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpPlanReview.cs.meta",
+      "sha256": "f03f8ffaf4d24bfd8d7790f240733e0cf776b4559dfd6b6067df1f3d80144d41"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpTargetRotationMath.cs",
+      "sha256": "c087c5e2656cfe4ff8ac9a01bcf726c05c3e0125e6a0714d234e3ee99c7032ae"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/TcpTargetRotationMath.cs.meta",
+      "sha256": "dd6db2a911a218918ab9297c34fa20beee2cbc1c4304d959f727270643dfb844"
+    },
+    {
+      "path": "Assets/Scripts/V3/RobotPointRegistration.cs",
+      "sha256": "4c97385852058e123685f6b934430fe0ef32e63f73b70bff8718db4f0197ca2f"
+    },
+    {
+      "path": "Assets/Scripts/V3/RobotPointRegistration.cs.meta",
+      "sha256": "fc060f969c8b67304a1eb4a553b8a83103dafc9b05061ae8075eb7b64d298172"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/JointStateSubscriber.cs",
+      "sha256": "2943ef249a49a39b689272b65698cde01bde856e3868b6450f2b23793736d16b"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/JointStateSubscriber.cs.meta",
+      "sha256": "98ab9fd42f506d55fde19bcbd5144ab09c97b5077a50cd414e11277afffd6c11"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotCoordinateService.cs",
+      "sha256": "70b762078de80613b5902e792e5d3a230c2f4d8cce1a9788c797522f1c4714e0"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotCoordinateService.cs.meta",
+      "sha256": "f13aa7eff6cb9f234666eabb1dd3773737a5fc3db495e3d7460b8f6db1bbf31a"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotStateService.cs",
+      "sha256": "e54fb4ee3ee7e8d5a8e933c96b64e6a4e2e2db2acf87818b9aa9b5e20f5cb0f3"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotStateService.cs.meta",
+      "sha256": "549790c458fd092cea794fc814941d2ad1acb5f9c3a22dae2b7ffc5de3819e32"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/RobotRegistrationGuide.cs",
+      "sha256": "959acc23cc3aeca5b06c02fe2aeca362530fda599e5daab4622f622dcde18cbc"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/RobotRegistrationGuide.cs.meta",
+      "sha256": "133d21fe48d327bb540dd78f8eda45a8913f4e65716b74f2ede54eb66cb39ae4"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "5fcd73f66f5bf6c85810d5e10475b3418bf068c48235c77fc2d887f6aab30b56"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs.meta",
+      "sha256": "dadfd7d091659512fbd587700c74fd65278627ba6ca02cef239f8b5510aea9e8"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.Fixture.cs",
+      "sha256": "263e7315254cc2d7281ac5a309916f1c6b87e4173dd2694be96e7bb81df03ba3"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.Fixture.cs.meta",
+      "sha256": "e48dc3e1642020e36768595809e6677f78b3de43cdf14541de6197418bfbe123"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.Navigation.cs",
+      "sha256": "1242bd14bb41b68e2f57d69b6ad1334cc59035d3f87a5b9a2f5272ec589f334a"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.Navigation.cs.meta",
+      "sha256": "0452848fc57803e4a7c4a5161625d4b52186063f9e2ac9c723f695c0c70dfd82"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.PointRegistration.cs",
+      "sha256": "3fbf22c720736d91bdf75bd740f622a079ca7d67ff57625ba0eca505241b8362"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.PointRegistration.cs.meta",
+      "sha256": "4d629c6b809086cb44feb41241cfc457cf5391fca16de34d63478181e1341864"
+    },
+    {
+      "path": "Assets/Scripts/V3/URInputManager.cs",
+      "sha256": "5d1d8241f256a79a5e905b9001e641ecbfa134d3c412389f1b8bf2c229aa53da"
+    },
+    {
+      "path": "Assets/Scripts/V3/URInputManager.cs.meta",
+      "sha256": "c26449402bd968e26b6c16995790f339851eedb96360fecc972da14164a1ae1c"
+    },
+    {
+      "path": "Assets/Scripts/V3/URInstantiator.cs",
+      "sha256": "7cf8bc6a3b62e5dfa888aa456f75d9688dc4601e80ac319b34061855fb8fb5c9"
+    },
+    {
+      "path": "Assets/Scripts/V3/URInstantiator.cs.meta",
+      "sha256": "0d1d9e9cdf0c3104694ba1c7975dcb155f453a3faa888c748a5d081a0d9a9e03"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/PointPlacementMenuTests.cs",
+      "sha256": "bdcdbc52796a19fab17df80de27f3b04c93a8b5dff6af80dc1b36fefda1f4390"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/PointPlacementMenuTests.cs.meta",
+      "sha256": "4c14e35ed40709204bd80e68b62084413d2b48bb61f2c22709a1d2709bf2138f"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotCoverLandmarkTests.cs",
+      "sha256": "cd1411ae2d02502f215216e64685d330f53d142fa316f6650722f7e118c04396"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotCoverLandmarkTests.cs.meta",
+      "sha256": "04e9879631d6bf0785d7783b4fd694a109dda4598fd93a84520b3635e0495feb"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotPointRegistrationMathTests.cs",
+      "sha256": "9b967fe2c421d4a4559e7edbb2feab4fc04e224ad4e030a12b13d5735af1e0ba"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotPointRegistrationMathTests.cs.meta",
+      "sha256": "223fc4ae1b888d4af31595b656fb385a4e592acb8e3aa45850a2839343214be9"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotPointRegistrationWorkflowTests.cs",
+      "sha256": "1b5c96c3625b5c0fe153d45f62ee25cfacc0406e7687bcea51f548a9f6d0efd6"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotPointRegistrationWorkflowTests.cs.meta",
+      "sha256": "1a84c556fe0f2f4ae83e57865c70235518d442769d9f1adedf505ff8789d0021"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotRegistrationGuideTests.cs",
+      "sha256": "23410cce2be6a3e8d5214da18ec09912fb11e275b1689b33ac206696d1254c8c"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotRegistrationGuideTests.cs.meta",
+      "sha256": "960df0984fd72dab1809047ce11139f6fe327f19cd22aecd46645f165ff652ed"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "Tools/RobotFrames/prepare_unity_validation.py",
+      "sha256": "2668d79c19fe9b70b343ea14b64f7afd9ac015222371ea490a5d5040c965c324"
+    },
+    {
+      "path": "Tools/RobotFrames/prepare_point_registration_validation.py",
+      "sha256": "d3e2c4b244586a017d11081c94025d32d4f2e985b9f52431a3cd7abfa6f3c73a"
+    },
+    {
+      "path": "Tools/RobotFrames/prepare_fixture_tiling_validation.py",
+      "sha256": "bc6e45b019feefaf696e6f8f5d46dc9a835b55411c71241b9a849e23aacee9ec"
+    },
+    {
+      "path": "Tools/RobotFrames/prepare_scene_workflow_validation.py",
+      "sha256": "44ec71387fadf8cb8e0659e1de8eb231da31a4bed1c8a0a5f598192aa6d30fe9"
+    },
+    {
+      "path": "Tools/RobotFrames/prepare_five_point_registration_validation.py",
+      "sha256": "1d098103627fd2d79e4499c4d726e7fbe58aa9a005fa0b2c95681a8fcdbe14c3"
+    },
+    {
+      "path": "Tools/RobotFrames/record_five_point_registration_validation.py",
+      "sha256": "8ef79c4be929fd5697de2708ea98169c155dfab40e75ecd85e5398296c7ccd80"
+    }
+  ],
+  "hardwareExercised": false,
+  "editorRosTransport": false,
+  "headsetTested": false,
+  "robotMotionRequested": false,
+  "deploymentPerformed": false,
+  "limits": [
+    "The fifth default contact is derived from CAD and still needs physical verification.",
+    "Residuals measure agreement between captured points, not absolute physical alignment accuracy.",
+    "A manual overlay correction does not recalibrate the controller's physical contact tip.",
+    "Native headset tracking, physical contact capture and live ROS execution are not exercised."
+  ]
+}

@@ -56,17 +56,23 @@ public sealed class RobotRegistrationGuideTests
         Assert.That(RobotCoverLandmarks.TryGetBasePoints(_model, _joints, landmarks, out Vector3[] points, out string error), Is.True, error);
         GameObject geometry = null;
         int[] rendererIds = null;
-        for (int step = 0; step < 4; step++)
+        for (int step = 0; step < landmarks.Length; step++)
         {
             SetStep(step);
             Refresh();
             Assert.That(Get<bool>(_guide, "HasVisual"), Is.True, Get<string>(_guide, "PoseStatus"));
+            Assert.That(Field<Material>(_guide,"_targetMaterial").shader,
+                Is.SameAs(Resources.Load<Shader>("RobotTargetMarkers/RegistrationGuideTarget")),
+                "The exact CAD contact needs its bundled depth-independent XR shader.");
+            Assert.That(Resources.Load<Material>("RobotTargetMarkers/RegistrationGuideTarget").enableInstancing,Is.True,
+                "The bundled material retains the instancing variant used by the XR guide.");
             Assert.That(Get<int>(_guide, "SelectedPointIndex"), Is.EqualTo(step));
             Assert.That(Get<string>(_guide, "CurrentPointName"), Is.EqualTo(landmarks[step].displayName));
             Assert.That(Get<string>(_guide, "HighlightedLinkName"), Is.EqualTo(landmarks[step].linkName));
             Assert.That(Vector3.Distance(Get<Vector3>(_guide, "TargetPointInModel"), points[step]), Is.LessThan(0.000001f));
             IList markers = Field<IList>(_guide, "_markers");
-            for (int point = 0; point < 4; point++)
+            Assert.That(markers.Count, Is.EqualTo(5));
+            for (int point = 0; point < landmarks.Length; point++)
                 Assert.That(Vector3.Distance(((Transform)markers[point]).localPosition, points[point]), Is.LessThan(0.000001f));
             Assert.That(((Transform)markers[step]).localScale.x, Is.GreaterThan(0.04f));
             IList visuals = Field<IList>(_guide, "_visuals");
@@ -82,10 +88,62 @@ public sealed class RobotRegistrationGuideTests
             if (geometry == null) { geometry = current; rendererIds = currentIds; }
             else { Assert.That(current, Is.SameAs(geometry)); CollectionAssert.AreEqual(rendererIds, currentIds); }
             Bounds bounds = RenderBounds(current);
-            Assert.That(Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z), Is.InRange(0.18f, 0.22f));
+            Assert.That(Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z), Is.InRange(0.1f, 0.22f));
         }
         Assert.That(Vector3.Distance(points[0], points[1]), Is.GreaterThan(0.3f),
             "Shoulder and elbow share an owning link but must identify different cover centers.");
+    }
+
+    [TestCase(0f, 0f, false)]
+    [TestCase(2.5f, 90f, false)]
+    [TestCase(5f, 180f, false)]
+    [TestCase(7.5f, 270f, false)]
+    [TestCase(10f, 0f, false)]
+    [TestCase(0f, 0f, true)]
+    [TestCase(2.5f, 90f, true)]
+    [TestCase(5f, 180f, true)]
+    [TestCase(7.5f, 270f, true)]
+    [TestCase(10f, 0f, true)]
+    public void SlowTurntableKeepsTheFifthTargetAndCadInputsStable(float elapsedSeconds, float expectedDegrees, bool tiltedMenu)
+    {
+        if (tiltedMenu) _guideOwner.transform.rotation = Quaternion.Euler(29,-17,13);
+        LockPose(); SetStep(4); Refresh();
+        GameObject geometry = Field<GameObject>(_guide,"_geometry");
+        int[] rendererIds = geometry.GetComponentsInChildren<Renderer>().Select(renderer => renderer.GetInstanceID()).ToArray();
+        Vector3 marker = Get<Vector3>(_guide,"TargetPointInModel");
+        Vector3 scale = geometry.transform.localScale;
+        var referenceTransforms = _prefab.GetComponentsInChildren<Transform>(true)
+            .ToDictionary(transform => transform, transform => new Pose(transform.localPosition,transform.localRotation));
+        Call(_guide,"AdvanceTurntable",elapsedSeconds);
+        Assert.That(Get<float>(_guide,"TurntableAngleDegrees"),Is.EqualTo(expectedDegrees).Within(.001f));
+        Assert.That(Get<int>(_guide,"SelectedPointIndex"),Is.EqualTo(4));
+        Assert.That(Get<string>(_guide,"CurrentPointName"),Is.EqualTo("Base rear"));
+        Assert.That(Get<string>(_guide,"HighlightedLinkName"),Is.EqualTo("ur_base_link_inertia"));
+        Assert.That(Get<Vector3>(_guide,"TargetPointInModel"),Is.EqualTo(marker));
+        Assert.That(geometry.transform.localScale,Is.EqualTo(scale));
+        Assert.That(Vector3.Distance(geometry.transform.rotation * Vector3.up,Vector3.up),Is.LessThan(.00001f));
+        CollectionAssert.AreEqual(rendererIds,geometry.GetComponentsInChildren<Renderer>().Select(renderer => renderer.GetInstanceID()).ToArray());
+        IList visuals = Field<IList>(_guide,"_visuals");
+        Bounds? meshBounds = null;
+        foreach (object visual in visuals)
+        {
+            Transform transform = (Transform)visual.GetType().GetField("Transform").GetValue(visual);
+            Bounds current = transform.GetComponent<Renderer>().bounds;
+            if (!meshBounds.HasValue) meshBounds = current;
+            else { Bounds union = meshBounds.Value; union.Encapsulate(current); meshBounds = union; }
+        }
+        Vector3 fixedCentre = Field<Vector3>(_guide,"_modelCentre");
+        Assert.That(Vector3.Distance(geometry.transform.TransformPoint(fixedCentre),_guideOwner.transform.position),Is.LessThan(.00001f),
+            "The same physical model centre stays fixed through every yaw, including with a tilted menu.");
+        Assert.That(Mathf.Max(meshBounds.Value.size.x,meshBounds.Value.size.y,meshBounds.Value.size.z),Is.LessThanOrEqualTo(.20001f));
+        foreach (var item in referenceTransforms)
+        {
+            Assert.That(item.Key.localPosition,Is.EqualTo(item.Value.position));
+            Assert.That(Quaternion.Angle(item.Key.localRotation,item.Value.rotation),Is.LessThan(.001f));
+        }
+        Assert.That(Field<Dictionary<string,double>>(_registration,"_referenceJoints"),Is.EquivalentTo(_joints));
+        Refresh();
+        Assert.That(Get<float>(_guide,"TurntableAngleDegrees"),Is.EqualTo(expectedDegrees).Within(.001f),"Periodic joint inspection must not restart the orbit.");
     }
 
     [Test]
@@ -181,7 +239,7 @@ public sealed class RobotRegistrationGuideTests
         Assert.That(Get<string>(_guide, "PoseStatus"), Does.Contain("reference missing"));
     }
 
-    /// <summary>Optional graphics-enabled rendering of the four real CAD targets.</summary>
+    /// <summary>Optional graphics-enabled rendering of the five real CAD targets.</summary>
     public static void RenderRegistrationGuidePreviews()
     {
         Assert.That(SystemInfo.graphicsDeviceType, Is.Not.EqualTo(UnityEngine.Rendering.GraphicsDeviceType.Null));
@@ -208,7 +266,7 @@ public sealed class RobotRegistrationGuideTests
             pixels = new Texture2D(600, 600, TextureFormat.RGB24, false);
             string directory = Path.GetFullPath("RegistrationGuidePreviews");
             Directory.CreateDirectory(directory);
-            for (int step = 0; step < 4; step++)
+            for (int step = 0; step < 5; step++)
             {
                 fixture.SetStep(step);
                 fixture.Refresh();

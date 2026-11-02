@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEditor;
@@ -64,17 +65,17 @@ public sealed class RobotPointRegistrationWorkflowTests
     }
 
     [Test]
-    public void FourthTouchPlacesTheActualRobotAtTheRigidFitAndRetainsAllLiveJointAngles()
+    public void FifthTouchPlacesTheActualRobotAtTheRigidFitAndRetainsAllLiveJointAngles()
     {
         BeginWithFeedback();
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 4; i++)
         {
             Assert.That(Capture(i), Is.True, Status);
             Assert.That(Get<int>(_registration, "CapturedPointCount"), Is.EqualTo(i + 1));
-            Assert.That(Get<bool>(_instantiator, "HasRobot"), Is.False, "The overlay must first appear after all four points.");
+            Assert.That(Get<bool>(_instantiator, "HasRobot"), Is.False, "The overlay must first appear after all five points.");
             AssertCoordinatesBlocked();
         }
-        Assert.That(Capture(3), Is.True, Status);
+        Assert.That(Capture(4), Is.True, Status);
         Assert.That(_robot, Is.Not.Null);
         Assert.That(Get<bool>(_registration, "IsCollecting"), Is.False);
         Assert.That(Get<bool>(_registration, "HasPlacement"), Is.True);
@@ -96,7 +97,7 @@ public sealed class RobotPointRegistrationWorkflowTests
     [Test]
     public void CollectionBlocksCoordinateCommandsAndConcurrentInitializationCannotRearmThem()
     {
-        PlaceAllFour();
+        PlaceAllFive();
         Component rig = _robot.GetComponent(RuntimeType("RosRobotRig"));
         ArticulationBody body = Get<Transform>(rig, "BaseLink").GetComponent<ArticulationBody>();
         Call(_registration, "BeginRegistration");
@@ -125,7 +126,7 @@ public sealed class RobotPointRegistrationWorkflowTests
     [Test]
     public void CancellingAReplacementRestoresThePriorPlacementAndRendererStatesAfterOriginMovement()
     {
-        PlaceAllFour();
+        PlaceAllFive();
         GameObject priorRobot = _robot;
         Renderer[] renderers = _robot.GetComponentsInChildren<Renderer>(true);
         Assert.That(renderers.Length, Is.GreaterThan(1));
@@ -187,21 +188,27 @@ public sealed class RobotPointRegistrationWorkflowTests
     }
 
     [Test]
-    public void PoorFitStaysBlockedAndUndoingTheBadFourthPointAllowsACorrectedFit()
+    public void PoorFitStaysBlockedAndUndoingTheBadFifthPointAllowsACorrectedFit()
     {
         BeginWithFeedback();
-        for (int i = 0; i < 3; i++) Assert.That(Capture(i), Is.True, Status);
-        Pose badFourth = ContactPose(3);
-        badFourth.position += new Vector3(0.17f, -0.11f, 0.14f);
-        Assert.That(Call(_registration, "CapturePointerPose", badFourth, _tracking), Is.EqualTo(false));
-        Assert.That(Status, Does.Contain("Fit rejected"));
-        Assert.That(Get<int>(_registration, "CapturedPointCount"), Is.EqualTo(4));
+        for (int i = 0; i < 4; i++) Assert.That(Capture(i), Is.True, Status);
+        Pose badFifth = ContactPose(4);
+        badFifth.position += new Vector3(0.17f, -0.11f, 0.14f);
+        Assert.That(Call(_registration, "CapturePointerPose", badFifth, _tracking), Is.EqualTo(false));
+        Assert.That(Status, Does.Contain("FAILED"));
+        Assert.That(Get<bool>(_registration, "HasFitFailure"), Is.True);
+        string failure = Get<string>(_registration, "FitFailureText");
+        Assert.That(failure, Does.Contain("FAILED").And.Contain("planning remains blocked").And.Contain("RMS").And.Contain("limit").And.Contain("Largest mismatch"));
+        Assert.That(Get<string[]>(_registration,"PointNames").Any(name => failure.Contains(name)),Is.True,"The rejected fit must identify an actual contact by name.");
+        Assert.That(Get<int>(_registration, "CapturedPointCount"), Is.EqualTo(5));
         Assert.That(Get<bool>(_registration, "IsCollecting"), Is.True);
         Assert.That(Get<bool>(_instantiator, "HasRobot"), Is.False);
         AssertCoordinatesBlocked();
         Call(_registration, "UndoLastPoint");
-        Assert.That(Get<int>(_registration, "CapturedPointCount"), Is.EqualTo(3));
-        Assert.That(Capture(3), Is.True, Status);
+        Assert.That(Get<int>(_registration, "CapturedPointCount"), Is.EqualTo(4));
+        Assert.That(Get<bool>(_registration, "HasFitFailure"), Is.False);
+        Assert.That(Get<string>(_registration, "FitFailureText"), Is.Empty);
+        Assert.That(Capture(4), Is.True, Status);
         AssertPose(ExpectedBaseWorld, BaseWorld);
     }
 
@@ -215,7 +222,7 @@ public sealed class RobotPointRegistrationWorkflowTests
         _angles[0] += 0.15d;
         Feed();
         RecomputeModelPoints();
-        for (int i = 0; i < 4; i++) Assert.That(Capture(i), Is.True, Status);
+        for (int i = 0; i < 5; i++) Assert.That(Capture(i), Is.True, Status);
         Assert.That(Get<bool>(_registration, "IsCollecting"), Is.False);
         AssertPose(ExpectedBaseWorld, BaseWorld);
     }
@@ -226,7 +233,7 @@ public sealed class RobotPointRegistrationWorkflowTests
         Vector3 offset = new Vector3(0.01f, -0.02f, 0.045f);
         Set(_registration, "_tipOffsetInPointer", offset);
         BeginWithFeedback();
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 5; i++)
         {
             Pose pointer = ContactPose(i);
             pointer.rotation = Quaternion.Euler(21f + 17f * i, -44f + 39f * i, 63f - 31f * i);
@@ -240,7 +247,7 @@ public sealed class RobotPointRegistrationWorkflowTests
     [Test]
     public void APlacementTriggerCannotReplaceThePointFitWithAPreviouslyValidatedQrPose()
     {
-        PlaceAllFour();
+        PlaceAllFive();
         GameObject priorRobot = _robot;
         Pose priorBase = BaseWorld;
         int priorRevision = Get<int>(_coordinates, "CalibrationRevision");
@@ -273,7 +280,7 @@ public sealed class RobotPointRegistrationWorkflowTests
     [Test]
     public void RegeneratedToolRenderersRemainHiddenThroughoutPointCollection()
     {
-        PlaceAllFour();
+        PlaceAllFive();
         Component rig = _robot.GetComponent(RuntimeType("RosRobotRig"));
         HashSet<int> oldRenderers = new HashSet<int>();
         foreach (Renderer renderer in _robot.GetComponentsInChildren<Renderer>(true)) oldRenderers.Add(renderer.GetInstanceID());
@@ -294,7 +301,7 @@ public sealed class RobotPointRegistrationWorkflowTests
     [Test]
     public void PausingAfterACompletedFitInvalidatesTheSessionAndCancelCannotRestoreIt()
     {
-        PlaceAllFour();
+        PlaceAllFive();
         InvokePrivate(_registration, "OnApplicationPause", true);
         Assert.That(Get<bool>(_registration, "HasPlacement"), Is.False);
         Assert.That(Get<bool>(_registration, "IsCollecting"), Is.True);
@@ -308,7 +315,7 @@ public sealed class RobotPointRegistrationWorkflowTests
     [Test]
     public void NativeTrackingResetDiscardsPicksAndThePriorPlacementWithoutAllowingCancelToRearmIt()
     {
-        PlaceAllFour();
+        PlaceAllFive();
         Call(_registration, "BeginRegistration");
         Assert.That(Capture(0), Is.True, Status);
         Call(_registration, "InvalidateTrackingSession", "Synthetic native tracking-space reset.");
@@ -371,35 +378,231 @@ public sealed class RobotPointRegistrationWorkflowTests
     }
 
     [Test]
-    public void CapturedSpheresSurviveTheFourthTouchAndClearForQrOrANewRegistration()
+    public void CapturedSpheresSurviveTheFifthTouchAndClearForQrOrANewRegistration()
     {
-        PlaceAllFour();
-        Assert.That(CapturedSpheres.Count, Is.EqualTo(4));
+        PlaceAllFive();
+        Assert.That(CapturedSpheres.Count, Is.EqualTo(5));
         foreach (GameObject sphere in CapturedSpheres) Assert.That(sphere.activeSelf, Is.True);
         GameObject[] completed = CapturedSpheres.ToArray();
         Call(_registration, "BeginRegistration");
         Assert.That(CapturedSpheres, Is.Empty);
         foreach (GameObject sphere in completed) Assert.That(sphere == null, Is.True);
-        for (int i = 0; i < 4; i++) Assert.That(Capture(i), Is.True, Status);
-        Assert.That(CapturedSpheres.Count, Is.EqualTo(4));
+        for (int i = 0; i < 5; i++) Assert.That(Capture(i), Is.True, Status);
+        Assert.That(CapturedSpheres.Count, Is.EqualTo(5));
         Call(_registration, "UseQrPlacement");
         Assert.That(CapturedSpheres, Is.Empty);
         Assert.That(Get<int>(_registration, "CapturedPointCount"), Is.Zero);
     }
 
     [Test]
-    public void RejectedFitKeepsItsFourFeedbackSpheresAndTrackingResetClearsThem()
+    public void RejectedFitKeepsItsFiveFeedbackSpheresAndTrackingResetClearsThem()
     {
         BeginWithFeedback();
-        for (int i = 0; i < 3; i++) Assert.That(Capture(i), Is.True, Status);
-        Pose badFourth = ContactPose(3);
-        badFourth.position += new Vector3(0.17f, -0.11f, 0.14f);
-        Assert.That(Call(_registration, "CapturePointerPose", badFourth, _tracking), Is.EqualTo(false));
-        Assert.That(CapturedSpheres.Count, Is.EqualTo(4), "All sampled contacts must remain inspectable after a rejected fit.");
+        for (int i = 0; i < 4; i++) Assert.That(Capture(i), Is.True, Status);
+        Pose badFifth = ContactPose(4);
+        badFifth.position += new Vector3(0.17f, -0.11f, 0.14f);
+        Assert.That(Call(_registration, "CapturePointerPose", badFifth, _tracking), Is.EqualTo(false));
+        Assert.That(CapturedSpheres.Count, Is.EqualTo(5), "All sampled contacts must remain inspectable after a rejected fit.");
         GameObject[] rejected = CapturedSpheres.ToArray();
         Call(_registration, "InvalidateTrackingSession", "Synthetic tracking reset");
         Assert.That(CapturedSpheres, Is.Empty);
         foreach (GameObject sphere in rejected) Assert.That(sphere == null, Is.True);
+    }
+
+    [TestCase(0.003f,0f,0f)]
+    [TestCase(0f,0.003f,0f)]
+    [TestCase(0f,0f,0.003f)]
+    public void PositionNudgeUsesRobotRosAxesWithRotatedBaseAndTrackingAndPreservesThePhysicalSamples(float x,float y,float z)
+    {
+        PlaceAllFive();
+        Pose original = BaseWorld;
+        Vector3[] samples = CapturedSpheres.Select(point => point.transform.localPosition).ToArray();
+        float rms = Get<float>(_registration,"RmsErrorMeters"), worst = Get<float>(_registration,"MaxErrorMeters");
+        int revision = Get<int>(_coordinates,"CalibrationRevision");
+        Call(_registration,"BeginPositionAdjustment");
+        Assert.That(Get<bool>(_registration,"IsAdjustingPosition"),Is.True);
+        AssertCoordinatesBlocked();
+        Assert.That((bool)RuntimeType("ToolSelectionController").GetProperty("CanSendRobotCommands").GetValue(null),Is.False);
+        Assert.That((bool)RuntimeType("ToolSelectionController").GetProperty("CanPlanPickPlace").GetValue(null),Is.False);
+        Vector3 delta = new Vector3(x,y,z);
+        Assert.That(Call(_registration,"NudgeRobotPosition",delta),Is.EqualTo(true),Status);
+        AssertPose(WithRosOffset(original,delta),BaseWorld);
+        Assert.That(Get<Vector3>(_registration,"PositionAdjustmentInRosMeters"),Is.EqualTo(delta));
+        AssertLiveJointsUnchanged();
+        CollectionAssert.AreEqual(samples,CapturedSpheres.Select(point => point.transform.localPosition).ToArray());
+        Assert.That(Get<float>(_registration,"RmsErrorMeters"),Is.EqualTo(rms));
+        Assert.That(Get<float>(_registration,"MaxErrorMeters"),Is.EqualTo(worst));
+        AssertCoordinatesBlocked();
+        Call(_registration,"EndPositionAdjustment");
+        Assert.That(Get<bool>(_registration,"IsAdjustingPosition"),Is.False);
+        Assert.That(Get<bool>(_coordinates,"IsInitialized"),Is.True);
+        Assert.That(Get<int>(_coordinates,"CalibrationRevision"),Is.GreaterThan(revision));
+        AssertPose(WithRosOffset(original,delta),BaseWorld);
+        SimulatePhysics();
+        AssertPose(WithRosOffset(original,delta),BaseWorld);
+        AssertLiveJointsUnchanged();
+    }
+
+    [Test]
+    public void PositionLimitIsEuclideanFromTheOriginalFitAcrossCompletedEditsAndResetReturnsToThatFit()
+    {
+        PlaceAllFive();
+        Pose original = BaseWorld;
+        Call(_registration,"BeginPositionAdjustment");
+        Assert.That(Call(_registration,"NudgeRobotPosition",new Vector3(.015f,0,0)),Is.EqualTo(true),Status);
+        Call(_registration,"EndPositionAdjustment");
+        Call(_registration,"BeginPositionAdjustment");
+        Pose first = BaseWorld;
+        Assert.That(Call(_registration,"NudgeRobotPosition",new Vector3(0,.015f,0)),Is.EqualTo(false));
+        Assert.That(Status,Does.Contain("20 mm"));
+        AssertPose(first,BaseWorld);
+        Assert.That(Get<Vector3>(_registration,"PositionAdjustmentInRosMeters"),Is.EqualTo(new Vector3(.015f,0,0)));
+        Assert.That(Call(_registration,"NudgeRobotPosition",new Vector3(0,.010f,0)),Is.EqualTo(true),Status);
+        Vector3 combined = new Vector3(.015f,.010f,0);
+        AssertPose(WithRosOffset(original,combined),BaseWorld);
+        Call(_registration,"EndPositionAdjustment");
+        Call(_registration,"BeginPositionAdjustment");
+        Assert.That(Call(_registration,"NudgeRobotPosition",new Vector3(0,0,.010f)),Is.EqualTo(false));
+        Assert.That(Get<Vector3>(_registration,"PositionAdjustmentInRosMeters"),Is.EqualTo(combined));
+        Call(_registration,"ResetPositionAdjustment");
+        Assert.That(Get<Vector3>(_registration,"PositionAdjustmentInRosMeters"),Is.EqualTo(Vector3.zero));
+        AssertPose(original,BaseWorld);
+        AssertCoordinatesBlocked();
+        Call(_registration,"EndPositionAdjustment");
+        AssertPose(original,BaseWorld);
+        Assert.That(Get<bool>(_coordinates,"IsInitialized"),Is.True);
+    }
+
+    [Test]
+    public void PositionAdjustmentRetainsNewerLiveJointsInsteadOfRestoringTheFirstTouchSnapshot()
+    {
+        PlaceAllFive();
+        Component rig = _robot.GetComponent(RuntimeType("RosRobotRig"));
+        double[] latest = Array.ConvertAll(_angles,value => value+0.1d);
+        Assert.That(Call(rig,"SetJointPositions",_jointNames,latest),Is.EqualTo(true));
+        _angles = latest;
+        Pose original = BaseWorld;
+        Vector3 delta = new Vector3(.003f,-.002f,.001f);
+        Call(_registration,"BeginPositionAdjustment");
+        Assert.That(Call(_registration,"NudgeRobotPosition",delta),Is.EqualTo(true),Status);
+        AssertLiveJointsUnchanged();
+        Call(_registration,"EndPositionAdjustment");
+        AssertLiveJointsUnchanged();
+        AssertPose(WithRosOffset(original,delta),BaseWorld);
+    }
+
+    [Test]
+    public void NonfinitePositionNudgesNeverChangeTheOverlayOrItsStoredOffset()
+    {
+        PlaceAllFive();
+        Call(_registration,"BeginPositionAdjustment");
+        Pose original = BaseWorld;
+        foreach(float invalid in new[] {float.NaN,float.PositiveInfinity,float.NegativeInfinity})
+        {
+            Assert.That(Call(_registration,"NudgeRobotPosition",new Vector3(invalid,0,0)),Is.EqualTo(false));
+            Assert.That(Status,Does.Contain("not finite"));
+            AssertPose(original,BaseWorld);
+            Assert.That(Get<Vector3>(_registration,"PositionAdjustmentInRosMeters"),Is.EqualTo(Vector3.zero));
+        }
+        Call(_registration,"CancelPositionAdjustment");
+    }
+
+    [Test]
+    public void PositionAdjustmentIsRejectedBeforePlacementAndDuringUnresolvedExecution()
+    {
+        Call(_registration,"BeginPositionAdjustment");
+        Assert.That(Get<bool>(_registration,"IsAdjustingPosition"),Is.False);
+        Assert.That(Call(_registration,"NudgeRobotPosition",Vector3.one*.001f),Is.EqualTo(false));
+        PlaceAllFive();
+        Pose original = BaseWorld;
+        int revision = Get<int>(_coordinates,"CalibrationRevision");
+        SetExecutionBusy(true);
+        try
+        {
+            Call(_registration,"BeginPositionAdjustment");
+            Assert.That(Get<bool>(_registration,"IsAdjustingPosition"),Is.False);
+            Assert.That(Call(_registration,"NudgeRobotPosition",Vector3.one*.001f),Is.EqualTo(false));
+            Assert.That(Get<int>(_coordinates,"CalibrationRevision"),Is.EqualTo(revision));
+            AssertPose(original,BaseWorld);
+        }
+        finally { SetExecutionBusy(false); }
+        Call(_registration,"BeginPositionAdjustment");
+        SetExecutionBusy(true);
+        try
+        {
+            Assert.That(Call(_registration,"NudgeRobotPosition",Vector3.one*.001f),Is.EqualTo(false));
+            Call(_registration,"EndPositionAdjustment");
+            Assert.That(Get<bool>(_registration,"IsAdjustingPosition"),Is.True);
+            AssertCoordinatesBlocked();
+            AssertPose(original,BaseWorld);
+        }
+        finally { SetExecutionBusy(false); }
+        Call(_registration,"CancelPositionAdjustment");
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void CancelAndDisableRevertToThePreviouslyCompletedPositionCorrection(bool disable)
+    {
+        PlaceAllFive();
+        Pose original = BaseWorld;
+        Vector3 prior = new Vector3(.005f,0,0);
+        Call(_registration,"BeginPositionAdjustment");
+        Assert.That(Call(_registration,"NudgeRobotPosition",prior),Is.EqualTo(true),Status);
+        Call(_registration,"EndPositionAdjustment");
+        Call(_registration,"BeginPositionAdjustment");
+        Assert.That(Call(_registration,"NudgeRobotPosition",new Vector3(0,.006f,0)),Is.EqualTo(true),Status);
+        if(disable) InvokePrivate(_registration,"OnDisable");
+        else Call(_registration,"CancelPositionAdjustment");
+        Assert.That(Get<bool>(_registration,"IsAdjustingPosition"),Is.False);
+        Assert.That(Get<Vector3>(_registration,"PositionAdjustmentInRosMeters"),Is.EqualTo(prior));
+        Assert.That(Get<bool>(_coordinates,"IsInitialized"),Is.True);
+        AssertPose(WithRosOffset(original,prior),BaseWorld);
+        AssertLiveJointsUnchanged();
+    }
+
+    [Test]
+    public void SceneResetBeforeDisableCannotReinitializeTheOutgoingRobot()
+    {
+        PlaceAllFive();
+        Call(_registration,"BeginPositionAdjustment");
+        Assert.That(Call(_registration,"NudgeRobotPosition",new Vector3(.005f,0,0)),Is.EqualTo(true),Status);
+        Component state = UnityEngine.Object.FindFirstObjectByType(RuntimeType("RobotStateService")) as Component;
+        Call(state,"ResetForSceneChange");
+        Call(_coordinates,"ResetForSceneChange");
+        int revision = Get<int>(_coordinates,"CalibrationRevision");
+        InvokePrivate(_registration,"OnDisable");
+        Assert.That(Get<bool>(_registration,"IsAdjustingPosition"),Is.False);
+        Assert.That(Get<bool>(_coordinates,"IsInitialized"),Is.False);
+        Assert.That(Get<int>(_coordinates,"CalibrationRevision"),Is.EqualTo(revision));
+        Assert.That(Get<bool>(state,"IsInitialized"),Is.False);
+        Assert.That(Call(state,"GetRobotInstance"),Is.Null);
+        AssertCoordinatesBlocked();
+    }
+
+    [Test]
+    public void TrackingResetDuringAdjustmentDropsTheCorrectionAndRequiresAllFiveContactsAgain()
+    {
+        PlaceAllFive();
+        Call(_registration,"BeginPositionAdjustment");
+        Assert.That(Call(_registration,"NudgeRobotPosition",new Vector3(.005f,0,0)),Is.EqualTo(true),Status);
+        Call(_registration,"InvalidateTrackingSession","Synthetic adjustment tracking reset.");
+        Assert.That(Get<bool>(_registration,"HasPlacement"),Is.False);
+        Assert.That(Get<bool>(_registration,"IsAdjustingPosition"),Is.False);
+        Assert.That(Get<bool>(_registration,"IsCollecting"),Is.True);
+        Assert.That(Get<int>(_registration,"CapturedPointCount"),Is.Zero);
+        Assert.That(Get<Vector3>(_registration,"PositionAdjustmentInRosMeters"),Is.EqualTo(Vector3.zero));
+        AssertCoordinatesBlocked();
+        Feed();
+        for(int index=0;index<4;index++)
+        {
+            Assert.That(Capture(index),Is.True,Status);
+            Assert.That(Get<bool>(_registration,"HasPlacement"),Is.False);
+            AssertCoordinatesBlocked();
+        }
+        Assert.That(Capture(4),Is.True,Status);
+        Assert.That(Get<Vector3>(_registration,"PositionAdjustmentInRosMeters"),Is.EqualTo(Vector3.zero));
+        AssertPose(ExpectedBaseWorld,BaseWorld);
     }
 
     [Test]
@@ -426,15 +629,28 @@ public sealed class RobotPointRegistrationWorkflowTests
     private List<GameObject> CapturedSpheres => Field<List<GameObject>>(_registration, "_capturedPointVisuals");
     private void BeginWithFeedback() { Feed(); Call(_registration, "BeginRegistration"); }
     private void Feed() => Assert.That(Call(_feedback, "ObserveJointState", _jointNames, _angles), Is.EqualTo(true));
-    private void PlaceAllFour()
+    private void PlaceAllFive()
     {
         BeginWithFeedback();
-        for (int i = 0; i < 4; i++) Assert.That(Capture(i), Is.True, Status);
+        for (int i = 0; i < 5; i++) Assert.That(Capture(i), Is.True, Status);
         Feed(); // Keep replacement-session scenarios independent of prefab construction time.
     }
     private bool Capture(int point) => (bool)Call(_registration, "CapturePointerPose", ContactPose(point), _tracking);
     private Pose ContactPose(int point) => new Pose(_tracking.TransformPoint(_baseInTracking.position + _baseInTracking.rotation * _modelPoints[point]), Quaternion.identity);
     private Pose ExpectedBaseWorld => RobotFrameMath.Compose(new Pose(_tracking.position, _tracking.rotation), _baseInTracking);
+    private static Pose WithRosOffset(Pose original,Vector3 offset) => new Pose(
+        original.position + original.rotation*new Vector3(-offset.y,offset.z,offset.x),original.rotation);
+    private void SetExecutionBusy(bool busy) => RuntimeType("RobotExecutionState").GetMethod("SetBusy").Invoke(null,new object[] {_registration,busy});
+    private void AssertLiveJointsUnchanged()
+    {
+        Component rig = _robot.GetComponent(RuntimeType("RosRobotRig"));
+        for(int index=0;index<_jointNames.Length;index++)
+        {
+            object[] query = {_jointNames[index],0d};
+            Assert.That(Call(rig,"TryGetJointPosition",query),Is.EqualTo(true));
+            Assert.That((double)query[1],Is.EqualTo(_angles[index]).Within(1e-10));
+        }
+    }
     private Pose BaseWorld
     {
         get

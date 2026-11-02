@@ -14,23 +14,40 @@ public sealed class RobotCoverLandmark
     public string expectedMeshSuffix;
 }
 
-/// <summary>UR16e blue-cover surface centres. Defaults are CAD-derived, not physical measurements.</summary>
+/// <summary>UR16e rear surface contacts. Defaults are CAD-derived, not physical measurements.</summary>
 public static class RobotCoverLandmarks
 {
     /// <summary>
-    /// Order follows the supplied photo from base to tool: shoulder, elbow, wrist 2, wrist 3.
+    /// Preserve the four existing covers: shoulder, elbow, wrist 2, wrist 3; then the fixed base rear.
     /// The wrist 1 cover is on the opposite side of the forearm and is omitted.
     /// Both large covers belong to the upper-arm visual; the small covers belong to the
     /// wrist-1 and wrist-2 visuals. Joint origins are not the contact surfaces.
-    /// See Tools/RobotFrames/controller_point_landmarks.md for the mesh derivation.
+    /// The fifth contact is on the gray fixed base housing, upstream of shoulder pan;
+    /// it is not a blue cover on the moving shoulder link. See the landmark notes in Tools/RobotFrames.
     /// </summary>
     public static RobotCoverLandmark[] CreateDefaults() => new[]
     {
         Cover("Shoulder", "ur_upper_arm_link", new Vector3(-0.000001f, 0.087242f, -0.000297f), "/ur16e/visual/upperarm.dae"),
         Cover("Elbow", "ur_upper_arm_link", new Vector3(0f, 0.065129f, 0.477982f), "/ur16e/visual/upperarm.dae"),
         Cover("Wrist 2", "ur_wrist_1_link", new Vector3(-0.000001f, 0.135142f, -0.054024f), "/ur10e/visual/wrist1.dae"),
-        Cover("Wrist 3", "ur_wrist_2_link", new Vector3(0.000001f, -0.053495f, 0.119459f), "/ur10e/visual/wrist2.dae")
+        Cover("Wrist 3", "ur_wrist_2_link", new Vector3(0.000001f, -0.053495f, 0.119459f), "/ur10e/visual/wrist2.dae"),
+        Cover("Base rear", "ur_base_link_inertia", new Vector3(-0.086787f, 0f, 0.042474f), "/ur10e/visual/base.dae")
     };
+
+    /// <summary>Upgrade only untouched serialized four-cover defaults; keep custom contacts explicit.</summary>
+    public static RobotCoverLandmark[] UpgradeDefaults(RobotCoverLandmark[] landmarks)
+    {
+        if (landmarks == null || landmarks.Length != 4) return landmarks;
+        RobotCoverLandmark[] defaults = CreateDefaults();
+        for (int index = 0; index < 4; index++)
+        {
+            RobotCoverLandmark point = landmarks[index], original = defaults[index];
+            if (point == null || point.displayName != original.displayName || point.linkName != original.linkName ||
+                point.visualIndex != original.visualIndex || point.expectedMeshSuffix != original.expectedMeshSuffix ||
+                !point.pointInVisualRos.Equals(original.pointInVisualRos)) return landmarks;
+        }
+        return defaults;
+    }
 
     private static RobotCoverLandmark Cover(string name, string link, Vector3 point, string mesh) =>
         new RobotCoverLandmark { displayName = name, linkName = link, visualIndex = 0,

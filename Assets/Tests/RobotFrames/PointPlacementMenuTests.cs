@@ -7,7 +7,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
-/// <summary>Offline layout and pre-placement access checks for the four-point menu.</summary>
+/// <summary>Offline layout and pre-placement access checks for the five-point menu.</summary>
 public sealed class PointPlacementMenuTests
 {
     private GameObject _owner;
@@ -44,6 +44,7 @@ public sealed class PointPlacementMenuTests
     [TestCase(1, "Elbow")]
     [TestCase(2, "Wrist 2")]
     [TestCase(3, "Wrist 3")]
+    [TestCase(4, "Base rear")]
     public void MiniatureFollowsTheCurrentCaptureStepAndHidesAfterLeavingPlacement(int step, string cover)
     {
         Component guide = Field<Component>("_pointGuide");
@@ -54,7 +55,7 @@ public sealed class PointPlacementMenuTests
         Assert.That((int)guide.GetType().GetProperty("SelectedPointIndex").GetValue(guide), Is.EqualTo(step));
         Assert.That((string)guide.GetType().GetProperty("CurrentPointName").GetValue(guide), Is.EqualTo(cover));
         Assert.That(Field<object>("_pointGuideTitle").GetType().GetProperty("text")
-            .GetValue(Field<object>("_pointGuideTitle")), Is.EqualTo((step + 1) + " / 4 · " + cover));
+            .GetValue(Field<object>("_pointGuideTitle")), Is.EqualTo((step + 1) + " / 5 · " + cover));
         Assert.That(guide.GetComponentInParent<Canvas>(), Is.SameAs(Field<Canvas>("_canvas")));
         Assert.That(guide.transform.IsChildOf(Field<RectTransform>("_pointView")), Is.True);
 
@@ -100,7 +101,7 @@ public sealed class PointPlacementMenuTests
             camera.orthographic = false;
             camera.fieldOfView = 46f;
             Vector3[] viewpoints = { new Vector3(0f, 0f, -1f), new Vector3(-0.15f, 0.1f, -1f), new Vector3(0.2f, -0.08f, -0.8f) };
-            for (int step = 0; step < 4; step++)
+            for (int step = 0; step < 5; step++)
             {
                 ShowGuideForStep(step);
                 Component guide = Field<Component>("_pointGuide");
@@ -143,9 +144,10 @@ public sealed class PointPlacementMenuTests
         Assert.That(labels.Any(text => text.StartsWith("2  Elbow")), Is.True);
         Assert.That(labels.Any(text => text.StartsWith("3  Wrist 2")), Is.True);
         Assert.That(labels.Any(text => text.StartsWith("4  Wrist 3")), Is.True);
+        Assert.That(labels.Any(text => text.StartsWith("5  Base rear")), Is.True);
         Type buttonType = RuntimeType("UnityEngine.UI.Button");
         Component[] buttons = pointView.GetComponentsInChildren(buttonType, true);
-        foreach (string name in new[] { "Undo last point", "Restart 4 points", "Cancel placement", "Use QR instead", "Recenter point menu" })
+        foreach (string name in new[] { "Undo last point", "Restart 5 points", "Cancel placement", "Use QR instead", "Recenter point menu" })
             Assert.That(buttons.Any(button => button.name == name), Is.True, name);
         var occupied = new List<Rect>();
         foreach (Component button in buttons)
@@ -161,13 +163,79 @@ public sealed class PointPlacementMenuTests
         }
     }
 
+    [Test]
+    public void ARejectedMeasuredFitShowsRecoveryAndUndoReturnsToTheFifthCapture()
+    {
+        ShowRejectedFit();
+        Assert.That(Field<RectTransform>("_fitFailureView").gameObject.activeSelf,Is.True);
+        Assert.That(Field<RectTransform>("_pointView").gameObject.activeSelf,Is.False);
+        Assert.That((bool)Field<Component>("_pointGuide").GetType().GetProperty("HasVisual").GetValue(Field<Component>("_pointGuide")),Is.False);
+        object reason = Field<object>("_fitFailureReason");
+        Assert.That((string)reason.GetType().GetProperty("text").GetValue(reason),Does.Contain("FAILED").And.Contain("Largest mismatch"));
+        Assert.That((float)reason.GetType().GetProperty("fontSizeMin").GetValue(reason),Is.GreaterThanOrEqualTo(14));
+        Call("UndoPointPlacement");
+        Assert.That((bool)_guideRegistration.GetType().GetProperty("HasFitFailure").GetValue(_guideRegistration),Is.False);
+        Assert.That(Field<RectTransform>("_fitFailureView").gameObject.activeSelf,Is.False);
+        Assert.That(Field<RectTransform>("_pointView").gameObject.activeSelf,Is.True);
+        Assert.That((int)_guideRegistration.GetType().GetProperty("CapturedPointCount").GetValue(_guideRegistration),Is.EqualTo(4));
+    }
+
+    [Test]
+    public void PositionAdjustmentUsesItsOwnPanelAndHasBoundedIncrementChoices()
+    {
+        ShowAdjustment();
+        Assert.That(Field<RectTransform>("_positionAdjustmentView").gameObject.activeSelf,Is.True);
+        Assert.That(Field<RectTransform>("_pointView").gameObject.activeSelf,Is.False);
+        Assert.That(Field<RectTransform>("_fitFailureView").gameObject.activeSelf,Is.False);
+        Assert.That(Field<RectTransform>("_taskView").gameObject.activeSelf,Is.False);
+        var labels = Field<System.Collections.IList>("_positionStepButtons");
+        Assert.That(labels.Count,Is.EqualTo(3));
+        Type textType = RuntimeType("TMPro.TMP_Text");
+        string[] text = Field<RectTransform>("_positionAdjustmentView").GetComponentsInChildren(textType,true)
+            .Select(component => (string)textType.GetProperty("text").GetValue(component)).ToArray();
+        Assert.That(text,Does.Contain("0.1 mm").And.Contain("1 mm").And.Contain("5 mm"));
+        Assert.That(text.Any(value => value.Contains("20 mm total") && value.Contains("Rotation stays fixed")),Is.True);
+        SetRegistration("<IsAdjustingPosition>k__BackingField",false);
+    }
+
+    private void ShowRejectedFit()
+    {
+        ShowGuideForStep(5);
+        RosRobotModel model = RosRobotModelCatalog.Load().Find("kenos");
+        RosRobotGoldenCase bent = model.goldenCases.First(pose => pose.name == "bent");
+        var joints = bent.jointNames.Select((name,index) => new {name,value=bent.jointPositions[index]})
+            .ToDictionary(joint => joint.name,joint => joint.value);
+        Assert.That(RobotCoverLandmarks.TryGetBasePoints(model,joints,RobotCoverLandmarks.CreateDefaults(),out Vector3[] points,out string error),Is.True,error);
+        SetRegistration("_modelPoints",points);
+        System.Collections.IList measured = (System.Collections.IList)_guideRegistration.GetType().GetField("_measuredInTracking",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(_guideRegistration);
+        measured.Clear();
+        for (int index = 0; index < points.Length; index++) measured.Add(points[index] + (index == 1 ? new Vector3(.12f,0,0) : Vector3.zero));
+        _guideRegistration.GetType().GetMethod("TryFinish",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(_guideRegistration,null);
+        Assert.That((bool)_guideRegistration.GetType().GetProperty("HasFitFailure").GetValue(_guideRegistration),Is.True);
+        Call("RefreshPointPlacementControls");
+    }
+
+    private void ShowAdjustment()
+    {
+        ShowGuideForStep(0);
+        SetCollecting(_guideRegistration,false);
+        SetRegistration("<HasPlacement>k__BackingField",true);
+        SetRegistration("<IsAdjustingPosition>k__BackingField",true);
+        SetRegistration("_positionAdjustmentInRosMeters",new Vector3(.012f,-.008f,.003f));
+        SetRegistration("<StatusText>k__BackingField","XR position correction: X 12.0, Y -8.0, Z 3.0 mm. Robot axes; original fit residuals are unchanged. Select Done before planning.");
+        Call("RefreshTask");
+    }
+
+    private void SetRegistration(string name,object value) => _guideRegistration.GetType()
+        .GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).SetValue(_guideRegistration,value);
+
     /// <summary>One offline entry point for the contour fix, loop menu and miniature guide images.</summary>
     public static void RenderInteractionPreviews()
     {
         RobotContourRenderingTests.RenderRobotContourPreviews();
         RenderPointPlacementPreview();
         RobotRegistrationGuideTests.RenderRegistrationGuidePreviews();
-        Debug.Log("RobotInteractionPreviews passed: contours, playback menu and four registration guide steps.");
+        Debug.Log("RobotInteractionPreviews passed: contours, playback menu and five registration guide steps.");
     }
 
     /// <summary>Graphics-enabled, connection-free preview of the actual generated placement UI.</summary>
@@ -200,8 +268,8 @@ public sealed class PointPlacementMenuTests
             preview._menu.GetType().GetMethod("PositionPointGuide", BindingFlags.NonPublic | BindingFlags.Instance)
                 .Invoke(preview._menu, new object[] { camera });
             preview.Field<Component>("_grabHandle").gameObject.SetActive(true);
-            preview.SetText("_pointProgress", "1 / 4 points captured\nNext: Elbow rear blue cover");
-            preview.SetText("_pointStatus", "Keep the robot still. Touch 2/4: the elbow cover center, then press trigger.");
+            preview.SetText("_pointProgress", "1 / 5 points captured\nNext: Elbow rear blue cover");
+            preview.SetText("_pointStatus", "Keep the robot still. Touch 2/5: the elbow cover center, then press trigger.");
             Type textType = RuntimeType("TMPro.TMP_Text");
             Type fontType = RuntimeType("TMPro.TMP_FontAsset");
             UnityEngine.Object font = Resources.Load("Fonts & Materials/LiberationSans SDF", fontType);
@@ -235,6 +303,26 @@ public sealed class PointPlacementMenuTests
             string output = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "point-placement-menu.png"));
             File.WriteAllBytes(output, pixels.EncodeToPNG());
             Debug.Log("PointPlacementMenuPreview: " + output);
+            foreach (string panel in new[] { "failure", "adjustment" })
+            {
+                if (panel == "failure") preview.ShowRejectedFit(); else preview.ShowAdjustment();
+                camera.transform.position = new Vector3(0,0,-1);
+                foreach (Component text in canvas.GetComponentsInChildren(textType,true)) textType.GetProperty("font").SetValue(text,font);
+                Canvas.ForceUpdateCanvases();
+                foreach (Component text in canvas.GetComponentsInChildren(textType,true))
+                    textType.GetMethod("ForceMeshUpdate").Invoke(text,new object[] {true,true});
+                Canvas.ForceUpdateCanvases();
+                RectTransform visible = preview.Field<RectTransform>(panel == "failure" ? "_fitFailureView" : "_positionAdjustmentView");
+                foreach (Component text in visible.GetComponentsInChildren(textType,false))
+                    Assert.That((bool)textType.GetProperty("isTextOverflowing").GetValue(text),Is.False,"Registration panel text overflow: " + text.name);
+                camera.Render();
+                RenderTexture.active = target;
+                pixels.ReadPixels(new Rect(0,0,target.width,target.height),0,0); pixels.Apply();
+                string path = Path.GetFullPath(Path.Combine(Application.dataPath,"..","point-" + panel + "-menu.png"));
+                File.WriteAllBytes(path,pixels.EncodeToPNG());
+                Debug.Log("PointPlacementMenuPreview: " + path);
+            }
+            preview.SetRegistration("<IsAdjustingPosition>k__BackingField",false);
         }
         finally
         {
@@ -245,6 +333,20 @@ public sealed class PointPlacementMenuTests
             preview.Cleanup();
             if (cameraOwner != null) UnityEngine.Object.DestroyImmediate(cameraOwner);
         }
+    }
+
+    /// <summary>Single graphics export for the five contacts and both new registration panels.</summary>
+    public static void RenderFivePointRegistrationPreviews()
+    {
+        RenderPointPlacementPreview();
+        RobotRegistrationGuideTests.RenderRegistrationGuidePreviews();
+        string directory = Path.GetFullPath("FivePointRegistrationPreviews");
+        Directory.CreateDirectory(Path.Combine(directory,"Guide"));
+        foreach (string item in new[] { "placement", "failure", "adjustment" })
+            File.Copy(Path.GetFullPath("point-" + item + "-menu.png"),Path.Combine(directory,item + ".png"),true);
+        for (int step = 1; step <= 5; step++) File.Copy(Path.GetFullPath("RegistrationGuidePreviews/step-" + step + ".png"),
+            Path.Combine(directory,"Guide/step-" + step + ".png"),true);
+        Debug.Log("FivePointRegistrationPreviews: " + directory);
     }
 
     private void SetText(string field, string text)
@@ -259,7 +361,7 @@ public sealed class PointPlacementMenuTests
         object entry = Field<object>("_pointPlacementButton");
         Assert.That(entry, Is.Not.Null);
         Call("BeginPointPlacement");
-        Assert.That(Field<string>("_localNotice"), Does.Contain("Four-point placement is unavailable"));
+        Assert.That(Field<string>("_localNotice"), Does.Contain("Five-point placement is unavailable"));
         Assert.That(Field<RectTransform>("_taskView").gameObject.activeSelf, Is.True);
         Assert.That(Field<RectTransform>("_pointView").gameObject.activeSelf, Is.False);
         Type connectionType = RuntimeType("Unity.Robotics.ROSTCPConnector.ROSConnection");

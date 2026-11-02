@@ -117,6 +117,30 @@ public sealed class RobotPointRegistrationMathTests
         }
     }
 
+    [Test]
+    public void FiveContactsIncludingTheFixedBaseAllContributeToTheRigidFit()
+    {
+        // Four moving cover contacts plus the fixed base rear contact. The fifth
+        // point must participate in the fit and its residual, not be ignored.
+        Vector3[] five = { Model[0], Model[1], Model[2], Model[3], new Vector3(0f,0.042474f,-0.086787f) };
+        Pose expected = new Pose(new Vector3(.7f,-.3f,1.2f),Quaternion.Euler(24f,135f,-16f));
+        Vector3[] measured = Transform(five,expected);
+        Assert.That(RobotPointRegistrationMath.TryFit(five,measured,out Pose fit,out float rms,out float worst,out string error),Is.True,error);
+        Assert.That(Vector3.Distance(fit.position,expected.position),Is.LessThan(0.000002f));
+        Assert.That(rms,Is.LessThan(0.000002f));Assert.That(worst,Is.LessThan(0.000002f));
+        measured[4] += new Vector3(.04f,-.03f,.02f);
+        Assert.That(RobotPointRegistrationMath.TryFit(five,measured,out fit,out rms,out worst,out error),Is.True,error);
+        Assert.That(rms,Is.GreaterThan(.005f));Assert.That(worst,Is.GreaterThan(.015f));
+        float squared = 0f, maximum = 0f;
+        for(int index=0;index<five.Length;index++)
+        {
+            float residual = Vector3.Distance(fit.position+fit.rotation*five[index],measured[index]);
+            squared += residual*residual;maximum=Mathf.Max(maximum,residual);
+        }
+        Assert.That(rms,Is.EqualTo(Mathf.Sqrt(squared/5)).Within(0.000001f));
+        Assert.That(worst,Is.EqualTo(maximum).Within(0.000001f));
+    }
+
     private static Vector3[] Transform(Vector3[] points, Pose pose) => Array.ConvertAll(points, point => pose.position + pose.rotation * point);
 
     private static void AssertRejected(Vector3[] model, Vector3[] measured)

@@ -500,14 +500,15 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private bool IsCalibrating => _instantiator != null && _instantiator.IsCalibrating;
     private bool IsPointCollecting => _pointRegistration != null && _pointRegistration.IsCollecting;
-    private bool IsPlacementBusy => IsCalibrating || IsPointCollecting;
+    private bool IsPositionAdjusting => _pointRegistration != null && _pointRegistration.IsAdjustingPosition;
+    private bool IsPlacementBusy => IsCalibrating || IsPointCollecting || IsPositionAdjusting;
 
     public void BeginPointPlacement()
     {
         BindTaskControls();
         if (IsCalibrating || MTCPlansManager.ActiveExecution != null) return;
         _localNotice = null;
-        if (_pointRegistration == null) _localNotice = "Four-point placement is unavailable in this scene.";
+        if (_pointRegistration == null) _localNotice = "Five-point placement is unavailable in this scene.";
         else _pointRegistration.BeginRegistration();
         RefreshMenu();
     }
@@ -544,6 +545,11 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     {
         BindTaskControls();
         if (IsPointCollecting) return;
+        if (_pointRegistration != null && _pointRegistration.HasPlacement)
+        {
+            BeginPositionAdjustment();
+            return;
+        }
         _localNotice = null;
         if (_instantiator == null)
         {
@@ -757,13 +763,14 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
             if (_instantiator != null) qr += "\n" + _instantiator.CalibrationSummary;
             if (_instantiator != null && _instantiator.HasSavedCalibration) qr += "\nSaved on this headset for this QR.";
             _qrStatus.text = _pointRegistration != null && _pointRegistration.HasPlacement
-                ? "Four-point placement: RMS " + (_pointRegistration.RmsErrorMeters * 1000f).ToString("F1") +
+                ? "Five-point placement: RMS " + (_pointRegistration.RmsErrorMeters * 1000f).ToString("F1") +
                     " mm · max " + (_pointRegistration.MaxErrorMeters * 1000f).ToString("F1") + " mm\n" + _pointRegistration.StatusText
                 : qr;
         }
         RefreshPlayback();
         RefreshAlignmentControls();
         RefreshPointPlacementControls();
+        RefreshPointRegistrationPanels();
         RefreshFixtureMenu();
         RefreshSceneNavigation();
     }
@@ -778,9 +785,9 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     private void RefreshAlignmentControls()
     {
         bool editing = IsCalibrating;
-        if (_taskView != null) _taskView.gameObject.SetActive(!editing && !IsPointCollecting &&
+        if (_taskView != null) _taskView.gameObject.SetActive(!editing && !IsPointCollecting && !IsPositionAdjusting &&
             !(_showFixtureSetup && _input != null && _input.IsFixtureMode));
-        if (_alignmentView != null) _alignmentView.gameObject.SetActive(editing && !IsPointCollecting);
+        if (_alignmentView != null) _alignmentView.gameObject.SetActive(editing && !IsPointCollecting && !IsPositionAdjusting);
         if (_alignmentStatus != null)
             _alignmentStatus.text = _instantiator != null
                 ? "QR: " + (_qrDetector != null ? ShortPayload(_qrDetector.DetectedPayload, 26) : "unknown") +
@@ -796,21 +803,23 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     private void RefreshPointPlacementControls()
     {
         bool collecting = IsPointCollecting;
-        if (_pointView != null) _pointView.gameObject.SetActive(collecting);
+        bool failed = collecting && _pointRegistration != null && _pointRegistration.HasFitFailure;
+        if (_pointView != null) _pointView.gameObject.SetActive(collecting && !failed);
         int count = _pointRegistration != null ? _pointRegistration.CapturedPointCount : 0;
+        int required = _pointRegistration != null ? _pointRegistration.RequiredPointCount : 5;
         if (_pointGuide != null)
         {
-            if (collecting)
+            if (collecting && !failed)
                 _pointGuide.Refresh(_pointRegistration, _instantiator != null ? _instantiator.RobotPrefab : null, 180f);
             else _pointGuide.Hide();
         }
         if (_pointGuideTitle != null)
-            _pointGuideTitle.text = collecting ? (Mathf.Min(count + 1, 4)) + " / 4 · " + _pointRegistration.CurrentPointName : "Cover guide";
+            _pointGuideTitle.text = collecting ? (Mathf.Min(count + 1, required)) + " / " + required + " · " + _pointRegistration.CurrentPointName : "Contact guide";
         if (_pointGuidePose != null) _pointGuidePose.text = _pointGuide != null ? _pointGuide.PoseStatus : string.Empty;
         PositionPointGuide(Camera.main);
         if (_pointProgress != null)
-            _pointProgress.text = count + " / 4 points captured\n" +
-                (collecting ? "Next: " + _pointRegistration.CurrentPointName : "Choose Place with 4 points to begin.");
+            _pointProgress.text = count + " / " + required + " points captured\n" +
+                (collecting ? "Next: " + _pointRegistration.CurrentPointName : "Choose Place with 5 points to begin.");
         if (_pointStatus != null) _pointStatus.text = _pointRegistration != null ? _pointRegistration.StatusText : string.Empty;
         for (int index = 0; index < _pointLabels.Count; index++)
         {
@@ -822,6 +831,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         if (_pointRestartButton != null) _pointRestartButton.interactable = collecting;
         if (_pointCancelButton != null) _pointCancelButton.interactable = collecting;
         if (_pointQrButton != null) _pointQrButton.interactable = collecting && _qrDetector != null;
+        RefreshPointRegistrationPanels();
     }
 
     private static void RefreshStepButtons(List<Button> buttons, int selectedIndex, bool editing)
@@ -930,7 +940,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
         _taskView = Rect("Task view", _panel, Vector2.zero, new Vector2(440f, 756f));
         _alignmentView = Rect("Alignment view", _panel, Vector2.zero, new Vector2(440f, 756f));
-        _pointView = Rect("Four-point placement view", _panel, Vector2.zero, new Vector2(440f, 756f));
+        _pointView = Rect("Five-point placement view", _panel, Vector2.zero, new Vector2(440f, 756f));
         BuildHeader(_taskView, "Title", _workflowMode == URInputManager.WorkflowMode.SimplePickAndPlace
             ? "Simple Pick and Place" : _workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace
             ? "Repetitive Pick and Place" : "Robot tool");
@@ -966,7 +976,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         _executeButton.onClick.AddListener(ExecuteTask);
         BuildPlaybackControls();
         BuildPathThicknessSlider();
-        _pointPlacementButton = CreateButton("Place with 4 points", _taskView, new Vector2(16f, -625f), new Vector2(130f, 28f), out TextMeshProUGUI pointPlacementLabel);
+        _pointPlacementButton = CreateButton("Place with 5 points", _taskView, new Vector2(16f, -625f), new Vector2(130f, 28f), out TextMeshProUGUI pointPlacementLabel);
         pointPlacementLabel.fontSize = 13f;
         _pointPlacementButton.onClick.AddListener(BeginPointPlacement);
         _recenterButton = CreateButton("Recenter menu", _taskView, new Vector2(343f, -625f), new Vector2(81f, 28f), out TextMeshProUGUI recenterLabel);
@@ -988,6 +998,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         BuildSceneNavigation();
         BuildAlignmentView();
         BuildPointPlacementView();
+        BuildPointRegistrationPanels();
         BuildFixtureView();
         BuildGrabHandle(canvasRect);
         RefreshAlignmentControls();
@@ -1034,32 +1045,33 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void BuildPointPlacementView()
     {
-        BuildHeader(_pointView, "Four-point placement title", "Place robot with 4 points");
-        Text("Four-point placement introduction", _pointView, new Vector2(16f, -52f), new Vector2(408f, 64f),
-            "Touch each blue rear cover's center with the controller tip, from shoulder to wrist. Press the trigger once at each point.", 17f);
-        _pointProgress = Text("Four-point placement progress", _pointView, new Vector2(16f, -126f),
+        BuildHeader(_pointView, "Five-point placement title", "Place robot with 5 points");
+        Text("Five-point placement introduction", _pointView, new Vector2(16f, -52f), new Vector2(408f, 64f),
+            "Touch four rear cover centres, then the rear of the fixed base, using the controller tip. Press trigger once at each target.", 17f);
+        _pointProgress = Text("Five-point placement progress", _pointView, new Vector2(16f, -126f),
             new Vector2(408f, 70f), string.Empty, 23f);
         _pointProgress.color = new Color(0.55f, 0.91f, 1f);
         string[] descriptions = {
             "1  Shoulder — large cover above the base",
             "2  Elbow — large cover between long links",
             "3  Wrist 2 — blue cover behind the bent wrist",
-            "4  Wrist 3 — last blue cover by the tool flange"
+            "4  Wrist 3 — last blue cover by the tool flange",
+            "5  Base rear — fixed grey housing below shoulder"
         };
         for (int index = 0; index < descriptions.Length; index++)
-            _pointLabels.Add(Text("Four-point cover " + (index + 1), _pointView,
-                new Vector2(16f, -210f - index * 45f), new Vector2(408f, 40f), descriptions[index], 17f));
-        _pointStatus = Text("Four-point placement status", _pointView, new Vector2(16f, -400f),
+            _pointLabels.Add(Text("Five-point contact " + (index + 1), _pointView,
+                new Vector2(16f, -203f - index * 38f), new Vector2(408f, 35f), descriptions[index], 17f));
+        _pointStatus = Text("Five-point placement status", _pointView, new Vector2(16f, -400f),
             new Vector2(408f, 115f), string.Empty, 16f);
         _pointStatus.richText = false;
         _pointStatus.enableAutoSizing = true;
         _pointStatus.fontSizeMin = 13f;
         _pointStatus.fontSizeMax = 16f;
-        Text("Four-point placement fit hint", _pointView, new Vector2(16f, -519f), new Vector2(408f, 51f),
-            "Keep the robot still; live ROS joints are required. Verify the tip marker. Point 4 reveals a valid fit.", 14f).color = new Color(0.73f, 0.81f, 0.87f);
+        Text("Five-point placement fit hint", _pointView, new Vector2(16f, -519f), new Vector2(408f, 51f),
+            "Keep the robot still; live ROS joints are required. Verify the tip marker. Point 5 completes the fit.", 14f).color = new Color(0.73f, 0.81f, 0.87f);
         _pointUndoButton = CreateButton("Undo last point", _pointView, new Vector2(16f, -582f), new Vector2(198f, 38f), out _);
         _pointUndoButton.onClick.AddListener(UndoPointPlacement);
-        _pointRestartButton = CreateButton("Restart 4 points", _pointView, new Vector2(226f, -582f), new Vector2(198f, 38f), out _);
+        _pointRestartButton = CreateButton("Restart 5 points", _pointView, new Vector2(226f, -582f), new Vector2(198f, 38f), out _);
         _pointRestartButton.onClick.AddListener(BeginPointPlacement);
         _pointCancelButton = CreateButton("Cancel placement", _pointView, new Vector2(16f, -633f), new Vector2(198f, 38f), out _);
         _pointCancelButton.onClick.AddListener(CancelPointPlacement);
@@ -1074,7 +1086,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void BuildPointGuide()
     {
-        RectTransform sidebar = Rect("Four-point miniature guide", _pointView, new Vector2(457f, -170f), new Vector2(220f, 350f));
+        RectTransform sidebar = Rect("Five-point miniature guide", _pointView, new Vector2(457f, -170f), new Vector2(220f, 350f));
         Image background = sidebar.gameObject.AddComponent<Image>();
         background.color = new Color(0.035f, 0.06f, 0.09f, 0.97f);
         Outline border = sidebar.gameObject.AddComponent<Outline>();
@@ -1095,7 +1107,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         mount.transform.localPosition = new Vector3(0f, 0f, -125f);
         _pointGuide = mount.AddComponent<RobotRegistrationGuide>();
         Text("Miniature touch hint", sidebar, new Vector2(12f, -305f), new Vector2(196f, 37f),
-            "Touch the orange center\non the highlighted link.", 13f);
+            "Orange x-ray dot = contact.\nOne turn every 10 seconds.", 13f);
     }
 
     private void PositionPointGuide(Camera viewer)

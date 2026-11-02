@@ -68,8 +68,8 @@ public class URInstantiator : MonoBehaviour
         get
         {
             if (_placedWithPoints) return GetComponent<RobotPointRegistration>()?.HasPlacement == true
-                ? "Robot placed from four rear-cover centers (this XR session)."
-                : "Point placement is pending. Pick the four covers again.";
+                ? "Robot placed from five contacts (four covers and the fixed base rear; this XR session)."
+                : "Point placement is pending. Pick all five contacts again.";
             if (!TryGetCalibration(out Pose pose)) return "QR-to-base calibration is unavailable.";
             Vector3 euler = pose.rotation.eulerAngles;
             string source = IsCalibrating ? "Unsaved alignment" : _hasActiveCalibration ? "Saved alignment" :
@@ -212,7 +212,7 @@ public class URInstantiator : MonoBehaviour
         _appliedValidationRevision = -1;
         RobotStateService.Instance.IsReadyForPlanning = false;
         if (firstPlacement) OnURInstantiated.Invoke(robot, baseWorld);
-        SetAlignmentStatus("Four-point placement applied. Review the overlay before planning.");
+        SetAlignmentStatus("Five-point placement applied. Review the overlay before planning; use Adjust XYZ for small position corrections.");
         return true;
     }
 

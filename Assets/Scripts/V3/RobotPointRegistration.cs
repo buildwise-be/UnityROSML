@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 
-/// <summary>Session-local, ordered contact registration of the UR rear joint covers.</summary>
+/// <summary>Session-local registration from four rear covers and the fixed base rear contact.</summary>
 [DisallowMultipleComponent]
 public sealed class RobotPointRegistration : MonoBehaviour
 {
@@ -24,7 +24,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
     private readonly List<Material> _capturedPointMaterials = new List<Material>();
     private static readonly Color[] CapturedPointColors = {
         new Color(0.3f, 1f, 0.5f), new Color(1f, 0.5f, 0.1f),
-        new Color(0.85f, 0.4f, 1f), new Color(0.2f, 0.85f, 1f)
+        new Color(0.85f, 0.4f, 1f), new Color(0.2f, 0.85f, 1f), new Color(1f, 0.9f, 0.2f)
     };
     private readonly Dictionary<Renderer, bool> _hiddenRenderers = new Dictionary<Renderer, bool>();
     private Dictionary<string, double> _referenceJoints;
@@ -41,13 +41,29 @@ public sealed class RobotPointRegistration : MonoBehaviour
     private Material _tipMaterial;
     private RosRobotRig _hiddenRig;
     private readonly List<XRInputSubsystem> _inputSubsystems = new List<XRInputSubsystem>();
+    private Pose _fittedBaseInTracking;
+    private Transform _fitTrackingSpace;
+    private Vector3 _positionAdjustmentInRosMeters;
+    private Vector3 _adjustmentBeforeEdit;
+    private float _previousFitRms, _previousFitMax;
+    public const float MaximumPositionAdjustmentMeters = 0.02f;
 
+    public int RequiredPointCount => 5;
     public bool IsCollecting { get; private set; }
     public bool HasPlacement { get; private set; }
+    public bool HasFitFailure { get; private set; }
+    public string FitFailureText { get; private set; } = "";
+    public bool IsAdjustingPosition { get; private set; }
+    public Vector3 PositionAdjustmentInRosMeters => _positionAdjustmentInRosMeters;
+    public bool CanAdjustPosition => HasPlacement && !IsCollecting && _instantiator != null &&
+        _instantiator.IsPointPlaced && _instantiator.RobotInstance != null && !_instantiator.IsCalibrating &&
+        !RobotExecutionState.IsBusy && MTCPlansManager.ActiveExecution == null &&
+        RobotFrameMath.IsRigidFrame(_fitTrackingSpace) && RobotFrameMath.IsValidPose(_fittedBaseInTracking) &&
+        (IsAdjustingPosition ? RobotCoordinateService.IsCalibrationEditActive : RobotCoordinateService.Instance.IsInitialized);
     public int CapturedPointCount => _measuredInTracking.Count;
     public float RmsErrorMeters { get; private set; }
     public float MaxErrorMeters { get; private set; }
-    public string StatusText { get; private set; } = "Place the robot by touching four rear blue cover centers.";
+    public string StatusText { get; private set; } = "Place the robot using four rear cover centres, then the rear of the fixed base.";
     public event Action StateChanged;
     public string[] PointNames
     {
@@ -60,7 +76,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
         }
     }
     public string CurrentPointName => _landmarks != null && CapturedPointCount < _landmarks.Length
-        ? _landmarks[CapturedPointCount].displayName : "All four points collected";
+        ? _landmarks[CapturedPointCount].displayName : "All five points collected";
 
     /// <summary>Read-only miniature inputs. A captured registration always uses its first-touch joint pose.</summary>
     public bool GetGuideState(out RosRobotModel model, out Dictionary<string, double> joints,
@@ -93,8 +109,10 @@ public sealed class RobotPointRegistration : MonoBehaviour
         if (_instantiator == null) { SetStatus("Robot placement component is missing."); return; }
         if (_instantiator.IsCalibrating || RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null)
         { SetStatus("Finish the current alignment or robot execution before picking points."); return; }
-        if (_landmarks == null || _landmarks.Length != 4)
-        { SetStatus("Configure four rear-cover landmarks before point placement."); return; }
+        if (IsAdjustingPosition) CancelPositionAdjustment();
+        _landmarks = RobotCoverLandmarks.UpgradeDefaults(_landmarks);
+        if (_landmarks == null || _landmarks.Length != RequiredPointCount)
+        { SetStatus("Configure five contact landmarks, including the fixed base rear, before point placement."); return; }
         foreach (RobotCoverLandmark landmark in _landmarks)
             if (landmark == null || string.IsNullOrWhiteSpace(landmark.displayName))
             { SetStatus("Each rear-cover landmark needs a name and contact definition."); return; }
@@ -105,6 +123,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
             _hadUsablePlacement = coordinates.TryGetRobotBaseWorldPose(out Pose previousBase) &&
                 XRTrackingSpaceResolver.TryResolve(ref _trackingSpace);
             _previousTrackingSpace = _hadUsablePlacement ? _trackingSpace : null;
+            _previousFitRms = RmsErrorMeters; _previousFitMax = MaxErrorMeters;
             if (_hadUsablePlacement)
                 _previousBaseInTracking = RobotFrameMath.RelativeTo(new Pose(_trackingSpace.position, _trackingSpace.rotation), previousBase);
             _detector = _instantiator.MarkerDetector;
@@ -118,7 +137,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
             HideRobot();
         }
         ClearPicks();
-        SetStatus("Keep the robot still. Touch 1/4: " + CurrentPointName + "; press trigger.");
+        SetStatus("Keep the robot still. Touch 1/5: " + CurrentPointName + "; press trigger.");
     }
 
     /// <summary>Called only for a tracked pointer pose, after XR UI has consumed its trigger.</summary>
@@ -128,9 +147,9 @@ public sealed class RobotPointRegistration : MonoBehaviour
         if (!RobotFrameMath.IsValidPose(pointerWorld) || !RobotFrameMath.IsRigidFrame(trackingSpace) ||
             !RobotFrameMath.IsValidPose(new Pose(_tipOffsetInPointer, Quaternion.identity)))
         { SetStatus("A tracked controller and a valid metre-scale tracking frame are required."); return false; }
-        if (CapturedPointCount == 4) { SetStatus("Undo the last point or restart to retry the fit."); return false; }
+        if (CapturedPointCount >= RequiredPointCount) { SetStatus(HasFitFailure ? FitFailureText : "Undo the last point or restart to retry the fit."); return false; }
         if (_captureTrackingSpace != null && _captureTrackingSpace != trackingSpace)
-        { RestartPicks("The XR tracking frame changed. Pick all four points again."); return false; }
+        { RestartPicks("The XR tracking frame changed. Pick all five points again."); return false; }
         RosRobotModel model = CurrentModel();
         if (_jointFeedback == null) _jointFeedback = FindFirstObjectByType<JointStateSubscriber>();
         if (_jointFeedback == null)
@@ -139,9 +158,9 @@ public sealed class RobotPointRegistration : MonoBehaviour
             out Dictionary<string, double> joints, out string error))
         { SetStatus(error); return false; }
         if (_referenceModel != null && _referenceModel != model)
-        { RestartPicks("The robot model changed. Pick all four points again."); return false; }
+        { RestartPicks("The robot model changed. Pick all five points again."); return false; }
         if (_referenceJoints != null && JointsMoved(joints))
-        { RestartPicks("The robot moved. Keep it still and pick all four points again."); return false; }
+        { RestartPicks("The robot moved. Keep it still and pick all five points again."); return false; }
         if (CapturedPointCount == 0)
         {
             if (!RobotCoverLandmarks.TryGetBasePoints(model, joints, _landmarks, out _modelPoints, out error))
@@ -157,8 +176,9 @@ public sealed class RobotPointRegistration : MonoBehaviour
             { SetStatus("This point is too close to an earlier pick. Touch " + CurrentPointName + "."); return false; }
         _measuredInTracking.Add(measured);
         AddCapturedPointVisual(trackingSpace, measured, CapturedPointCount - 1);
-        if (CapturedPointCount < 4)
-        { SetStatus("Touch " + (CapturedPointCount + 1) + "/4: " + CurrentPointName + "; press trigger."); return true; }
+        ClearFitFailure();
+        if (CapturedPointCount < RequiredPointCount)
+        { SetStatus("Touch " + (CapturedPointCount + 1) + "/5: " + CurrentPointName + "; press trigger."); return true; }
         return TryFinish();
     }
 
@@ -181,15 +201,24 @@ public sealed class RobotPointRegistration : MonoBehaviour
     {
         if (!RobotPointRegistrationMath.TryFit(_modelPoints, _measuredInTracking,
             out Pose baseInTracking, out float rms, out float worst, out string error))
-        { SetStatus(error + " Undo a point or restart."); return false; }
+        { FailFit("Five-point fit FAILED. " + error + " No new placement was applied; planning remains blocked. Restart and capture all five points in order."); return false; }
         RmsErrorMeters = rms;
         MaxErrorMeters = worst;
         if (!(_maximumRmsErrorMeters > 0f) || !(_maximumPointErrorMeters > 0f) ||
             float.IsInfinity(_maximumRmsErrorMeters) || float.IsInfinity(_maximumPointErrorMeters) ||
             rms > _maximumRmsErrorMeters || worst > _maximumPointErrorMeters)
         {
-            SetStatus("Fit rejected: RMS " + (rms * 1000f).ToString("F1") + " mm; worst " +
-                (worst * 1000f).ToString("F1") + " mm. Check point order and tip offset; undo or restart.");
+            int worstIndex = 0; float largest = -1f;
+            for (int i = 0; i < _modelPoints.Length; i++)
+            {
+                float mismatch = Vector3.Distance(baseInTracking.position + baseInTracking.rotation * _modelPoints[i], _measuredInTracking[i]);
+                if (mismatch > largest) { largest = mismatch; worstIndex = i; }
+            }
+            FailFit("Five-point fit FAILED — fit rejected. No new XR placement was applied; planning remains blocked.\n" +
+                "RMS " + (rms * 1000f).ToString("F1") + " mm (limit " + (_maximumRmsErrorMeters*1000f).ToString("F1") +
+                "); worst " + (worst * 1000f).ToString("F1") + " mm (limit " + (_maximumPointErrorMeters*1000f).ToString("F1") +
+                "). Largest mismatch: point " + (worstIndex+1) + " " + _landmarks[worstIndex].displayName + ".\n" +
+                "Undo recaptures point 5. For an earlier point, Restart. Check point order, contact centres and controller tip offset; keep the real robot still.");
             return false;
         }
         Pose baseWorld = RobotFrameMath.Compose(new Pose(_captureTrackingSpace.position, _captureTrackingSpace.rotation), baseInTracking);
@@ -198,25 +227,125 @@ public sealed class RobotPointRegistration : MonoBehaviour
         if (!_instantiator.PlaceFromPointRegistration(baseWorld, _captureTrackingSpace, _referenceJoints))
         {
             coordinates.BeginCalibrationEdit();
-            SetStatus("The fit is valid, but the robot could not be placed. Restart to retry.");
+            FailFit("Five-point fit FAILED to apply. The measured fit is valid, but the XR robot could not be placed. Planning remains blocked. Check the robot prefab/model, then Restart.");
             return false;
         }
         IsCollecting = false;
         HasPlacement = true;
+        _fittedBaseInTracking = baseInTracking;
+        _fitTrackingSpace = _captureTrackingSpace;
+        _positionAdjustmentInRosMeters = Vector3.zero;
+        ClearFitFailure();
         RestoreRobotVisibility();
         HideTip();
-        SetStatus("Placed from 4 points. RMS " + (rms * 1000f).ToString("F1") + " mm; worst " +
-            (worst * 1000f).ToString("F1") + " mm. Check the overlay before planning.");
+        SetStatus("Placed from 5 points. RMS " + (rms * 1000f).ToString("F1") + " mm; worst " +
+            (worst * 1000f).ToString("F1") + " mm. Check the overlay; use Adjust position for small robot-XYZ corrections.");
         return true;
     }
+
+    /// <summary>Session-only translation of the XR overlay. Never sends robot motion or changes joint angles.</summary>
+    public void BeginPositionAdjustment()
+    {
+        if (IsAdjustingPosition) return;
+        if (!CanAdjustPosition)
+        { SetStatus("Complete a valid five-point placement and finish any robot execution before adjusting the XR position."); return; }
+        _adjustmentBeforeEdit = _positionAdjustmentInRosMeters;
+        IsAdjustingPosition = true;
+        TargetPoseContextMenu.CloseAll();
+        TargetRotationHandles.CancelAllInteractions();
+        RobotCoordinateService.Instance.BeginCalibrationEdit();
+        RobotStateService.Instance.IsReadyForPlanning = false;
+        SetStatus("Adjust the XR overlay in robot XYZ. Planning is blocked until Done. Maximum total correction: 20 mm from the five-point fit.");
+    }
+
+    public bool NudgeRobotPosition(Vector3 deltaInRosMeters)
+    {
+        if (!IsAdjustingPosition || !CanAdjustPosition)
+        { SetStatus("Position adjustment requires an active five-point alignment edit and no unresolved execution."); return false; }
+        if (!RobotFrameMath.IsValidPose(new Pose(deltaInRosMeters, Quaternion.identity)))
+        { SetStatus("The requested XYZ correction is not finite."); return false; }
+        Vector3 candidate = _positionAdjustmentInRosMeters + deltaInRosMeters;
+        if (!RobotFrameMath.IsValidPose(new Pose(candidate, Quaternion.identity)) ||
+            candidate.magnitude > MaximumPositionAdjustmentMeters + 0.0000001f)
+        { SetStatus("20 mm total correction limit reached. Reduce another axis, Reset, or repeat the five-point fit for a larger error."); return false; }
+        if (!ApplyPositionOffset(candidate)) return false;
+        _positionAdjustmentInRosMeters = candidate;
+        SetStatus("XR position correction: " + AdjustmentDescription() + ". Robot axes; original fit residuals are unchanged. Select Done before planning.");
+        return true;
+    }
+
+    public void ResetPositionAdjustment()
+    {
+        if (!IsAdjustingPosition || !CanAdjustPosition || !ApplyPositionOffset(Vector3.zero)) return;
+        _positionAdjustmentInRosMeters = Vector3.zero;
+        SetStatus("Original five-point fit position restored. Select Done to finish adjustment.");
+    }
+
+    public void EndPositionAdjustment()
+    {
+        if (!IsAdjustingPosition) return;
+        RobotCoordinateService coordinates = RobotCoordinateService.Instance;
+        // Scene navigation resets coordinates before unloading this component.
+        // Never reinitialize the outgoing robot after that reset.
+        if (!coordinates.IsCalibrationInProgress)
+        { IsAdjustingPosition = false; SetStatus("Robot alignment changed. Confirm alignment again before planning."); return; }
+        if (!CanAdjustPosition || !ApplyPositionOffset(_positionAdjustmentInRosMeters))
+        { SetStatus("Cannot finish position adjustment while execution or tracking is unresolved. Keep planning blocked and restore tracking first."); return; }
+        FinishPositionEdit(coordinates, "Five-point alignment adjusted by " + AdjustmentDescription() + ". Review the overlay and plan again.");
+    }
+
+    public void CancelPositionAdjustment()
+    {
+        if (!IsAdjustingPosition) return;
+        RobotCoordinateService coordinates = FindFirstObjectByType<RobotCoordinateService>();
+        _positionAdjustmentInRosMeters = _adjustmentBeforeEdit;
+        if (coordinates != null && coordinates.IsCalibrationInProgress &&
+            HasPlacement && RobotFrameMath.IsRigidFrame(_fitTrackingSpace) &&
+            _instantiator != null && _instantiator.RobotInstance != null && ApplyPositionOffset(_adjustmentBeforeEdit))
+            FinishPositionEdit(coordinates, "Position adjustment cancelled. Previous XR position restored.");
+        else { IsAdjustingPosition = false; StateChanged?.Invoke(); }
+    }
+
+    private bool ApplyPositionOffset(Vector3 offsetRos)
+    {
+        RosRobotRig rig = _instantiator?.RobotInstance != null ? _instantiator.RobotInstance.GetComponent<RosRobotRig>() : null;
+        if (rig == null || rig.BaseLink == null || !RobotFrameMath.IsRigidFrame(_fitTrackingSpace))
+        { SetStatus("The XR robot or tracking frame is unavailable. Repeat robot placement."); return false; }
+        Vector3 localDelta = RosRobotModelMath.FromRosVector(new[] { offsetRos.x, offsetRos.y, offsetRos.z });
+        Pose adjusted = new Pose(_fittedBaseInTracking.position + _fittedBaseInTracking.rotation * localDelta,
+            _fittedBaseInTracking.rotation);
+        Pose world = RobotFrameMath.Compose(new Pose(_fitTrackingSpace.position, _fitTrackingSpace.rotation), adjusted);
+        if (!RobotFrameMath.IsValidPose(world)) return false;
+        rig.SetBaseWorldPose(world);
+        return true;
+    }
+
+    private void FinishPositionEdit(RobotCoordinateService coordinates, string status)
+    {
+        RosRobotRig rig = _instantiator.RobotInstance.GetComponent<RosRobotRig>();
+        Pose world = new Pose(rig.BaseLink.position, rig.BaseLink.rotation);
+        coordinates.EndCalibrationEdit();
+        RobotStateService.Instance.InitializeRobot(world, _instantiator.RobotInstance, _fitTrackingSpace);
+        IsAdjustingPosition = false;
+        if (!coordinates.IsInitialized)
+        { HasPlacement = false; SetStatus("XR position correction could not be applied. Repeat the five-point placement before planning."); return; }
+        RobotStateService.Instance.IsReadyForPlanning = false;
+        SetStatus(status);
+    }
+    private string AdjustmentDescription() => "X " + (_positionAdjustmentInRosMeters.x*1000f).ToString("F1") +
+        ", Y " + (_positionAdjustmentInRosMeters.y*1000f).ToString("F1") +
+        ", Z " + (_positionAdjustmentInRosMeters.z*1000f).ToString("F1") + " mm";
+    private void ClearFitFailure() { HasFitFailure = false; FitFailureText = ""; }
+    private void FailFit(string reason) { HasFitFailure = true; FitFailureText = reason; SetStatus(reason); }
 
     public void UndoLastPoint()
     {
         if (!IsCollecting || CapturedPointCount == 0) return;
         _measuredInTracking.RemoveAt(CapturedPointCount - 1);
+        ClearFitFailure();
         RemoveLastCapturedPointVisual();
         if (CapturedPointCount == 0) ClearPicks();
-        SetStatus("Touch " + (CapturedPointCount + 1) + "/4: " + CurrentPointName + "; press trigger.");
+        SetStatus("Touch " + (CapturedPointCount + 1) + "/5: " + CurrentPointName + "; press trigger.");
     }
 
     public void CancelRegistration()
@@ -238,14 +367,17 @@ public sealed class RobotPointRegistration : MonoBehaviour
         RestoreRobotVisibility();
         HideTip();
         ClearPicks();
-        SetStatus("Point placement cancelled." + (_hadUsablePlacement ? " Previous placement restored." : " Choose four points or scan QR."));
+        if (_hadUsablePlacement) { RmsErrorMeters = _previousFitRms; MaxErrorMeters = _previousFitMax; }
+        SetStatus("Point placement cancelled." + (_hadUsablePlacement ? " Previous placement restored." : " Choose five points or scan QR."));
     }
 
     public void UseQrPlacement()
     {
+        if (IsAdjustingPosition) CancelPositionAdjustment();
         CancelRegistration();
         ClearPicks();
         HasPlacement = false;
+        _fitTrackingSpace = null; _positionAdjustmentInRosMeters = Vector3.zero;
         if (_instantiator == null) _instantiator = GetComponent<URInstantiator>();
         if (_instantiator != null) _instantiator.SelectQrPlacement();
         QRDetector detector = _instantiator != null ? _instantiator.MarkerDetector : null;
@@ -253,20 +385,23 @@ public sealed class RobotPointRegistration : MonoBehaviour
         SetStatus("QR placement selected. Scan the marker, then trigger to place the robot.");
     }
 
-    public void NotifyQrPlacement() { ClearPicks(); HideTip(); HasPlacement = false; StateChanged?.Invoke(); }
+    public void NotifyQrPlacement() { ClearPicks(); HideTip(); HasPlacement = false; IsAdjustingPosition = false; _fitTrackingSpace = null; _positionAdjustmentInRosMeters = Vector3.zero; StateChanged?.Invoke(); }
 
     /// <summary>Native reference-space changes invalidate saved contacts; moving the XR Origin transform does not.</summary>
     public void InvalidateTrackingSession(string reason)
     {
         if (!HasPlacement && !IsCollecting) return;
         HasPlacement = false;
+        IsAdjustingPosition = false;
+        _fitTrackingSpace = null;
+        _positionAdjustmentInRosMeters = _adjustmentBeforeEdit = Vector3.zero;
         _hadUsablePlacement = false;
         RobotCoordinateService coordinates = FindFirstObjectByType<RobotCoordinateService>();
         if (coordinates != null) coordinates.InvalidateCalibration();
         RobotStateService state = FindFirstObjectByType<RobotStateService>();
         if (state != null) state.IsReadyForPlanning = false;
         if (!IsCollecting) BeginRegistration();
-        RestartPicks(reason + " Pick all four points again.");
+        RestartPicks(reason + " Pick all five points again.");
     }
 
     private void OnEnable() => SubscribeTrackingOrigin();
@@ -303,6 +438,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
     private void RestartPicks(string reason) { ClearPicks(); SetStatus(reason + " Start at " + CurrentPointName + "."); }
     private void ClearPicks()
     {
+        ClearFitFailure();
         ClearCapturedPointVisuals();
         _measuredInTracking.Clear();
         _referenceJoints = null;
@@ -376,6 +512,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
     private void LateUpdate() { if (IsCollecting) HideCurrentRenderers(); }
     private void OnDisable()
     {
+        if (IsAdjustingPosition) CancelPositionAdjustment();
         CancelRegistration();
         foreach (XRInputSubsystem subsystem in _inputSubsystems) subsystem.trackingOriginUpdated -= OnTrackingOriginUpdated;
         _inputSubsystems.Clear();
@@ -387,5 +524,5 @@ public sealed class RobotPointRegistration : MonoBehaviour
         DisposeVisual(_tipMaterial);
     }
     private void OnApplicationPause(bool paused) { if (paused) InvalidateTrackingSession("App paused."); }
-    private void OnApplicationFocus(bool focus) { if (!focus && IsCollecting) RestartPicks("App lost focus; pick all four points again."); }
+    private void OnApplicationFocus(bool focus) { if (!focus && IsCollecting) RestartPicks("App lost focus; pick all five points again."); }
 }

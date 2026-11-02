@@ -38,10 +38,15 @@ public sealed class RobotRegistrationGuide : MonoBehaviour
     private float _nextInspection;
     private bool _lastIllustration;
     private int _lastStep = -1;
+    private float _turntableElapsedSeconds;
+    private Quaternion _initialViewRotation = Quaternion.identity;
+    private Vector3 _modelCentre;
+    private float _geometryScale;
+    private const float TurntablePeriodSeconds = 10f;
 
     // The measured covers' outward surface normals, in their visual's ROS axes.
     // A step-specific view keeps its rear-cover center visible in the miniature.
-    private static readonly Vector3[] CoverNormalsRos = { Vector3.up, Vector3.up, Vector3.back, Vector3.down };
+    private static readonly Vector3[] CoverNormalsRos = { Vector3.up, Vector3.up, Vector3.back, Vector3.down, Vector3.left };
     private static readonly Color TargetColor = new Color(1f, 0.5f, 0.08f);
     private const float TargetDiameterInModel = 0.05f;
 
@@ -51,6 +56,7 @@ public sealed class RobotRegistrationGuide : MonoBehaviour
     public string HighlightedLinkName { get; private set; } = string.Empty;
     public string PoseStatus { get; private set; } = "Waiting for registration";
     public Vector3 TargetPointInModel { get; private set; }
+    public float TurntableAngleDegrees => _turntableElapsedSeconds * (360f / TurntablePeriodSeconds);
 
     /// <summary>Mount on a menu-relative transform. 200 local units become 20 cm on the .001-scale canvas.</summary>
     public void Refresh(RobotPointRegistration registration, GameObject referencePrefab, float maximumLocalSize = 200f)
@@ -72,18 +78,18 @@ public sealed class RobotRegistrationGuide : MonoBehaviour
         bool hasJoints = registration.GetGuideState(out RosRobotModel model, out Dictionary<string, double> joints,
             out RobotCoverLandmark[] landmarks, out bool locked);
         if (!hasJoints) joints = IllustrationJoints(model);
-        int step = Mathf.Clamp(registration.CapturedPointCount, 0, 3);
+        int step = Mathf.Clamp(registration.CapturedPointCount, 0, landmarks != null ? landmarks.Length - 1 : 0);
         try
         {
-            if (_model != model || _referencePrefab != referencePrefab || _geometry == null)
+            if (landmarks == null || landmarks.Length < 3 || landmarks[step] == null)
+                throw new ArgumentException("Valid contact definitions are required.");
+            if (_model != model || _referencePrefab != referencePrefab || _geometry == null || _markers.Count != landmarks.Length)
             {
                 ClearGeometry();
                 _model = model;
                 _referencePrefab = referencePrefab;
-                BuildGeometry();
+                BuildGeometry(landmarks.Length);
             }
-            if (landmarks == null || landmarks.Length != 4 || landmarks[step] == null)
-                throw new ArgumentException("Four valid cover definitions are required.");
             if (step != _lastStep || !SameJoints(joints) || _lastIllustration != !hasJoints || !HasVisual)
                 PoseGeometry(joints, landmarks, step);
             HasVisual = _visuals.Count > 0;
@@ -124,12 +130,13 @@ public sealed class RobotRegistrationGuide : MonoBehaviour
         if (!_registration.IsCollecting) { Hide(); return; }
         if (Time.unscaledTime >= _nextInspection)
             Refresh(_registration, _referencePrefab, _maximumLocalSize);
+        AdvanceTurntable(Time.unscaledDeltaTime);
         if (HasVisual && SelectedPointIndex >= 0 && SelectedPointIndex < _markers.Count)
             _markers[SelectedPointIndex].localScale = Vector3.one * TargetDiameterInModel *
                 (1.08f + 0.08f * Mathf.Sin(Time.unscaledTime * 4f));
     }
 
-    private void BuildGeometry()
+    private void BuildGeometry(int pointCount)
     {
         RosRobotModelMath.Validate(_model);
         _geometry = new GameObject("UR16e registration miniature geometry");
@@ -186,9 +193,13 @@ public sealed class RobotRegistrationGuide : MonoBehaviour
             }
         }
         if (_visuals.Count == 0) throw new InvalidOperationException("UR16e arm meshes are unavailable.");
-        _targetMaterial = Own(TargetMarkerMaterials.Create(TargetColor));
+        Material targetTemplate = Resources.Load<Material>("RobotTargetMarkers/RegistrationGuideTarget");
+        if (targetTemplate == null || targetTemplate.shader == null)
+            throw new InvalidOperationException("The bundled registration contact material is missing.");
+        _targetMaterial = Own(new Material(targetTemplate) { name = "Miniature contact x-ray highlight", enableInstancing = true });
+        _targetMaterial.SetColor("_BaseColor",TargetColor);
         _otherPointMaterial = Own(TargetMarkerMaterials.Create(new Color(0.2f, 0.48f, 0.62f)));
-        for (int index = 0; index < 4; index++)
+        for (int index = 0; index < pointCount; index++)
         {
             GameObject marker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             marker.name = "Guide cover center " + (index + 1);
@@ -225,18 +236,41 @@ public sealed class RobotRegistrationGuide : MonoBehaviour
         RobotCoverLandmark target = landmarks[step];
         RosRobotGeometry geometry = _model.FindLink(target.linkName).visuals[target.visualIndex];
         Vector3 normal = poses[target.linkName].rotation * RosRobotModelMath.GeometryPose(geometry).rotation *
-            RosRobotModelMath.FromRosVector(ToArray(CoverNormalsRos[step]));
-        Vector3 up = Mathf.Abs(Vector3.Dot(normal.normalized, Vector3.up)) > 0.94f ? Vector3.forward : Vector3.up;
-        Quaternion view = Quaternion.Inverse(Quaternion.LookRotation(-normal, up));
-        Bounds bounds = RotatedBounds(view);
-        float scale = _maximumLocalSize / Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z, 0.001f);
-        _geometry.transform.localRotation = view;
-        _geometry.transform.localScale = Vector3.one * scale;
-        _geometry.transform.localPosition = -bounds.center * scale;
+            RosRobotModelMath.FromRosVector(ToArray(CoverNormalsRos[Mathf.Min(step, CoverNormalsRos.Length - 1)]));
+        Vector3 horizontalNormal = Vector3.ProjectOnPlane(normal, Vector3.up);
+        _initialViewRotation = horizontalNormal.sqrMagnitude > 0.000001f
+            ? Quaternion.Inverse(Quaternion.LookRotation(-horizontalNormal, Vector3.up)) : Quaternion.identity;
+        Bounds bounds = RotatedBounds(Quaternion.identity);
+        _modelCentre = bounds.center;
+        // One scale encloses the complete vertical-axis turn, preventing size
+        // pumping and clipping as the arm rotates through its widest view.
+        float sweptDiameter = 2f * bounds.extents.magnitude;
+        _geometryScale = _maximumLocalSize / Mathf.Max(sweptDiameter, 0.001f);
+        ApplyTurntableView();
         TargetPointInModel = points[step];
         _lastStep = step;
         _lastJoints.Clear();
         foreach (KeyValuePair<string, double> joint in joints) _lastJoints[joint.Key] = joint.Value;
+    }
+
+    private void AdvanceTurntable(float deltaSeconds)
+    {
+        if (!HasVisual || !float.IsFinite(deltaSeconds) || deltaSeconds < 0f) return;
+        _turntableElapsedSeconds = Mathf.Repeat(_turntableElapsedSeconds + deltaSeconds, TurntablePeriodSeconds);
+        ApplyTurntableView();
+    }
+
+    private void ApplyTurntableView()
+    {
+        if (_geometry == null) return;
+        Vector3 forward = Vector3.ProjectOnPlane(transform.forward,Vector3.up);
+        if (forward.sqrMagnitude < .000001f) forward = Vector3.forward;
+        Quaternion worldYaw = Quaternion.LookRotation(forward,Vector3.up);
+        Quaternion worldRotation = Quaternion.AngleAxis(TurntableAngleDegrees,Vector3.up) * worldYaw * _initialViewRotation;
+        Quaternion rotation = Quaternion.Inverse(transform.rotation) * worldRotation;
+        _geometry.transform.localRotation = rotation;
+        _geometry.transform.localScale = Vector3.one * _geometryScale;
+        _geometry.transform.localPosition = -(rotation * _modelCentre) * _geometryScale;
     }
 
     private Bounds RotatedBounds(Quaternion rotation)

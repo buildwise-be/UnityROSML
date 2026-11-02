@@ -105,6 +105,12 @@ def main():
                     "Assets/Samples/Magic Leap SDK/2.6.0/ML Rig & OpenXR Input/MagicLeapOpenXRInput.cs"):
         if (PROJECT / runtime).is_file():
             copy_file(PROJECT / runtime)
+    # Shared menus now have workflow-specific partials. Keep their runtime
+    # dependencies together even when an older focused preparer is used.
+    for folder, pattern in (("Assets/Scripts/V3/UI", "ToolSelectionMenu*.cs"),
+                            ("Assets/Scripts/V3/ROS", "Fixture*.cs")):
+        for source in (PROJECT / folder).glob(pattern):
+            copy_file(source)
     plugin_folder = DESTINATION / "Assets/Plugins"
     plugin_folder.mkdir(parents=True, exist_ok=True)
     for dll in ("Unity.Robotics.ROSTCPConnector.MessageGeneration.dll", "Unity.Robotics.ROSTCPConnector.dll",
