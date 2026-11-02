@@ -118,17 +118,17 @@ public sealed class RobotPointRegistrationMathTests
     }
 
     [Test]
-    public void FiveContactsIncludingTheFixedBaseAllContributeToTheRigidFit()
+    public void AllFiveBlueCoverContactsContributeToTheRigidFit()
     {
-        // Four moving cover contacts plus the fixed base rear contact. The fifth
-        // point must participate in the fit and its residual, not be ignored.
-        Vector3[] five = { Model[0], Model[1], Model[2], Model[3], new Vector3(0f,0.042474f,-0.086787f) };
+        // The lower pan cap comes first, followed by the existing four covers.
+        // Every point must participate in the fit and its reported residual.
+        Vector3[] five = { new Vector3(-0.000008f,0.268762f,-0.000003f),Model[0],Model[1],Model[2],Model[3] };
         Pose expected = new Pose(new Vector3(.7f,-.3f,1.2f),Quaternion.Euler(24f,135f,-16f));
         Vector3[] measured = Transform(five,expected);
         Assert.That(RobotPointRegistrationMath.TryFit(five,measured,out Pose fit,out float rms,out float worst,out string error),Is.True,error);
         Assert.That(Vector3.Distance(fit.position,expected.position),Is.LessThan(0.000002f));
         Assert.That(rms,Is.LessThan(0.000002f));Assert.That(worst,Is.LessThan(0.000002f));
-        measured[4] += new Vector3(.04f,-.03f,.02f);
+        measured[0] += new Vector3(.04f,-.03f,.02f);
         Assert.That(RobotPointRegistrationMath.TryFit(five,measured,out fit,out rms,out worst,out error),Is.True,error);
         Assert.That(rms,Is.GreaterThan(.005f));Assert.That(worst,Is.GreaterThan(.015f));
         float squared = 0f, maximum = 0f;

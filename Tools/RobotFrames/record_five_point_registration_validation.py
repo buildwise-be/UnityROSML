@@ -15,6 +15,7 @@ REGISTRATION_FIXTURES = {
     "RobotCoverLandmarkTests", "RobotPointRegistrationMathTests", "RobotPointRegistrationWorkflowTests",
     "RobotRegistrationGuideTests", "PointPlacementMenuTests",
 }
+CONTACT_FIXTURES = {"TargetPoseContextTests", "TargetSelectionGestureTests", "PickPlaceToolContactTests"}
 
 
 def fingerprint(path):
@@ -28,6 +29,7 @@ def main():
     parser.add_argument("--results-file", default="five-point-results.xml")
     parser.add_argument("--render-log", default="five-point-previews.log")
     parser.add_argument("--preview-directory", default="FivePointRegistrationPreviews")
+    parser.add_argument("--contact-render-log", default="five-point-previews.log")
     args = parser.parse_args()
     isolated = args.project.resolve()
     library = (PROJECT / "Library").resolve()
@@ -44,6 +46,13 @@ def main():
     for case in result.iter("test-case"):
         if case.get("classname") in REGISTRATION_FIXTURES and case.get("result") != "Passed":
             raise ValueError("A registration case did not pass: " + str(case.get("fullname")))
+    contact_counts = Counter(case.get("classname") for case in result.iter("test-case")
+                             if case.get("classname") in CONTACT_FIXTURES and case.get("result") == "Passed")
+    if set(contact_counts) != CONTACT_FIXTURES:
+        raise ValueError("All target gesture/contact fixtures must have passing cases")
+    for case in result.iter("test-case"):
+        if case.get("classname") in CONTACT_FIXTURES and case.get("result") != "Passed":
+            raise ValueError("A target gesture/contact case did not pass: " + str(case.get("fullname")))
     skipped = [{"name": case.get("fullname"), "reason": case.findtext("reason/message")}
                for case in result.iter("test-case") if case.get("result") == "Skipped"]
 
@@ -57,11 +66,15 @@ def main():
         PROJECT / "Assets/Scripts/V3/ROS/JointStateSubscriber.cs",
         PROJECT / "Assets/Resources/RobotModels/Models.json",
         PROJECT / "Assets/Prefabs/ur16e_kenos/ur16e_kenos.prefab",
-        PROJECT / "Assets/Prefabs/ur16e_kenos/meshes/ur_description/meshes/ur10e/visual/base.dae",
+        PROJECT / "Assets/Prefabs/ur16e_kenos/meshes/ur_description/meshes/ur10e/visual/shoulder.dae",
     }
     sources.update((PROJECT / "Assets/Scripts/V3/UI").glob("ToolSelectionMenu*.cs"))
     sources.update((PROJECT / "Assets/Scripts/V3/Frames").glob("*.cs"))
     sources.update(PROJECT / "Assets/Tests/RobotFrames" / (name + ".cs") for name in REGISTRATION_FIXTURES)
+    sources.update(PROJECT / "Assets/Tests/RobotFrames" / (name + ".cs") for name in CONTACT_FIXTURES)
+    sources.update(PROJECT / "Assets/Scripts/V3" / name for name in (
+        "TargetPoseContextMenu.cs", "TargetRotationHandles.cs", "NormalTargetMarker.cs", "ToolPoseVisual.cs"))
+    sources.add(PROJECT / "Assets/Scripts/V3/ROS/PickPlaceController.cs")
     sources.update(PROJECT / "Assets/Resources/RobotTargetMarkers" / name for name in (
         "RegistrationGuideTarget.shader", "RegistrationGuideTarget.mat"))
     sources.update(Path(str(path) + ".meta") for path in tuple(sources) if Path(str(path) + ".meta").is_file())
@@ -94,17 +107,23 @@ def main():
         r"RegistrationGuidePreview: step=(\d+), orangeTargetPixels=(\d+)", render_log)}
     if set(marker_pixels) != set(range(1, 6)) or any(count <= 8 for count in marker_pixels.values()):
         raise ValueError("All five contact markers must render visible orange pixels")
+    contact_preview = isolated / "normal-contact-context.png"
+    contact_log = isolated / args.contact_render_log
+    if not contact_preview.is_file() or "ToolContactPreview:" not in contact_log.read_text(encoding="utf-8", errors="replace"):
+        raise ValueError("The actual ground-locked target context preview is required")
 
     report = {
         "schemaVersion": 1, "completedUtc": result.get("end-time"), "unityVersion": "6000.0.84f1",
-        "scope": "Five physical registration contacts, rotating miniature, explicit failures and bounded robot-local XYZ overlay correction",
+        "scope": "Five blue registration covers from base to tool, bounded XYZ correction, target click/drag gestures and ground-locked MTC contact normals",
         "editorTests": {key: int(result.get(key, "0")) for key in ("total", "passed", "failed", "skipped")},
         "skippedCases": skipped,
         "registrationTests": {"total": sum(fixture_counts.values()), "fixtures": dict(sorted(fixture_counts.items()))},
+        "targetContactTests": {"total": sum(contact_counts.values()), "fixtures": dict(sorted(contact_counts.items()))},
         "testResults": fingerprint(results_path),
-        "landmarks": {"orderedNames": ["Shoulder", "Elbow", "Wrist 2", "Wrist 3", "Base rear"],
-                      "fifthOwningLink": "ur_base_link_inertia", "fifthSurface": "Fixed gray base housing, upstream of shoulder pan",
-                      "provenance": "CAD-derived default contact; independently checked against the actual base.dae surface and fixed-link FK"},
+        "landmarks": {"orderedNames": ["Base cover", "Shoulder", "Elbow", "Wrist 2", "Wrist 3"],
+                      "firstOwningLink": "ur_shoulder_link", "firstSurface": "Lowest blue pan-joint cover, upstream of the shoulder-lift cover",
+                      "firstPointInVisualRosM": [-0.000003, 0.000008, 0.087942],
+                      "provenance": "CAD-derived blue surface on shoulder.dae; checked against the URBlue material and calibrated moving-link FK"},
         "miniature": {"turnPeriodSeconds": 10, "checks": "Deterministic orbit, stable geometry/centering, all five highlighted contacts and unchanged live/locked joint inputs"},
         "positionCorrection": {"axes": "ROS robot-local XYZ", "maximumTotalOffsetMeters": .02,
                                "bound": "Euclidean displacement from the original fit across repeated adjustments",
@@ -112,6 +131,7 @@ def main():
         "runtimeCompile": {"helperSources": compiler["helperSourceCount"], "mainSources": compiler["mainSourceCount"],
                            "errors": 0, "warnings": compiler["warnings"], "evidence": fingerprint(compiler_path)},
         "visualQa": {"log": fingerprint(render_log_path), "previews": [fingerprint(path) for path in previews],
+                     "groundLockContextPreview": fingerprint(contact_preview), "groundLockContextLog": fingerprint(contact_log),
                      "markerPixelChecks": "All five current contact markers remain visible using the bundled XR-aware overlay shader/material",
                      "orangeMarkerPixelsByStep": marker_pixels,
                      "shaderValidation": "Graphics-enabled mobile URP D3D11 render; no shader compilation errors; native headset rendering not exercised"},
@@ -122,7 +142,7 @@ def main():
             "prepare_five_point_registration_validation.py", "record_five_point_registration_validation.py")],
         "hardwareExercised": False, "editorRosTransport": False, "headsetTested": False,
         "robotMotionRequested": False, "deploymentPerformed": False,
-        "limits": ["The fifth default contact is derived from CAD and still needs physical verification.",
+        "limits": ["The lowest blue cover contact is derived from CAD and still needs physical verification.",
                    "Residuals measure agreement between captured points, not absolute physical alignment accuracy.",
                    "A manual overlay correction does not recalibrate the controller's physical contact tip.",
                    "Native headset tracking, physical contact capture and live ROS execution are not exercised."],

@@ -43,7 +43,7 @@ def main():
         "actualMenuSources": [{"path": source.relative_to(PROJECT).as_posix(),
                                "sha256": hashlib.sha256(source.read_bytes()).hexdigest()}
                               for source in menu_sources],
-        "landmarkContract": "Shoulder, Elbow, Wrist 2, Wrist 3, then Base rear on the fixed base housing",
+        "landmarkContract": "Base cover (lowest blue cover), Shoulder, Elbow, Wrist 2, Wrist 3, from base to tool",
         "correctionContract": "Robot-local XYZ position correction; total displacement from original fit limited to 20 mm",
         "miniatureContract": "One complete revolution per 10 seconds, preserving highlighted landmark and locked joint pose",
         "transportBoundary": "The ROS factory throws before any connection, subscription or publisher; no native XR scene is loaded",

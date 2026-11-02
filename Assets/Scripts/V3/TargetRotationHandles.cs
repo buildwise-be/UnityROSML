@@ -97,6 +97,10 @@ public sealed class TargetRotationHandles : MonoBehaviour
     private Handle _activeHandle;
     private IXRSelectInteractor _activeInteractor;
     private bool _dragging;
+    private bool _pendingClick;
+    private float _selectionStartedAt;
+    private const float ClickDurationSeconds = 0.4f;
+    private const float DragThresholdDegrees = 3f;
     private RotationHandleKind _dragKind;
     private Vector3 _pivotWorld;
     private Vector3 _worldAxis;
@@ -158,7 +162,7 @@ public sealed class TargetRotationHandles : MonoBehaviour
     // These methods also allow isolated verification without an XR device.
     public bool BeginRotation(RotationHandleKind kind, Quaternion controllerWorldRotation, Vector3 radialWorld)
     {
-        if (RobotCoordinateService.IsCalibrationEditActive || TargetPoseContextMenu.IsOpen || _dragging || OtherTargetSelected() || !isActiveAndEnabled || !RobotFrameMath.IsRigidFrame(transform) ||
+        if (RobotCoordinateService.IsCalibrationEditActive || TargetPoseContextMenu.IsOpen || _dragging || _pendingClick || OtherTargetSelected() || !isActiveAndEnabled || !RobotFrameMath.IsRigidFrame(transform) ||
             !RobotFrameMath.IsValidPose(new Pose(Vector3.zero, controllerWorldRotation))) return false;
         if (kind != RotationHandleKind.Free && kind != RotationHandleKind.Tilt && kind != RotationHandleKind.Twist) return false;
         _pivotWorld = transform.position;
@@ -202,6 +206,8 @@ public sealed class TargetRotationHandles : MonoBehaviour
             _previousRadial = radialWorld;
             rotation = TcpTargetRotationMath.ApplyWorldAxisDelta(_initialTargetRotation, _worldAxis, _accumulatedDegrees);
         }
+        TargetPoseContextMenu context = GetComponent<TargetPoseContextMenu>();
+        if (context != null) rotation = context.ConstrainRotation(rotation);
         bool changed = RotationDiffers(transform.rotation, rotation);
         transform.SetPositionAndRotation(_pivotWorld, rotation);
         if (changed) RotationChanged?.Invoke();
@@ -211,6 +217,7 @@ public sealed class TargetRotationHandles : MonoBehaviour
     public void EndRotation()
     {
         _dragging = false;
+        _pendingClick = false;
         _activeHandle = null;
         _activeInteractor = null;
         SelectedTargets.Remove(this);
@@ -219,8 +226,9 @@ public sealed class TargetRotationHandles : MonoBehaviour
 
     private void Update()
     {
-        if (!_dragging || _activeHandle == null || _activeInteractor == null) return;
-        if (ParentMoved() || (_activeInteractor is Behaviour behaviour && (behaviour == null || !behaviour.isActiveAndEnabled)))
+        if ((!_dragging && !_pendingClick) || _activeHandle == null || _activeInteractor == null) return;
+        if (RobotCoordinateService.IsCalibrationEditActive || !RobotFrameMath.IsRigidFrame(transform) ||
+            ParentMoved() || (_activeInteractor is Behaviour behaviour && (behaviour == null || !behaviour.isActiveAndEnabled)))
         {
             AbortRotation();
             return;
@@ -228,8 +236,19 @@ public sealed class TargetRotationHandles : MonoBehaviour
         Transform attach = _activeInteractor.GetAttachTransform(_activeHandle.Interactable);
         if (attach == null) { EndRotation(); return; }
         Quaternion controllerRotation = ControllerRotation(_activeInteractor, attach);
+        if (!RobotFrameMath.IsValidPose(new Pose(Vector3.zero, controllerRotation))) { AbortRotation(); return; }
         Vector3 radial = _previousRadial;
         if (_dragKind != RotationHandleKind.Free && !TryGetRadial(_activeInteractor, attach, false, out radial)) return;
+        if (_pendingClick)
+        {
+            bool moved = _dragKind == RotationHandleKind.Free
+                ? Quaternion.Angle(_initialControllerRotation, controllerRotation) > DragThresholdDegrees
+                : TcpTargetRotationMath.TrySignedPlaneAngle(_previousRadial, radial, _worldAxis, out float degrees) &&
+                    Mathf.Abs(degrees) > DragThresholdDegrees;
+            if (!moved && Time.unscaledTime - _selectionStartedAt <= ClickDurationSeconds) return;
+            _pendingClick = false;
+            if (!BeginRotation(_dragKind, _initialControllerRotation, _previousRadial)) { AbortRotation(); return; }
+        }
         UpdateRotation(controllerRotation, radial);
     }
 
@@ -264,17 +283,40 @@ public sealed class TargetRotationHandles : MonoBehaviour
 
     private void Selected(Handle handle, SelectEnterEventArgs args)
     {
-        if (RobotCoordinateService.IsCalibrationEditActive || _dragging || !isActiveAndEnabled) return;
+        if (RobotCoordinateService.IsCalibrationEditActive || TargetPoseContextMenu.IsOpen || _dragging || _pendingClick ||
+            OtherTargetSelected() || !isActiveAndEnabled || !RobotFrameMath.IsRigidFrame(transform)) return;
         Transform attach = args.interactorObject.GetAttachTransform(handle.Interactable);
         if (attach == null) return;
         _pivotWorld = transform.position;
         _worldAxis = transform.rotation * (handle.Kind == RotationHandleKind.Tilt ? Vector3.forward : Vector3.up);
         Vector3 radial = Vector3.zero;
         if (handle.Kind != RotationHandleKind.Free && !TryGetRadial(args.interactorObject, attach, true, out radial)) return;
-        if (!BeginRotation(handle.Kind, ControllerRotation(args.interactorObject, attach), radial)) return;
+        Quaternion controllerRotation = ControllerRotation(args.interactorObject, attach);
+        if (!RobotFrameMath.IsValidPose(new Pose(Vector3.zero, controllerRotation))) return;
+        // A short click opens the menu without changing a reviewed target. Movement or a hold starts rotation.
+        _parentAtBegin = transform.parent;
+        _parentPoseAtBegin = _parentAtBegin != null
+            ? new Pose(_parentAtBegin.position, _parentAtBegin.rotation) : Pose.identity;
+        _initialControllerRotation = controllerRotation;
+        _dragKind = handle.Kind;
+        _previousRadial = radial;
+        _pendingClick = true;
+        _selectionStartedAt = Time.unscaledTime;
         _activeHandle = handle;
         _activeInteractor = args.interactorObject;
+        SelectedTargets.Add(this);
         RefreshColors();
+    }
+
+    private void Released(Handle handle, SelectExitEventArgs args)
+    {
+        if (_activeHandle != handle || _activeInteractor != args.interactorObject) return;
+        // Input can press and release between updates; still distinguish a fast turn from a click.
+        if (_pendingClick && !args.isCanceled) Update();
+        bool click = _pendingClick && !args.isCanceled && Time.unscaledTime - _selectionStartedAt <= ClickDurationSeconds &&
+            !ParentMoved() && !RobotCoordinateService.IsCalibrationEditActive;
+        EndRotation();
+        if (click) GetComponent<TargetPoseContextMenu>()?.Open();
     }
 
     private static Quaternion ControllerRotation(IXRSelectInteractor interactor, Transform attach)
@@ -312,7 +354,7 @@ public sealed class TargetRotationHandles : MonoBehaviour
     private void CreateBall(float diameter, Material source, Color color)
     {
         GameObject ball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        ball.name = "Free rotation ball - select and turn controller";
+        ball.name = "Contact ball - trigger-click for menu; trigger-drag to turn";
         ball.layer = 0;
         ball.transform.SetParent(_visualRoot, false);
         ball.transform.localScale = Vector3.one * diameter;
@@ -402,7 +444,7 @@ public sealed class TargetRotationHandles : MonoBehaviour
         Handle handle = new Handle { Kind = kind, Interactable = interactable, Material = material, Color = color };
         handle.Filter = new XRSelectFilterDelegate((interactor, target) =>
             !RobotCoordinateService.IsCalibrationEditActive && !TargetPoseContextMenu.IsOpen && isActiveAndEnabled && !OtherTargetSelected() &&
-            (!_dragging || (_activeHandle == handle && _activeInteractor == interactor)));
+            (!(_dragging || _pendingClick) || (_activeHandle == handle && _activeInteractor == interactor)));
         interactable.selectFilters.Add(handle.Filter);
         handle.HoverEntered = args =>
         {
@@ -417,10 +459,7 @@ public sealed class TargetRotationHandles : MonoBehaviour
             RefreshHoverState();
         };
         handle.SelectEntered = args => Selected(handle, args);
-        handle.SelectExited = args =>
-        {
-            if (_activeHandle == handle && _activeInteractor == args.interactorObject) EndRotation();
-        };
+        handle.SelectExited = args => Released(handle, args);
         interactable.hoverEntered.AddListener(handle.HoverEntered);
         interactable.hoverExited.AddListener(handle.HoverExited);
         interactable.selectEntered.AddListener(handle.SelectEntered);

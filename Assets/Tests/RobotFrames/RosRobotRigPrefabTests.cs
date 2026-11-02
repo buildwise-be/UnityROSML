@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
@@ -11,6 +12,63 @@ public class RosRobotRigPrefabTests
     private const string PrefabDirectory = "Assets/Prefabs/ur16e_kenos/";
     private static Type RigType => AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType("RosRobotRig"))
         .FirstOrDefault(type => type != null) ?? throw new InvalidOperationException("RosRobotRig was not compiled.");
+
+    /// <summary>Render the real regenerated adapter and detailed CAD before/after the existing5mm correction.</summary>
+    public static void RenderToolMountPreviews()
+    {
+        if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+            throw new InvalidOperationException("Tool mount previews need a graphics device.");
+        GameObject robot = Instantiate(false);
+        GameObject cameraObject = new GameObject("Tool mount validation camera");
+        RenderTexture image = null;
+        Texture2D pixels = null;
+        try
+        {
+            Component rig = robot.AddComponent(RigType);
+            RosRobotModel corrected = RosRobotModelCatalog.Load().Find("kenos_sl");
+            RosRobotModel previous = JsonUtility.FromJson<RosRobotModel>(JsonUtility.ToJson(corrected));
+            previous.FindLink("kenos_sl_base").position[2] = 0.06025f;
+            foreach (RosRobotGeometry cylinder in previous.FindLink("kenos_sl_mount").visuals
+                .Concat(previous.FindLink("kenos_sl_mount").collisions))
+            { cylinder.length = 0.06025f; cylinder.position[2] = 0.030125f; }
+            Camera camera = cameraObject.AddComponent<Camera>();
+            Light light = cameraObject.AddComponent<Light>();
+            light.type = LightType.Directional; light.intensity = 1.8f; light.shadows = LightShadows.None;
+            camera.orthographic = true; camera.orthographicSize = 0.145f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.08f, 0.11f, 0.15f);
+            image = new RenderTexture(900, 1000, 24, RenderTextureFormat.ARGB32);
+            camera.targetTexture = image;
+            pixels = new Texture2D(900, 1000, TextureFormat.RGB24, false);
+            string directory = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "ToolMountPreviews"));
+            Directory.CreateDirectory(directory);
+            foreach (RosRobotModel model in new[] { previous, corrected })
+            {
+                Assert.That(Invoke(rig, "ApplyModel", model), Is.EqualTo(true));
+                robot.SetActive(true);
+                Transform mount = Link(rig, "kenos_sl_mount");
+                Vector3 centre = mount.position + mount.up * 0.057f;
+                camera.transform.SetPositionAndRotation(centre + mount.right * 0.65f,
+                    Quaternion.LookRotation(-mount.right, mount.up));
+                foreach (Renderer renderer in robot.GetComponentsInChildren<Renderer>())
+                    renderer.enabled = renderer.transform.IsChildOf(mount) ||
+                        renderer.transform.IsChildOf(Link(rig, "ur_wrist_3_link"));
+                camera.Render(); RenderTexture.active = image;
+                pixels.ReadPixels(new Rect(0, 0, 900, 1000), 0, 0); pixels.Apply();
+                string filename = ReferenceEquals(model, previous) ? "previous-60.25mm.png" : "corrected-55.25mm.png";
+                File.WriteAllBytes(Path.Combine(directory, filename), pixels.EncodeToPNG());
+                Debug.Log("ToolMountPreview: " + filename + ", adapter=" + model.FindLink("kenos_sl_base").position[2]);
+            }
+        }
+        finally
+        {
+            RenderTexture.active = null;
+            if (image != null) { image.Release(); UnityEngine.Object.DestroyImmediate(image); }
+            if (pixels != null) UnityEngine.Object.DestroyImmediate(pixels);
+            UnityEngine.Object.DestroyImmediate(cameraObject);
+            UnityEngine.Object.DestroyImmediate(robot);
+        }
+    }
 
     [TestCase(false, "none")]
     [TestCase(false, "kenos")]
@@ -191,6 +249,71 @@ public class RosRobotRigPrefabTests
             UnityEngine.Object.DestroyImmediate(robot);
             if (helperMaterial != null) UnityEngine.Object.DestroyImmediate(helperMaterial);
         }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void SafeLightRenderedAdapterAndToolMoveFiveMillimetresWithoutScalingTheCad(bool transparent)
+    {
+        GameObject robot = Instantiate(transparent);
+        SimulationMode previousMode = Physics.simulationMode;
+        try
+        {
+            Physics.simulationMode = SimulationMode.Script;
+            RosRobotModel corrected = RosRobotModelCatalog.Load().Find("kenos_sl");
+            RosRobotModel previous = JsonUtility.FromJson<RosRobotModel>(JsonUtility.ToJson(corrected));
+            previous.FindLink("kenos_sl_base").position[2] = 0.06025f;
+            foreach (RosRobotGeometry cylinder in previous.FindLink("kenos_sl_mount").visuals
+                .Concat(previous.FindLink("kenos_sl_mount").collisions))
+            {
+                cylinder.length = 0.06025f;
+                cylinder.position[2] = 0.030125f;
+            }
+            Component rig = robot.AddComponent(RigType);
+            Pose basePose = new Pose(new Vector3(0.6f, -0.2f, 1.3f), Quaternion.Euler(19f, -33f, 7f));
+            RosRobotGoldenCase bent = corrected.goldenCases.Single(sample => sample.name == "bent");
+            Assert.That(Invoke(rig, "ApplyModel", previous), Is.EqualTo(true));
+            Invoke(rig, "SetBaseWorldPose", basePose);
+            robot.SetActive(true);
+            Invoke(rig, "SetBaseWorldPose", basePose);
+            Assert.That(Invoke(rig, "SetJointPositions", bent.jointNames, bent.jointPositions), Is.EqualTo(true));
+            Physics.SyncTransforms();
+            Physics.Simulate(0.02f);
+            Transform oldMount = Link(rig, "kenos_sl_mount");
+            Vector3 change = oldMount.rotation * Vector3.up * -0.005f;
+            Vector3 oldToolPosition = Link(rig, "kenos_sl_base").position;
+            Vector3 oldTcpPosition = Link(rig, "tcp").position;
+
+            Assert.That(Invoke(rig, "ApplyModel", corrected), Is.EqualTo(true));
+            Assert.That(Invoke(rig, "SetJointPositions", bent.jointNames, bent.jointPositions), Is.EqualTo(true));
+            Physics.SyncTransforms();
+            Physics.Simulate(0.02f);
+            Assert.That(Vector3.Distance(Link(rig, "kenos_sl_base").position, oldToolPosition + change), Is.LessThan(0.00002f));
+            Assert.That(Vector3.Distance(Link(rig, "tcp").position, oldTcpPosition + change), Is.LessThan(0.00002f));
+            Transform cylinderVisual = Link(rig, "kenos_sl_mount").Cast<Transform>()
+                .Single(child => child.name == "ROS visual: cylinder");
+            Assert.That(Vector3.Distance(cylinderVisual.localPosition, Vector3.up * 0.027625f), Is.LessThan(0.000001f));
+            Mesh cylinderMesh = cylinderVisual.GetComponent<MeshFilter>().sharedMesh;
+            Assert.That(cylinderMesh.bounds.size.y * cylinderVisual.localScale.y, Is.EqualTo(0.05525f).Within(0.000001f));
+            Transform detail = Link(rig, "kenos_sl_base").Cast<Transform>()
+                .Single(child => child.name.StartsWith("ROS visual:"));
+            Assert.That(detail.localPosition, Is.EqualTo(Vector3.zero));
+            Assert.That(detail.localRotation, Is.EqualTo(Quaternion.identity));
+            Assert.That(detail.localScale, Is.EqualTo(Vector3.one));
+            Assert.That(detail.GetComponent<MeshFilter>().sharedMesh.vertexCount, Is.EqualTo(24569));
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(robot);
+            Physics.simulationMode = previousMode;
+        }
+    }
+
+    private static Transform Link(Component rig, string name)
+    {
+        object[] arguments = { name, null };
+        Assert.That(Invoke(rig, "TryGetLink", arguments), Is.EqualTo(true), name);
+        return (Transform)arguments[1];
     }
 
     [Test]

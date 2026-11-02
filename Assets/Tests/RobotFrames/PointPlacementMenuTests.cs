@@ -40,11 +40,11 @@ public sealed class PointPlacementMenuTests
         if (_owner != null) UnityEngine.Object.DestroyImmediate(_owner);
     }
 
-    [TestCase(0, "Shoulder")]
-    [TestCase(1, "Elbow")]
-    [TestCase(2, "Wrist 2")]
-    [TestCase(3, "Wrist 3")]
-    [TestCase(4, "Base rear")]
+    [TestCase(0, "Base cover")]
+    [TestCase(1, "Shoulder")]
+    [TestCase(2, "Elbow")]
+    [TestCase(3, "Wrist 2")]
+    [TestCase(4, "Wrist 3")]
     public void MiniatureFollowsTheCurrentCaptureStepAndHidesAfterLeavingPlacement(int step, string cover)
     {
         Component guide = Field<Component>("_pointGuide");
@@ -140,11 +140,11 @@ public sealed class PointPlacementMenuTests
         string[] labels = pointView.GetComponentsInChildren(textType, true)
             .Select(text => (string)textType.GetProperty("text").GetValue(text)).ToArray();
         Assert.That(labels.Any(text => text.Contains("controller tip") && text.Contains("trigger")), Is.True);
-        Assert.That(labels.Any(text => text.StartsWith("1  Shoulder")), Is.True);
-        Assert.That(labels.Any(text => text.StartsWith("2  Elbow")), Is.True);
-        Assert.That(labels.Any(text => text.StartsWith("3  Wrist 2")), Is.True);
-        Assert.That(labels.Any(text => text.StartsWith("4  Wrist 3")), Is.True);
-        Assert.That(labels.Any(text => text.StartsWith("5  Base rear")), Is.True);
+        Assert.That(labels.Any(text => text.StartsWith("1  Base cover")), Is.True);
+        Assert.That(labels.Any(text => text.StartsWith("2  Shoulder")), Is.True);
+        Assert.That(labels.Any(text => text.StartsWith("3  Elbow")), Is.True);
+        Assert.That(labels.Any(text => text.StartsWith("4  Wrist 2")), Is.True);
+        Assert.That(labels.Any(text => text.StartsWith("5  Wrist 3")), Is.True);
         Type buttonType = RuntimeType("UnityEngine.UI.Button");
         Component[] buttons = pointView.GetComponentsInChildren(buttonType, true);
         foreach (string name in new[] { "Undo last point", "Restart 5 points", "Cancel placement", "Use QR instead", "Recenter point menu" })
@@ -268,8 +268,8 @@ public sealed class PointPlacementMenuTests
             preview._menu.GetType().GetMethod("PositionPointGuide", BindingFlags.NonPublic | BindingFlags.Instance)
                 .Invoke(preview._menu, new object[] { camera });
             preview.Field<Component>("_grabHandle").gameObject.SetActive(true);
-            preview.SetText("_pointProgress", "1 / 5 points captured\nNext: Elbow rear blue cover");
-            preview.SetText("_pointStatus", "Keep the robot still. Touch 2/5: the elbow cover center, then press trigger.");
+            preview.SetText("_pointProgress", "1 / 5 points captured\nNext: Shoulder");
+            preview.SetText("_pointStatus", "Keep the robot still. Touch 2/5: the shoulder cover centre, then press trigger.");
             Type textType = RuntimeType("TMPro.TMP_Text");
             Type fontType = RuntimeType("TMPro.TMP_FontAsset");
             UnityEngine.Object font = Resources.Load("Fonts & Materials/LiberationSans SDF", fontType);

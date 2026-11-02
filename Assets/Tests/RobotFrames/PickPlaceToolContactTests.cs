@@ -389,6 +389,67 @@ public sealed class PickPlaceToolContactTests
         AssertPose(Point(true).transform, contact);
     }
 
+    [Test]
+    public void GroundLockKeepsThePickNormalDownThroughRotationAndExportsTheDisplayedRosPose()
+    {
+        Pose contact = new Pose(new Vector3(.4f,.8f,.2f),Quaternion.Euler(23,-37,14));
+        Capture(contact);
+        GameObject pick = Point(true), place = Point(false);
+        Quaternion untouchedPlace = place.transform.rotation;
+        Component context = pick.GetComponent(TypeOf("TargetPoseContextMenu"));
+        Assert.That(Call(_plans,"BeginPlanningRequest"),Is.EqualTo(true));
+        Assert.That(Get<bool>(_plans,"IsPlanning"),Is.True);
+        Assert.That(Call(context,"SetForceTowardsGround",true),Is.EqualTo(true));
+        Assert.That(Get<bool>(_plans,"IsPlanning"),Is.False,"Changing the physical tool normal must revoke the pending review.");
+        Assert.That(Vector3.Distance(pick.transform.up,Vector3.down),Is.LessThan(1e-6f));
+        Assert.That(Quaternion.Angle(place.transform.rotation,untouchedPlace),Is.LessThan(.001f),"Pick and place locks are independent.");
+        Assert.That(Get<bool>(place.GetComponent(TypeOf("TargetPoseContextMenu")),"ForceTowardsGround"),Is.False);
+        object initialExport = Export();
+        AssertExport(Field(initialExport,"pick_pose").GetValue(initialExport),new Pose(pick.transform.position,pick.transform.rotation));
+
+        Vector3 pivot = pick.transform.position;
+        Component handles = pick.GetComponent(TypeOf("TargetRotationHandles"));
+        object free = Enum.Parse(handles.GetType().GetNestedType("RotationHandleKind"),"Free");
+        Assert.That(Call(_plans,"BeginPlanningRequest"),Is.EqualTo(true));
+        Assert.That(Call(handles,"BeginRotation",free,Quaternion.identity,Vector3.zero),Is.EqualTo(true));
+        Assert.That(Call(handles,"UpdateRotation",Quaternion.Euler(27,46,-12),Vector3.zero),Is.EqualTo(true));
+        Call(handles,"EndRotation");
+        Assert.That(Vector3.Distance(pick.transform.position,pivot),Is.LessThan(1e-6f));
+        Assert.That(Vector3.Distance(pick.transform.up,Vector3.down),Is.LessThan(1e-6f));
+        Assert.That(Get<bool>(_plans,"IsPlanning"),Is.False);
+        object exported = Export();
+        AssertExport(Field(exported,"pick_pose").GetValue(exported),new Pose(pick.transform.position,pick.transform.rotation));
+        Assert.That(Call(context,"NudgeDepth",1),Is.EqualTo(true));
+        Assert.That(Vector3.Distance(pick.transform.position,pivot+Vector3.down*.005f),Is.LessThan(1e-6f));
+    }
+
+    [Test]
+    public void GroundLockIsReappliedAtRecaptureAndBeforeExportAfterTrackingFrameRotation()
+    {
+        Capture(new Pose(new Vector3(.4f,.8f,.2f),Quaternion.Euler(23,-37,14)));
+        // This offline fixture uses an inert tracking Transform rather than a
+        // native XR Origin; reproduce the normal captured-target parentage.
+        Point(true).transform.SetParent(_tracking,true);
+        Point(false).transform.SetParent(_tracking,true);
+        Component context = Point(true).GetComponent(TypeOf("TargetPoseContextMenu"));
+        Assert.That(Call(context,"SetForceTowardsGround",true),Is.EqualTo(true));
+        Vector3 recaptured = new Vector3(.7f,.5f,-.2f);
+        Call(_controller,"SetPickPlace",recaptured,Quaternion.Euler(-17,31,66));
+        Assert.That(Get<bool>(context,"ForceTowardsGround"),Is.True);
+        Assert.That(Vector3.Distance(Point(true).transform.position,recaptured),Is.LessThan(1e-6f));
+        Assert.That(Vector3.Distance(Point(true).transform.up,Vector3.down),Is.LessThan(1e-6f));
+        _tracking.rotation = Quaternion.Euler(19,-42,11);
+        Assert.That(Vector3.Distance(Point(true).transform.up,Vector3.down),Is.GreaterThan(.01f));
+        Private(_coordinates,"LateUpdate");
+        object exported = Export();
+        Assert.That(Vector3.Distance(Point(true).transform.up,Vector3.down),Is.LessThan(1e-6f),"The wire export must constrain the displayed target before LateUpdate runs.");
+        AssertExport(Field(exported,"pick_pose").GetValue(exported),new Pose(Point(true).transform.position,Point(true).transform.rotation));
+        Assert.That(Call(context,"SetForceTowardsGround",false),Is.EqualTo(true));
+        Quaternion free = Quaternion.Euler(12,-28,49);
+        Call(_controller,"SetPickPlace",recaptured,free);
+        Assert.That(Quaternion.Angle(Point(true).transform.rotation,free),Is.LessThan(.001f));
+    }
+
     private void Capture(Pose contact)
     {
         Call(_controller, "SetPickPlace", contact.position, contact.rotation);
@@ -415,7 +476,8 @@ public sealed class PickPlaceToolContactTests
         MeshRenderer[] all = target.GetComponentsInChildren<MeshRenderer>(true);
         return new[]
         {
-            all.Single(renderer => renderer.name.StartsWith("Free rotation ball", StringComparison.Ordinal)),
+            all.Single(renderer => renderer.name.StartsWith("Free rotation ball", StringComparison.Ordinal) ||
+                renderer.name.StartsWith("Contact ball", StringComparison.Ordinal)),
             all.Single(renderer => renderer.name == "Tool +Z normal shaft"),
             all.Single(renderer => renderer.name == "Tool +Z normal arrowhead")
         };
@@ -460,7 +522,11 @@ public sealed class PickPlaceToolContactTests
     }
     private void AssertExport(object stamped, Pose expected)
     {
-        Pose local = RobotFrameMath.RelativeTo(new Pose(_base.position, _base.rotation), expected);
+        // The calibrated base follows the XR tracking frame. A PhysX root can
+        // temporarily retain its old Transform pose until the physics update.
+        object[] worldBase = { default(Pose) };
+        Assert.That(CallArgs(_coordinates,"TryGetRobotBaseWorldPose",worldBase),Is.EqualTo(true));
+        Pose local = RobotFrameMath.RelativeTo((Pose)worldBase[0], expected);
         object pose = Field(stamped, "pose").GetValue(stamped);
         object position = Field(pose, "position").GetValue(pose);
         Assert.That(Number(position, "x"), Is.EqualTo(local.position.z).Within(0.000001));

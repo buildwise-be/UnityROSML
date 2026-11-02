@@ -1,0 +1,12 @@
+test_collisions_cover_ejector_and_air_connection (__main__.TestKenosSL.test_collisions_cover_ejector_and_air_connection) ... ok
+test_collisions_cover_nominal_foam_and_holder_envelopes (__main__.TestKenosSL.test_collisions_cover_nominal_foam_and_holder_envelopes) ... ok
+test_five_mm_mount_correction_moves_the_whole_tool_and_contact_frame (__main__.TestKenosSL.test_five_mm_mount_correction_moves_the_whole_tool_and_contact_frame) ... ok
+test_fixed_flange_chain_and_default_tcp (__main__.TestKenosSL.test_fixed_flange_chain_and_default_tcp) ... ok
+test_mount_and_tcp_calibration_can_be_overridden (__main__.TestKenosSL.test_mount_and_tcp_calibration_can_be_overridden) ... ok
+test_mount_yaw_rotates_eccentricity_without_changing_reach (__main__.TestKenosSL.test_mount_yaw_rotates_eccentricity_without_changing_reach) ... ok
+test_two_prefixed_instances_have_independent_frames (__main__.TestKenosSL.test_two_prefixed_instances_have_independent_frames) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.092s
+
+OK

@@ -68,7 +68,7 @@ public class URInstantiator : MonoBehaviour
         get
         {
             if (_placedWithPoints) return GetComponent<RobotPointRegistration>()?.HasPlacement == true
-                ? "Robot placed from five contacts (four covers and the fixed base rear; this XR session)."
+                ? "Robot placed from five blue cover contacts, from base to tool (this XR session)."
                 : "Point placement is pending. Pick all five contacts again.";
             if (!TryGetCalibration(out Pose pose)) return "QR-to-base calibration is unavailable.";
             Vector3 euler = pose.rotation.eulerAngles;

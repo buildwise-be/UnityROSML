@@ -47,6 +47,7 @@ public sealed class TargetPoseContextTests
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.08f, 0.11f, 0.15f, 1f);
             Assert.That(Call(preview._menu, "Open"), Is.EqualTo(true));
+            Assert.That(Call(preview._menu,"SetForceTowardsGround",true),Is.EqualTo(true));
             Call(preview._menu, "NudgeDepth", 1);
             Canvas canvas = (Canvas)Field(preview._menu, "_canvas").GetValue(preview._menu);
             Type fontType = TypeOf("TMPro.TMP_FontAsset");
@@ -65,6 +66,9 @@ public sealed class TargetPoseContextTests
             pixels = new Texture2D(1024, 768, TextureFormat.RGB24, false);
             camera.targetTexture = image;
             Canvas.ForceUpdateCanvases();
+            foreach (Component text in canvas.GetComponentsInChildren(TypeOf("TMPro.TMP_Text"),false))
+                Assert.That((bool)text.GetType().GetProperty("isTextOverflowing").GetValue(text),Is.False,
+                    "Ground-lock context text overflows: " + text.name);
             camera.Render();
             RenderTexture.active = image;
             pixels.ReadPixels(new Rect(0f, 0f, 1024f, 768f), 0, 0);
@@ -184,12 +188,164 @@ public sealed class TargetPoseContextTests
         Assert.That(Vector3.Distance(_target.localPosition, baseline), Is.LessThan(0.000001f));
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void ForceTowardsGroundUsesWorldGravityAndDoesNotMoveTheContact(bool tiltedParent)
+    {
+        if (tiltedParent) _tracking.rotation = Quaternion.Euler(31,47,-24);
+        Vector3 point = _target.position;
+        Assert.That(Call(_menu,"SetForceTowardsGround",true),Is.EqualTo(true));
+        Assert.That(Get<bool>(_menu,"ForceTowardsGround"),Is.True);
+        AssertDown(_target.rotation);
+        Assert.That(Vector3.Distance(_target.position,point),Is.LessThan(.000001f));
+        Assert.That(_changes,Is.EqualTo(1),"Changing the constraint revokes the reviewed plan exactly once.");
+    }
+
+    [Test]
+    public void EnablingTheConstraintStillInvalidatesReviewWhenTheTargetAlreadyPointsDown()
+    {
+        _target.rotation = Quaternion.AngleAxis(180,Vector3.forward);
+        Quaternion before = _target.rotation;
+        Call(_menu,"SetForceTowardsGround",true);
+        Assert.That(_changes,Is.EqualTo(1));
+        AssertEquivalent(_target.rotation,before);
+        Call(_menu,"SetForceTowardsGround",false);
+        Assert.That(_changes,Is.EqualTo(2));
+        Assert.That(Get<bool>(_menu,"ForceTowardsGround"),Is.False);
+        AssertEquivalent(_target.rotation,before);
+    }
+
+    [TestCase(0f)]
+    [TestCase(37f)]
+    [TestCase(179f)]
+    public void ConstraintPreservesInPlaneTwistAndProjectsDragRotationsWithoutMovingTheTarget(float yaw)
+    {
+        Call(_menu,"SetForceTowardsGround",true);
+        Quaternion candidate = Quaternion.AngleAxis(yaw,Vector3.up) * Quaternion.AngleAxis(180,Vector3.forward);
+        Quaternion constrained = (Quaternion)Call(_menu,"ConstrainRotation",candidate);
+        AssertDown(constrained);
+        AssertEquivalent(constrained,candidate);
+        Quaternion actual = _target.rotation;
+        Quaternion tilted = (Quaternion)Call(_menu,"ConstrainRotation",Quaternion.Euler(31,yaw,-23));
+        AssertDown(tilted);
+        AssertEquivalent(_target.rotation,actual);
+    }
+
+    [Test]
+    public void GroundLockedDepthPushesDownAndResetRestoresTheActualPoint()
+    {
+        _tracking.rotation = Quaternion.Euler(24,39,-17);
+        Call(_menu,"SetForceTowardsGround",true);
+        Vector3 original = _target.position;
+        _target.rotation = Quaternion.Euler(35,27,14);
+        Assert.That(Call(_menu,"NudgeDepth",1),Is.EqualTo(true));
+        AssertDown(_target.rotation);
+        Assert.That(Vector3.Distance(_target.position,original + Vector3.down * .005f),Is.LessThan(.000001f));
+        Call(_menu,"ResetDepth");
+        Assert.That(Vector3.Distance(_target.position,original),Is.LessThan(.000001f));
+        Assert.That(Get<bool>(_menu,"ForceTowardsGround"),Is.True);
+    }
+
+    [Test]
+    public void RecaptureRetainsGroundLockAndRebasesOnlyDepth()
+    {
+        Call(_menu,"SetForceTowardsGround",true);
+        Call(_menu,"NudgeDepth",1);
+        Vector3 captured = new Vector3(-.4f,.9f,.2f);
+        _target.SetPositionAndRotation(captured,Quaternion.Euler(27,-54,12));
+        Call(_menu,"RebaseAtCurrentPose");
+        Assert.That(Get<bool>(_menu,"ForceTowardsGround"),Is.True);
+        AssertDown(_target.rotation);
+        Assert.That(Get<int>(_menu,"DepthSteps"),Is.Zero);
+        Call(_menu,"ResetDepth");
+        Assert.That(Vector3.Distance(_target.position,captured),Is.LessThan(.000001f));
+    }
+
+    [Test]
+    public void LateConstraintCorrectsParentOrExternalRotationButDoesNotRepeatedlyInvalidateAStablePose()
+    {
+        Call(_menu,"SetForceTowardsGround",true);
+        _tracking.rotation = Quaternion.Euler(-22,73,19);
+        Private(_menu,"LateUpdate");
+        AssertDown(_target.rotation);
+        int changes = _changes;
+        Assert.That(changes,Is.GreaterThan(1));
+        Private(_menu,"LateUpdate");
+        Assert.That(_changes,Is.EqualTo(changes));
+    }
+
+    [Test]
+    public void PickAndPlaceConstraintsAreIndependent()
+    {
+        Transform second = New("Independent place contact").transform;
+        second.SetParent(_tracking,false);
+        second.rotation = Quaternion.Euler(47,19,-31);
+        Component place = Attach(second,true);
+        Quaternion placeBefore = second.rotation;
+        Call(_menu,"SetForceTowardsGround",true);
+        Assert.That(Get<bool>(place,"ForceTowardsGround"),Is.False);
+        AssertEquivalent(second.rotation,placeBefore);
+        Call(place,"SetForceTowardsGround",true);
+        Call(_menu,"SetForceTowardsGround",false);
+        _target.rotation = Quaternion.Euler(17,23,29);
+        Assert.That(Call(_menu,"ApplyOrientationConstraint"),Is.EqualTo(false));
+        Assert.That(Get<bool>(place,"ForceTowardsGround"),Is.True);
+        AssertDown(second.rotation);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void DisabledTargetsOrCalibrationEditsDoNotApplyOrChangeTheConstraint(bool calibration)
+    {
+        Call(_menu,"SetForceTowardsGround",true);
+        Component coordinates = null;
+        if (calibration)
+        {
+            coordinates = New("Ground constraint calibration gate").AddComponent(TypeOf("RobotCoordinateService"));
+            Call(coordinates,"BeginCalibrationEdit");
+        }
+        else ((Behaviour)_menu).enabled = false;
+        try
+        {
+            Quaternion untouched = Quaternion.Euler(-14,52,37);
+            _target.rotation = untouched;
+            Assert.That(Call(_menu,"ApplyOrientationConstraint"),Is.EqualTo(false));
+            Assert.That(Call(_menu,"SetForceTowardsGround",false),Is.EqualTo(false));
+            Assert.That(Get<bool>(_menu,"ForceTowardsGround"),Is.True);
+            AssertEquivalent(_target.rotation,untouched);
+        }
+        finally
+        {
+            if (coordinates != null) Call(coordinates,"EndCalibrationEdit");
+            else ((Behaviour)_menu).enabled = true;
+        }
+    }
+
+    [Test]
+    public void NativeCheckboxCallbackChangesTheTargetAndItsReviewInvalidation()
+    {
+        Assert.That(Call(_menu,"Open"),Is.EqualTo(true));
+        Canvas canvas = (Canvas)Field(_menu,"_canvas").GetValue(_menu);
+        Component checkbox = canvas.GetComponentsInChildren(TypeOf("UnityEngine.UI.Toggle"),true).Single();
+        Assert.That(Get<bool>(checkbox,"isOn"),Is.False);
+        checkbox.GetType().GetProperty("isOn").SetValue(checkbox,true);
+        Assert.That(Get<bool>(_menu,"ForceTowardsGround"),Is.True);
+        AssertDown(_target.rotation);
+        Assert.That(_changes,Is.EqualTo(1));
+        checkbox.GetType().GetProperty("isOn").SetValue(checkbox,false);
+        Assert.That(Get<bool>(_menu,"ForceTowardsGround"),Is.False);
+        Assert.That(_changes,Is.EqualTo(2));
+    }
+
     [Test]
     public void ExactTcpContextDisallowsContactDepthAdjustments()
     {
         Component exact = Attach(New("TCP A").transform, false);
         Pose original = new Pose(exact.transform.position, exact.transform.rotation);
         Assert.That(Call(exact, "NudgeDepth", 1), Is.EqualTo(false));
+        Assert.That(Call(exact,"SetForceTowardsGround",true),Is.EqualTo(false));
+        Assert.That(Get<bool>(exact,"ForceTowardsGround"),Is.False);
+        Assert.That(Call(exact,"ApplyOrientationConstraint"),Is.EqualTo(false));
         Assert.That(exact.transform.position, Is.EqualTo(original.position));
         Assert.That(_changes, Is.Zero);
     }
@@ -263,4 +419,7 @@ public sealed class TargetPoseContextTests
     private static object Call(Component c, string method, params object[] values) => c.GetType().GetMethod(method).Invoke(c, values);
     private static object Private(Component c, string method, params object[] values) => c.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic).Invoke(c, values);
     private static T Get<T>(Component c, string property) => (T)c.GetType().GetProperty(property).GetValue(c);
+    private static void AssertDown(Quaternion rotation) => Assert.That(Vector3.Distance(
+        RobotFrameMath.TcpPositiveZ(new Pose(Vector3.zero,rotation)),Vector3.down),Is.LessThan(.000001f));
+    private static void AssertEquivalent(Quaternion a,Quaternion b) => Assert.That(Mathf.Abs(Quaternion.Dot(a,b)),Is.GreaterThan(.9999998f));
 }

@@ -1,0 +1,23 @@
+{
+  "pytestExitCode": 0,
+  "sourceReadOnly": true,
+  "networkMode": "none",
+  "rosNodeActionsExecuted": false,
+  "robotCommandsSent": false,
+  "packageOverlay": [
+    "kenos_flexigrip",
+    "mir_description",
+    "ur16e_bringup",
+    "ur16e_commander",
+    "ur16e_environment",
+    "ur16e_interfaces",
+    "ur16e_mir250_control",
+    "ur16e_mir250_description",
+    "ur16e_mir250_moveit_config",
+    "ur16e_mtc_gpio_stage"
+  ],
+  "driverMacro": "/opt/ros/jazzy/share/ur_robot_driver/urdf/ur.ros2_control.xacro",
+  "xacroModule": "/opt/ros/jazzy/lib/python3.12/site-packages/xacro/__init__.py",
+  "yamlVersion": "6.0.1",
+  "junit": "ros-source-model-results.xml"
+}

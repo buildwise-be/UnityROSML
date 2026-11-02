@@ -46,7 +46,7 @@ public sealed class RobotRegistrationGuide : MonoBehaviour
 
     // The measured covers' outward surface normals, in their visual's ROS axes.
     // A step-specific view keeps its rear-cover center visible in the miniature.
-    private static readonly Vector3[] CoverNormalsRos = { Vector3.up, Vector3.up, Vector3.back, Vector3.down, Vector3.left };
+    private static readonly Vector3[] CoverNormalsRos = { Vector3.forward, Vector3.up, Vector3.up, Vector3.back, Vector3.down };
     private static readonly Color TargetColor = new Color(1f, 0.5f, 0.08f);
     private const float TargetDiameterInModel = 0.05f;
 

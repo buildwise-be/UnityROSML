@@ -1,8 +1,9 @@
 # Controller contact landmarks for the UR16e
 
-`RobotCoverLandmarks.CreateDefaults()` uses five contacts: the four blue rear-cover
-centres visible in the supplied robot photograph, followed by the fixed base rear:
-**Shoulder, Elbow, Wrist 2, Wrist 3, Base rear**. Here Shoulder means the shoulder-lift
+`RobotCoverLandmarks.CreateDefaults()` uses five blue cover centres, ordered
+from base to tool: **Base cover, Shoulder, Elbow, Wrist 2, Wrist 3**.
+Base cover is the lowest blue shoulder-pan cover on `ur_shoulder_link`,
+not the gray stationary housing. Here Shoulder means the shoulder-lift
 joint cover. The wrist-1 cover is on the opposite side of the forearm and is
 omitted. The last two labels identify the covered joints; their meshes belong
 to the preceding links.
@@ -20,17 +21,16 @@ model's visual origin, visual scale, and link forward kinematics are applied.
 
 | Order | Contact | Link | Mesh | Surface node | X | Y | Z |
 | --- | --- | --- | --- | --- | ---: | ---: | ---: |
-| 1 | Shoulder | `ur_upper_arm_link` | `ur16e/visual/upperarm.dae` | `eSeries_UR10e_004` | -0.000001 | 0.087242 | -0.000297 |
-| 2 | Elbow | `ur_upper_arm_link` | `ur16e/visual/upperarm.dae` | `eSeries_UR10e_005` | 0 | 0.065129 | 0.477982 |
-| 3 | Wrist 2 | `ur_wrist_1_link` | `ur10e/visual/wrist1.dae` | `eSeries_UR10e_021` | -0.000001 | 0.135142 | -0.054024 |
-| 4 | Wrist 3 | `ur_wrist_2_link` | `ur10e/visual/wrist2.dae` | `eSeries_UR10e_030` | 0.000001 | -0.053495 | 0.119459 |
-| 5 | Base rear | `ur_base_link_inertia` | `ur10e/visual/base.dae` | `eSeries_UR10e_010` (gray) | -0.086787 | 0 | 0.042474 |
+| 1 | Base cover | `ur_shoulder_link` | `ur10e/visual/shoulder.dae` | `eSeries_UR10e_003` | -0.000003 | 0.000008 | 0.087942 |
+| 2 | Shoulder | `ur_upper_arm_link` | `ur16e/visual/upperarm.dae` | `eSeries_UR10e_004` | -0.000001 | 0.087242 | -0.000297 |
+| 3 | Elbow | `ur_upper_arm_link` | `ur16e/visual/upperarm.dae` | `eSeries_UR10e_005` | 0 | 0.065129 | 0.477982 |
+| 4 | Wrist 2 | `ur_wrist_1_link` | `ur10e/visual/wrist1.dae` | `eSeries_UR10e_021` | -0.000001 | 0.135142 | -0.054024 |
+| 5 | Wrist 3 | `ur_wrist_2_link` | `ur10e/visual/wrist2.dae` | `eSeries_UR10e_030` | 0.000001 | -0.053495 | 0.119459 |
 
-The fifth point is the rear-most gray base-housing surface at its mid-height,
-upstream of the moving shoulder. It is not another blue cover. See the
-[base surface derivation](base_rear_registration_landmark.md) for its CAD ray
-intersection and the fixed-link relationship. The original four-point order
-is retained, with this contact appended last.
+The first point is the blue pan-joint cap above the fixed housing. See the
+[blue base-cover derivation](base_blue_cover_registration_landmark.md) for its
+CAD circle fit, exterior ray intersection and moving-link relationship.
+The existing four covers follow it in their original relative order.
 
 The UR16e model intentionally uses the upstream UR10e wrist geometry. The
 runtime helper checks each expected mesh suffix to prevent silently applying
@@ -45,6 +45,7 @@ Source files are under
 
 | File | SHA-256 |
 | --- | --- |
+| `ur10e/visual/shoulder.dae` | `e8acdd7a52ccb4c11fbbf06b4a9fd5932b7b984bbd177c0e5fd53135501c4f23` |
 | `ur16e/visual/upperarm.dae` | `cec3f8c5744f8ce28ccbf46384486fe006359b94cc40597adad91ff195035c8d` |
 | `ur10e/visual/wrist1.dae` | `c00bc3196230d9a5bccdd24614122be2aa98c75f0402de6386ecaa8a851d2899` |
 | `ur10e/visual/wrist2.dae` | `0c4c85a9902375aed81e5f6b147fe7c88ac4431861975639c0d512d479428279` |
@@ -56,9 +57,10 @@ Source files are under
    including its millimetre-to-metre scale and upper-arm translation.
 3. Project the blue mesh vertices into the plane perpendicular to the cover's
    axis. Fit a circle to the convex hull to estimate the circular centre.
-   The hull radii are approximately 76.36, 60.08, 47.00, and 47.01 mm.
+   The hull radii are approximately 76.37, 76.36, 60.08, 47.00, and 47.01 mm.
 4. Intersect the mesh triangles with a ray through that centre along the cover
-   axis. Use the exterior surface intersection: positive mesh Y for Shoulder
+   axis. Use the exterior surface intersection: positive mesh Z for Base cover,
+   positive mesh Y for Shoulder
    and Elbow, negative mesh Z for Wrist 2, negative mesh Y for Wrist 3.
    This avoids screw protrusions and the centre of the cap's thickness.
 5. Intersect at the final rounded radial centre coordinates, then round the
@@ -66,7 +68,7 @@ Source files are under
    is slightly nonplanar, so reusing a depth intersected at a nominal centre
    instead of the fitted centre can shift the contact by tens of micrometres.
 
-`RobotCoverLandmarkTests.DefaultContactIsOnTheActualBlueMeshOuterSurface`
+`RobotCoverLandmarkTests.DefaultContactIsOnTheActualMeshOuterSurface`
 independently reads the actual DAE triangle/polylist data and repeats the
 exterior-surface ray intersection for each stored point. It requires agreement
 within **0.02 mm in the source mesh**. Additional tests check complete feedback,
@@ -77,15 +79,15 @@ The CAD surface check is not an accuracy claim about the physical robot or the
 controller. The real plastic covers, where the user judges their centres, the
 physical controller tip's offset from OpenXR's tracked pointer, and headset
 tracking can each introduce errors. The contact offset should be checked on
-the actual controller, and the cover/base identification and final overlay
+the actual controller, and the five-cover identification and final overlay
 should be verified on the robot. A low five-point residual alone cannot detect
 a shared tip offset or a consistent error in all cover definitions.
 
 ## Registration feedback and final position correction
 
 All five contacts are required before fitting and revealing the XR robot.
-The helper marks the current contact on a geometry-only miniature, including
-the fixed base for point 5. It rotates around world vertical at 36 degrees per
+The helper marks the current contact on a geometry-only miniature, starting
+with the blue base cover. It rotates around world vertical at 36 degrees per
 second (one full turn in 10 seconds); this does not change the model landmarks
 or captured joint snapshot.
 

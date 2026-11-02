@@ -13,19 +13,19 @@ public sealed class RobotCoverLandmarkTests
     public void DefaultsUseTheVisibleCoverSurfacesRatherThanJointOrigins()
     {
         RobotCoverLandmark[] landmarks = RobotCoverLandmarks.CreateDefaults();
-        CollectionAssert.AreEqual(new[] { "Shoulder", "Elbow", "Wrist 2", "Wrist 3", "Base rear" }, landmarks.Select(point => point.displayName));
-        CollectionAssert.AreEqual(new[] { "ur_upper_arm_link", "ur_upper_arm_link", "ur_wrist_1_link", "ur_wrist_2_link", "ur_base_link_inertia" },
+        CollectionAssert.AreEqual(new[] { "Base cover", "Shoulder", "Elbow", "Wrist 2", "Wrist 3" }, landmarks.Select(point => point.displayName));
+        CollectionAssert.AreEqual(new[] { "ur_shoulder_link", "ur_upper_arm_link", "ur_upper_arm_link", "ur_wrist_1_link", "ur_wrist_2_link" },
             landmarks.Select(point => point.linkName));
         // Defaults must be fresh inspector-editable data, not a shared mutable array.
         landmarks[0].pointInVisualRos = Vector3.zero;
         Assert.That(RobotCoverLandmarks.CreateDefaults()[0].pointInVisualRos.magnitude, Is.GreaterThan(0.08f));
     }
 
-    [TestCase(0, "ur16e/visual/upperarm.dae", "eSeries_UR10e_004", 1, true, "URBlue")]
-    [TestCase(1, "ur16e/visual/upperarm.dae", "eSeries_UR10e_005", 1, true, "URBlue")]
-    [TestCase(2, "ur10e/visual/wrist1.dae", "eSeries_UR10e_021", 2, false, "URBlue")]
-    [TestCase(3, "ur10e/visual/wrist2.dae", "eSeries_UR10e_030", 1, false, "URBlue")]
-    [TestCase(4, "ur10e/visual/base.dae", "eSeries_UR10e_010", 0, false, "JointGrey")]
+    [TestCase(0, "ur10e/visual/shoulder.dae", "eSeries_UR10e_003", 2, true, "URBlue")]
+    [TestCase(1, "ur16e/visual/upperarm.dae", "eSeries_UR10e_004", 1, true, "URBlue")]
+    [TestCase(2, "ur16e/visual/upperarm.dae", "eSeries_UR10e_005", 1, true, "URBlue")]
+    [TestCase(3, "ur10e/visual/wrist1.dae", "eSeries_UR10e_021", 2, false, "URBlue")]
+    [TestCase(4, "ur10e/visual/wrist2.dae", "eSeries_UR10e_030", 1, false, "URBlue")]
     public void DefaultContactIsOnTheActualMeshOuterSurface(int index, string meshPath,
         string nodeId, int normalAxis, bool outwardPositive, string expectedMaterial)
     {
@@ -114,37 +114,49 @@ public sealed class RobotCoverLandmarkTests
         Assert.That(RobotCoverLandmarks.TryGetBasePoints(model, joints, landmarks, out Vector3[] moved, out error), Is.True, error);
         Assert.That(Vector3.Distance(original[0], moved[0]), Is.LessThan(0.000001f));
         Assert.That(Vector3.Distance(original[1], moved[1]), Is.LessThan(0.000001f));
-        Assert.That(Vector3.Distance(original[2], moved[2]), Is.GreaterThan(0.02f));
+        Assert.That(Vector3.Distance(original[2], moved[2]), Is.LessThan(0.000001f));
         Assert.That(Vector3.Distance(original[3], moved[3]), Is.GreaterThan(0.02f));
-        Assert.That(Vector3.Distance(original[4], moved[4]), Is.LessThan(0.000001f));
+        Assert.That(Vector3.Distance(original[4], moved[4]), Is.GreaterThan(0.02f));
     }
 
     [Test]
-    public void FifthContactBelongsToTheFixedBaseAndNeverFollowsShoulderPan()
+    public void FirstBlueContactBelongsToTheShoulderPanLinkAndIncludesItsCalibratedOrigin()
     {
         RosRobotModel model = RosRobotModelCatalog.Load().Find("none");
         Dictionary<string, double> joints = HomeJoints(model);
         RobotCoverLandmark[] landmarks = RobotCoverLandmarks.CreateDefaults();
-        Assert.That(landmarks[4].linkName, Is.EqualTo("ur_base_link_inertia"));
-        Assert.That(model.FindLink(landmarks[4].linkName).jointType, Is.EqualTo("fixed"));
+        Assert.That(landmarks[0].linkName, Is.EqualTo("ur_shoulder_link"));
+        RosRobotLink pan = model.FindLink(landmarks[0].linkName);
+        Assert.That(pan.jointType, Is.EqualTo("revolute"));
+        Assert.That(pan.jointName, Is.EqualTo("ur_shoulder_pan_joint"));
         Assert.That(RobotCoverLandmarks.TryGetBasePoints(model, joints, landmarks, out Vector3[] original, out string error), Is.True, error);
-        foreach (string name in joints.Keys.ToArray()) joints[name] += 0.7;
+        Assert.That(original[0].y, Is.EqualTo(pan.position[2]+0.087942f).Within(0.000001f),
+            "The blue cap is above the calibrated pan origin, not on the gray fixed housing.");
+        joints["ur_shoulder_pan_joint"] += 0.7;
         Assert.That(RobotCoverLandmarks.TryGetBasePoints(model, joints, landmarks, out Vector3[] moved, out error), Is.True, error);
-        Assert.That(Vector3.Distance(original[4], moved[4]), Is.LessThan(0.000001f));
-        Assert.That(Vector3.Distance(original[4], new Vector3(0f,0.042474f,-0.086787f)), Is.LessThan(0.000001f),
-            "The fixed joint and visual half-turns cancel, leaving the point on base -X.");
-        Assert.That(Vector3.Distance(original[0], moved[0]), Is.GreaterThan(0.02f), "The fixed-base test must actually move the downstream arm.");
+        Pose visual = RobotFrameMath.Compose(RosRobotModelMath.ForwardKinematics(model,joints)[pan.name],RosRobotModelMath.GeometryPose(pan.visuals[0]));
+        Vector3 meshPoint = RosRobotModelMath.FromRosVector(new[] {-0.000003f,0.000008f,0.087942f});
+        Assert.That(Vector3.Distance(moved[0],visual.position+visual.rotation*meshPoint),Is.LessThan(0.000001f));
+        Assert.That(Vector3.Distance(original[1], moved[1]), Is.GreaterThan(0.02f), "The pan change must actually move the downstream arm.");
     }
 
     [Test]
-    public void OnlyUnchangedLegacyFourCoverDefaultsAreMigrated()
+    public void OnlyUnchangedLegacyFourOrSupersededGrayBaseDefaultsAreMigrated()
     {
-        RobotCoverLandmark[] oldDefaults = RobotCoverLandmarks.CreateDefaults().Take(4).ToArray();
+        RobotCoverLandmark[] oldDefaults = RobotCoverLandmarks.CreateDefaults().Skip(1).ToArray();
         RobotCoverLandmark[] migrated = RobotCoverLandmarks.UpgradeDefaults(oldDefaults);
         Assert.That(migrated.Length, Is.EqualTo(5));
         Assert.That(migrated, Is.Not.SameAs(oldDefaults));
         Assert.That(oldDefaults.Length, Is.EqualTo(4));
-        Assert.That(migrated[4].displayName, Is.EqualTo("Base rear"));
+        Assert.That(migrated[0].displayName, Is.EqualTo("Base cover"));
+        RobotCoverLandmark[] grayDefaults = oldDefaults.Concat(new[] {new RobotCoverLandmark {
+            displayName="Base rear",linkName="ur_base_link_inertia",visualIndex=0,
+            pointInVisualRos=new Vector3(-0.086787f,0f,0.042474f),expectedMeshSuffix="/ur10e/visual/base.dae"
+        }}).ToArray();
+        Assert.That(RobotCoverLandmarks.UpgradeDefaults(grayDefaults).Select(point=>point.displayName),
+            Is.EqualTo(migrated.Select(point=>point.displayName)));
+        grayDefaults[4].pointInVisualRos += Vector3.up*0.0000001f;
+        Assert.That(RobotCoverLandmarks.UpgradeDefaults(grayDefaults),Is.SameAs(grayDefaults));
         oldDefaults[0].pointInVisualRos += Vector3.right * 0.0000001f;
         Assert.That(RobotCoverLandmarks.UpgradeDefaults(oldDefaults), Is.SameAs(oldDefaults), "A measured custom four-point configuration needs explicit fifth-point configuration.");
         Assert.That(RobotCoverLandmarks.UpgradeDefaults(migrated), Is.SameAs(migrated));

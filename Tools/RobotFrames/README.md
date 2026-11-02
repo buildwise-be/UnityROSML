@@ -1,16 +1,18 @@
 # Offline robot-frame comparison
 
-## Four-point controller placement
+## Five-point controller placement
 
-The interaction scene starts with **Place robot with 4 points**. Keep the real
+The interaction scene starts with **Place robot with 5 points**. Keep the real
 robot still in a bent pose, with `/joint_states` streaming. Touch the centre of
 each indicated blue rear cover with the controller contact tip and press trigger:
-**Shoulder → Elbow → Wrist 2 → Wrist 3**. These are the four covers in the supplied
-photo. The XR robot appears after the fourth accepted touch. Undo, Restart,
+**Base cover → Shoulder → Elbow → Wrist 2 → Wrist 3**. Start at the lowest blue
+cover on the rotating base joint, then work towards the tool. The XR robot appears
+after the fifth accepted touch. Undo, Restart,
 Cancel, and Use QR instead are available in the placement menu.
 
 A floating UR16e miniature beside the picker highlights the current link and
-marks the exact cover center in orange. It turns that cover toward the viewer;
+marks the exact cover center in orange. It turns slowly around world vertical,
+completing one revolution every 10 seconds;
 the shoulder and elbow share a link but have separate touch markers. The guide
 uses live joint feedback before the first touch and the locked first-touch pose
 afterwards. Without fresh joints it shows an explicitly labeled bent example.
@@ -18,17 +20,17 @@ Undo/restart updates the highlight, and leaving placement hides the guide. This
 is mesh-only guidance: it cannot become a live robot, ghost, or physics target.
 
 Each captured contact leaves a coloured 12 mm sphere at the sampled physical
-tip position. The four colours follow the point order. Spheres stay attached to
+tip position. The five colours follow the point order. Spheres stay attached to
 tracking space, remain visible after a successful fit, and follow undo/restart,
 cancel, QR switching and tracking-reset cleanup. They have no active colliders.
 
-`RobotPointRegistration` fits a rigid rotation and translation using all four
+`RobotPointRegistration` fits a rigid rotation and translation using all five
 ordered correspondences and the calibrated model at the first touch's live joint
 pose. It estimates no scale. Incomplete/stale feedback, robot movement over
 0.5 degrees, changed models, repeated points and nearly collinear geometry are
 rejected. A failed fit remains in the picker. Default acceptance limits are
 10 mm RMS and 20 mm worst-point residual; both values appear after placement.
-Residuals measure consistency of the four touches, not absolute physical accuracy.
+Residuals measure consistency of the five touches, not absolute physical accuracy.
 
 **Verify the physical contact tip first.** The 6 mm marker shows the point being
 sampled. OpenXR's pointer origin is the default; it is not a measured physical
@@ -44,7 +46,7 @@ Point placement requires no QR-to-base distance and does not overwrite saved
 QR alignment profiles. Planning/capture are blocked while picking; placement
 never sends robot motion. Existing placement is hidden during a retry and
 restored on Cancel when its tracking session is still valid. Native tracking
-origin resets and app suspension invalidate the fit and require four new touches.
+origin resets and app suspension invalidate the fit and require five new touches.
 Moving the XR Origin transform retains the fit in tracking space. Contacts and
 world placement are session-local and are not restored after restarting the app.
 
@@ -125,11 +127,15 @@ solved tool rotation in the trajectory.
 TCP A/B shows the selected tool geometry. MTC pick/place shows a small ball at
 each contact point with a single arrow along tool +Z, and the same ball/arrow
 as the live aim preview. It shows no fixed tool clocking or curved twist rings.
-Trigger-drag the ball to turn the normal. Hover a placed reference and press
-the bumper for its contextual menu. MTC targets have **+Z 5 mm**,
+Trigger-drag the ball to turn the normal. Trigger-click a placed reference to
+open its contextual menu (the bumper also opens it). MTC targets have **+Z 5 mm**,
 **-Z 5 mm** and **Reset depth** controls for contact compression/backoff. Depth
 steps follow the current tool normal and invalidate any reviewed plan. Close the
-menu before rotating, planning or executing. TCP targets retain exact captured
+menu before rotating, planning or executing. **Force towards ground** keeps the
+physical tool +Z normal vertically down in world space, independently for Pick
+and Place, including after recapture or rotation edits. Enabling it changes only
+orientation, preserves the contact position and invalidates the reviewed plan.
+Disable it to rotate the normal freely again. TCP targets retain exact captured
 positions; their context menu explains rotation controls.
 
 The ball/arrow materials are bundled under `Resources/RobotTargetMarkers` so
@@ -437,9 +443,33 @@ The menu displays a mismatch or waiting status when this cannot be established.
 
 The Kenos SL link transforms match the ROS model, including the 34 mm lateral
 contact-centre offset. Matching software does not measure the physical adapter:
-its 60.25 mm height, 50 mm radius and zero clocking remain the ROS model's
-provisional mounting assumptions. Calibrate those in ROS; the connected Unity
-replica then uses the actual expanded values without a second set of offsets.
+its default height is **55.25 mm**, shortened from 60.25 mm by the owner's
+requested 5 mm overlay correction on 2026-10-30. The cylinder's visual/collision
+centres are at 27.625 mm, and the gripper attaches at 55.25 mm. This moves the
+whole gripper and TCP toward the flange without scaling the tool CAD. Axial
+flange-to-TCP reach is now **145 mm**, with the same 34 mm eccentric offset and
+89.75 mm tool-local contact depth. Mount height remains an empirical adjustment;
+the 50 mm radius and zero clocking remain provisional mounting assumptions.
+Calibrate those in ROS; the connected Unity replica uses the actual expanded
+values without a second set of offsets.
+
+The ROS defaults are updated for RSP/control, MoveGroup and MTC, and Unity's
+offline catalog/URDF snapshot is regenerated from them. Rebuild the relevant
+ROS packages and restart all model consumers together to apply the new live
+description; an already-running ROS model overrides the offline Unity catalog.
+This source correction does not deploy or restart the stack.
+On 2026-11-02 the separate fixture workflow ROS worktree was found to retain the
+old 60.25 mm defaults. It now carries the same 55.25 mm correction across the
+tool/arm macros, description and all six launch entry points. No second 5 mm
+reduction was applied. `check_tool_mount_sources.py --ros-root <ROS checkout>`
+checks those source defaults against Unity's catalog without starting ROS;
+it does not inspect a running robot description or replace launch integration
+tests. Rebuilding Unity alone cannot change an old live ROS description.
+`tool_mount_validation_summary.json` records 532 passing Unity checks and 11
+source launch-model cases, plus a comparison of all 903 baseline link poses:
+only the 42 Kenos SL body/TCP poses move, exactly 5 mm, with all orientations,
+other-tool models and detailed CAD bytes preserved. The separate portable
+model suite passes 16 checks, and the standalone ROS tool Xacro suite passes 7.
 
 Kenos SL also loads the detailed supplied STEP geometry from the preconverted
 `RobotModels/KenosSLVisual.bytes` resource. This mesh is local to
@@ -501,7 +531,7 @@ The scene now starts in **TCP Preview** mode on `URInputManager`:
   tool +Z independently at pick and place. The trajectory preview shows the
   actual chosen rotation. The internal virtual object remains 100 x 100 x 4 mm;
   these controls do not infer a scanned object's shape.
-- Hover a captured reference and press the bumper to open its
+- Trigger-click a captured reference (or hover and press the bumper) to open its
   contextual menu. For MTC targets, **+Z 5 mm** pushes the contact point through
   the suction face and **-Z 5 mm** backs off. Each click moves exactly 5 mm along
   the tool's current normal. **Reset depth** undoes these translations, including

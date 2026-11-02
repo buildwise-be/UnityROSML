@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-11-02T10:50:02.608982+00:00",
+  "finding": "The Oct30 correction already existed in Unity and the original ROS correction branch, but the separate fixture workflow source retained 60.25 mm defaults. The original evidence recorded no deployment; a live ROS description overrides the Unity catalog.",
+  "correction": "Synchronize the existing 5 mm correction; no additional 5 mm reduction.",
+  "mountHeightM": 0.05525,
+  "axialFlangeToTcpM": 0.145,
+  "toolLocalTcpRosM": [
+    0.034,
+    0,
+    0.08975
+  ],
+  "rosCommits": [
+    {
+      "branch": "codex/correct-tool-mount",
+      "commit": "ed85b286d385226bb1122cbf8ed90cc37dbd8895",
+      "root": "C:\\Users\\aca\\source\\UR16UnityControl"
+    },
+    {
+      "branch": "codex/fixture-tiling",
+      "commit": "00740a01fbc0a4d8261eb207e621969bf1bbecc5",
+      "root": "C:\\Users\\aca\\source\\UR16UnityControl\\ros_ws\\build\\fixture_tiling_source"
+    }
+  ],
+  "preservation": "Only the 11 mount source/test/default files were committed; existing fixture workflow and documentation edits remain unstaged.",
+  "synchronizedSources": [
+    {
+      "path": "ros_ws/src/kenos-flexigrip/test/test_kenos_sl.py",
+      "before_sha256": "e18dd374c67d7125e097a99d5756417a08aeada0c44a43673faeed9f991d31b8",
+      "main_sha256": "ca640030bbc7ae7d86360aa81612de42a8096bdf6abac998d423fb53aaebfca4",
+      "after_sha256": "ca640030bbc7ae7d86360aa81612de42a8096bdf6abac998d423fb53aaebfca4"
+    },
+    {
+      "path": "ros_ws/src/kenos-flexigrip/urdf/kenos_sl.urdf.xacro",
+      "before_sha256": "5274c6f09d359cd3ff4a6e3ac1a53291f9cc1ca899c0fdd1132cf440ce387d4d",
+      "main_sha256": "4e82d2329d3733d51b795cd202ab305f03cfd199711bd86e2634ed53b7f4afb5",
+      "after_sha256": "4e82d2329d3733d51b795cd202ab305f03cfd199711bd86e2634ed53b7f4afb5"
+    },
+    {
+      "path": "ros_ws/src/ur16e_bringup/launch/ur16e_start.launch.py",
+      "before_sha256": "38a17ac6d3b8ab722eaca523a88d1d20b7be7a56f94f8da61315c426ac9f3316",
+      "main_sha256": "88c726e4d0f1f3d51f2f55d518735a1daa4d049a67fbdcbc302a10e96f8574a8",
+      "after_sha256": "f9f0bcda3bf85b60e5f5f3d8ad9b9f41e05257c799e06c721e2af056578d1af0"
+    },
+    {
+      "path": "ros_ws/src/ur16e_bringup/test/test_model_consistency.py",
+      "before_sha256": "fee76db05d89cfe563f54da470b9136aeeab55dcbf8921da3659e90fb8453b48",
+      "main_sha256": "4be140948fa0efec8a940366ce607ebdbf2f6721be9660cb6b972c3af91b5b85",
+      "after_sha256": "4be140948fa0efec8a940366ce607ebdbf2f6721be9660cb6b972c3af91b5b85"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/launch/start_robot.launch.py",
+      "before_sha256": "242f5ad73d2bb6799d51a1b96a11e7ef116af53535b366fde2174a27b864229b",
+      "main_sha256": "ae96cad33362c2a8d945100430ac16de5392dd67b206bd2ecdbd34187c1751d8",
+      "after_sha256": "ae96cad33362c2a8d945100430ac16de5392dd67b206bd2ecdbd34187c1751d8"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/launch/urmir_rsp.launch.py",
+      "before_sha256": "b0568ba4676ed8a29ed8aaa2785f5dc16a4a415d7230b74d5071efd897cf94fc",
+      "main_sha256": "77610e1f117d4759965c551de3073038da9ac6028c622ca7724d68ded6be08fa",
+      "after_sha256": "77610e1f117d4759965c551de3073038da9ac6028c622ca7724d68ded6be08fa"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/launch/urmir_rsp_kenos_sl.launch.py",
+      "before_sha256": "ee991849da9abc9a44bfc969f33ac6119607df008afcf0ff3dd5e9a72c8d6529",
+      "main_sha256": "0b2a22aa4cbfdc7802258d9e61cb39c2fd201e1ededc2ef08d11810c5119b9da",
+      "after_sha256": "0b2a22aa4cbfdc7802258d9e61cb39c2fd201e1ededc2ef08d11810c5119b9da"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_description/include/bw_ur16e_macro.xacro",
+      "before_sha256": "f6129631cfbd6819d1dce074bf6051fef28b1cd9f66c1c860d55c7538432dbb8",
+      "main_sha256": "654ccb24818066b37ee8660beade93090f2ebc3f374906b6594d6e3001d6b10b",
+      "after_sha256": "654ccb24818066b37ee8660beade93090f2ebc3f374906b6594d6e3001d6b10b"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_description/urdf/mir250_ur16e.urdf.xacro",
+      "before_sha256": "18b3c5742103c9595e128964633654457d5f12a9fd4c4f08d22a9fc93fb7f8f5",
+      "main_sha256": "60553c26472e59e8478b8704b92ed980457b4851d60142367616f5971f5f1a4c",
+      "after_sha256": "60553c26472e59e8478b8704b92ed980457b4851d60142367616f5971f5f1a4c"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/launch/move_group.launch.py",
+      "before_sha256": "7670623aef787dfa7f2427cd84d8193b7f150749ea6449455fe406a81cbba489",
+      "main_sha256": "bea966dd138811f64f72f78aec7878b29be99eb7c97d19731b274286f332414d",
+      "after_sha256": "bea966dd138811f64f72f78aec7878b29be99eb7c97d19731b274286f332414d"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/launch/mtc_commander.launch.py",
+      "before_sha256": "713145ee45615585d9f7181ffca4b9aa8bbbe3e72201fb07d0a0a0e9d078e55c",
+      "main_sha256": "76df5f6c692af5f0f1a4870f3a06b248fda44549caa2c4015f4113d726b25ca1",
+      "after_sha256": "37e23f3637e57a08f69a5a63b576042eb7588297ee142b7e5d4521e61d93a0cb"
+    }
+  ],
+  "sourceDefaultParity": {
+    "path": "Tools/RobotFrames/ToolMountValidation/source-default-parity-20261102.json",
+    "sha256": "990fd07dd9aac497acaf56ae544dd1f00331cdd85b13190e743ca8b5b476d3aa"
+  },
+  "sourceChecks": {
+    "rosSourceTrees": 2,
+    "launchDefaultsPerTree": 6,
+    "xacroXmlDefaultsPerTree": 3,
+    "kenosSlXacroTests": {
+      "passed": 7,
+      "failed": 0,
+      "evidence": {
+        "path": "Tools/RobotFrames/ToolMountValidation/kenos-sl-tests-20261102.log",
+        "sha256": "295bb0b40da1a62ff267d1c87073fd6ec3fbc1f8e431a5083a180f3471801aaa"
+      }
+    },
+    "portableUnityModelTests": {
+      "passed": 16,
+      "failed": 0,
+      "command": "python -m unittest discover -s Tools/RobotFrames -p test_model_export.py -v"
+    },
+    "catalogRosProvenanceEntriesVerified": 22,
+    "integrationLimit": "Full ROS launch-model integration was not rerun: this PC has no Docker client or ROS launch/PyYAML environment. AST defaults and actual Xacro macro expansion were checked without starting nodes."
+  },
+  "unityEditor": {
+    "tests": {
+      "total": 660,
+      "passed": 659,
+      "failed": 0,
+      "skipped": 1
+    },
+    "mountModelAndRigFixtures": {
+      "RosRobotModelTests": 105,
+      "RosRobotRigPrefabTests": 13
+    },
+    "result": {
+      "path": "Library/FixtureTilingValidation/five-point-results.xml",
+      "sha256": "31fec0d24edda08fc94f97476188813efdab683b80e499bf39a151b690387c22"
+    }
+  },
+  "runtimeVisual": "RosRobotRig disables original prefab tool branches and regenerates the adapter/link chain from the selected model; detailed CAD is identity-local to kenos_sl_base. Matching connected RSP/MoveIt/MTC descriptions take precedence over the offline catalog.",
+  "visualQa": {
+    "previews": [
+      {
+        "path": "Library/FixtureTilingValidation/ToolMountPreviews/previous-60.25mm.png",
+        "sha256": "2636b997cf1e95427a5ef3a9c80d22c1ebef5c07fce42b302b0f8918c0c1d016"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/ToolMountPreviews/corrected-55.25mm.png",
+        "sha256": "1553ef3a93b4508f5b2ee9ef4d2ad6a265e4c9a74e754fdcbd9b3affd2daa9e5"
+      }
+    ],
+    "renderLog": {
+      "path": "Library/FixtureTilingValidation/five-point-previews.log",
+      "sha256": "9a90be06959e04f4876487df0d34ecb775ebb3bcc78210379640135e12953a08"
+    },
+    "shaderErrors": 0,
+    "nativeHeadset": false
+  },
+  "priorGeometricComparison": {
+    "changedDistalPoses": 42,
+    "unchangedPoses": 861,
+    "orientationsUnchanged": true,
+    "noneAndFlexiGripUnchanged": true,
+    "cadBytesAndProvenanceUnchanged": true
+  },
+  "unchangedCatalogProvesPriorComparisonStillApplies": true,
+  "unitySources": [
+    {
+      "path": "Assets/Resources/RobotModels/Models.json",
+      "sha256": "04f054fb7d1e9828f7fb6a4ff543508499e6c43b9a59f3e08d5ecffbf005ab2b"
+    },
+    {
+      "path": "Assets/Resources/RobotModels/kenos_sl.urdf.txt",
+      "sha256": "729f204328c51ba30b62165fb1b5235767462ef123e5dafcc09eeeda5ff200d7"
+    },
+    {
+      "path": "Assets/Resources/RobotModels/kenos.urdf.txt",
+      "sha256": "a91ec30152e2960bb3919f6e225b920eaad88b14dda765b326878250b2e4cae0"
+    },
+    {
+      "path": "Assets/Resources/RobotModels/none.urdf.txt",
+      "sha256": "56415af69b93f127bc5dc619870aec9deee9eecff684119b26e65fff2d04e28c"
+    },
+    {
+      "path": "Assets/Resources/RobotModels/KenosSLVisual.bytes",
+      "sha256": "aa8514e96c2639128bbd581b2a08f7c04625656506cd280748043f0f71360e32"
+    },
+    {
+      "path": "Assets/Resources/RobotModels/KenosSLVisualProvenance.json",
+      "sha256": "49e3db77de5c664b7dfd9c975e896181c10a6e157d103814b8ac423c90d7f5da"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RosRobotRig.cs",
+      "sha256": "ac6865a741503b42657c1bfa21d93c9813e085680b89b5119ed4979bd25244ca"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/ToolSelectionController.cs",
+      "sha256": "dbbdc371e679b8243da1730b46a26b93bd94b533f50992db4731b035479394c1"
+    },
+    {
+      "path": "Assets/Scripts/V3/ToolPoseVisual.cs",
+      "sha256": "4558b0d7e3acb58dfb69c77b8874a88bbf60dca9730480b189bd9a2c99b28717"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotModelTests.cs",
+      "sha256": "432af071cc98c107285415f0ad552bf038acfcab16ec72fad4b1d69ea542403d"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotRigPrefabTests.cs",
+      "sha256": "4f25a08135d6806852edc4a76f0a3c6bf7237bb5a73e6b5a7d603d68f1e95eb8"
+    }
+  ],
+  "hardwareExercised": false,
+  "rosNodesStarted": false,
+  "robotCommandsSent": false,
+  "deployed": false,
+  "limits": [
+    "No running ROS model was read or restarted. Rebuild and restart all model consumers together to apply corrected live descriptions.",
+    "This remains the prior empirical mounting correction, not an independently measured physical adapter calibration."
+  ]
+}

@@ -155,8 +155,8 @@ public class PickPlaceController : MonoBehaviour
         TargetNameLabel.Attach(point.transform, pick ? "Pick" : "Place", tint);
         TargetPoseContextMenu context = TargetPoseContextMenu.Attach(point.transform,
             pick ? "Pick contact" : "Place contact", true, OnTargetRotationChanged);
-        context.RebaseAtCurrentPose();
         point.SetActive(_tilePlanningEnabled);
+        context.RebaseAtCurrentPose();
         InvalidatePlanningRequest();
     }
 
@@ -170,6 +170,11 @@ public class PickPlaceController : MonoBehaviour
     public bool TryGetContactPoses(out PickPlacePosesMsg message)
     {
         message = null;
+        // Keep the exported poses identical to the displayed constrained contacts, even before LateUpdate.
+        if (_pickPointInstance != null)
+            _pickPointInstance.GetComponent<TargetPoseContextMenu>()?.ApplyOrientationConstraint();
+        if (_placePointInstance != null)
+            _placePointInstance.GetComponent<TargetPoseContextMenu>()?.ApplyOrientationConstraint();
         if (!_tilePlanningEnabled || _pickPointInstance == null || _placePointInstance == null ||
             !RobotFrameMath.IsRigidFrame(_pickPointInstance.transform) || !RobotFrameMath.IsRigidFrame(_placePointInstance.transform) ||
             !RobotCoordinateService.Instance.TryConvertWorldPoseToLocalPose(
@@ -232,8 +237,12 @@ public class PickPlaceController : MonoBehaviour
         !RobotCoordinateService.IsCalibrationEditActive && RobotCoordinateService.Instance.IsInitialized &&
         RobotCoordinateService.Instance.CalibrationRevision == _requestCalibrationRevision &&
         ToolSelectionController.CanPlanPickPlace && TargetsMatchRequest();
-    private bool TargetsMatchRequest() => _requestedContactPoses != null && TryGetContactPoses(out PickPlacePosesMsg current) &&
-        SamePose(_requestedContactPoses.pick_pose, current.pick_pose) && SamePose(_requestedContactPoses.place_pose, current.place_pose);
+    private bool TargetsMatchRequest()
+    {
+        PickPlacePosesMsg requested = _requestedContactPoses;
+        return requested != null && TryGetContactPoses(out PickPlacePosesMsg current) && _requestedContactPoses == requested &&
+            SamePose(requested.pick_pose, current.pick_pose) && SamePose(requested.place_pose, current.place_pose);
+    }
     private static bool SamePose(PoseStampedMsg a, PoseStampedMsg b)
     {
         if (a.header.frame_id != b.header.frame_id) return false;

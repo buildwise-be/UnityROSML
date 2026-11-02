@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 
-/// <summary>Session-local registration from four rear covers and the fixed base rear contact.</summary>
+/// <summary>Session-local registration from five rear blue covers, ordered from base to tool.</summary>
 [DisallowMultipleComponent]
 public sealed class RobotPointRegistration : MonoBehaviour
 {
@@ -63,7 +63,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
     public int CapturedPointCount => _measuredInTracking.Count;
     public float RmsErrorMeters { get; private set; }
     public float MaxErrorMeters { get; private set; }
-    public string StatusText { get; private set; } = "Place the robot using four rear cover centres, then the rear of the fixed base.";
+    public string StatusText { get; private set; } = "Place the robot using five rear blue cover centres, starting at the base and working towards the tool.";
     public event Action StateChanged;
     public string[] PointNames
     {
@@ -112,7 +112,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
         if (IsAdjustingPosition) CancelPositionAdjustment();
         _landmarks = RobotCoverLandmarks.UpgradeDefaults(_landmarks);
         if (_landmarks == null || _landmarks.Length != RequiredPointCount)
-        { SetStatus("Configure five contact landmarks, including the fixed base rear, before point placement."); return; }
+        { SetStatus("Configure five blue cover landmarks, ordered from base to tool, before point placement."); return; }
         foreach (RobotCoverLandmark landmark in _landmarks)
             if (landmark == null || string.IsNullOrWhiteSpace(landmark.displayName))
             { SetStatus("Each rear-cover landmark needs a name and contact definition."); return; }

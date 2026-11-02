@@ -53,6 +53,8 @@ public sealed class RobotRegistrationGuideTests
     {
         LockPose();
         RobotCoverLandmark[] landmarks = RobotCoverLandmarks.CreateDefaults();
+        Assert.That(landmarks[0].displayName,Is.EqualTo("Base cover"));
+        Assert.That(landmarks[0].linkName,Is.EqualTo("ur_shoulder_link"),"The first blue cap moves with the base pan joint.");
         Assert.That(RobotCoverLandmarks.TryGetBasePoints(_model, _joints, landmarks, out Vector3[] points, out string error), Is.True, error);
         GameObject geometry = null;
         int[] rendererIds = null;
@@ -90,7 +92,7 @@ public sealed class RobotRegistrationGuideTests
             Bounds bounds = RenderBounds(current);
             Assert.That(Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z), Is.InRange(0.1f, 0.22f));
         }
-        Assert.That(Vector3.Distance(points[0], points[1]), Is.GreaterThan(0.3f),
+        Assert.That(Vector3.Distance(points[1], points[2]), Is.GreaterThan(0.3f),
             "Shoulder and elbow share an owning link but must identify different cover centers.");
     }
 
@@ -104,7 +106,7 @@ public sealed class RobotRegistrationGuideTests
     [TestCase(5f, 180f, true)]
     [TestCase(7.5f, 270f, true)]
     [TestCase(10f, 0f, true)]
-    public void SlowTurntableKeepsTheFifthTargetAndCadInputsStable(float elapsedSeconds, float expectedDegrees, bool tiltedMenu)
+    public void SlowTurntableKeepsTheCurrentTargetAndCadInputsStable(float elapsedSeconds, float expectedDegrees, bool tiltedMenu)
     {
         if (tiltedMenu) _guideOwner.transform.rotation = Quaternion.Euler(29,-17,13);
         LockPose(); SetStep(4); Refresh();
@@ -117,8 +119,9 @@ public sealed class RobotRegistrationGuideTests
         Call(_guide,"AdvanceTurntable",elapsedSeconds);
         Assert.That(Get<float>(_guide,"TurntableAngleDegrees"),Is.EqualTo(expectedDegrees).Within(.001f));
         Assert.That(Get<int>(_guide,"SelectedPointIndex"),Is.EqualTo(4));
-        Assert.That(Get<string>(_guide,"CurrentPointName"),Is.EqualTo("Base rear"));
-        Assert.That(Get<string>(_guide,"HighlightedLinkName"),Is.EqualTo("ur_base_link_inertia"));
+        Assert.That(Get<string>(_guide,"CurrentPointName"),Is.EqualTo("Wrist 3"));
+        Assert.That(Get<string>(_guide,"HighlightedLinkName"),Is.EqualTo("ur_wrist_2_link"),
+            "The Wrist 3 contact is measured on the cover carried by the Wrist 2 visual.");
         Assert.That(Get<Vector3>(_guide,"TargetPointInModel"),Is.EqualTo(marker));
         Assert.That(geometry.transform.localScale,Is.EqualTo(scale));
         Assert.That(Vector3.Distance(geometry.transform.rotation * Vector3.up,Vector3.up),Is.LessThan(.00001f));
@@ -178,6 +181,9 @@ public sealed class RobotRegistrationGuideTests
     [Test]
     public void GuideUsesFreshFeedbackBeforeCaptureAndTheLockedPoseAfterCapture()
     {
+        // The new first cap centre lies almost on the pan axis. Use the
+        // shoulder-lift cover to measure a meaningful pan-induced displacement.
+        SetStep(1);
         Observe(_joints);
         Refresh();
         Assert.That(Get<string>(_guide, "PoseStatus"), Is.EqualTo("Live robot pose"));

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.UI;
 
-/// <summary>Local target editing only. Bumper opens the hovered target's menu; no ROS publication.</summary>
+/// <summary>Local target editing only. Trigger-click or bumper opens the menu; no ROS publication.</summary>
 public sealed class TargetPoseContextMenu : MonoBehaviour
 {
     public const float DepthStepMetres = 0.005f;
@@ -19,6 +19,8 @@ public sealed class TargetPoseContextMenu : MonoBehaviour
     private Action _changed;
     private Canvas _canvas;
     private TextMeshProUGUI _depthLabel;
+    private Toggle _groundToggle;
+    private bool _forceTowardsGround;
     private readonly HashSet<int> _hovering = new HashSet<int>();
     private readonly HashSet<int> _pressing = new HashSet<int>();
     private Vector3 _depthShiftInParent;
@@ -29,6 +31,7 @@ public sealed class TargetPoseContextMenu : MonoBehaviour
     public int DepthSteps => _depthSteps;
     public float DepthOffsetMetres => _depthSteps * DepthStepMetres;
     public bool AllowsDepthAdjustment => _allowDepth;
+    public bool ForceTowardsGround => _forceTowardsGround;
 
     public static TargetPoseContextMenu Attach(Transform target, string title,
         bool allowDepthAdjustment, Action changed)
@@ -49,7 +52,46 @@ public sealed class TargetPoseContextMenu : MonoBehaviour
         _offsetParent = transform.parent;
         _depthShiftInParent = Vector3.zero;
         _depthSteps = 0;
+        ApplyOrientationConstraint();
         RefreshDepthLabel();
+    }
+
+    /// <summary>Lock a contact's physical TCP +Z to gravity-down, independently for pick and place.</summary>
+    public bool SetForceTowardsGround(bool enabled)
+    {
+        if (!_allowDepth || !isActiveAndEnabled || RobotCoordinateService.IsCalibrationEditActive ||
+            TargetRotationHandles.IsInteracting || !RobotFrameMath.IsRigidFrame(transform))
+        {
+            if (_groundToggle != null) _groundToggle.SetIsOnWithoutNotify(_forceTowardsGround);
+            return false;
+        }
+        if (_forceTowardsGround == enabled) return true;
+        _forceTowardsGround = enabled;
+        if (enabled) transform.rotation = ConstrainRotation(transform.rotation);
+        if (_groundToggle != null) _groundToggle.SetIsOnWithoutNotify(enabled);
+        RefreshDepthLabel();
+        _changed?.Invoke();
+        return true;
+    }
+
+    /// <summary>Preserve the available twist while aligning ROS TCP +Z (Unity local +Y) to world down.</summary>
+    public Quaternion ConstrainRotation(Quaternion rotation)
+    {
+        if (!_forceTowardsGround || !RobotFrameMath.IsValidPose(new Pose(Vector3.zero, rotation))) return rotation;
+        rotation = rotation.normalized;
+        return (Quaternion.FromToRotation(rotation * Vector3.up, Vector3.down) * rotation).normalized;
+    }
+
+    /// <summary>Also used before pose export, so a tracking-origin update cannot bypass the lock.</summary>
+    public bool ApplyOrientationConstraint()
+    {
+        if (!_forceTowardsGround || !isActiveAndEnabled || RobotCoordinateService.IsCalibrationEditActive ||
+            !RobotFrameMath.IsRigidFrame(transform)) return false;
+        // Avoid accumulating quaternion roundoff and invalidating plans when already constrained.
+        if ((transform.up - Vector3.down).sqrMagnitude < 0.000000000001f) return false;
+        transform.rotation = ConstrainRotation(transform.rotation);
+        _changed?.Invoke();
+        return true;
     }
 
     public static bool TryOpenHovered()
@@ -99,6 +141,7 @@ public sealed class TargetPoseContextMenu : MonoBehaviour
         if (steps == 0 || !_allowDepth || !isActiveAndEnabled || RobotCoordinateService.IsCalibrationEditActive ||
             TargetRotationHandles.IsInteracting || !RobotFrameMath.IsRigidFrame(transform)) return false;
         if (_offsetParent != transform.parent) RebaseAtCurrentPose();
+        ApplyOrientationConstraint();
         // A click is one step, even when this public entry point receives an arbitrary integer.
         int direction = Math.Sign(steps);
         if ((_depthSteps == int.MaxValue && direction > 0) || (_depthSteps == int.MinValue && direction < 0)) return false;
@@ -132,6 +175,7 @@ public sealed class TargetPoseContextMenu : MonoBehaviour
     private void RefreshDepthLabel()
     {
         if (_depthLabel == null) return;
+        if (_groundToggle != null) _groundToggle.SetIsOnWithoutNotify(_forceTowardsGround);
         _depthLabel.text = _allowDepth
             ? "Shift from capture: " + (_depthShiftInParent.magnitude * 1000f).ToString("0") +
                 " mm\n+Z pushes through the suction face; −Z backs off."
@@ -145,7 +189,7 @@ public sealed class TargetPoseContextMenu : MonoBehaviour
         _canvas = go.GetComponent<Canvas>();
         _canvas.renderMode = RenderMode.WorldSpace;
         RectTransform panel = (RectTransform)go.transform;
-        panel.sizeDelta = new Vector2(360f, _allowDepth ? 270f : 200f);
+        panel.sizeDelta = new Vector2(360f, _allowDepth ? 342f : 200f);
         panel.pivot = new Vector2(0.5f, 0.5f);
         panel.localScale = Vector3.one * 0.001f;
         Image background = go.AddComponent<Image>();
@@ -155,15 +199,40 @@ public sealed class TargetPoseContextMenu : MonoBehaviour
         _depthLabel = Text(panel, "Depth", "", new Vector2(16f, -51f), new Vector2(328f, 68f), 17f);
         if (_allowDepth)
         {
-            Button(panel, "−Z  5 mm", new Vector2(16f, -126f), new Vector2(158f, 43f), () => NudgeDepth(-1));
-            Button(panel, "+Z  5 mm", new Vector2(186f, -126f), new Vector2(158f, 43f), () => NudgeDepth(1));
-            Button(panel, "Reset depth", new Vector2(16f, -181f), new Vector2(158f, 40f), ResetDepth);
-            Button(panel, "Close", new Vector2(186f, -181f), new Vector2(158f, 40f), Close);
-            Text(panel, "Hint", "Close to turn the ball; depth steps follow the arrow.",
-                new Vector2(16f, -228f), new Vector2(328f, 30f), 14f);
+            BuildGroundToggle(panel);
+            Button(panel, "−Z  5 mm", new Vector2(16f, -198f), new Vector2(158f, 43f), () => NudgeDepth(-1));
+            Button(panel, "+Z  5 mm", new Vector2(186f, -198f), new Vector2(158f, 43f), () => NudgeDepth(1));
+            Button(panel, "Reset depth", new Vector2(16f, -253f), new Vector2(158f, 40f), ResetDepth);
+            Button(panel, "Close", new Vector2(186f, -253f), new Vector2(158f, 40f), Close);
+            Text(panel, "Hint", "Trigger-click: menu. Trigger-drag: turn.\nGround lock keeps the normal vertical.",
+                new Vector2(16f, -300f), new Vector2(328f, 34f), 14f);
         }
         else Button(panel, "Close", new Vector2(16f, -135f), new Vector2(328f, 43f), Close);
         go.SetActive(false);
+    }
+
+    private void BuildGroundToggle(Transform panel)
+    {
+        RectTransform row = Rect(panel, "Force towards ground", new Vector2(16f, -123f), new Vector2(328f, 40f));
+        Image background = row.gameObject.AddComponent<Image>();
+        background.color = new Color(0.12f, 0.25f, 0.31f, 1f);
+        RectTransform box = Rect(row, "Checkbox", new Vector2(8f, -6f), new Vector2(28f, 28f));
+        Image border = box.gameObject.AddComponent<Image>();
+        border.color = new Color(0.45f, 0.6f, 0.65f, 1f);
+        RectTransform mark = Rect(box, "Checked", new Vector2(5f, -5f), new Vector2(18f, 18f));
+        Image checkedImage = mark.gameObject.AddComponent<Image>();
+        checkedImage.color = new Color(0.25f, 1f, 0.6f, 1f);
+        checkedImage.raycastTarget = false;
+        border.raycastTarget = false;
+        _groundToggle = row.gameObject.AddComponent<Toggle>();
+        _groundToggle.targetGraphic = background;
+        _groundToggle.graphic = checkedImage;
+        _groundToggle.SetIsOnWithoutNotify(_forceTowardsGround);
+        _groundToggle.onValueChanged.AddListener(value => SetForceTowardsGround(value));
+        Text(row, "Label", "Force towards ground", new Vector2(46f, -5f), new Vector2(274f, 30f), 20f);
+        Text(panel, "Ground hint", "Tool normal points down. Position stays put.",
+            new Vector2(16f, -166f), new Vector2(328f, 27f), 14f);
+        TrackPointer(row.gameObject);
     }
 
     private void Button(Transform parent, string label, Vector2 position, Vector2 size, Action clicked)
@@ -225,6 +294,8 @@ public sealed class TargetPoseContextMenu : MonoBehaviour
         // Lost pointer-up events after a tracking interruption must not leave a permanent press latch.
         if (_pressing.Count != 0 && Time.unscaledTime - _lastPressTime > 10f) _pressing.Clear();
     }
+
+    private void LateUpdate() => ApplyOrientationConstraint();
 
     private void OnApplicationFocus(bool focus) { if (!focus) Close(); }
     private void OnApplicationPause(bool paused) { if (paused) Close(); }

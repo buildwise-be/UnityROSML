@@ -728,7 +728,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
             ? "Set tile, stack, pattern and fixture.\nChoose a point, then trigger to capture."
             : tcp
             ? "Hold bumper: TCP A. Double press: TCP B.\nPlace the tool preview; drag it to set exact orientation."
-            : "Hold/double bumper: pick/place contact balls.\nArrow = normal. Drag ball to turn; bumper: depth ±5 mm.";
+            : "Hold/double bumper: pick/place contact balls.\nTrigger-click a ball: depth / Force towards ground.";
         if (_taskStatus != null)
             _taskStatus.text = _fixtureTiling != null && _fixtureTiling.IsExecuting ? _fixtureTiling.StatusText : execution != null ? execution.StatusText : tcpExecution != null ? tcpExecution.StatusText : _localNotice ?? (tcp
                 ? (_tcpPlanning != null ? _tcpPlanning.StatusText : "Capture TCP A and B to prepare a preview.")
@@ -1047,16 +1047,16 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     {
         BuildHeader(_pointView, "Five-point placement title", "Place robot with 5 points");
         Text("Five-point placement introduction", _pointView, new Vector2(16f, -52f), new Vector2(408f, 64f),
-            "Touch four rear cover centres, then the rear of the fixed base, using the controller tip. Press trigger once at each target.", 17f);
+            "Touch the five blue cover centres, starting at the lowest cover on the rotating base joint. Use the controller tip; press trigger at each target.", 17f);
         _pointProgress = Text("Five-point placement progress", _pointView, new Vector2(16f, -126f),
             new Vector2(408f, 70f), string.Empty, 23f);
         _pointProgress.color = new Color(0.55f, 0.91f, 1f);
         string[] descriptions = {
-            "1  Shoulder — large cover above the base",
-            "2  Elbow — large cover between long links",
-            "3  Wrist 2 — blue cover behind the bent wrist",
-            "4  Wrist 3 — last blue cover by the tool flange",
-            "5  Base rear — fixed grey housing below shoulder"
+            "1  Base cover — lowest blue joint cover",
+            "2  Shoulder — large cover above the base",
+            "3  Elbow — large cover between long links",
+            "4  Wrist 2 — blue cover behind the bent wrist",
+            "5  Wrist 3 — last blue cover by the tool flange"
         };
         for (int index = 0; index < descriptions.Length; index++)
             _pointLabels.Add(Text("Five-point contact " + (index + 1), _pointView,

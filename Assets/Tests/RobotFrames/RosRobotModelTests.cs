@@ -170,6 +170,50 @@ public sealed class RosRobotModelTests
         Assert.That(RosRobotDescription.Equivalent(_catalog.Find("kenos_sl"), model, out _), Is.False);
     }
 
+    [Test]
+    public void SafeLightMountCorrectionShortensOnlyTheAdapterAndDistalReach()
+    {
+        RosRobotModel corrected = _catalog.Find("kenos_sl");
+        RosRobotLink mount = corrected.FindLink("kenos_sl_mount");
+        foreach (RosRobotGeometry cylinder in mount.visuals.Concat(mount.collisions))
+        {
+            Assert.That(cylinder.kind, Is.EqualTo("cylinder"));
+            Assert.That(cylinder.length, Is.EqualTo(0.05525f).Within(0.000001f));
+            Assert.That(cylinder.radius, Is.EqualTo(0.05f).Within(0.000001f));
+            CollectionAssert.AreEqual(new[] { 0f, 0f, 0.027625f }, cylinder.position);
+        }
+        CollectionAssert.AreEqual(new[] { 0f, 0f, 0.05525f }, corrected.FindLink("kenos_sl_base").position);
+        CollectionAssert.AreEqual(new[] { 0.034f, 0f, 0.08975f }, corrected.FindLink("tcp").position);
+
+        // The prior stack remains an explicit valid model override. Compare
+        // every pose with that stack, without changing the tool's local shape.
+        RosRobotModel previous = Clone(corrected);
+        previous.FindLink("kenos_sl_base").position[2] = 0.06025f;
+        foreach (RosRobotGeometry cylinder in previous.FindLink("kenos_sl_mount").visuals
+            .Concat(previous.FindLink("kenos_sl_mount").collisions))
+        {
+            cylinder.length = 0.06025f;
+            cylinder.position[2] = 0.030125f;
+        }
+        foreach (RosRobotGoldenCase sample in corrected.goldenCases)
+        {
+            var joints = new Dictionary<string, double>();
+            for (int index = 0; index < sample.jointNames.Length; index++) joints[sample.jointNames[index]] = sample.jointPositions[index];
+            Dictionary<string, Pose> current = RosRobotModelMath.ForwardKinematics(corrected, joints);
+            Dictionary<string, Pose> old = RosRobotModelMath.ForwardKinematics(previous, joints);
+            Vector3 change = old["kenos_sl_mount"].rotation * Vector3.up * -0.005f;
+            foreach (RosRobotLink link in corrected.links)
+            {
+                Vector3 expected = old[link.name].position +
+                    (link.name == "kenos_sl_base" || link.name == "tcp" ? change : Vector3.zero);
+                AssertVector(expected, current[link.name].position, 0.000002f, sample.name + "/" + link.name);
+                Assert.That(Quaternion.Angle(old[link.name].rotation, current[link.name].rotation), Is.LessThan(0.001f));
+            }
+            Pose flangeToTcp = RobotFrameMath.RelativeTo(current["ur_flange"], current["tcp"]);
+            AssertVector(new Vector3(0f, -0.034f, 0.145f), flangeToTcp.position, PositionTolerance, "corrected flange TCP");
+        }
+    }
+
     [TestCase(null)]
     [TestCase("")]
     [TestCase("  ")]
