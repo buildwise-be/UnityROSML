@@ -1,0 +1,76 @@
+{
+  "model": "synthetic Cartesian XYZ + wrist XYZ, not a UR model",
+  "return_home_each_tile": false,
+  "passed": true,
+  "scene_queries": 5,
+  "scene_updates": 2,
+  "statuses": [
+    {
+      "status": "planning",
+      "reason": "Planning complete batch; no motion or IO sent",
+      "request_id": "synthetic-two-tile-fixture-replay",
+      "plan_id": "",
+      "tile_index": 0,
+      "repeatable": false
+    },
+    {
+      "status": "planning",
+      "reason": "Planning tile cycle",
+      "request_id": "synthetic-two-tile-fixture-replay",
+      "plan_id": "plan-1793618088696392460-12507342-393619947-1",
+      "tile_index": 0,
+      "repeatable": false
+    },
+    {
+      "status": "planning",
+      "reason": "Planning tile cycle",
+      "request_id": "synthetic-two-tile-fixture-replay",
+      "plan_id": "plan-1793618088696392460-12507342-393619947-1",
+      "tile_index": 1,
+      "repeatable": false
+    },
+    {
+      "status": "ready",
+      "reason": "Every tile cycle is planned; review before explicit plan-ID execution",
+      "request_id": "synthetic-two-tile-fixture-replay",
+      "plan_id": "plan-1793618088696392460-12507342-393619947-1",
+      "tile_index": 0,
+      "repeatable": false
+    }
+  ],
+  "node_log": "/evidence/full-cycle-replay.node.log",
+  "ros_domain_id": "184",
+  "elapsed_seconds": 0.7148753781802952,
+  "terminal": {
+    "status": "ready",
+    "reason": "Every tile cycle is planned; review before explicit plan-ID execution",
+    "request_id": "synthetic-two-tile-fixture-replay",
+    "plan_id": "plan-1793618088696392460-12507342-393619947-1",
+    "tile_index": 0,
+    "repeatable": false
+  },
+  "steps": 72,
+  "request_return_home_each_tile": false,
+  "plan_id": "plan-1793618088696392460-12507342-393619947-1",
+  "inventory_ids": [
+    "fixture_plan-1793618088696392460-12507342-393619947-1_tile_0",
+    "fixture_plan-1793618088696392460-12507342-393619947-1_tile_1"
+  ],
+  "attached_ids": [
+    "fixture_plan-1793618088696392460-12507342-393619947-1_tile_0",
+    "fixture_plan-1793618088696392460-12507342-393619947-1_tile_1"
+  ],
+  "waits": 2,
+  "trajectory_points": 384,
+  "named_home_segments": [],
+  "cycles_planned": [
+    0,
+    1
+  ],
+  "calibration_save": {
+    "success": true,
+    "message": "Calibration saved to /tmp/replay-saved-fixture.yaml; restart MTC with this fixture_config to load it. Current scene/calibration are unchanged.",
+    "runtime_scene_unchanged": true
+  },
+  "process_returncode": 0
+}

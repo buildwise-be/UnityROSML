@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "commit": "6ec8146f99ab7ef670b45e39a203e35de6bbc295",
+  "branch": "codex/fixture-tiling",
+  "activeSourceCheckout": "/home/nordbo/Unity/UR16UnityControlV2/UR16UnityControl-fixture-tiling",
+  "originalCheckoutPreserved": true,
+  "testOnlyFollowup": true,
+  "githubPushed": true,
+  "documentationCommit": "f44d9bab82f694e684bd6b6a7bf51e771cea885d",
+  "checkoutHead": "f44d9bab82f694e684bd6b6a7bf51e771cea885d",
+  "originalCheckoutDirtyPatchPreserved": true
+}

@@ -1,0 +1,898 @@
+{
+  "success": false,
+  "network": "none",
+  "colconTestExitCode": 0,
+  "colconResultExitCode": 1,
+  "reports": [
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/kenos_flexigrip/test_results/kenos_flexigrip/kenos_sl_model.xunit.xml",
+      "tests": 7,
+      "failed": 0
+    },
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mir250_control/test_results/ur16e_mir250_control/test_generate_control_xacro.xunit.xml",
+      "tests": 16,
+      "failed": 0
+    },
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_commander/test_results/ur16e_commander/test_pose_targets.gtest.xml",
+      "tests": 9,
+      "failed": 0
+    },
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_startup_parameter.gtest.xml",
+      "tests": 8,
+      "failed": 0
+    },
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_fixture_tiling_geometry.gtest.xml",
+      "tests": 12,
+      "failed": 0
+    },
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_scene_effects.gtest.xml",
+      "tests": 4,
+      "failed": 1
+    },
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_tcp_waypoints.gtest.xml",
+      "tests": 7,
+      "failed": 0
+    },
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_tool_model_validation.gtest.xml",
+      "tests": 10,
+      "failed": 0
+    },
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_fixture_cycle_builder.gtest.xml",
+      "tests": 5,
+      "failed": 0
+    },
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_startup_robot_model.gtest.xml",
+      "tests": 1,
+      "failed": 0
+    },
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_pick_place_targets.gtest.xml",
+      "tests": 4,
+      "failed": 0
+    },
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_plan_validation.gtest.xml",
+      "tests": 14,
+      "failed": 0
+    },
+    {
+      "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_bringup/test_results/ur16e_bringup/model_consistency.xunit.xml",
+      "tests": 11,
+      "failed": 9
+    }
+  ],
+  "failures": [
+    {
+      "name": "ur16e_mtc_gpio_stage.SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder",
+      "message": "/home/ros_ws/src/ur16e_mtc_gpio_stage/test/test_scene_effects.cpp:166\nValue of: live_->getAllowedCollisionMatrix().getEntry(\"tile\", \"hand\", permission)\n  Actual: false\nExpected: true\n/home/ros_ws/src/ur16e_mtc_gpio_stage/test/test_scene_effects.cpp:166\nValue of: live_->getAllowedCollisionMatrix().getEntry(\"tile\", \"hand\", permission)\n  Actual: false\nExpected: true\n"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_bringup_models_agree[stored-none]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tool = 'none', override_calibration = False\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_bringup_models_agree_stor0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3873dfe000>\n\n    @pytest.mark.parametrize('tool', ['none', 'kenos', 'kenos_sl'])\n    @pytest.mark.parametrize('override_calibration', [False, True], ids=['stored', 'override'])\n    def test_bringup_models_agree(tool, override_calibration, tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        arguments = {'tool': tool}\n        if override_calibration:\n            # Change a geometric value, not just the filename/hash: prove the override\n            # affects all models, including the RSP's external Xacro command.\n            data['kinematics']['shoulder']['z'] += 0.01\n            calibration = tmp_path / 'different_calibration.yaml'\n            calibration.write_text(yaml.safe_dump(data))\n            arguments['kinematics_params_file'] = str(calibration)\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:297: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871c37680>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871c5b530>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_bringup_models_agree[stored-kenos]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tool = 'kenos', override_calibration = False\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_bringup_models_agree_stor1')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3871c8ea20>\n\n    @pytest.mark.parametrize('tool', ['none', 'kenos', 'kenos_sl'])\n    @pytest.mark.parametrize('override_calibration', [False, True], ids=['stored', 'override'])\n    def test_bringup_models_agree(tool, override_calibration, tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        arguments = {'tool': tool}\n        if override_calibration:\n            # Change a geometric value, not just the filename/hash: prove the override\n            # affects all models, including the RSP's external Xacro command.\n            data['kinematics']['shoulder']['z'] += 0.01\n            calibration = tmp_path / 'different_calibration.yaml'\n            calibration.write_text(yaml.safe_dump(data))\n            arguments['kinematics_params_file'] = str(calibration)\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:297: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871757bf0>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a387159bd10>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_bringup_models_agree[stored-kenos_sl]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tool = 'kenos_sl', override_calibration = False\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_bringup_models_agree_stor2')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a387175abd0>\n\n    @pytest.mark.parametrize('tool', ['none', 'kenos', 'kenos_sl'])\n    @pytest.mark.parametrize('override_calibration', [False, True], ids=['stored', 'override'])\n    def test_bringup_models_agree(tool, override_calibration, tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        arguments = {'tool': tool}\n        if override_calibration:\n            # Change a geometric value, not just the filename/hash: prove the override\n            # affects all models, including the RSP's external Xacro command.\n            data['kinematics']['shoulder']['z'] += 0.01\n            calibration = tmp_path / 'different_calibration.yaml'\n            calibration.write_text(yaml.safe_dump(data))\n            arguments['kinematics_params_file'] = str(calibration)\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:297: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871b18740>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871774260>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_bringup_models_agree[override-none]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tool = 'none', override_calibration = True\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_bringup_models_agree_over0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3871ca2a20>\n\n    @pytest.mark.parametrize('tool', ['none', 'kenos', 'kenos_sl'])\n    @pytest.mark.parametrize('override_calibration', [False, True], ids=['stored', 'override'])\n    def test_bringup_models_agree(tool, override_calibration, tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        arguments = {'tool': tool}\n        if override_calibration:\n            # Change a geometric value, not just the filename/hash: prove the override\n            # affects all models, including the RSP's external Xacro command.\n            data['kinematics']['shoulder']['z'] += 0.01\n            calibration = tmp_path / 'different_calibration.yaml'\n            calibration.write_text(yaml.safe_dump(data))\n            arguments['kinematics_params_file'] = str(calibration)\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:297: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871a67ce0>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871a7b020>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_bringup_models_agree[override-kenos]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tool = 'kenos', override_calibration = True\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_bringup_models_agree_over1')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3871a644d0>\n\n    @pytest.mark.parametrize('tool', ['none', 'kenos', 'kenos_sl'])\n    @pytest.mark.parametrize('override_calibration', [False, True], ids=['stored', 'override'])\n    def test_bringup_models_agree(tool, override_calibration, tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        arguments = {'tool': tool}\n        if override_calibration:\n            # Change a geometric value, not just the filename/hash: prove the override\n            # affects all models, including the RSP's external Xacro command.\n            data['kinematics']['shoulder']['z'] += 0.01\n            calibration = tmp_path / 'different_calibration.yaml'\n            calibration.write_text(yaml.safe_dump(data))\n            arguments['kinematics_params_file'] = str(calibration)\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:297: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871abaab0>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871a607a0>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_bringup_models_agree[override-kenos_sl]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tool = 'kenos_sl', override_calibration = True\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_bringup_models_agree_over2')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3871ca8170>\n\n    @pytest.mark.parametrize('tool', ['none', 'kenos', 'kenos_sl'])\n    @pytest.mark.parametrize('override_calibration', [False, True], ids=['stored', 'override'])\n    def test_bringup_models_agree(tool, override_calibration, tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        arguments = {'tool': tool}\n        if override_calibration:\n            # Change a geometric value, not just the filename/hash: prove the override\n            # affects all models, including the RSP's external Xacro command.\n            data['kinematics']['shoulder']['z'] += 0.01\n            calibration = tmp_path / 'different_calibration.yaml'\n            calibration.write_text(yaml.safe_dump(data))\n            arguments['kinematics_params_file'] = str(calibration)\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:297: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a387159e300>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871c162a0>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_kenos_sl_calibration_reaches_all_models",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_kenos_sl_calibration_reac0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3871c377a0>\n\n    def test_kenos_sl_calibration_reaches_all_models(tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        data['kinematics']['shoulder']['z'] += 0.0123\n        calibration = tmp_path / 'sl_arm_calibration.yaml'\n        calibration.write_text(yaml.safe_dump(data))\n        arguments = {\n            'tool': 'kenos_sl',\n            'kinematics_params_file': str(calibration),\n            'kenos_sl_mount_height': '0.0783',\n            'kenos_sl_mount_radius': '0.0417',\n            'kenos_sl_mount_yaw': '1.5707963267948966',\n            'kenos_sl_tcp_xyz': '0.011 -0.019 0.102',\n            'kenos_sl_tcp_rpy': '1.5707963267948966 0 -1.5707963267948966',\n        }\n        # Multi-component XYZ/RPY values must survive the RSP's real external Xacro\n        # Command as single arguments, as well as both planner Xacro API mappings.\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:327: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871c5a2a0>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871c97770>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_standalone_planner_defaults[ur16e_mtc_gpio_stage-mtc_commander.launch.py-test_task]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)package = 'ur16e_mtc_gpio_stage', launch_file = 'mtc_commander.launch.py'\nexecutable = 'test_task'\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a387182c0b0>\n\n    @pytest.mark.parametrize('package,launch_file,executable', [\n        ('ur16e_mir250_moveit_config', 'move_group.launch.py', 'move_group'),\n        ('ur16e_mtc_gpio_stage', 'mtc_commander.launch.py', 'test_task'),\n    ])\n    def test_standalone_planner_defaults(package, launch_file, executable, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        shoulder_z = yaml.safe_load(calibration.read_text())['kinematics']['shoulder']['z']\n>       parameters = _planner_parameters(package, launch_file, executable, {}, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:356: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871779b50>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871a78bf0>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_arm_type_override_reaches_all_models",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3871c8ddf0>\n\n    def test_arm_type_override_reaches_all_models(monkeypatch):\n        calibration = _share('ur_description') / 'config' / 'ur5e' / 'default_kinematics.yaml'\n>       models = _bringup_models({\n            'tool': 'none', 'ur_type': 'ur5e', 'kinematics_params_file': str(calibration),\n        }, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:362: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871b60f80>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a38719bb4a0>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    }
+  ],
+  "knownBaselineFailure": "SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder",
+  "unexpectedFailures": [
+    {
+      "name": "ur16e_mtc_gpio_stage.SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder",
+      "message": "/home/ros_ws/src/ur16e_mtc_gpio_stage/test/test_scene_effects.cpp:166\nValue of: live_->getAllowedCollisionMatrix().getEntry(\"tile\", \"hand\", permission)\n  Actual: false\nExpected: true\n/home/ros_ws/src/ur16e_mtc_gpio_stage/test/test_scene_effects.cpp:166\nValue of: live_->getAllowedCollisionMatrix().getEntry(\"tile\", \"hand\", permission)\n  Actual: false\nExpected: true\n"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_bringup_models_agree[stored-none]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tool = 'none', override_calibration = False\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_bringup_models_agree_stor0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3873dfe000>\n\n    @pytest.mark.parametrize('tool', ['none', 'kenos', 'kenos_sl'])\n    @pytest.mark.parametrize('override_calibration', [False, True], ids=['stored', 'override'])\n    def test_bringup_models_agree(tool, override_calibration, tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        arguments = {'tool': tool}\n        if override_calibration:\n            # Change a geometric value, not just the filename/hash: prove the override\n            # affects all models, including the RSP's external Xacro command.\n            data['kinematics']['shoulder']['z'] += 0.01\n            calibration = tmp_path / 'different_calibration.yaml'\n            calibration.write_text(yaml.safe_dump(data))\n            arguments['kinematics_params_file'] = str(calibration)\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:297: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871c37680>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871c5b530>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_bringup_models_agree[stored-kenos]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tool = 'kenos', override_calibration = False\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_bringup_models_agree_stor1')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3871c8ea20>\n\n    @pytest.mark.parametrize('tool', ['none', 'kenos', 'kenos_sl'])\n    @pytest.mark.parametrize('override_calibration', [False, True], ids=['stored', 'override'])\n    def test_bringup_models_agree(tool, override_calibration, tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        arguments = {'tool': tool}\n        if override_calibration:\n            # Change a geometric value, not just the filename/hash: prove the override\n            # affects all models, including the RSP's external Xacro command.\n            data['kinematics']['shoulder']['z'] += 0.01\n            calibration = tmp_path / 'different_calibration.yaml'\n            calibration.write_text(yaml.safe_dump(data))\n            arguments['kinematics_params_file'] = str(calibration)\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:297: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871757bf0>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a387159bd10>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_bringup_models_agree[stored-kenos_sl]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tool = 'kenos_sl', override_calibration = False\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_bringup_models_agree_stor2')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a387175abd0>\n\n    @pytest.mark.parametrize('tool', ['none', 'kenos', 'kenos_sl'])\n    @pytest.mark.parametrize('override_calibration', [False, True], ids=['stored', 'override'])\n    def test_bringup_models_agree(tool, override_calibration, tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        arguments = {'tool': tool}\n        if override_calibration:\n            # Change a geometric value, not just the filename/hash: prove the override\n            # affects all models, including the RSP's external Xacro command.\n            data['kinematics']['shoulder']['z'] += 0.01\n            calibration = tmp_path / 'different_calibration.yaml'\n            calibration.write_text(yaml.safe_dump(data))\n            arguments['kinematics_params_file'] = str(calibration)\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:297: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871b18740>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871774260>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_bringup_models_agree[override-none]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tool = 'none', override_calibration = True\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_bringup_models_agree_over0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3871ca2a20>\n\n    @pytest.mark.parametrize('tool', ['none', 'kenos', 'kenos_sl'])\n    @pytest.mark.parametrize('override_calibration', [False, True], ids=['stored', 'override'])\n    def test_bringup_models_agree(tool, override_calibration, tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        arguments = {'tool': tool}\n        if override_calibration:\n            # Change a geometric value, not just the filename/hash: prove the override\n            # affects all models, including the RSP's external Xacro command.\n            data['kinematics']['shoulder']['z'] += 0.01\n            calibration = tmp_path / 'different_calibration.yaml'\n            calibration.write_text(yaml.safe_dump(data))\n            arguments['kinematics_params_file'] = str(calibration)\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:297: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871a67ce0>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871a7b020>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_bringup_models_agree[override-kenos]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tool = 'kenos', override_calibration = True\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_bringup_models_agree_over1')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3871a644d0>\n\n    @pytest.mark.parametrize('tool', ['none', 'kenos', 'kenos_sl'])\n    @pytest.mark.parametrize('override_calibration', [False, True], ids=['stored', 'override'])\n    def test_bringup_models_agree(tool, override_calibration, tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        arguments = {'tool': tool}\n        if override_calibration:\n            # Change a geometric value, not just the filename/hash: prove the override\n            # affects all models, including the RSP's external Xacro command.\n            data['kinematics']['shoulder']['z'] += 0.01\n            calibration = tmp_path / 'different_calibration.yaml'\n            calibration.write_text(yaml.safe_dump(data))\n            arguments['kinematics_params_file'] = str(calibration)\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:297: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871abaab0>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871a607a0>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_bringup_models_agree[override-kenos_sl]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tool = 'kenos_sl', override_calibration = True\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_bringup_models_agree_over2')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3871ca8170>\n\n    @pytest.mark.parametrize('tool', ['none', 'kenos', 'kenos_sl'])\n    @pytest.mark.parametrize('override_calibration', [False, True], ids=['stored', 'override'])\n    def test_bringup_models_agree(tool, override_calibration, tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        arguments = {'tool': tool}\n        if override_calibration:\n            # Change a geometric value, not just the filename/hash: prove the override\n            # affects all models, including the RSP's external Xacro command.\n            data['kinematics']['shoulder']['z'] += 0.01\n            calibration = tmp_path / 'different_calibration.yaml'\n            calibration.write_text(yaml.safe_dump(data))\n            arguments['kinematics_params_file'] = str(calibration)\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:297: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a387159e300>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871c162a0>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_kenos_sl_calibration_reaches_all_models",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)tmp_path = PosixPath('/tmp/pytest-of-root/pytest-1/test_kenos_sl_calibration_reac0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3871c377a0>\n\n    def test_kenos_sl_calibration_reaches_all_models(tmp_path, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        data = yaml.safe_load(calibration.read_text())\n        data['kinematics']['shoulder']['z'] += 0.0123\n        calibration = tmp_path / 'sl_arm_calibration.yaml'\n        calibration.write_text(yaml.safe_dump(data))\n        arguments = {\n            'tool': 'kenos_sl',\n            'kinematics_params_file': str(calibration),\n            'kenos_sl_mount_height': '0.0783',\n            'kenos_sl_mount_radius': '0.0417',\n            'kenos_sl_mount_yaw': '1.5707963267948966',\n            'kenos_sl_tcp_xyz': '0.011 -0.019 0.102',\n            'kenos_sl_tcp_rpy': '1.5707963267948966 0 -1.5707963267948966',\n        }\n        # Multi-component XYZ/RPY values must survive the RSP's real external Xacro\n        # Command as single arguments, as well as both planner Xacro API mappings.\n>       models = _bringup_models(arguments, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:327: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871c5a2a0>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871c97770>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_standalone_planner_defaults[ur16e_mtc_gpio_stage-mtc_commander.launch.py-test_task]",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)package = 'ur16e_mtc_gpio_stage', launch_file = 'mtc_commander.launch.py'\nexecutable = 'test_task'\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a387182c0b0>\n\n    @pytest.mark.parametrize('package,launch_file,executable', [\n        ('ur16e_mir250_moveit_config', 'move_group.launch.py', 'move_group'),\n        ('ur16e_mtc_gpio_stage', 'mtc_commander.launch.py', 'test_task'),\n    ])\n    def test_standalone_planner_defaults(package, launch_file, executable, monkeypatch):\n        calibration = _share('ur16e_mir250_control') / 'config' / 'ur16e_calibration.yaml'\n        shoulder_z = yaml.safe_load(calibration.read_text())['kinematics']['shoulder']['z']\n>       parameters = _planner_parameters(package, launch_file, executable, {}, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:356: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871779b50>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a3871a78bf0>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    },
+    {
+      "name": "ur16e_bringup.src.ur16e_bringup.test.test_model_consistency.test_arm_type_override_reaches_all_models",
+      "message": "AssertionError: Model parameters should be inline dictionaries\nassert False\n +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a3871c8ddf0>\n\n    def test_arm_type_override_reaches_all_models(monkeypatch):\n        calibration = _share('ur_description') / 'config' / 'ur5e' / 'default_kinematics.yaml'\n>       models = _bringup_models({\n            'tool': 'none', 'ur_type': 'ur5e', 'kinematics_params_file': str(calibration),\n        }, monkeypatch)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:362: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n../../src/ur16e_bringup/test/test_model_consistency.py:173: in _bringup_models\n    'MTC': _planner_parameters(\n../../src/ur16e_bringup/test/test_model_consistency.py:104: in _planner_parameters\n    parameters = _node_parameters(nodes, _context(description, arguments), executable)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnodes = [{'arguments': ['--ros-args', '--log-level', <launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7a3871b60f80>], 'executable': 'test_task', 'output': 'screen', 'package': 'ur16e_mtc_gpio_stage', ...}]\ncontext = <launch.launch_context.LaunchContext object at 0x7a38719bb4a0>\nexecutable = 'test_task'\n\n    def _node_parameters(nodes, context, executable):\n        matches = [node for node in nodes if node['executable'] == executable]\n        assert len(matches) == 1, f'Expected one {executable} node'\n        parameters = {}\n        for entry in evaluate_parameters(context, normalize_parameters(matches[0]['parameters'])):\n>           assert isinstance(entry, dict), 'Model parameters should be inline dictionaries'\nE           AssertionError: Model parameters should be inline dictionaries\nE           assert False\nE            +  where False = isinstance(PosixPath('/home/ros_ws/install/ur16e_mtc_gpio_stage/share/ur16e_mtc_gpio_stage/config/fixture.yaml'), dict)\n\n../../src/ur16e_bringup/test/test_model_consistency.py:97: AssertionError"
+    }
+  ],
+  "replays": [
+    {
+      "name": "full-cycle-replay",
+      "exitCode": 0,
+      "result": {
+        "model": "synthetic Cartesian XYZ + wrist XYZ, not a UR model",
+        "return_home_each_tile": false,
+        "passed": true,
+        "scene_queries": 5,
+        "scene_updates": 2,
+        "statuses": [
+          {
+            "status": "planning",
+            "reason": "Planning complete batch; no motion or IO sent",
+            "request_id": "synthetic-two-tile-fixture-replay",
+            "plan_id": "",
+            "tile_index": 0,
+            "repeatable": false
+          },
+          {
+            "status": "planning",
+            "reason": "Planning tile cycle",
+            "request_id": "synthetic-two-tile-fixture-replay",
+            "plan_id": "plan-1793617756094288500-2972259190-661373063-1",
+            "tile_index": 0,
+            "repeatable": false
+          },
+          {
+            "status": "planning",
+            "reason": "Planning tile cycle",
+            "request_id": "synthetic-two-tile-fixture-replay",
+            "plan_id": "plan-1793617756094288500-2972259190-661373063-1",
+            "tile_index": 1,
+            "repeatable": false
+          },
+          {
+            "status": "ready",
+            "reason": "Every tile cycle is planned; review before explicit plan-ID execution",
+            "request_id": "synthetic-two-tile-fixture-replay",
+            "plan_id": "plan-1793617756094288500-2972259190-661373063-1",
+            "tile_index": 0,
+            "repeatable": false
+          }
+        ],
+        "node_log": "/evidence/full-cycle-replay.node.log",
+        "ros_domain_id": "130",
+        "elapsed_seconds": 0.6604881957173347,
+        "terminal": {
+          "status": "ready",
+          "reason": "Every tile cycle is planned; review before explicit plan-ID execution",
+          "request_id": "synthetic-two-tile-fixture-replay",
+          "plan_id": "plan-1793617756094288500-2972259190-661373063-1",
+          "tile_index": 0,
+          "repeatable": false
+        },
+        "steps": 72,
+        "request_return_home_each_tile": false,
+        "plan_id": "plan-1793617756094288500-2972259190-661373063-1",
+        "inventory_ids": [
+          "fixture_plan-1793617756094288500-2972259190-661373063-1_tile_0",
+          "fixture_plan-1793617756094288500-2972259190-661373063-1_tile_1"
+        ],
+        "attached_ids": [
+          "fixture_plan-1793617756094288500-2972259190-661373063-1_tile_0",
+          "fixture_plan-1793617756094288500-2972259190-661373063-1_tile_1"
+        ],
+        "waits": 2,
+        "trajectory_points": 383,
+        "named_home_segments": [],
+        "cycles_planned": [
+          0,
+          1
+        ],
+        "calibration_save": {
+          "success": true,
+          "message": "Calibration saved to /tmp/replay-saved-fixture.yaml; restart MTC with this fixture_config to load it. Current scene/calibration are unchanged.",
+          "runtime_scene_unchanged": true
+        },
+        "process_returncode": 0
+      }
+    },
+    {
+      "name": "full-cycle-home-replay",
+      "exitCode": 0,
+      "result": {
+        "model": "synthetic Cartesian XYZ + wrist XYZ, not a UR model",
+        "return_home_each_tile": true,
+        "passed": true,
+        "scene_queries": 5,
+        "scene_updates": 2,
+        "statuses": [
+          {
+            "status": "planning",
+            "reason": "Planning complete batch; no motion or IO sent",
+            "request_id": "synthetic-two-tile-fixture-replay",
+            "plan_id": "",
+            "tile_index": 0,
+            "repeatable": false
+          },
+          {
+            "status": "planning",
+            "reason": "Planning tile cycle",
+            "request_id": "synthetic-two-tile-fixture-replay",
+            "plan_id": "plan-1793617759562718444-462976928-3084271143-1",
+            "tile_index": 0,
+            "repeatable": false
+          },
+          {
+            "status": "planning",
+            "reason": "Planning tile cycle",
+            "request_id": "synthetic-two-tile-fixture-replay",
+            "plan_id": "plan-1793617759562718444-462976928-3084271143-1",
+            "tile_index": 1,
+            "repeatable": false
+          },
+          {
+            "status": "ready",
+            "reason": "Every tile cycle is planned; review before explicit plan-ID execution",
+            "request_id": "synthetic-two-tile-fixture-replay",
+            "plan_id": "plan-1793617759562718444-462976928-3084271143-1",
+            "tile_index": 0,
+            "repeatable": false
+          }
+        ],
+        "node_log": "/evidence/full-cycle-home-replay.node.log",
+        "ros_domain_id": "158",
+        "elapsed_seconds": 0.8653503507375717,
+        "terminal": {
+          "status": "ready",
+          "reason": "Every tile cycle is planned; review before explicit plan-ID execution",
+          "request_id": "synthetic-two-tile-fixture-replay",
+          "plan_id": "plan-1793617759562718444-462976928-3084271143-1",
+          "tile_index": 0,
+          "repeatable": false
+        },
+        "steps": 74,
+        "request_return_home_each_tile": true,
+        "expected_home": {
+          "ur_shoulder_pan_joint": 0.0,
+          "ur_shoulder_lift_joint": 0.0,
+          "ur_elbow_joint": 0.8,
+          "ur_wrist_1_joint": 0.0,
+          "ur_wrist_2_joint": 0.0,
+          "ur_wrist_3_joint": 0.0
+        },
+        "home_goal_tolerance": 0.0001,
+        "motion_endpoints": [
+          {
+            "step": 1,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -0.35006592185422775,
+              -0.24998185805217363,
+              0.5619242463002447,
+              3.141524042065399,
+              -8.357536406256259e-05,
+              -3.2046396145597104e-05
+            ],
+            "comment": ""
+          },
+          {
+            "step": 6,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -0.35,
+              -0.25,
+              0.4620000000000001,
+              3.141592653589793,
+              0.0,
+              0.0
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 8,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -0.35,
+              -0.25,
+              0.562,
+              3.141592653589793,
+              0.0,
+              0.0
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 10,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.3227039064327657,
+              0.192102332890631,
+              0.453669310427733,
+              3.454724934112672,
+              0.2862427584077951,
+              -0.09107192567131593
+            ],
+            "comment": ""
+          },
+          {
+            "step": 11,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.3509806790251714,
+              0.22159723201695058,
+              0.3624113093999515,
+              3.4547371491909216,
+              0.2862129446674393,
+              -0.0911616752888646
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 17,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.34956907284168376,
+              0.220119630983644,
+              0.36697464843722566,
+              3.4547371491909216,
+              0.2862129446674393,
+              -0.0911616752888646
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 19,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.3227485553554195,
+              0.19204521135081676,
+              0.45367809014543536,
+              3.4547371491909216,
+              0.2862129446674393,
+              -0.0911616752888646
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 22,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.16059645613098966,
+              0.013413884093159264,
+              0.3347428733004098,
+              3.454644211045997,
+              0.286199005610335,
+              -0.09115259652418196
+            ],
+            "comment": ""
+          },
+          {
+            "step": 26,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.18888307504186186,
+              0.04303850114969893,
+              0.24349475708722032,
+              3.4547371491909216,
+              0.2862129446674393,
+              -0.0911616752888646
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 28,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.16065095137211008,
+              0.01348648048356499,
+              0.3347615378327043,
+              3.4547371491909216,
+              0.2862129446674393,
+              -0.0911616752888646
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 30,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -0.3499128408654127,
+              0.4499525260414463,
+              0.5119024496204686,
+              3.1416558831850323,
+              1.2484613203036889e-05,
+              2.038081048610605e-05
+            ],
+            "comment": ""
+          },
+          {
+            "step": 31,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -0.3500000000000001,
+              0.45000000000000007,
+              0.41200000000000003,
+              3.1415925454783045,
+              6.329957634519223e-08,
+              1.7246853183008459e-07
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 35,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -0.35,
+              0.45000000000000007,
+              0.512,
+              3.1415925454783045,
+              6.329957634519223e-08,
+              1.7246853183008459e-07
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 37,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -8.158215787261783e-07,
+              4.3041113903746024e-05,
+              0.7999051631312818,
+              -4.565747636370361e-05,
+              8.06656158529222e-05,
+              5.9004102740436784e-05
+            ],
+            "comment": ""
+          },
+          {
+            "step": 39,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -0.3499366355083417,
+              -0.25003643672438336,
+              0.5580588732216043,
+              1.1046610992646792e-05,
+              3.141496156940884,
+              3.896061131856725e-05
+            ],
+            "comment": ""
+          },
+          {
+            "step": 43,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -0.35,
+              -0.24999999999999997,
+              0.45800000000000013,
+              3.377257241227172e-14,
+              3.1415926445474804,
+              -3.5992422150327164e-14
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 45,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -0.35,
+              -0.24999999999999997,
+              0.558,
+              3.377257241227172e-14,
+              3.1415926445474804,
+              -3.5992422150327164e-14
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 46,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.32272819078899273,
+              0.1919465489313857,
+              0.4537499380603399,
+              0.31323247209131155,
+              2.8553690335327624,
+              -0.09119273927139547
+            ],
+            "comment": ""
+          },
+          {
+            "step": 47,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.35098067902517127,
+              0.22159723201695058,
+              0.36241130939995164,
+              0.31314449645923825,
+              2.8553796999175898,
+              -0.09116167553116064
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 53,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.34956907284168365,
+              0.22011963098364387,
+              0.3669746484372258,
+              0.31314449645923825,
+              2.8553796999175898,
+              -0.09116167553116064
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 55,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.3227485553554194,
+              0.1920452113508167,
+              0.4536780901454356,
+              0.31314449645923825,
+              2.8553796999175898,
+              -0.09116167553116064
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 58,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.1606523648355388,
+              0.013450962611020831,
+              0.3347840285592087,
+              -2.828400107051146,
+              0.28627705379542406,
+              -0.09115466039170243
+            ],
+            "comment": ""
+          },
+          {
+            "step": 62,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.18888307504186194,
+              0.04303850114969879,
+              0.2434947570872202,
+              -2.8284481591471407,
+              0.28621294476980763,
+              -0.09116167496176168
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 64,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              0.16065095137211013,
+              0.01348648048356483,
+              0.3347615378327042,
+              -2.8284481591471407,
+              0.28621294476980763,
+              -0.09116167496176168
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 66,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -0.23990652105407803,
+              0.44998255685074257,
+              0.5119771843872964,
+              -6.522095110991618e-05,
+              3.1415202832592497,
+              3.1416319472269834
+            ],
+            "comment": ""
+          },
+          {
+            "step": 67,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -0.24000000000000016,
+              0.44999999999999996,
+              0.4120000000000001,
+              -1.5508360943182475e-07,
+              3.1415926539637926,
+              3.1415928260582247
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 71,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -0.24000000000000016,
+              0.45,
+              0.512,
+              -1.5508360943182475e-07,
+              3.1415926539637926,
+              3.1415928260582247
+            ],
+            "comment": "Solution generated by CartesianPath"
+          },
+          {
+            "step": 73,
+            "names": [
+              "ur_shoulder_pan_joint",
+              "ur_shoulder_lift_joint",
+              "ur_elbow_joint",
+              "ur_wrist_1_joint",
+              "ur_wrist_2_joint",
+              "ur_wrist_3_joint"
+            ],
+            "positions": [
+              -9.675209387206074e-05,
+              9.741502190009761e-05,
+              0.7999132683286909,
+              1.8947895802557465e-05,
+              -5.310307070543146e-06,
+              9.87971608062041e-05
+            ],
+            "comment": ""
+          }
+        ],
+        "home_max_joint_error": 9.87971608062041e-05,
+        "plan_id": "plan-1793617759562718444-462976928-3084271143-1",
+        "inventory_ids": [
+          "fixture_plan-1793617759562718444-462976928-3084271143-1_tile_0",
+          "fixture_plan-1793617759562718444-462976928-3084271143-1_tile_1"
+        ],
+        "attached_ids": [
+          "fixture_plan-1793617759562718444-462976928-3084271143-1_tile_0",
+          "fixture_plan-1793617759562718444-462976928-3084271143-1_tile_1"
+        ],
+        "waits": 2,
+        "trajectory_points": 697,
+        "named_home_segments": [
+          37,
+          73
+        ],
+        "cycles_planned": [
+          0,
+          1
+        ],
+        "calibration_save": {
+          "success": true,
+          "message": "Calibration saved to /tmp/replay-saved-fixture.yaml; restart MTC with this fixture_config to load it. Current scene/calibration are unchanged.",
+          "runtime_scene_unchanged": true
+        },
+        "process_returncode": 0
+      }
+    }
+  ],
+  "production_ros_access": false,
+  "robot_motion_requested": false,
+  "io_commands_sent": false
+}

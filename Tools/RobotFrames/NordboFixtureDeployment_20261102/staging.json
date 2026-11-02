@@ -1,0 +1,117 @@
+{
+  "createdUtc": "2026-11-02T11:01:53.137331+00:00",
+  "hostRoot": "/home/nordbo/Unity/UR16UnityControlV2/UR16UnityControl",
+  "hostHead": "040e1eb1df863938324d791a5e1927dea6efc1aa",
+  "hostDirtyFiles": [
+    " M docs/ai-context/CHANGELOG_AI.md",
+    " M docs/ai-context/CURRENT_STATE.md",
+    " M docs/ai-context/DECISIONS.md",
+    " M docs/ai-context/KNOWN_ISSUES.md",
+    " M docs/wiki/API.md",
+    " M docs/wiki/TASK_EXECUTION.md",
+    " M ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp",
+    " M ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp"
+  ],
+  "oldImage": "sha256:e460a99082eca2528a2fd9a8e3afe074ff9c94313d555a859ea1ef087f615a82",
+  "oldContainerId": "a1c796598d57dc9c1722002cefc7e41b5cd4a299c2bf23e7f4abd120728524d3",
+  "oldTag": "urmir-jazzy:before-fixture-20261102",
+  "candidateTag": "urmir-jazzy:fixture-tiling-20261102",
+  "launch": {
+    "pid": 590,
+    "args": [
+      "/usr/bin/python3",
+      "/opt/ros/jazzy/bin/ros2",
+      "launch",
+      "ur16e_bringup",
+      "ur16e_start.launch.py",
+      "ur_type:=ur16e",
+      "tool:=kenos_sl",
+      "robot_ip:=192.168.125.101",
+      "use_mock_hardware:=false",
+      "launch_moveit_rviz:=true"
+    ],
+    "cwd": "/home/ros_ws"
+  },
+  "processesBefore": [
+    {
+      "pid": 594,
+      "args": [
+        "/opt/ros/jazzy/lib/controller_manager/ros2_control_node",
+        "--ros-args",
+        "--params-file",
+        "/home/ros_ws/install/ur16e_mir250_control/share/ur16e_mir250_control/config/ur16e_update_rate.yaml",
+        "--params-file",
+        "/tmp/launch_params_d_yc0w46"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    {
+      "pid": 599,
+      "args": [
+        "/opt/ros/jazzy/lib/robot_state_publisher/robot_state_publisher",
+        "--ros-args",
+        "--params-file",
+        "/tmp/launch_params_8_etg2c4"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    {
+      "pid": 805,
+      "args": [
+        "/usr/bin/python3",
+        "/home/ros_ws/install/ros_tcp_endpoint/lib/ros_tcp_endpoint/default_server_endpoint",
+        "--ros-args",
+        "--params-file",
+        "/tmp/launch_params_3jco1cno",
+        "--params-file",
+        "/tmp/launch_params_bwhc3t43"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    {
+      "pid": 806,
+      "args": [
+        "/home/ros_ws/install/ur16e_mtc_gpio_stage/lib/ur16e_mtc_gpio_stage/test_task",
+        "--ros-args",
+        "--log-level",
+        "info",
+        "--ros-args",
+        "--params-file",
+        "/tmp/launch_params_u9172fvs",
+        "--params-file",
+        "/tmp/launch_params_ktdxijl6",
+        "--params-file",
+        "/tmp/launch_params_dyxpasvk",
+        "--params-file",
+        "/tmp/launch_params_91qgc6ca",
+        "--params-file",
+        "/tmp/launch_params_om4m0uet",
+        "--params-file",
+        "/tmp/launch_params_jx7ynzet",
+        "--params-file",
+        "/tmp/launch_params_ochp2de4",
+        "--params-file",
+        "/tmp/launch_params_kge1t75s",
+        "--params-file",
+        "/tmp/launch_params_pl79kkiu"
+      ],
+      "cwd": "/home/ros_ws"
+    },
+    {
+      "pid": 897,
+      "args": [
+        "/home/ros_ws/install/moveit_ros_move_group/lib/moveit_ros_move_group/move_group",
+        "--ros-args",
+        "--params-file",
+        "/tmp/launch_params_tfagz73e",
+        "--params-file",
+        "/tmp/launch_params_7ptvgkcn"
+      ],
+      "cwd": "/home/ros_ws"
+    }
+  ],
+  "sourceArchiveSha256": "b665a7a638edbbc49e0c37efdbcdbac68bb2398ca254b66e9909ee5556556004",
+  "bundleSha256": "e2c1695c397a13761183a19397d5713f4d1d239c89f16ec7258c9d5d81e561ed",
+  "liveChanged": false,
+  "robotCommands": false
+}

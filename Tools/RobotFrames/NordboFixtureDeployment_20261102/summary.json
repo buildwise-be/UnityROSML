@@ -1,0 +1,2061 @@
+{
+  "schemaVersion": 1,
+  "recordedUtc": "2026-11-02T11:22:05.907159+00:00",
+  "operatorRecordedOutcome": "verified_deployed",
+  "recordingScope": "Local indexing of collected evidence; no remote or ROS operations are performed by this recorder",
+  "expectedApplicationPackages": [
+    "kenos_flexigrip",
+    "mir_description",
+    "ur16e_bringup",
+    "ur16e_commander",
+    "ur16e_environment",
+    "ur16e_interfaces",
+    "ur16e_mir250_control",
+    "ur16e_mir250_description",
+    "ur16e_mir250_moveit_config",
+    "ur16e_mtc_gpio_stage"
+  ],
+  "reportedApplicationPackages": [
+    "kenos_flexigrip",
+    "mir_description",
+    "ur16e_bringup",
+    "ur16e_commander",
+    "ur16e_environment",
+    "ur16e_interfaces",
+    "ur16e_mir250_control",
+    "ur16e_mir250_description",
+    "ur16e_mir250_moveit_config",
+    "ur16e_mtc_gpio_stage"
+  ],
+  "reportedTestCases": 111,
+  "reportedFailedCases": 1,
+  "missingManifests": [],
+  "manifests": {
+    "staging.json": {
+      "createdUtc": "2026-11-02T11:01:53.137331+00:00",
+      "hostRoot": "/home/nordbo/Unity/UR16UnityControlV2/UR16UnityControl",
+      "hostHead": "040e1eb1df863938324d791a5e1927dea6efc1aa",
+      "hostDirtyFiles": [
+        " M docs/ai-context/CHANGELOG_AI.md",
+        " M docs/ai-context/CURRENT_STATE.md",
+        " M docs/ai-context/DECISIONS.md",
+        " M docs/ai-context/KNOWN_ISSUES.md",
+        " M docs/wiki/API.md",
+        " M docs/wiki/TASK_EXECUTION.md",
+        " M ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp",
+        " M ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp"
+      ],
+      "oldImage": "sha256:e460a99082eca2528a2fd9a8e3afe074ff9c94313d555a859ea1ef087f615a82",
+      "oldContainerId": "a1c796598d57dc9c1722002cefc7e41b5cd4a299c2bf23e7f4abd120728524d3",
+      "oldTag": "urmir-jazzy:before-fixture-20261102",
+      "candidateTag": "urmir-jazzy:fixture-tiling-20261102",
+      "launch": {
+        "pid": 590,
+        "args": [
+          "/usr/bin/python3",
+          "/opt/ros/jazzy/bin/ros2",
+          "launch",
+          "ur16e_bringup",
+          "ur16e_start.launch.py",
+          "ur_type:=ur16e",
+          "tool:=kenos_sl",
+          "robot_ip:=192.168.125.101",
+          "use_mock_hardware:=false",
+          "launch_moveit_rviz:=true"
+        ],
+        "cwd": "/home/ros_ws"
+      },
+      "processesBefore": [
+        {
+          "pid": 594,
+          "args": [
+            "/opt/ros/jazzy/lib/controller_manager/ros2_control_node",
+            "--ros-args",
+            "--params-file",
+            "/home/ros_ws/install/ur16e_mir250_control/share/ur16e_mir250_control/config/ur16e_update_rate.yaml",
+            "--params-file",
+            "/tmp/launch_params_d_yc0w46"
+          ],
+          "cwd": "/home/ros_ws"
+        },
+        {
+          "pid": 599,
+          "args": [
+            "/opt/ros/jazzy/lib/robot_state_publisher/robot_state_publisher",
+            "--ros-args",
+            "--params-file",
+            "/tmp/launch_params_8_etg2c4"
+          ],
+          "cwd": "/home/ros_ws"
+        },
+        {
+          "pid": 805,
+          "args": [
+            "/usr/bin/python3",
+            "/home/ros_ws/install/ros_tcp_endpoint/lib/ros_tcp_endpoint/default_server_endpoint",
+            "--ros-args",
+            "--params-file",
+            "/tmp/launch_params_3jco1cno",
+            "--params-file",
+            "/tmp/launch_params_bwhc3t43"
+          ],
+          "cwd": "/home/ros_ws"
+        },
+        {
+          "pid": 806,
+          "args": [
+            "/home/ros_ws/install/ur16e_mtc_gpio_stage/lib/ur16e_mtc_gpio_stage/test_task",
+            "--ros-args",
+            "--log-level",
+            "info",
+            "--ros-args",
+            "--params-file",
+            "/tmp/launch_params_u9172fvs",
+            "--params-file",
+            "/tmp/launch_params_ktdxijl6",
+            "--params-file",
+            "/tmp/launch_params_dyxpasvk",
+            "--params-file",
+            "/tmp/launch_params_91qgc6ca",
+            "--params-file",
+            "/tmp/launch_params_om4m0uet",
+            "--params-file",
+            "/tmp/launch_params_jx7ynzet",
+            "--params-file",
+            "/tmp/launch_params_ochp2de4",
+            "--params-file",
+            "/tmp/launch_params_kge1t75s",
+            "--params-file",
+            "/tmp/launch_params_pl79kkiu"
+          ],
+          "cwd": "/home/ros_ws"
+        },
+        {
+          "pid": 897,
+          "args": [
+            "/home/ros_ws/install/moveit_ros_move_group/lib/moveit_ros_move_group/move_group",
+            "--ros-args",
+            "--params-file",
+            "/tmp/launch_params_tfagz73e",
+            "--params-file",
+            "/tmp/launch_params_7ptvgkcn"
+          ],
+          "cwd": "/home/ros_ws"
+        }
+      ],
+      "sourceArchiveSha256": "b665a7a638edbbc49e0c37efdbcdbac68bb2398ca254b66e9909ee5556556004",
+      "bundleSha256": "e2c1695c397a13761183a19397d5713f4d1d239c89f16ec7258c9d5d81e561ed",
+      "liveChanged": false,
+      "robotCommands": false
+    },
+    "build-result.json": {
+      "completedUtc": "2026-11-02T11:09:03.982129+00:00",
+      "exitCode": 0,
+      "command": [
+        "docker",
+        "build",
+        "--network",
+        "none",
+        "--pull=false",
+        "--progress=plain",
+        "-t",
+        "urmir-jazzy:fixture-tiling-20261102",
+        "/home/nordbo/.cache/codex/fixture-tiling-20261102/source"
+      ],
+      "packages": [
+        "kenos_flexigrip",
+        "mir_description",
+        "ur16e_bringup",
+        "ur16e_commander",
+        "ur16e_environment",
+        "ur16e_interfaces",
+        "ur16e_mir250_control",
+        "ur16e_mir250_description",
+        "ur16e_mir250_moveit_config",
+        "ur16e_mtc_gpio_stage"
+      ],
+      "network": "none",
+      "dependencyInstallation": false,
+      "liveContainerChanged": false,
+      "image": "sha256:a13990f26a3ef63e257431a63c70a60c2795ddb966d669b79de41d8eb8da91b2",
+      "sourceCommit": "6ec8146f99ab7ef670b45e39a203e35de6bbc295",
+      "compiledRuntimeImage": "sha256:6317dfabf1fee2afbe60ca18b77cc2b041b360d34e6845a89eaeb47750cbdbec",
+      "testOnlyLayer": "ros_ws/src/ur16e_bringup/test/test_model_consistency.py",
+      "unchangedMtcBinarySha256": "247d7e7e9c7f40271354855b0985f7d432bfae7c40c5cf24e66b76fea6fd2ee2"
+    },
+    "test-result.json": {
+      "success": true,
+      "missingOrIncompleteReports": [],
+      "unexpectedFailures": [],
+      "unreadableReports": [],
+      "unexpectedCtestTargets": [],
+      "replaysComplete": true,
+      "network": "none",
+      "colconTestExitCode": 0,
+      "colconResultExitCode": 1,
+      "reports": [
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/kenos_flexigrip/test_results/kenos_flexigrip/kenos_sl_model.xunit.xml",
+          "tests": 7,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mir250_control/test_results/ur16e_mir250_control/test_generate_control_xacro.xunit.xml",
+          "tests": 16,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_commander/test_results/ur16e_commander/test_pose_targets.gtest.xml",
+          "tests": 9,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_startup_parameter.gtest.xml",
+          "tests": 8,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_fixture_tiling_geometry.gtest.xml",
+          "tests": 12,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_scene_effects.gtest.xml",
+          "tests": 4,
+          "failed": 1,
+          "skipped": 0
+        },
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_tcp_waypoints.gtest.xml",
+          "tests": 7,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_tool_model_validation.gtest.xml",
+          "tests": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_fixture_cycle_builder.gtest.xml",
+          "tests": 5,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_startup_robot_model.gtest.xml",
+          "tests": 1,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_pick_place_targets.gtest.xml",
+          "tests": 4,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_plan_validation.gtest.xml",
+          "tests": 14,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "path": "/home/ros_ws/build_codex_fixture_20261102/ur16e_bringup/test_results/ur16e_bringup/model_consistency.xunit.xml",
+          "tests": 14,
+          "failed": 0,
+          "skipped": 0
+        }
+      ],
+      "failures": [
+        {
+          "name": "ur16e_mtc_gpio_stage.SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder",
+          "message": "/home/ros_ws/src/ur16e_mtc_gpio_stage/test/test_scene_effects.cpp:166\nValue of: live_->getAllowedCollisionMatrix().getEntry(\"tile\", \"hand\", permission)\n  Actual: false\nExpected: true\n/home/ros_ws/src/ur16e_mtc_gpio_stage/test/test_scene_effects.cpp:166\nValue of: live_->getAllowedCollisionMatrix().getEntry(\"tile\", \"hand\", permission)\n  Actual: false\nExpected: true\n"
+        }
+      ],
+      "knownBaselineFailure": "ur16e_mtc_gpio_stage.SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder",
+      "requiredReports": {
+        "ur16e_bringup/model_consistency.xunit.xml": 11,
+        "ur16e_mtc_gpio_stage/test_fixture_tiling_geometry.gtest.xml": 12,
+        "ur16e_mtc_gpio_stage/test_fixture_cycle_builder.gtest.xml": 5,
+        "ur16e_mtc_gpio_stage/test_startup_robot_model.gtest.xml": 1,
+        "ur16e_mtc_gpio_stage/test_tool_model_validation.gtest.xml": 10,
+        "ur16e_mtc_gpio_stage/test_plan_validation.gtest.xml": 14
+      },
+      "ctestFailedTargets": [],
+      "replays": [
+        {
+          "name": "full-cycle-replay",
+          "exitCode": 0,
+          "result": {
+            "model": "synthetic Cartesian XYZ + wrist XYZ, not a UR model",
+            "return_home_each_tile": false,
+            "passed": true,
+            "scene_queries": 5,
+            "scene_updates": 2,
+            "statuses": [
+              {
+                "status": "planning",
+                "reason": "Planning complete batch; no motion or IO sent",
+                "request_id": "synthetic-two-tile-fixture-replay",
+                "plan_id": "",
+                "tile_index": 0,
+                "repeatable": false
+              },
+              {
+                "status": "planning",
+                "reason": "Planning tile cycle",
+                "request_id": "synthetic-two-tile-fixture-replay",
+                "plan_id": "plan-1793618088696392460-12507342-393619947-1",
+                "tile_index": 0,
+                "repeatable": false
+              },
+              {
+                "status": "planning",
+                "reason": "Planning tile cycle",
+                "request_id": "synthetic-two-tile-fixture-replay",
+                "plan_id": "plan-1793618088696392460-12507342-393619947-1",
+                "tile_index": 1,
+                "repeatable": false
+              },
+              {
+                "status": "ready",
+                "reason": "Every tile cycle is planned; review before explicit plan-ID execution",
+                "request_id": "synthetic-two-tile-fixture-replay",
+                "plan_id": "plan-1793618088696392460-12507342-393619947-1",
+                "tile_index": 0,
+                "repeatable": false
+              }
+            ],
+            "node_log": "/evidence/full-cycle-replay.node.log",
+            "ros_domain_id": "184",
+            "elapsed_seconds": 0.7148753781802952,
+            "terminal": {
+              "status": "ready",
+              "reason": "Every tile cycle is planned; review before explicit plan-ID execution",
+              "request_id": "synthetic-two-tile-fixture-replay",
+              "plan_id": "plan-1793618088696392460-12507342-393619947-1",
+              "tile_index": 0,
+              "repeatable": false
+            },
+            "steps": 72,
+            "request_return_home_each_tile": false,
+            "plan_id": "plan-1793618088696392460-12507342-393619947-1",
+            "inventory_ids": [
+              "fixture_plan-1793618088696392460-12507342-393619947-1_tile_0",
+              "fixture_plan-1793618088696392460-12507342-393619947-1_tile_1"
+            ],
+            "attached_ids": [
+              "fixture_plan-1793618088696392460-12507342-393619947-1_tile_0",
+              "fixture_plan-1793618088696392460-12507342-393619947-1_tile_1"
+            ],
+            "waits": 2,
+            "trajectory_points": 384,
+            "named_home_segments": [],
+            "cycles_planned": [
+              0,
+              1
+            ],
+            "calibration_save": {
+              "success": true,
+              "message": "Calibration saved to /tmp/replay-saved-fixture.yaml; restart MTC with this fixture_config to load it. Current scene/calibration are unchanged.",
+              "runtime_scene_unchanged": true
+            },
+            "process_returncode": 0
+          }
+        },
+        {
+          "name": "full-cycle-home-replay",
+          "exitCode": 0,
+          "result": {
+            "model": "synthetic Cartesian XYZ + wrist XYZ, not a UR model",
+            "return_home_each_tile": true,
+            "passed": true,
+            "scene_queries": 5,
+            "scene_updates": 2,
+            "statuses": [
+              {
+                "status": "planning",
+                "reason": "Planning complete batch; no motion or IO sent",
+                "request_id": "synthetic-two-tile-fixture-replay",
+                "plan_id": "",
+                "tile_index": 0,
+                "repeatable": false
+              },
+              {
+                "status": "planning",
+                "reason": "Planning tile cycle",
+                "request_id": "synthetic-two-tile-fixture-replay",
+                "plan_id": "plan-1793618092099949864-228531803-706222364-1",
+                "tile_index": 0,
+                "repeatable": false
+              },
+              {
+                "status": "planning",
+                "reason": "Planning tile cycle",
+                "request_id": "synthetic-two-tile-fixture-replay",
+                "plan_id": "plan-1793618092099949864-228531803-706222364-1",
+                "tile_index": 1,
+                "repeatable": false
+              },
+              {
+                "status": "ready",
+                "reason": "Every tile cycle is planned; review before explicit plan-ID execution",
+                "request_id": "synthetic-two-tile-fixture-replay",
+                "plan_id": "plan-1793618092099949864-228531803-706222364-1",
+                "tile_index": 0,
+                "repeatable": false
+              }
+            ],
+            "node_log": "/evidence/full-cycle-home-replay.node.log",
+            "ros_domain_id": "137",
+            "elapsed_seconds": 0.7275772290304303,
+            "terminal": {
+              "status": "ready",
+              "reason": "Every tile cycle is planned; review before explicit plan-ID execution",
+              "request_id": "synthetic-two-tile-fixture-replay",
+              "plan_id": "plan-1793618092099949864-228531803-706222364-1",
+              "tile_index": 0,
+              "repeatable": false
+            },
+            "steps": 74,
+            "request_return_home_each_tile": true,
+            "expected_home": {
+              "ur_shoulder_pan_joint": 0.0,
+              "ur_shoulder_lift_joint": 0.0,
+              "ur_elbow_joint": 0.8,
+              "ur_wrist_1_joint": 0.0,
+              "ur_wrist_2_joint": 0.0,
+              "ur_wrist_3_joint": 0.0
+            },
+            "home_goal_tolerance": 0.0001,
+            "motion_endpoints": [
+              {
+                "step": 1,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -0.34993815850042737,
+                  -0.2500926388443913,
+                  0.5620142324451358,
+                  7.734185566201237e-05,
+                  -3.1415185291297423,
+                  -6.266573270349764e-05
+                ],
+                "comment": ""
+              },
+              {
+                "step": 6,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -0.35,
+                  -0.25000000000000006,
+                  0.462,
+                  -4.7002693631323367e-07,
+                  -3.141583478380243,
+                  -1.6520619721617676e-06
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 8,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -0.3499999999999999,
+                  -0.2500000000000001,
+                  0.5619999999999999,
+                  -4.7002693631323367e-07,
+                  -3.141583478380243,
+                  -1.6520619721617676e-06
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 10,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.322698394593823,
+                  0.1920209065432114,
+                  0.45374907799968145,
+                  0.3131506066648778,
+                  -3.4278933965512235,
+                  -0.09118599974601742
+                ],
+                "comment": ""
+              },
+              {
+                "step": 11,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.3509806790251714,
+                  0.22159723201695053,
+                  0.3624113093999516,
+                  0.31314313699468266,
+                  -3.4277965039339064,
+                  -0.09116294379397508
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 17,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.34956907284168376,
+                  0.22011963098364384,
+                  0.36697464843722577,
+                  0.31314313699468266,
+                  -3.4277965039339064,
+                  -0.09116294379397508
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 19,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.3227485553554195,
+                  0.19204521135081665,
+                  0.45367809014543536,
+                  0.31314313699468266,
+                  -3.4277965039339064,
+                  -0.09116294379397508
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 22,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.16070300047162442,
+                  0.013502082566510457,
+                  0.3347493829640866,
+                  0.3131050369558836,
+                  -3.427778142155272,
+                  -3.2326633307610155
+                ],
+                "comment": ""
+              },
+              {
+                "step": 26,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.18888307504186186,
+                  0.04303850114969902,
+                  0.24349475708722024,
+                  0.31314454164327854,
+                  -3.427805573304261,
+                  -3.2327543915740664
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 28,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.16065095137211005,
+                  0.013486480483565044,
+                  0.3347615378327042,
+                  0.31314454164327854,
+                  -3.427805573304261,
+                  -3.2327543915740664
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 30,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -0.3500176178955008,
+                  0.4499591586032884,
+                  0.5119284067323897,
+                  -2.2972754086934643e-05,
+                  -3.1415474508948584,
+                  -3.141609947041961
+                ],
+                "comment": ""
+              },
+              {
+                "step": 31,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -0.3500000000000001,
+                  0.4500000000000002,
+                  0.412,
+                  -6.185413860591111e-08,
+                  -3.1415926960609815,
+                  -3.1415925308179844
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 35,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -0.35000000000000003,
+                  0.4500000000000002,
+                  0.512,
+                  -6.185413860591111e-08,
+                  -3.1415926960609815,
+                  -3.1415925308179844
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 37,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -9.933004155755044e-05,
+                  6.076228525489575e-06,
+                  0.7999541870674118,
+                  -2.0497700106352575e-05,
+                  -2.298440183512867e-05,
+                  -8.365572732873261e-05
+                ],
+                "comment": ""
+              },
+              {
+                "step": 39,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -0.3499341382316779,
+                  -0.250086742817238,
+                  0.5580418794249651,
+                  -6.985844271075371e-05,
+                  -3.1415044755071144,
+                  -4.2309391483399115e-07
+                ],
+                "comment": ""
+              },
+              {
+                "step": 43,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -0.35,
+                  -0.25,
+                  0.458,
+                  4.838761769737632e-14,
+                  -3.141592644790441,
+                  6.348159573964923e-14
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 45,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -0.35,
+                  -0.25,
+                  0.558,
+                  4.838761769737632e-14,
+                  -3.141592644790441,
+                  6.348159573964923e-14
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 46,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.3226837816629029,
+                  0.19198340068239855,
+                  0.4537712500537711,
+                  0.3131743933102346,
+                  -3.4277592705633735,
+                  -0.0910922443646782
+                ],
+                "comment": ""
+              },
+              {
+                "step": 47,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.3509806790251714,
+                  0.22159723201695064,
+                  0.36241130939995153,
+                  0.31314449476615963,
+                  -3.427805589494413,
+                  -0.09116167505307429
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 53,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.34956907284168387,
+                  0.22011963098364398,
+                  0.3669746484372257,
+                  0.31314449476615963,
+                  -3.427805589494413,
+                  -0.09116167505307429
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 55,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.3227485553554197,
+                  0.1920452113508167,
+                  0.4536780901454354,
+                  0.31314449476615963,
+                  -3.427805589494413,
+                  -0.09116167505307429
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 58,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.16059091835611022,
+                  0.013396034849214698,
+                  0.33473577636665,
+                  0.3131558196435523,
+                  -3.427712421225817,
+                  3.050353337481506
+                ],
+                "comment": ""
+              },
+              {
+                "step": 62,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.18888307504186191,
+                  0.04303850114969884,
+                  0.24349475708722024,
+                  0.31314446819772285,
+                  -3.427805518805343,
+                  3.0504309860375525
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 64,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  0.16065095137211016,
+                  0.01348648048356488,
+                  0.3347615378327042,
+                  0.31314446819772285,
+                  -3.427805518805343,
+                  3.0504309860375525
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 66,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -0.24006046179803098,
+                  0.4500305217184591,
+                  0.5119878112767356,
+                  8.54684653711937e-05,
+                  -3.1416287210674234,
+                  3.1414931007288636
+                ],
+                "comment": ""
+              },
+              {
+                "step": 67,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -0.2400000000000001,
+                  0.44999999999999996,
+                  0.41200000000000003,
+                  -1.2705796199197076e-07,
+                  -3.1415926353741646,
+                  3.1415928260583206
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 71,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  -0.2400000000000001,
+                  0.4499999999999999,
+                  0.512,
+                  -1.2705796199197076e-07,
+                  -3.1415926353741646,
+                  3.1415928260583206
+                ],
+                "comment": "Solution generated by CartesianPath"
+              },
+              {
+                "step": 73,
+                "names": [
+                  "ur_shoulder_pan_joint",
+                  "ur_shoulder_lift_joint",
+                  "ur_elbow_joint",
+                  "ur_wrist_1_joint",
+                  "ur_wrist_2_joint",
+                  "ur_wrist_3_joint"
+                ],
+                "positions": [
+                  5.061090649105609e-05,
+                  9.909832808189095e-05,
+                  0.799967661003396,
+                  7.395691964775325e-05,
+                  6.198412724770605e-05,
+                  9.472593078389766e-05
+                ],
+                "comment": ""
+              }
+            ],
+            "home_max_joint_error": 9.933004155755044e-05,
+            "plan_id": "plan-1793618092099949864-228531803-706222364-1",
+            "inventory_ids": [
+              "fixture_plan-1793618092099949864-228531803-706222364-1_tile_0",
+              "fixture_plan-1793618092099949864-228531803-706222364-1_tile_1"
+            ],
+            "attached_ids": [
+              "fixture_plan-1793618092099949864-228531803-706222364-1_tile_0",
+              "fixture_plan-1793618092099949864-228531803-706222364-1_tile_1"
+            ],
+            "waits": 2,
+            "trajectory_points": 702,
+            "named_home_segments": [
+              37,
+              73
+            ],
+            "cycles_planned": [
+              0,
+              1
+            ],
+            "calibration_save": {
+              "success": true,
+              "message": "Calibration saved to /tmp/replay-saved-fixture.yaml; restart MTC with this fixture_config to load it. Current scene/calibration are unchanged.",
+              "runtime_scene_unchanged": true
+            },
+            "process_returncode": 0
+          }
+        }
+      ],
+      "production_ros_access": false,
+      "robot_motion_requested": false,
+      "io_commands_sent": false
+    },
+    "activation-result.json": {
+      "success": true,
+      "rolledBack": false,
+      "image": "sha256:a13990f26a3ef63e257431a63c70a60c2795ddb966d669b79de41d8eb8da91b2",
+      "sourceCheckout": "/home/nordbo/Unity/UR16UnityControlV2/UR16UnityControl-fixture-tiling",
+      "launch": {
+        "pid": 20,
+        "log": "/tmp/codex-fixture-bringup.log",
+        "args": [
+          "/usr/bin/python3",
+          "/opt/ros/jazzy/bin/ros2",
+          "launch",
+          "ur16e_bringup",
+          "ur16e_start.launch.py",
+          "ur_type:=ur16e",
+          "tool:=kenos_sl",
+          "robot_ip:=192.168.125.101",
+          "use_mock_hardware:=false",
+          "launch_moveit_rviz:=true"
+        ]
+      },
+      "allModelConsumersRestarted": true,
+      "robot_motion_requested": false,
+      "execution_requests_sent": false,
+      "io_commands_sent": false,
+      "production_plan_requests_sent": false
+    },
+    "final-verification.json": {
+      "stationary": true,
+      "joint_messages": 500,
+      "joint_names": [
+        "ur_elbow_joint",
+        "ur_shoulder_lift_joint",
+        "ur_shoulder_pan_joint",
+        "ur_wrist_1_joint",
+        "ur_wrist_2_joint",
+        "ur_wrist_3_joint"
+      ],
+      "complete_joint_messages": 500,
+      "max_abs_joint_velocity": 3.952305269194767e-05,
+      "max_joint_drift": 0.00017554655939733266,
+      "active_goals": {},
+      "execution_status": {},
+      "idle": true,
+      "models": {
+        "/robot_state_publisher": {
+          "description_expected": true,
+          "description_sha256": "111d85a047743045d1084bf83f250707c7ad053c5e2f6e925b0b7a77f47feb20",
+          "description_length": 45125,
+          "robot_link_joint_sha256": "c625c0e7b316941211fa8f34e314e42c79d16a3ef682b6023cad99680bb22b61",
+          "tool": null,
+          "full_robot_link_joint_sha256": "019c92c7d52742160e20356c7860ec877f0c8d501552fc8095b580f0b2652790",
+          "safety_controller_metadata": {
+            "ur_shoulder_pan_joint": [
+              {
+                "k_position": 20.0,
+                "k_velocity": 0.0,
+                "soft_lower_limit": -6.133185307179586,
+                "soft_upper_limit": 6.133185307179586
+              }
+            ],
+            "ur_shoulder_lift_joint": [
+              {
+                "k_position": 20.0,
+                "k_velocity": 0.0,
+                "soft_lower_limit": -6.133185307179586,
+                "soft_upper_limit": 6.133185307179586
+              }
+            ],
+            "ur_elbow_joint": [
+              {
+                "k_position": 20.0,
+                "k_velocity": 0.0,
+                "soft_lower_limit": -2.991592653589793,
+                "soft_upper_limit": 2.991592653589793
+              }
+            ],
+            "ur_wrist_1_joint": [
+              {
+                "k_position": 20.0,
+                "k_velocity": 0.0,
+                "soft_lower_limit": -6.133185307179586,
+                "soft_upper_limit": 6.133185307179586
+              }
+            ],
+            "ur_wrist_2_joint": [
+              {
+                "k_position": 20.0,
+                "k_velocity": 0.0,
+                "soft_lower_limit": -6.133185307179586,
+                "soft_upper_limit": 6.133185307179586
+              }
+            ],
+            "ur_wrist_3_joint": [
+              {
+                "k_position": 20.0,
+                "k_velocity": 0.0,
+                "soft_lower_limit": -6.133185307179586,
+                "soft_upper_limit": 6.133185307179586
+              }
+            ]
+          },
+          "fixture_enabled": null,
+          "fixture_parameter_present": false,
+          "fixture_calibration_output": null,
+          "mount_height_m": 0.05525,
+          "tcp_local_xyz": "0.034 0 0.08975",
+          "expected_mount_height_m": 0.05525,
+          "mount_height_matches_expected": true,
+          "queried_parameters": [
+            "robot_description"
+          ],
+          "undeclared_parameters": [
+            "tool",
+            "fixture.enabled",
+            "fixture.calibration_output"
+          ],
+          "link_count": 30,
+          "joint_count": 29
+        },
+        "/move_group": {
+          "description_expected": true,
+          "description_sha256": "e28cd3e04551692692cc94d74ffe9f3ceea076ec39a8116aefa86f568a8b0952",
+          "description_length": 24625,
+          "robot_link_joint_sha256": "c625c0e7b316941211fa8f34e314e42c79d16a3ef682b6023cad99680bb22b61",
+          "tool": null,
+          "full_robot_link_joint_sha256": "c625c0e7b316941211fa8f34e314e42c79d16a3ef682b6023cad99680bb22b61",
+          "safety_controller_metadata": {},
+          "fixture_enabled": null,
+          "fixture_parameter_present": false,
+          "fixture_calibration_output": null,
+          "mount_height_m": 0.05525,
+          "tcp_local_xyz": "0.034 0 0.08975",
+          "expected_mount_height_m": 0.05525,
+          "mount_height_matches_expected": true,
+          "queried_parameters": [
+            "robot_description"
+          ],
+          "undeclared_parameters": [
+            "tool",
+            "fixture.enabled",
+            "fixture.calibration_output"
+          ],
+          "link_count": 30,
+          "joint_count": 29
+        },
+        "/mtc_test_task_node": {
+          "description_expected": true,
+          "description_sha256": "e28cd3e04551692692cc94d74ffe9f3ceea076ec39a8116aefa86f568a8b0952",
+          "description_length": 24625,
+          "robot_link_joint_sha256": "c625c0e7b316941211fa8f34e314e42c79d16a3ef682b6023cad99680bb22b61",
+          "tool": "kenos_sl",
+          "full_robot_link_joint_sha256": "c625c0e7b316941211fa8f34e314e42c79d16a3ef682b6023cad99680bb22b61",
+          "safety_controller_metadata": {},
+          "fixture_enabled": false,
+          "fixture_parameter_present": true,
+          "fixture_calibration_output": "/root/.config/ur16e/fixture.yaml",
+          "mount_height_m": 0.05525,
+          "tcp_local_xyz": "0.034 0 0.08975",
+          "expected_mount_height_m": 0.05525,
+          "mount_height_matches_expected": true,
+          "queried_parameters": [
+            "robot_description",
+            "tool",
+            "fixture.enabled",
+            "fixture.calibration_output"
+          ],
+          "undeclared_parameters": [],
+          "link_count": 30,
+          "joint_count": 29
+        },
+        "/controller_manager": {
+          "description_expected": false,
+          "description_sha256": null,
+          "description_length": null,
+          "robot_link_joint_sha256": null,
+          "tool": null,
+          "full_robot_link_joint_sha256": null,
+          "safety_controller_metadata": null,
+          "fixture_enabled": null,
+          "fixture_parameter_present": false,
+          "fixture_calibration_output": null,
+          "mount_height_m": null,
+          "tcp_local_xyz": null,
+          "expected_mount_height_m": 0.05525,
+          "mount_height_matches_expected": null,
+          "queried_parameters": [],
+          "undeclared_parameters": [
+            "robot_description",
+            "tool",
+            "fixture.enabled",
+            "fixture.calibration_output"
+          ],
+          "description_note": "controller_manager may receive robot_description by topic"
+        }
+      },
+      "robot_link_joint_models_match": true,
+      "full_robot_link_joint_models_match": false,
+      "comparisonExcludedElements": [
+        "safety_controller"
+      ],
+      "model_comparison_scope": "Complete root link/joint subtrees including hard limits, origins, axes, geometry and inertials; only joint safety_controller children are separated",
+      "safety_controller_metadata_by_node": {
+        "/robot_state_publisher": {
+          "ur_shoulder_pan_joint": [
+            {
+              "k_position": 20.0,
+              "k_velocity": 0.0,
+              "soft_lower_limit": -6.133185307179586,
+              "soft_upper_limit": 6.133185307179586
+            }
+          ],
+          "ur_shoulder_lift_joint": [
+            {
+              "k_position": 20.0,
+              "k_velocity": 0.0,
+              "soft_lower_limit": -6.133185307179586,
+              "soft_upper_limit": 6.133185307179586
+            }
+          ],
+          "ur_elbow_joint": [
+            {
+              "k_position": 20.0,
+              "k_velocity": 0.0,
+              "soft_lower_limit": -2.991592653589793,
+              "soft_upper_limit": 2.991592653589793
+            }
+          ],
+          "ur_wrist_1_joint": [
+            {
+              "k_position": 20.0,
+              "k_velocity": 0.0,
+              "soft_lower_limit": -6.133185307179586,
+              "soft_upper_limit": 6.133185307179586
+            }
+          ],
+          "ur_wrist_2_joint": [
+            {
+              "k_position": 20.0,
+              "k_velocity": 0.0,
+              "soft_lower_limit": -6.133185307179586,
+              "soft_upper_limit": 6.133185307179586
+            }
+          ],
+          "ur_wrist_3_joint": [
+            {
+              "k_position": 20.0,
+              "k_velocity": 0.0,
+              "soft_lower_limit": -6.133185307179586,
+              "soft_upper_limit": 6.133185307179586
+            }
+          ]
+        },
+        "/move_group": {},
+        "/mtc_test_task_node": {}
+      },
+      "safety_controller_differences_from_rsp": {
+        "/move_group": [
+          "ur_elbow_joint",
+          "ur_shoulder_lift_joint",
+          "ur_shoulder_pan_joint",
+          "ur_wrist_1_joint",
+          "ur_wrist_2_joint",
+          "ur_wrist_3_joint"
+        ],
+        "/mtc_test_task_node": [
+          "ur_elbow_joint",
+          "ur_shoulder_lift_joint",
+          "ur_shoulder_pan_joint",
+          "ur_wrist_1_joint",
+          "ur_wrist_2_joint",
+          "ur_wrist_3_joint"
+        ]
+      },
+      "model_comparison_nodes": [
+        "/robot_state_publisher",
+        "/move_group",
+        "/mtc_test_task_node"
+      ],
+      "topics": [
+        "/attached_collision_object",
+        "/clicked_point",
+        "/collision_object",
+        "/commander/motion_status",
+        "/controller_manager/activity",
+        "/controller_manager/introspection_data/full",
+        "/controller_manager/introspection_data/names",
+        "/controller_manager/introspection_data/values",
+        "/controller_manager/statistics/full",
+        "/controller_manager/statistics/names",
+        "/controller_manager/statistics/values",
+        "/description",
+        "/diagnostics",
+        "/display_planned_path",
+        "/dynamic_joint_states",
+        "/execute_fixture_plan",
+        "/execute_task",
+        "/execute_task_solution/_action/feedback",
+        "/execute_task_solution/_action/status",
+        "/execute_tcp_plan",
+        "/execute_trajectory/_action/feedback",
+        "/execute_trajectory/_action/status",
+        "/fixture_tiling_plan_target",
+        "/force_mode_controller/transition_event",
+        "/force_torque_sensor_broadcaster/transition_event",
+        "/force_torque_sensor_broadcaster/wrench",
+        "/force_torque_sensor_broadcaster/wrench_filtered",
+        "/forward_effort_controller/commands",
+        "/forward_effort_controller/transition_event",
+        "/forward_position_controller/commands",
+        "/forward_position_controller/transition_event",
+        "/forward_velocity_controller/commands",
+        "/forward_velocity_controller/transition_event",
+        "/freedrive_mode_controller/enable_freedrive_mode",
+        "/freedrive_mode_controller/transition_event",
+        "/goal_pose",
+        "/initialpose",
+        "/io_and_status_controller/io_states",
+        "/io_and_status_controller/robot_mode",
+        "/io_and_status_controller/robot_program_running",
+        "/io_and_status_controller/safety_mode",
+        "/io_and_status_controller/tool_data",
+        "/io_and_status_controller/transition_event",
+        "/joint_state_broadcaster/transition_event",
+        "/joint_states",
+        "/joint_trajectory_controller/controller_state",
+        "/joint_trajectory_controller/follow_joint_trajectory/_action/feedback",
+        "/joint_trajectory_controller/follow_joint_trajectory/_action/status",
+        "/joint_trajectory_controller/joint_trajectory",
+        "/joint_trajectory_controller/speed_scaling_input",
+        "/joint_trajectory_controller/transition_event",
+        "/move_action/_action/feedback",
+        "/move_action/_action/status",
+        "/mtc/execution_status",
+        "/mtc/fixture/planned_trajectory",
+        "/mtc/fixture/preview_scene",
+        "/mtc/fixture/solution",
+        "/mtc/fixture/status",
+        "/mtc/planned_trajectory",
+        "/mtc/planning_status",
+        "/mtc/tcp_execution_status",
+        "/mtc/tcp_planned_trajectory",
+        "/mtc/tcp_planning_status",
+        "/parameter_events",
+        "/passthrough_trajectory_controller/follow_joint_trajectory/_action/feedback",
+        "/passthrough_trajectory_controller/follow_joint_trajectory/_action/status",
+        "/passthrough_trajectory_controller/transition_event",
+        "/pick_place_poses_target",
+        "/pick_place_tcp_target",
+        "/planning_scene",
+        "/planning_scene_world",
+        "/recognized_object_array",
+        "/repeat_reviewed_plan",
+        "/robot_description",
+        "/rosout",
+        "/scaled_joint_trajectory_controller/controller_state",
+        "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/feedback",
+        "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/status",
+        "/scaled_joint_trajectory_controller/joint_trajectory",
+        "/scaled_joint_trajectory_controller/speed_scaling_input",
+        "/scaled_joint_trajectory_controller/transition_event",
+        "/scene_setup_box",
+        "/solution",
+        "/speed_scaling_state_broadcaster/speed_scaling",
+        "/speed_scaling_state_broadcaster/transition_event",
+        "/statistics",
+        "/tcp_pose_array_target",
+        "/tcp_pose_broadcaster/pose",
+        "/tcp_pose_broadcaster/transition_event",
+        "/tcp_pose_target",
+        "/tcp_poses_plan_target",
+        "/tf",
+        "/tf_static",
+        "/tool_contact_controller/detect_tool_contact/_action/feedback",
+        "/tool_contact_controller/detect_tool_contact/_action/status",
+        "/tool_contact_controller/transition_event",
+        "/trajectory_execution_event",
+        "/trajectory_until_node/execute/_action/feedback",
+        "/trajectory_until_node/execute/_action/status",
+        "/ur_configuration_controller/transition_event",
+        "/ur_robot_state_helper/set_mode/_action/feedback",
+        "/ur_robot_state_helper/set_mode/_action/status"
+      ],
+      "services": [
+        "/UnityEndpoint/describe_parameters",
+        "/UnityEndpoint/get_parameter_types",
+        "/UnityEndpoint/get_parameters",
+        "/UnityEndpoint/get_type_description",
+        "/UnityEndpoint/list_parameters",
+        "/UnityEndpoint/set_parameters",
+        "/UnityEndpoint/set_parameters_atomically",
+        "/apply_planning_scene",
+        "/check_state_validity",
+        "/clear_octomap",
+        "/codex_fixture_deployment_readonly_probe/describe_parameters",
+        "/codex_fixture_deployment_readonly_probe/get_parameter_types",
+        "/codex_fixture_deployment_readonly_probe/get_parameters",
+        "/codex_fixture_deployment_readonly_probe/get_type_description",
+        "/codex_fixture_deployment_readonly_probe/list_parameters",
+        "/codex_fixture_deployment_readonly_probe/set_parameters",
+        "/codex_fixture_deployment_readonly_probe/set_parameters_atomically",
+        "/compute_cartesian_path",
+        "/compute_fk",
+        "/compute_ik",
+        "/controller_manager/cleanup_controller",
+        "/controller_manager/configure_controller",
+        "/controller_manager/describe_parameters",
+        "/controller_manager/get_logger_levels",
+        "/controller_manager/get_parameter_types",
+        "/controller_manager/get_parameters",
+        "/controller_manager/get_type_description",
+        "/controller_manager/list_controller_types",
+        "/controller_manager/list_controllers",
+        "/controller_manager/list_hardware_components",
+        "/controller_manager/list_hardware_interfaces",
+        "/controller_manager/list_parameters",
+        "/controller_manager/load_controller",
+        "/controller_manager/reload_controller_libraries",
+        "/controller_manager/set_hardware_component_state",
+        "/controller_manager/set_logger_levels",
+        "/controller_manager/set_parameters",
+        "/controller_manager/set_parameters_atomically",
+        "/controller_manager/switch_controller",
+        "/controller_manager/unload_controller",
+        "/controller_stopper/describe_parameters",
+        "/controller_stopper/get_parameter_types",
+        "/controller_stopper/get_parameters",
+        "/controller_stopper/get_type_description",
+        "/controller_stopper/list_parameters",
+        "/controller_stopper/set_parameters",
+        "/controller_stopper/set_parameters_atomically",
+        "/dashboard_client/add_to_log",
+        "/dashboard_client/brake_release",
+        "/dashboard_client/clear_operational_mode",
+        "/dashboard_client/close_popup",
+        "/dashboard_client/close_safety_popup",
+        "/dashboard_client/connect",
+        "/dashboard_client/describe_parameters",
+        "/dashboard_client/get_loaded_program",
+        "/dashboard_client/get_parameter_types",
+        "/dashboard_client/get_parameters",
+        "/dashboard_client/get_robot_mode",
+        "/dashboard_client/get_safety_mode",
+        "/dashboard_client/get_type_description",
+        "/dashboard_client/is_in_remote_control",
+        "/dashboard_client/list_parameters",
+        "/dashboard_client/load_installation",
+        "/dashboard_client/load_program",
+        "/dashboard_client/pause",
+        "/dashboard_client/play",
+        "/dashboard_client/popup",
+        "/dashboard_client/power_off",
+        "/dashboard_client/power_on",
+        "/dashboard_client/program_running",
+        "/dashboard_client/program_saved",
+        "/dashboard_client/program_state",
+        "/dashboard_client/quit",
+        "/dashboard_client/raw_request",
+        "/dashboard_client/restart_safety",
+        "/dashboard_client/set_parameters",
+        "/dashboard_client/set_parameters_atomically",
+        "/dashboard_client/shutdown",
+        "/dashboard_client/stop",
+        "/dashboard_client/unlock_protective_stop",
+        "/execute_task_solution/_action/cancel_goal",
+        "/execute_task_solution/_action/get_result",
+        "/execute_task_solution/_action/send_goal",
+        "/execute_trajectory/_action/cancel_goal",
+        "/execute_trajectory/_action/get_result",
+        "/execute_trajectory/_action/send_goal",
+        "/force_mode_controller/describe_parameters",
+        "/force_mode_controller/get_logger_levels",
+        "/force_mode_controller/get_parameter_types",
+        "/force_mode_controller/get_parameters",
+        "/force_mode_controller/get_type_description",
+        "/force_mode_controller/list_parameters",
+        "/force_mode_controller/set_logger_levels",
+        "/force_mode_controller/set_parameters",
+        "/force_mode_controller/set_parameters_atomically",
+        "/force_mode_controller/start_force_mode",
+        "/force_mode_controller/stop_force_mode",
+        "/force_torque_sensor_broadcaster/describe_parameters",
+        "/force_torque_sensor_broadcaster/get_logger_levels",
+        "/force_torque_sensor_broadcaster/get_parameter_types",
+        "/force_torque_sensor_broadcaster/get_parameters",
+        "/force_torque_sensor_broadcaster/get_type_description",
+        "/force_torque_sensor_broadcaster/list_parameters",
+        "/force_torque_sensor_broadcaster/set_logger_levels",
+        "/force_torque_sensor_broadcaster/set_parameters",
+        "/force_torque_sensor_broadcaster/set_parameters_atomically",
+        "/forward_effort_controller/describe_parameters",
+        "/forward_effort_controller/get_logger_levels",
+        "/forward_effort_controller/get_parameter_types",
+        "/forward_effort_controller/get_parameters",
+        "/forward_effort_controller/get_type_description",
+        "/forward_effort_controller/list_parameters",
+        "/forward_effort_controller/set_logger_levels",
+        "/forward_effort_controller/set_parameters",
+        "/forward_effort_controller/set_parameters_atomically",
+        "/forward_position_controller/describe_parameters",
+        "/forward_position_controller/get_logger_levels",
+        "/forward_position_controller/get_parameter_types",
+        "/forward_position_controller/get_parameters",
+        "/forward_position_controller/get_type_description",
+        "/forward_position_controller/list_parameters",
+        "/forward_position_controller/set_logger_levels",
+        "/forward_position_controller/set_parameters",
+        "/forward_position_controller/set_parameters_atomically",
+        "/forward_velocity_controller/describe_parameters",
+        "/forward_velocity_controller/get_logger_levels",
+        "/forward_velocity_controller/get_parameter_types",
+        "/forward_velocity_controller/get_parameters",
+        "/forward_velocity_controller/get_type_description",
+        "/forward_velocity_controller/list_parameters",
+        "/forward_velocity_controller/set_logger_levels",
+        "/forward_velocity_controller/set_parameters",
+        "/forward_velocity_controller/set_parameters_atomically",
+        "/freedrive_mode_controller/describe_parameters",
+        "/freedrive_mode_controller/get_logger_levels",
+        "/freedrive_mode_controller/get_parameter_types",
+        "/freedrive_mode_controller/get_parameters",
+        "/freedrive_mode_controller/get_type_description",
+        "/freedrive_mode_controller/list_parameters",
+        "/freedrive_mode_controller/set_logger_levels",
+        "/freedrive_mode_controller/set_parameters",
+        "/freedrive_mode_controller/set_parameters_atomically",
+        "/get_planner_params",
+        "/get_planning_scene",
+        "/get_solution_urmir_jazzy_302_94500929791216",
+        "/get_urdf",
+        "/interactive_marker_display_107355742927776/describe_parameters",
+        "/interactive_marker_display_107355742927776/get_parameter_types",
+        "/interactive_marker_display_107355742927776/get_parameters",
+        "/interactive_marker_display_107355742927776/get_type_description",
+        "/interactive_marker_display_107355742927776/list_parameters",
+        "/interactive_marker_display_107355742927776/set_parameters",
+        "/interactive_marker_display_107355742927776/set_parameters_atomically",
+        "/introspection_urmir_jazzy_302_94500929791216/describe_parameters",
+        "/introspection_urmir_jazzy_302_94500929791216/get_parameter_types",
+        "/introspection_urmir_jazzy_302_94500929791216/get_parameters",
+        "/introspection_urmir_jazzy_302_94500929791216/get_type_description",
+        "/introspection_urmir_jazzy_302_94500929791216/list_parameters",
+        "/introspection_urmir_jazzy_302_94500929791216/set_parameters",
+        "/introspection_urmir_jazzy_302_94500929791216/set_parameters_atomically",
+        "/io_and_status_controller/describe_parameters",
+        "/io_and_status_controller/get_logger_levels",
+        "/io_and_status_controller/get_parameter_types",
+        "/io_and_status_controller/get_parameters",
+        "/io_and_status_controller/get_type_description",
+        "/io_and_status_controller/hand_back_control",
+        "/io_and_status_controller/list_parameters",
+        "/io_and_status_controller/resend_robot_program",
+        "/io_and_status_controller/set_analog_output",
+        "/io_and_status_controller/set_io",
+        "/io_and_status_controller/set_logger_levels",
+        "/io_and_status_controller/set_parameters",
+        "/io_and_status_controller/set_parameters_atomically",
+        "/io_and_status_controller/set_payload",
+        "/io_and_status_controller/set_speed_slider",
+        "/io_and_status_controller/zero_ftsensor",
+        "/joint_state_broadcaster/describe_parameters",
+        "/joint_state_broadcaster/get_logger_levels",
+        "/joint_state_broadcaster/get_parameter_types",
+        "/joint_state_broadcaster/get_parameters",
+        "/joint_state_broadcaster/get_type_description",
+        "/joint_state_broadcaster/list_parameters",
+        "/joint_state_broadcaster/set_logger_levels",
+        "/joint_state_broadcaster/set_parameters",
+        "/joint_state_broadcaster/set_parameters_atomically",
+        "/joint_trajectory_controller/describe_parameters",
+        "/joint_trajectory_controller/follow_joint_trajectory/_action/cancel_goal",
+        "/joint_trajectory_controller/follow_joint_trajectory/_action/get_result",
+        "/joint_trajectory_controller/follow_joint_trajectory/_action/send_goal",
+        "/joint_trajectory_controller/get_logger_levels",
+        "/joint_trajectory_controller/get_parameter_types",
+        "/joint_trajectory_controller/get_parameters",
+        "/joint_trajectory_controller/get_type_description",
+        "/joint_trajectory_controller/list_parameters",
+        "/joint_trajectory_controller/query_state",
+        "/joint_trajectory_controller/set_logger_levels",
+        "/joint_trajectory_controller/set_parameters",
+        "/joint_trajectory_controller/set_parameters_atomically",
+        "/load_geometry_from_file",
+        "/load_map",
+        "/move_action/_action/cancel_goal",
+        "/move_action/_action/get_result",
+        "/move_action/_action/send_goal",
+        "/move_group/describe_parameters",
+        "/move_group/get_parameter_types",
+        "/move_group/get_parameters",
+        "/move_group/get_type_description",
+        "/move_group/list_parameters",
+        "/move_group/moveit/describe_parameters",
+        "/move_group/moveit/get_parameter_types",
+        "/move_group/moveit/get_parameters",
+        "/move_group/moveit/get_type_description",
+        "/move_group/moveit/list_parameters",
+        "/move_group/moveit/set_parameters",
+        "/move_group/moveit/set_parameters_atomically",
+        "/move_group/set_parameters",
+        "/move_group/set_parameters_atomically",
+        "/move_group_private_95259502763968/describe_parameters",
+        "/move_group_private_95259502763968/get_parameter_types",
+        "/move_group_private_95259502763968/get_parameters",
+        "/move_group_private_95259502763968/get_type_description",
+        "/move_group_private_95259502763968/list_parameters",
+        "/move_group_private_95259502763968/set_parameters",
+        "/move_group_private_95259502763968/set_parameters_atomically",
+        "/moveit_1137676087/describe_parameters",
+        "/moveit_1137676087/get_parameter_types",
+        "/moveit_1137676087/get_parameters",
+        "/moveit_1137676087/get_type_description",
+        "/moveit_1137676087/list_parameters",
+        "/moveit_1137676087/set_parameters",
+        "/moveit_1137676087/set_parameters_atomically",
+        "/moveit_1378226773/describe_parameters",
+        "/moveit_1378226773/get_parameter_types",
+        "/moveit_1378226773/get_parameters",
+        "/moveit_1378226773/get_type_description",
+        "/moveit_1378226773/list_parameters",
+        "/moveit_1378226773/set_parameters",
+        "/moveit_1378226773/set_parameters_atomically",
+        "/moveit_3101200039/describe_parameters",
+        "/moveit_3101200039/get_parameter_types",
+        "/moveit_3101200039/get_parameters",
+        "/moveit_3101200039/get_type_description",
+        "/moveit_3101200039/list_parameters",
+        "/moveit_3101200039/set_parameters",
+        "/moveit_3101200039/set_parameters_atomically",
+        "/moveit_3379547405/describe_parameters",
+        "/moveit_3379547405/get_parameter_types",
+        "/moveit_3379547405/get_parameters",
+        "/moveit_3379547405/get_type_description",
+        "/moveit_3379547405/list_parameters",
+        "/moveit_3379547405/set_parameters",
+        "/moveit_3379547405/set_parameters_atomically",
+        "/moveit_simple_controller_manager/describe_parameters",
+        "/moveit_simple_controller_manager/get_parameter_types",
+        "/moveit_simple_controller_manager/get_parameters",
+        "/moveit_simple_controller_manager/get_type_description",
+        "/moveit_simple_controller_manager/list_parameters",
+        "/moveit_simple_controller_manager/set_parameters",
+        "/moveit_simple_controller_manager/set_parameters_atomically",
+        "/mtc_test_task_node/describe_parameters",
+        "/mtc_test_task_node/get_parameter_types",
+        "/mtc_test_task_node/get_parameters",
+        "/mtc_test_task_node/get_type_description",
+        "/mtc_test_task_node/list_parameters",
+        "/mtc_test_task_node/set_parameters",
+        "/mtc_test_task_node/set_parameters_atomically",
+        "/passthrough_trajectory_controller/describe_parameters",
+        "/passthrough_trajectory_controller/follow_joint_trajectory/_action/cancel_goal",
+        "/passthrough_trajectory_controller/follow_joint_trajectory/_action/get_result",
+        "/passthrough_trajectory_controller/follow_joint_trajectory/_action/send_goal",
+        "/passthrough_trajectory_controller/get_logger_levels",
+        "/passthrough_trajectory_controller/get_parameter_types",
+        "/passthrough_trajectory_controller/get_parameters",
+        "/passthrough_trajectory_controller/get_type_description",
+        "/passthrough_trajectory_controller/list_parameters",
+        "/passthrough_trajectory_controller/set_logger_levels",
+        "/passthrough_trajectory_controller/set_parameters",
+        "/passthrough_trajectory_controller/set_parameters_atomically",
+        "/plan_kinematic_path",
+        "/plan_sequence_path",
+        "/planning_scene_interface_95024518066560/describe_parameters",
+        "/planning_scene_interface_95024518066560/get_parameter_types",
+        "/planning_scene_interface_95024518066560/get_parameters",
+        "/planning_scene_interface_95024518066560/get_type_description",
+        "/planning_scene_interface_95024518066560/list_parameters",
+        "/planning_scene_interface_95024518066560/moveit/describe_parameters",
+        "/planning_scene_interface_95024518066560/moveit/get_parameter_types",
+        "/planning_scene_interface_95024518066560/moveit/get_parameters",
+        "/planning_scene_interface_95024518066560/moveit/get_type_description",
+        "/planning_scene_interface_95024518066560/moveit/list_parameters",
+        "/planning_scene_interface_95024518066560/moveit/set_parameters",
+        "/planning_scene_interface_95024518066560/moveit/set_parameters_atomically",
+        "/planning_scene_interface_95024518066560/set_parameters",
+        "/planning_scene_interface_95024518066560/set_parameters_atomically",
+        "/query_planner_interface",
+        "/robot_state_publisher/describe_parameters",
+        "/robot_state_publisher/get_parameter_types",
+        "/robot_state_publisher/get_parameters",
+        "/robot_state_publisher/get_type_description",
+        "/robot_state_publisher/list_parameters",
+        "/robot_state_publisher/set_parameters",
+        "/robot_state_publisher/set_parameters_atomically",
+        "/rviz2_moveit/describe_parameters",
+        "/rviz2_moveit/get_parameter_types",
+        "/rviz2_moveit/get_parameters",
+        "/rviz2_moveit/get_type_description",
+        "/rviz2_moveit/list_parameters",
+        "/rviz2_moveit/reset_time",
+        "/rviz2_moveit/set_parameters",
+        "/rviz2_moveit/set_parameters_atomically",
+        "/save_fixture_calibration",
+        "/save_geometry_to_file",
+        "/save_map",
+        "/scaled_joint_trajectory_controller/describe_parameters",
+        "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/cancel_goal",
+        "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/get_result",
+        "/scaled_joint_trajectory_controller/follow_joint_trajectory/_action/send_goal",
+        "/scaled_joint_trajectory_controller/get_logger_levels",
+        "/scaled_joint_trajectory_controller/get_parameter_types",
+        "/scaled_joint_trajectory_controller/get_parameters",
+        "/scaled_joint_trajectory_controller/get_type_description",
+        "/scaled_joint_trajectory_controller/list_parameters",
+        "/scaled_joint_trajectory_controller/query_state",
+        "/scaled_joint_trajectory_controller/set_logger_levels",
+        "/scaled_joint_trajectory_controller/set_parameters",
+        "/scaled_joint_trajectory_controller/set_parameters_atomically",
+        "/sequence_move_group/_action/cancel_goal",
+        "/sequence_move_group/_action/get_result",
+        "/sequence_move_group/_action/send_goal",
+        "/set_planner_params",
+        "/speed_scaling_state_broadcaster/describe_parameters",
+        "/speed_scaling_state_broadcaster/get_logger_levels",
+        "/speed_scaling_state_broadcaster/get_parameter_types",
+        "/speed_scaling_state_broadcaster/get_parameters",
+        "/speed_scaling_state_broadcaster/get_type_description",
+        "/speed_scaling_state_broadcaster/list_parameters",
+        "/speed_scaling_state_broadcaster/set_logger_levels",
+        "/speed_scaling_state_broadcaster/set_parameters",
+        "/speed_scaling_state_broadcaster/set_parameters_atomically",
+        "/tcp_pose_broadcaster/describe_parameters",
+        "/tcp_pose_broadcaster/get_logger_levels",
+        "/tcp_pose_broadcaster/get_parameter_types",
+        "/tcp_pose_broadcaster/get_parameters",
+        "/tcp_pose_broadcaster/get_type_description",
+        "/tcp_pose_broadcaster/list_parameters",
+        "/tcp_pose_broadcaster/set_logger_levels",
+        "/tcp_pose_broadcaster/set_parameters",
+        "/tcp_pose_broadcaster/set_parameters_atomically",
+        "/tool_contact_controller/describe_parameters",
+        "/tool_contact_controller/detect_tool_contact/_action/cancel_goal",
+        "/tool_contact_controller/detect_tool_contact/_action/get_result",
+        "/tool_contact_controller/detect_tool_contact/_action/send_goal",
+        "/tool_contact_controller/get_logger_levels",
+        "/tool_contact_controller/get_parameter_types",
+        "/tool_contact_controller/get_parameters",
+        "/tool_contact_controller/get_type_description",
+        "/tool_contact_controller/list_parameters",
+        "/tool_contact_controller/set_logger_levels",
+        "/tool_contact_controller/set_parameters",
+        "/tool_contact_controller/set_parameters_atomically",
+        "/trajectory_until_node/describe_parameters",
+        "/trajectory_until_node/execute/_action/cancel_goal",
+        "/trajectory_until_node/execute/_action/get_result",
+        "/trajectory_until_node/execute/_action/send_goal",
+        "/trajectory_until_node/get_parameter_types",
+        "/trajectory_until_node/get_parameters",
+        "/trajectory_until_node/get_type_description",
+        "/trajectory_until_node/list_parameters",
+        "/trajectory_until_node/set_parameters",
+        "/trajectory_until_node/set_parameters_atomically",
+        "/transform_listener_impl_56a35502aa30/get_type_description",
+        "/transform_listener_impl_61a3b27f6860/get_type_description",
+        "/transform_listener_impl_61a3b28f44f0/get_type_description",
+        "/transform_listener_impl_62dad37fa360/get_type_description",
+        "/ur16e/describe_parameters",
+        "/ur16e/get_logger_levels",
+        "/ur16e/get_parameter_types",
+        "/ur16e/get_parameters",
+        "/ur16e/get_type_description",
+        "/ur16e/list_parameters",
+        "/ur16e/set_logger_levels",
+        "/ur16e/set_parameters",
+        "/ur16e/set_parameters_atomically",
+        "/ur16e_commander/describe_parameters",
+        "/ur16e_commander/get_parameter_types",
+        "/ur16e_commander/get_parameters",
+        "/ur16e_commander/get_type_description",
+        "/ur16e_commander/list_parameters",
+        "/ur16e_commander/set_parameters",
+        "/ur16e_commander/set_parameters_atomically",
+        "/ur16e_environment_updater/describe_parameters",
+        "/ur16e_environment_updater/get_parameter_types",
+        "/ur16e_environment_updater/get_parameters",
+        "/ur16e_environment_updater/get_type_description",
+        "/ur16e_environment_updater/list_parameters",
+        "/ur16e_environment_updater/set_parameters",
+        "/ur16e_environment_updater/set_parameters_atomically",
+        "/ur_configuration_controller/describe_parameters",
+        "/ur_configuration_controller/get_logger_levels",
+        "/ur_configuration_controller/get_parameter_types",
+        "/ur_configuration_controller/get_parameters",
+        "/ur_configuration_controller/get_robot_software_version",
+        "/ur_configuration_controller/get_type_description",
+        "/ur_configuration_controller/list_parameters",
+        "/ur_configuration_controller/set_logger_levels",
+        "/ur_configuration_controller/set_parameters",
+        "/ur_configuration_controller/set_parameters_atomically",
+        "/ur_robot_state_helper/describe_parameters",
+        "/ur_robot_state_helper/get_parameter_types",
+        "/ur_robot_state_helper/get_parameters",
+        "/ur_robot_state_helper/get_type_description",
+        "/ur_robot_state_helper/list_parameters",
+        "/ur_robot_state_helper/set_mode/_action/cancel_goal",
+        "/ur_robot_state_helper/set_mode/_action/get_result",
+        "/ur_robot_state_helper/set_mode/_action/send_goal",
+        "/ur_robot_state_helper/set_parameters",
+        "/ur_robot_state_helper/set_parameters_atomically",
+        "/urscript_interface/describe_parameters",
+        "/urscript_interface/get_parameter_types",
+        "/urscript_interface/get_parameters",
+        "/urscript_interface/get_type_description",
+        "/urscript_interface/list_parameters",
+        "/urscript_interface/set_parameters",
+        "/urscript_interface/set_parameters_atomically"
+      ],
+      "robot_motion_requested": false,
+      "execution_requests_sent": false,
+      "io_commands_sent": false,
+      "production_plan_requests_sent": false,
+      "success": true,
+      "commit": "6ec8146f99ab7ef670b45e39a203e35de6bbc295",
+      "image": "sha256:a13990f26a3ef63e257431a63c70a60c2795ddb966d669b79de41d8eb8da91b2",
+      "containerId": "e40ccb0df918b897c4f5abf6b6d17c1150b4be2b9310583062124e2090a71ccd",
+      "launch": {
+        "pid": 20,
+        "log": "/tmp/codex-fixture-bringup.log",
+        "args": [
+          "/usr/bin/python3",
+          "/opt/ros/jazzy/bin/ros2",
+          "launch",
+          "ur16e_bringup",
+          "ur16e_start.launch.py",
+          "ur_type:=ur16e",
+          "tool:=kenos_sl",
+          "robot_ip:=192.168.125.101",
+          "use_mock_hardware:=false",
+          "launch_moveit_rviz:=true"
+        ]
+      },
+      "calibrationVolume": [
+        {
+          "Type": "volume",
+          "Name": "docker_fixture_calibration",
+          "Source": "/var/lib/docker/volumes/docker_fixture_calibration/_data",
+          "Destination": "/root/.config/ur16e",
+          "Driver": "local",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": ""
+        }
+      ]
+    }
+  },
+  "supportingManifests": {
+    "source-sync.json": {
+      "success": true,
+      "commit": "6ec8146f99ab7ef670b45e39a203e35de6bbc295",
+      "branch": "codex/fixture-tiling",
+      "activeSourceCheckout": "/home/nordbo/Unity/UR16UnityControlV2/UR16UnityControl-fixture-tiling",
+      "originalCheckoutPreserved": true,
+      "testOnlyFollowup": true,
+      "githubPushed": true,
+      "documentationCommit": "f44d9bab82f694e684bd6b6a7bf51e771cea885d",
+      "checkoutHead": "f44d9bab82f694e684bd6b6a7bf51e771cea885d",
+      "originalCheckoutDirtyPatchPreserved": true
+    },
+    "python-interface-verification.json": {
+      "success": true,
+      "generatedPythonImportsExit": 0,
+      "message": "fixture interfaces import OK",
+      "error": ""
+    },
+    "original-checkout-preservation.json": {
+      "success": true,
+      "originalCheckout": "/home/nordbo/Unity/UR16UnityControlV2/UR16UnityControl",
+      "head": "040e1eb1df863938324d791a5e1927dea6efc1aa",
+      "headMatchesPreflight": true,
+      "statusMatchesPreflight": true,
+      "beforeTrackedDirtyPatchSha256": "eb81fe233ebd1cb3afa59c8cccb051e1bed428e19296cb9fad9ca25ca4cc4976",
+      "afterTrackedDirtyPatchSha256": "eb81fe233ebd1cb3afa59c8cccb051e1bed428e19296cb9fad9ca25ca4cc4976",
+      "trackedDirtyPatchUnchanged": true,
+      "trackedDirtyPatchBytes": 21344,
+      "patchContentsCollected": false
+    }
+  },
+  "initialCandidateTests": {
+    "evidence": {
+      "path": "test-result-first.json",
+      "bytes": 80804,
+      "sha256": "ea969eaab67ab7e886d6d7341c11e5b1136cf577bd6c71b9ca5cf223b6913d13"
+    },
+    "success": false,
+    "reportedCases": 108,
+    "failedCases": 10,
+    "supersededByFinalCandidate": true,
+    "note": "The first candidate exposed launch-test helper assumptions; the test-only correction was rebuilt and the final candidate revalidated. Original failures remain recorded separately."
+  },
+  "evidenceFiles": [
+    {
+      "path": "activate.py",
+      "bytes": 7235,
+      "sha256": "ba784e2a4d17200958366574e0922988695bf09aec5be209192d9b7f83ad77a3"
+    },
+    {
+      "path": "activation-result.json",
+      "bytes": 782,
+      "sha256": "37eb621533274ad8d53fa9e4ad9de51224297c0896dff34a8ae0ae88342c6c30"
+    },
+    {
+      "path": "build-result-runtime-131ea4e.json",
+      "bytes": 766,
+      "sha256": "48495d6c5b624e4ab76ea41d6a6be59c2334165fc08e8ffd4970a3a06850c417"
+    },
+    {
+      "path": "build-result.json",
+      "bytes": 1105,
+      "sha256": "c8090cebdb5e7fc1f9ce7c4b3f3b7d05f90dbbfeca365a6f597f962b6075349f"
+    },
+    {
+      "path": "final-verification.json",
+      "bytes": 34860,
+      "sha256": "0a8516490a9cd3d259e8f0103183da8d9a0c5e3157dec9b6f207464b25b5bb5d"
+    },
+    {
+      "path": "original-checkout-preservation.json",
+      "bytes": 547,
+      "sha256": "0e447b996f73df39b371f14339d3192d965f7ef91b83163771f6522944510fee"
+    },
+    {
+      "path": "preflight.json",
+      "bytes": 37820,
+      "sha256": "ad3a90b2f1525242df1750252db9269734620b207692094516d8e82f4bbbf581"
+    },
+    {
+      "path": "probe_ros.py",
+      "bytes": 12511,
+      "sha256": "d3fe3185d4e9532084dec70be9a1283b0f4be725f9472f3a671d89021fe6cae6"
+    },
+    {
+      "path": "python-interface-verification.json",
+      "bytes": 116,
+      "sha256": "97ec6ab3b3c827cfddd68af20ace1349a1e69c3fa339e3694ac06a6cbe6ff408"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5580,
+      "sha256": "47d57e50b67e5314731aadc3fd994d30d2afb21ba45c1842dcf1d31320517bae"
+    },
+    {
+      "path": "record_evidence.py",
+      "bytes": 6349,
+      "sha256": "4a4f2eaa8b3956d93c9f20141519259c4081ff84c49da2272ce735ef53f0dae3"
+    },
+    {
+      "path": "refresh_test_image.py",
+      "bytes": 2982,
+      "sha256": "24af0bfef15fd9cb221ffd3d0f45f3ce64620d13f739b2f6359148ec634155fd"
+    },
+    {
+      "path": "source-files-manifest-6ec8146.json",
+      "bytes": 69690,
+      "sha256": "79dc39fe100d5c5ea7b72f5364d2f043b149c64f7494b56daeee063e7f2381f4"
+    },
+    {
+      "path": "source-files-manifest.json",
+      "bytes": 81449,
+      "sha256": "85b466f6d36c8ef2fd98a4938001dcce4f4d2ce7c7747f6bd0a4eed07587a6ad"
+    },
+    {
+      "path": "source-sync.json",
+      "bytes": 480,
+      "sha256": "86644ca8f08bc57b81a306390eb7e0b49823be1ad25cc4b918a6cfda0b4c0db4"
+    },
+    {
+      "path": "stage_build.py",
+      "bytes": 6709,
+      "sha256": "7fcd66725d5474983e67f5d10f100a8df1fd88011c7facd702bd75bbfbef2967"
+    },
+    {
+      "path": "staging.json",
+      "bytes": 3630,
+      "sha256": "d913f69c48155b24e51b6cb0c15870de13e3e937208244c0de2e24e03624eb3a"
+    },
+    {
+      "path": "test-output/colcon-results.log",
+      "bytes": 4506,
+      "sha256": "cd1b8d75cabeb90dc0a92843d9b7f4728e20ca25925eea2e8824c780201e3a39"
+    },
+    {
+      "path": "test-output/colcon-test.log",
+      "bytes": 73434,
+      "sha256": "cad8357174065f247c43d1d1a634453e4f5db9a775fc98fc8bac3d051982e75f"
+    },
+    {
+      "path": "test-output/full-cycle-home-replay.json",
+      "bytes": 16086,
+      "sha256": "e402e683bc3cb8915f4a939f242ed982d9e328ad042cc3ca15e02be54ca465b2"
+    },
+    {
+      "path": "test-output/full-cycle-home-replay.log",
+      "bytes": 396,
+      "sha256": "ee62ff99d8a8516eabdf722ed9cd3a92b79058093034d65a75717a3ce3d918c6"
+    },
+    {
+      "path": "test-output/full-cycle-replay.json",
+      "bytes": 2461,
+      "sha256": "6b28c50b693a743097a463eef5fa280d995b103c02a516b44f4fc76461ef64f4"
+    },
+    {
+      "path": "test-output/full-cycle-replay.log",
+      "bytes": 391,
+      "sha256": "9d3c724d298089f7ae612413951e481d9250aae861c2e43ab6d0b0a57e5fe8cd"
+    },
+    {
+      "path": "test-result-first.json",
+      "bytes": 80804,
+      "sha256": "ea969eaab67ab7e886d6d7341c11e5b1136cf577bd6c71b9ca5cf223b6913d13"
+    },
+    {
+      "path": "test-result.json",
+      "bytes": 27338,
+      "sha256": "ee2f0fcec32f8d10e074f8b42157b9f8e6d920a76382d582513ddc594e64c09b"
+    },
+    {
+      "path": "test_image.py",
+      "bytes": 7409,
+      "sha256": "9d61702366692fc44914adc2da8fab5bad3367ccc429b15cdb7eb5868b98628c"
+    }
+  ],
+  "limits": [
+    "Synthetic fixture replay is plan-only in a separate network-disabled container; it does not prove physical reachability or fixture behavior.",
+    "A successful deployment does not validate robot motion, vacuum wiring, physical calibration or headset operation.",
+    "Private environment and raw parameter backups stay on Nordbo and must not be added to this public evidence directory."
+  ]
+}

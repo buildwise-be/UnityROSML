@@ -1,0 +1,3 @@
+[WARN] [1793618087.145384026] [rcl]: ROS_LOCALHOST_ONLY is deprecated but still honored if it is enabled. Use ROS_AUTOMATIC_DISCOVERY_RANGE and ROS_STATIC_PEERS instead.
+[WARN] [1793618087.145484705] [rcl]: 'localhost_only' is enabled, 'automatic_discovery_range' and 'static_peers' will be ignored.
+{"passed": true, "output": "/evidence/full-cycle-replay.json", "steps": 72, "error": null}

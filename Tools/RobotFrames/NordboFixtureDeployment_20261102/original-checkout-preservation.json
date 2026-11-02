@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "originalCheckout": "/home/nordbo/Unity/UR16UnityControlV2/UR16UnityControl",
+  "head": "040e1eb1df863938324d791a5e1927dea6efc1aa",
+  "headMatchesPreflight": true,
+  "statusMatchesPreflight": true,
+  "beforeTrackedDirtyPatchSha256": "eb81fe233ebd1cb3afa59c8cccb051e1bed428e19296cb9fad9ca25ca4cc4976",
+  "afterTrackedDirtyPatchSha256": "eb81fe233ebd1cb3afa59c8cccb051e1bed428e19296cb9fad9ca25ca4cc4976",
+  "trackedDirtyPatchUnchanged": true,
+  "trackedDirtyPatchBytes": 21344,
+  "patchContentsCollected": false
+}

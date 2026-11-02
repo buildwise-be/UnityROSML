@@ -1,0 +1,55 @@
+/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/Testing/20261102-1114/Test.xml: 14 tests, 0 errors, 1 failure, 0 skipped
+- test_scene_effects
+  <<< failure message
+    -- run_test.py: invoking following command in '/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage':
+     - /home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_scene_effects --gtest_output=xml:/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_scene_effects.gtest.xml
+    Running main() from /opt/ros/jazzy/src/gtest_vendor/src/gtest_main.cc
+    [==========] Running 4 tests from 1 test suite.
+    [----------] Global test environment set-up.
+    [----------] 4 tests from SceneEffectsTest
+    [ RUN      ] SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder
+    [WARN] [1793618080.140013873] [moveit_1103223660]: exception thrown while creating node for logging: failed to create guard condition: context argument is null, at ./src/rcl/guard_condition.c:65
+    [WARN] [1793618080.140042850] [moveit_1103223660]: if rclcpp::init was not called, messages from this logger may be missing from /rosout
+    [INFO] [1793618080.140072193] [moveit_1103223660.moveit.core.robot_model]: Loading robot model 'scene_effect_test'...
+    [INFO] [1793618080.140078073] [moveit_1103223660.moveit.core.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+    /home/ros_ws/src/ur16e_mtc_gpio_stage/test/test_scene_effects.cpp:166: Failure
+    Value of: live_->getAllowedCollisionMatrix().getEntry("tile", "hand", permission)
+      Actual: false
+    Expected: true
+    
+    [  FAILED  ] SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder (8 ms)
+    [ RUN      ] SceneEffectsTest.SanitizingJointMessagesPreservesAttachmentAndSceneMetadata
+    [INFO] [1793618080.140728681] [moveit_1103223660.moveit.core.robot_model]: Loading robot model 'scene_effect_test'...
+    [INFO] [1793618080.140733666] [moveit_1103223660.moveit.core.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+    [       OK ] SceneEffectsTest.SanitizingJointMessagesPreservesAttachmentAndSceneMetadata (0 ms)
+    [ RUN      ] SceneEffectsTest.FullSceneSerializationRemainsAFullReplacementWithoutChangingMeasuredJoints
+    [INFO] [1793618080.140805968] [moveit_1103223660.moveit.core.robot_model]: Loading robot model 'scene_effect_test'...
+    [INFO] [1793618080.140808321] [moveit_1103223660.moveit.core.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+    [       OK ] SceneEffectsTest.FullSceneSerializationRemainsAFullReplacementWithoutChangingMeasuredJoints (0 ms)
+    [ RUN      ] SceneEffectsTest.EmptyFullSnapshotClearsTheWorldWhileEmptyDiffPreservesIt
+    [INFO] [1793618080.140868075] [moveit_1103223660.moveit.core.robot_model]: Loading robot model 'scene_effect_test'...
+    [INFO] [1793618080.140870136] [moveit_1103223660.moveit.core.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+    [       OK ] SceneEffectsTest.EmptyFullSnapshotClearsTheWorldWhileEmptyDiffPreservesIt (0 ms)
+    [----------] 4 tests from SceneEffectsTest (9 ms total)
+    
+    [----------] Global test environment tear-down
+    [==========] 4 tests from 1 test suite ran. (9 ms total)
+    [  PASSED  ] 3 tests.
+    [  FAILED  ] 1 test, listed below:
+    [  FAILED  ] SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder
+    
+     1 FAILED TEST
+    -- run_test.py: return code 1
+    -- run_test.py: inject classname prefix into gtest result file '/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_scene_effects.gtest.xml'
+    -- run_test.py: verify result file '/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_scene_effects.gtest.xml'
+  >>>
+/home/ros_ws/build_codex_fixture_20261102/ur16e_mtc_gpio_stage/test_results/ur16e_mtc_gpio_stage/test_scene_effects.gtest.xml: 4 tests, 0 errors, 1 failure, 0 skipped
+- ur16e_mtc_gpio_stage.SceneEffectsTest SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder (/home/ros_ws/src/ur16e_mtc_gpio_stage/test/test_scene_effects.cpp:96)
+  <<< failure message
+    /home/ros_ws/src/ur16e_mtc_gpio_stage/test/test_scene_effects.cpp:166
+    Value of: live_->getAllowedCollisionMatrix().getEntry("tile", "hand", permission)
+      Actual: false
+    Expected: true
+  >>>
+
+Summary: 130 tests, 0 errors, 2 failures, 0 skipped

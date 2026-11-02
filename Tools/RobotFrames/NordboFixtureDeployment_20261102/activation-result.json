@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "rolledBack": false,
+  "image": "sha256:a13990f26a3ef63e257431a63c70a60c2795ddb966d669b79de41d8eb8da91b2",
+  "sourceCheckout": "/home/nordbo/Unity/UR16UnityControlV2/UR16UnityControl-fixture-tiling",
+  "launch": {
+    "pid": 20,
+    "log": "/tmp/codex-fixture-bringup.log",
+    "args": [
+      "/usr/bin/python3",
+      "/opt/ros/jazzy/bin/ros2",
+      "launch",
+      "ur16e_bringup",
+      "ur16e_start.launch.py",
+      "ur_type:=ur16e",
+      "tool:=kenos_sl",
+      "robot_ip:=192.168.125.101",
+      "use_mock_hardware:=false",
+      "launch_moveit_rviz:=true"
+    ]
+  },
+  "allModelConsumersRestarted": true,
+  "robot_motion_requested": false,
+  "execution_requests_sent": false,
+  "io_commands_sent": false,
+  "production_plan_requests_sent": false
+}

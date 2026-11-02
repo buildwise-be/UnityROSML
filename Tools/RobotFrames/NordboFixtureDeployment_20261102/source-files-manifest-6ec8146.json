@@ -1,0 +1,1366 @@
+{
+  "schemaVersion": 1,
+  "commit": "6ec8146f99ab7ef670b45e39a203e35de6bbc295",
+  "branch": "codex/fixture-tiling",
+  "bundlePrerequisite": "131ea4eab7afd33857a17120c965bf3f6ac600c0",
+  "source": "Committed Git archive with core.autocrlf=false; every input entry byte-compared with git cat-file blob",
+  "lineEndings": "Text exported as LF; only two legacy Python wrapper blobs required normalization. Binary files unchanged.",
+  "normalizedLfFiles": [
+    "ros_ws/src/ur16e_mir250_control/launch/urmir_rsp_kenos.launch.py",
+    "ros_ws/src/ur16e_mir250_control/launch/urmir_rsp_none.launch.py"
+  ],
+  "packageCount": 10,
+  "packages": [
+    {
+      "name": "kenos_flexigrip",
+      "path": "ros_ws/src/kenos-flexigrip"
+    },
+    {
+      "name": "mir_description",
+      "path": "ros_ws/src/mir_description"
+    },
+    {
+      "name": "ur16e_bringup",
+      "path": "ros_ws/src/ur16e_bringup"
+    },
+    {
+      "name": "ur16e_commander",
+      "path": "ros_ws/src/ur16e_commander"
+    },
+    {
+      "name": "ur16e_environment",
+      "path": "ros_ws/src/ur16e_environment"
+    },
+    {
+      "name": "ur16e_interfaces",
+      "path": "ros_ws/src/ur16e_interfaces"
+    },
+    {
+      "name": "ur16e_mir250_control",
+      "path": "ros_ws/src/ur16e_mir250_control"
+    },
+    {
+      "name": "ur16e_mir250_description",
+      "path": "ros_ws/src/ur16e_mir250_description"
+    },
+    {
+      "name": "ur16e_mir250_moveit_config",
+      "path": "ros_ws/src/ur16e_mir250_moveit_config"
+    },
+    {
+      "name": "ur16e_mtc_gpio_stage",
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage"
+    }
+  ],
+  "fileCount": 163,
+  "files": [
+    {
+      "path": ".codex/framework.json",
+      "bytes": 4969,
+      "sha256": "9e2e1c1af8b98bb58e763361dc245562d588d7526850cc15cfe0e734ce01b778",
+      "committedBlobSha256": "9e2e1c1af8b98bb58e763361dc245562d588d7526850cc15cfe0e734ce01b778",
+      "archivePreNormalizationSha256": "9e2e1c1af8b98bb58e763361dc245562d588d7526850cc15cfe0e734ce01b778",
+      "mode": "0o664"
+    },
+    {
+      "path": ".dockerignore",
+      "bytes": 99,
+      "sha256": "8106b41ca1e43109b9c992b1bab8551a9c3bdac5890e7767263fb8cb0731da4a",
+      "committedBlobSha256": "8106b41ca1e43109b9c992b1bab8551a9c3bdac5890e7767263fb8cb0731da4a",
+      "archivePreNormalizationSha256": "8106b41ca1e43109b9c992b1bab8551a9c3bdac5890e7767263fb8cb0731da4a",
+      "mode": "0o664"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 3516,
+      "sha256": "7e2b04c0c08cae9c73160be82b89c5137347218e876389d6aa8f75c086a2bbf2",
+      "committedBlobSha256": "7e2b04c0c08cae9c73160be82b89c5137347218e876389d6aa8f75c086a2bbf2",
+      "archivePreNormalizationSha256": "7e2b04c0c08cae9c73160be82b89c5137347218e876389d6aa8f75c086a2bbf2",
+      "mode": "0o664"
+    },
+    {
+      "path": "docker/Dockerfile",
+      "bytes": 1675,
+      "sha256": "883f4fff0370eb35454066ce30ebf1a83a67e1c2386cbffe2fea9c330a3d8cb2",
+      "committedBlobSha256": "883f4fff0370eb35454066ce30ebf1a83a67e1c2386cbffe2fea9c330a3d8cb2",
+      "archivePreNormalizationSha256": "883f4fff0370eb35454066ce30ebf1a83a67e1c2386cbffe2fea9c330a3d8cb2",
+      "mode": "0o664"
+    },
+    {
+      "path": "docker/Dockerfile.base",
+      "bytes": 3304,
+      "sha256": "30e2e266f9bd7f08a2a9297b7d35ec221ab07dd90095068b0f172e3fddc3f2de",
+      "committedBlobSha256": "30e2e266f9bd7f08a2a9297b7d35ec221ab07dd90095068b0f172e3fddc3f2de",
+      "archivePreNormalizationSha256": "30e2e266f9bd7f08a2a9297b7d35ec221ab07dd90095068b0f172e3fddc3f2de",
+      "mode": "0o664"
+    },
+    {
+      "path": "docker/docker-compose.yaml",
+      "bytes": 1314,
+      "sha256": "9293d2913d0f469e7b005704ad293fe656e52fad2586cd3a6335c9f830e574c5",
+      "committedBlobSha256": "9293d2913d0f469e7b005704ad293fe656e52fad2586cd3a6335c9f830e574c5",
+      "archivePreNormalizationSha256": "9293d2913d0f469e7b005704ad293fe656e52fad2586cd3a6335c9f830e574c5",
+      "mode": "0o664"
+    },
+    {
+      "path": "docker/patches/mtc-pybind11-order.patch",
+      "bytes": 1163,
+      "sha256": "4854fade9810eacc7ba9bc0ca8bd7f6298280c597b2726faf1acd55be163bb2e",
+      "committedBlobSha256": "4854fade9810eacc7ba9bc0ca8bd7f6298280c597b2726faf1acd55be163bb2e",
+      "archivePreNormalizationSha256": "4854fade9810eacc7ba9bc0ca8bd7f6298280c597b2726faf1acd55be163bb2e",
+      "mode": "0o664"
+    },
+    {
+      "path": "docker/run_docker.sh",
+      "bytes": 1538,
+      "sha256": "efdb2fac3097f6422b741d45f31e9c2a7acfcc2b09011b1344bcd88cff76ed6e",
+      "committedBlobSha256": "efdb2fac3097f6422b741d45f31e9c2a7acfcc2b09011b1344bcd88cff76ed6e",
+      "archivePreNormalizationSha256": "efdb2fac3097f6422b741d45f31e9c2a7acfcc2b09011b1344bcd88cff76ed6e",
+      "mode": "0o775"
+    },
+    {
+      "path": "docs/ai-context/ARCHITECTURE_REVIEW.md",
+      "bytes": 25458,
+      "sha256": "a27db125573bd60906373fd8f3ac703cc72cd599a0ef96908969451d50b807e9",
+      "committedBlobSha256": "a27db125573bd60906373fd8f3ac703cc72cd599a0ef96908969451d50b807e9",
+      "archivePreNormalizationSha256": "a27db125573bd60906373fd8f3ac703cc72cd599a0ef96908969451d50b807e9",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/ai-context/CHANGELOG_AI.md",
+      "bytes": 18647,
+      "sha256": "f7553ebdf4ec3a4ebb5bab6da968d072b56b40d2a0e41cff81984e42b2782a16",
+      "committedBlobSha256": "f7553ebdf4ec3a4ebb5bab6da968d072b56b40d2a0e41cff81984e42b2782a16",
+      "archivePreNormalizationSha256": "f7553ebdf4ec3a4ebb5bab6da968d072b56b40d2a0e41cff81984e42b2782a16",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/ai-context/CURRENT_STATE.md",
+      "bytes": 14939,
+      "sha256": "7bf36303bb25b3f2e67c15aef61570846d3a4afdd4890c0ad9b822461ab0fd1e",
+      "committedBlobSha256": "7bf36303bb25b3f2e67c15aef61570846d3a4afdd4890c0ad9b822461ab0fd1e",
+      "archivePreNormalizationSha256": "7bf36303bb25b3f2e67c15aef61570846d3a4afdd4890c0ad9b822461ab0fd1e",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/ai-context/DECISIONS.md",
+      "bytes": 18648,
+      "sha256": "a3eb7a735e3ae702c9430df5d267a8dc9fe62c037654ffad7ad6aa40dbf3621f",
+      "committedBlobSha256": "a3eb7a735e3ae702c9430df5d267a8dc9fe62c037654ffad7ad6aa40dbf3621f",
+      "archivePreNormalizationSha256": "a3eb7a735e3ae702c9430df5d267a8dc9fe62c037654ffad7ad6aa40dbf3621f",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/ai-context/KNOWN_ISSUES.md",
+      "bytes": 12063,
+      "sha256": "bade498a8c09aa5e24e381007c234a8ca0a3a9b82f9373f2b65907bc95fef3e7",
+      "committedBlobSha256": "bade498a8c09aa5e24e381007c234a8ca0a3a9b82f9373f2b65907bc95fef3e7",
+      "archivePreNormalizationSha256": "bade498a8c09aa5e24e381007c234a8ca0a3a9b82f9373f2b65907bc95fef3e7",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/ai-context/ROADMAP.md",
+      "bytes": 1396,
+      "sha256": "83e125f1a861a1e3f689d1c61c80f827c3a0cd5299bc25cf9975b75c4c5fcdc1",
+      "committedBlobSha256": "83e125f1a861a1e3f689d1c61c80f827c3a0cd5299bc25cf9975b75c4c5fcdc1",
+      "archivePreNormalizationSha256": "83e125f1a861a1e3f689d1c61c80f827c3a0cd5299bc25cf9975b75c4c5fcdc1",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/ai-governance/AI_DEVELOPMENT_GUIDE.md",
+      "bytes": 7203,
+      "sha256": "6bfe6fc91fe486a456b03ba8b09f18f8bbd2ca3a6439b1a7a35a106a3a02e721",
+      "committedBlobSha256": "6bfe6fc91fe486a456b03ba8b09f18f8bbd2ca3a6439b1a7a35a106a3a02e721",
+      "archivePreNormalizationSha256": "6bfe6fc91fe486a456b03ba8b09f18f8bbd2ca3a6439b1a7a35a106a3a02e721",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/ai-governance/PROMPTS.md",
+      "bytes": 2646,
+      "sha256": "b24eeb3f628e25760bb9cf6f63bcee9e5cc1dbf69b46055ca811bcb55b329769",
+      "committedBlobSha256": "b24eeb3f628e25760bb9cf6f63bcee9e5cc1dbf69b46055ca811bcb55b329769",
+      "archivePreNormalizationSha256": "b24eeb3f628e25760bb9cf6f63bcee9e5cc1dbf69b46055ca811bcb55b329769",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/ai-governance/WIKI_REFRESH_GUIDE.md",
+      "bytes": 2819,
+      "sha256": "706600db4b76fe23c1bd02421f90d6195fbfac5d45c5c1cc1b3ce2ededb0671a",
+      "committedBlobSha256": "706600db4b76fe23c1bd02421f90d6195fbfac5d45c5c1cc1b3ce2ededb0671a",
+      "archivePreNormalizationSha256": "706600db4b76fe23c1bd02421f90d6195fbfac5d45c5c1cc1b3ce2ededb0671a",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/wiki/API.md",
+      "bytes": 25398,
+      "sha256": "7451d7acf4b3a0bb69e66122dc919c0794bf07a7f3879fa137bd1718b29793a2",
+      "committedBlobSha256": "7451d7acf4b3a0bb69e66122dc919c0794bf07a7f3879fa137bd1718b29793a2",
+      "archivePreNormalizationSha256": "7451d7acf4b3a0bb69e66122dc919c0794bf07a7f3879fa137bd1718b29793a2",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/wiki/BUILD_AND_TESTING.md",
+      "bytes": 52932,
+      "sha256": "9e9fb087b6fe5e2184e1be63003f68609feabd2fdb9e37e3463dfd0d2f4de605",
+      "committedBlobSha256": "9e9fb087b6fe5e2184e1be63003f68609feabd2fdb9e37e3463dfd0d2f4de605",
+      "archivePreNormalizationSha256": "9e9fb087b6fe5e2184e1be63003f68609feabd2fdb9e37e3463dfd0d2f4de605",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/wiki/FIXTURE_TILING.md",
+      "bytes": 17286,
+      "sha256": "1f305562ee78233c112c5cc56a5a883aad847cff323f99ed5dd6d1f7f9d05d4e",
+      "committedBlobSha256": "1f305562ee78233c112c5cc56a5a883aad847cff323f99ed5dd6d1f7f9d05d4e",
+      "archivePreNormalizationSha256": "1f305562ee78233c112c5cc56a5a883aad847cff323f99ed5dd6d1f7f9d05d4e",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/wiki/INDEX.md",
+      "bytes": 2287,
+      "sha256": "4b8714cee32c2e5fdf8b78335c967a861f2267ab7b80b477b116dcdb40ab6e39",
+      "committedBlobSha256": "4b8714cee32c2e5fdf8b78335c967a861f2267ab7b80b477b116dcdb40ab6e39",
+      "archivePreNormalizationSha256": "4b8714cee32c2e5fdf8b78335c967a861f2267ab7b80b477b116dcdb40ab6e39",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/wiki/OVERVIEW.md",
+      "bytes": 7742,
+      "sha256": "1472dcd42dfd76f356e69f20c02990699bf61bca47e4a35a023877a17bae1ee5",
+      "committedBlobSha256": "1472dcd42dfd76f356e69f20c02990699bf61bca47e4a35a023877a17bae1ee5",
+      "archivePreNormalizationSha256": "1472dcd42dfd76f356e69f20c02990699bf61bca47e4a35a023877a17bae1ee5",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/wiki/ROBOT_AND_TOOLS.md",
+      "bytes": 25473,
+      "sha256": "f2ecc41435388e3629f3510932073ef853e9a0ad681f231be5ba617a321c112c",
+      "committedBlobSha256": "f2ecc41435388e3629f3510932073ef853e9a0ad681f231be5ba617a321c112c",
+      "archivePreNormalizationSha256": "f2ecc41435388e3629f3510932073ef853e9a0ad681f231be5ba617a321c112c",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/wiki/TASK_EXECUTION.md",
+      "bytes": 29055,
+      "sha256": "755e6b374e5dbd6f8ac111f17b5845a9bc9d5ac181de45eb3221af7ddf1bb1be",
+      "committedBlobSha256": "755e6b374e5dbd6f8ac111f17b5845a9bc9d5ac181de45eb3221af7ddf1bb1be",
+      "archivePreNormalizationSha256": "755e6b374e5dbd6f8ac111f17b5845a9bc9d5ac181de45eb3221af7ddf1bb1be",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/wiki/UR16E_LAUNCH_EXPLORER.html",
+      "bytes": 109691,
+      "sha256": "5aa7459738fa52bda93de482583049746cef4aef16c0efab9b886c37bbcad30f",
+      "committedBlobSha256": "5aa7459738fa52bda93de482583049746cef4aef16c0efab9b886c37bbcad30f",
+      "archivePreNormalizationSha256": "5aa7459738fa52bda93de482583049746cef4aef16c0efab9b886c37bbcad30f",
+      "mode": "0o664"
+    },
+    {
+      "path": "docs/wiki/UR16E_RUNTIME_ARCHITECTURE.html",
+      "bytes": 41020,
+      "sha256": "182181aa8daeed3bccacb00054057d8e8c35b086238bd2e46338f803f2fca4a4",
+      "committedBlobSha256": "182181aa8daeed3bccacb00054057d8e8c35b086238bd2e46338f803f2fca4a4",
+      "archivePreNormalizationSha256": "182181aa8daeed3bccacb00054057d8e8c35b086238bd2e46338f803f2fca4a4",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/kenos-flexigrip/CMakeLists.txt",
+      "bytes": 474,
+      "sha256": "9d9f930dce45f511bc01e1b5bfc2f1cae0ab786e51d0685f506fa4defb3efa83",
+      "committedBlobSha256": "9d9f930dce45f511bc01e1b5bfc2f1cae0ab786e51d0685f506fa4defb3efa83",
+      "archivePreNormalizationSha256": "9d9f930dce45f511bc01e1b5bfc2f1cae0ab786e51d0685f506fa4defb3efa83",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/kenos-flexigrip/meshes/collision/kfg_collision.dae",
+      "bytes": 4806,
+      "sha256": "c226e7030034c29c5e3d9f6cf9bbdb586a173f1cb8d26227e77b3733aa52bbea",
+      "committedBlobSha256": "c226e7030034c29c5e3d9f6cf9bbdb586a173f1cb8d26227e77b3733aa52bbea",
+      "archivePreNormalizationSha256": "c226e7030034c29c5e3d9f6cf9bbdb586a173f1cb8d26227e77b3733aa52bbea",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/kenos-flexigrip/meshes/collision/kfg_collision_simple.dae",
+      "bytes": 4810,
+      "sha256": "e9f9527cbe3496c197244cd023a0d47a470a2d6cf98e561d07fcfe6f54e1713e",
+      "committedBlobSha256": "e9f9527cbe3496c197244cd023a0d47a470a2d6cf98e561d07fcfe6f54e1713e",
+      "archivePreNormalizationSha256": "e9f9527cbe3496c197244cd023a0d47a470a2d6cf98e561d07fcfe6f54e1713e",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/kenos-flexigrip/meshes/visual/kfg.dae",
+      "bytes": 1498907,
+      "sha256": "191a7ebcfe6ca140255c4a0af9db392096e1172b075f9c7b1900ddb9f116e6d1",
+      "committedBlobSha256": "191a7ebcfe6ca140255c4a0af9db392096e1172b075f9c7b1900ddb9f116e6d1",
+      "archivePreNormalizationSha256": "191a7ebcfe6ca140255c4a0af9db392096e1172b075f9c7b1900ddb9f116e6d1",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/kenos-flexigrip/package.xml",
+      "bytes": 700,
+      "sha256": "7b23061d4ae9553ef18aa7dd82c30503b04ee9f7adbdef4e406c8b84c0a9a146",
+      "committedBlobSha256": "7b23061d4ae9553ef18aa7dd82c30503b04ee9f7adbdef4e406c8b84c0a9a146",
+      "archivePreNormalizationSha256": "7b23061d4ae9553ef18aa7dd82c30503b04ee9f7adbdef4e406c8b84c0a9a146",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/kenos-flexigrip/test/test_kenos_sl.py",
+      "bytes": 10382,
+      "sha256": "ec850ff0560f7d5baa48796a93b49ae9e98cd9dd3494e69a0beebce90692609b",
+      "committedBlobSha256": "ec850ff0560f7d5baa48796a93b49ae9e98cd9dd3494e69a0beebce90692609b",
+      "archivePreNormalizationSha256": "ec850ff0560f7d5baa48796a93b49ae9e98cd9dd3494e69a0beebce90692609b",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/kenos-flexigrip/urdf/kenos.urdf.xacro",
+      "bytes": 1830,
+      "sha256": "1fe2360319eb9aa2db3f5ce50926da6831fcd4ba21c3705ff554c295e250fe7b",
+      "committedBlobSha256": "1fe2360319eb9aa2db3f5ce50926da6831fcd4ba21c3705ff554c295e250fe7b",
+      "archivePreNormalizationSha256": "1fe2360319eb9aa2db3f5ce50926da6831fcd4ba21c3705ff554c295e250fe7b",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/kenos-flexigrip/urdf/kenos_sl.urdf.xacro",
+      "bytes": 5556,
+      "sha256": "6cea63d43dd9027abf6be3e5c305da72a204896d64b88a39caf3760b1b459d93",
+      "committedBlobSha256": "6cea63d43dd9027abf6be3e5c305da72a204896d64b88a39caf3760b1b459d93",
+      "archivePreNormalizationSha256": "6cea63d43dd9027abf6be3e5c305da72a204896d64b88a39caf3760b1b459d93",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/.clang-format",
+      "bytes": 1928,
+      "sha256": "a371d328dfb0d09c77e20ef4f6c60279cb7932f47e863f48bddd42dcb2b692c0",
+      "committedBlobSha256": "a371d328dfb0d09c77e20ef4f6c60279cb7932f47e863f48bddd42dcb2b692c0",
+      "archivePreNormalizationSha256": "a371d328dfb0d09c77e20ef4f6c60279cb7932f47e863f48bddd42dcb2b692c0",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/.markdownlint.yaml",
+      "bytes": 11053,
+      "sha256": "1df38332fa58f2f8fe246fcaada142729459dea13540817b914908f9bcdb3db6",
+      "committedBlobSha256": "1df38332fa58f2f8fe246fcaada142729459dea13540817b914908f9bcdb3db6",
+      "archivePreNormalizationSha256": "1df38332fa58f2f8fe246fcaada142729459dea13540817b914908f9bcdb3db6",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/CMakeLists.txt",
+      "bytes": 348,
+      "sha256": "cdecca8be74c3e351e4b9456e058fb5d8fd19bc869dfad114bc81455b1d718e7",
+      "committedBlobSha256": "cdecca8be74c3e351e4b9456e058fb5d8fd19bc869dfad114bc81455b1d718e7",
+      "archivePreNormalizationSha256": "cdecca8be74c3e351e4b9456e058fb5d8fd19bc869dfad114bc81455b1d718e7",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/config/diffdrive_controller.yaml",
+      "bytes": 1896,
+      "sha256": "645b2faa06b133439a52b551dca5ef01ace2fd6df3fd1926679286b87443ba96",
+      "committedBlobSha256": "645b2faa06b133439a52b551dca5ef01ace2fd6df3fd1926679286b87443ba96",
+      "archivePreNormalizationSha256": "645b2faa06b133439a52b551dca5ef01ace2fd6df3fd1926679286b87443ba96",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/config/joint_state_controller.yaml",
+      "bytes": 158,
+      "sha256": "b67c21f0638f41b94bffbb14f28b3e075f1c7ff55d237b77f22f68f8eb9dbe0c",
+      "committedBlobSha256": "b67c21f0638f41b94bffbb14f28b3e075f1c7ff55d237b77f22f68f8eb9dbe0c",
+      "archivePreNormalizationSha256": "b67c21f0638f41b94bffbb14f28b3e075f1c7ff55d237b77f22f68f8eb9dbe0c",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/launch/mir_debug_urdf.launch",
+      "bytes": 817,
+      "sha256": "61902bf74c7aa4850d5baca38f6be697381ee3362d78151ae54e083518037b3e",
+      "committedBlobSha256": "61902bf74c7aa4850d5baca38f6be697381ee3362d78151ae54e083518037b3e",
+      "archivePreNormalizationSha256": "61902bf74c7aa4850d5baca38f6be697381ee3362d78151ae54e083518037b3e",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/launch/upload_mir_urdf.launch",
+      "bytes": 406,
+      "sha256": "c1f6285271d3033fb911dcf95b0620364cc7896917e1c3e279c53c86d22078c1",
+      "committedBlobSha256": "c1f6285271d3033fb911dcf95b0620364cc7896917e1c3e279c53c86d22078c1",
+      "archivePreNormalizationSha256": "c1f6285271d3033fb911dcf95b0620364cc7896917e1c3e279c53c86d22078c1",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/meshes/collision/caster_wheel_base.stl",
+      "bytes": 45334,
+      "sha256": "62767707f0d155d833018bcf471e2f8c1743227330b32c53a523926a0ebf2fb0",
+      "committedBlobSha256": "62767707f0d155d833018bcf471e2f8c1743227330b32c53a523926a0ebf2fb0",
+      "archivePreNormalizationSha256": "62767707f0d155d833018bcf471e2f8c1743227330b32c53a523926a0ebf2fb0",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/meshes/collision/mir_100_base.stl",
+      "bytes": 146434,
+      "sha256": "199d4a951b0618a717e129a44f1b6ca5e77f7060a15a7618cd98e6980e070efe",
+      "committedBlobSha256": "199d4a951b0618a717e129a44f1b6ca5e77f7060a15a7618cd98e6980e070efe",
+      "archivePreNormalizationSha256": "199d4a951b0618a717e129a44f1b6ca5e77f7060a15a7618cd98e6980e070efe",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/meshes/collision/mir_250_base.stl",
+      "bytes": 222184,
+      "sha256": "7ebf7cf1b927fe4a5c476d469e8bb24511ccfe07c1333ded603dd41ab1844400",
+      "committedBlobSha256": "7ebf7cf1b927fe4a5c476d469e8bb24511ccfe07c1333ded603dd41ab1844400",
+      "archivePreNormalizationSha256": "7ebf7cf1b927fe4a5c476d469e8bb24511ccfe07c1333ded603dd41ab1844400",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/meshes/visual/caster_wheel_base.stl",
+      "bytes": 906134,
+      "sha256": "59d8836ee92161648630d93b9827fd8d2a8b9337026b9b93a650af185612cf03",
+      "committedBlobSha256": "59d8836ee92161648630d93b9827fd8d2a8b9337026b9b93a650af185612cf03",
+      "archivePreNormalizationSha256": "59d8836ee92161648630d93b9827fd8d2a8b9337026b9b93a650af185612cf03",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/meshes/visual/mir_100_base.stl",
+      "bytes": 1881184,
+      "sha256": "36ef0329a4f6c457b7aea2473d5131d7a1e431ab7bb5ffbb7402b2f9e629a660",
+      "committedBlobSha256": "36ef0329a4f6c457b7aea2473d5131d7a1e431ab7bb5ffbb7402b2f9e629a660",
+      "archivePreNormalizationSha256": "36ef0329a4f6c457b7aea2473d5131d7a1e431ab7bb5ffbb7402b2f9e629a660",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/meshes/visual/mir_250_base.stl",
+      "bytes": 1160484,
+      "sha256": "4c9979fdf96bf03157b417a5858394bfe6bc2aff6ecb465619c52711033c96a4",
+      "committedBlobSha256": "4c9979fdf96bf03157b417a5858394bfe6bc2aff6ecb465619c52711033c96a4",
+      "archivePreNormalizationSha256": "4c9979fdf96bf03157b417a5858394bfe6bc2aff6ecb465619c52711033c96a4",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/meshes/visual/sick_lms-100.stl",
+      "bytes": 435734,
+      "sha256": "20965a33f0e0474a646acb367ecc5b934e3756907a5daaf8dc35b4cdcd693a95",
+      "committedBlobSha256": "20965a33f0e0474a646acb367ecc5b934e3756907a5daaf8dc35b4cdcd693a95",
+      "archivePreNormalizationSha256": "20965a33f0e0474a646acb367ecc5b934e3756907a5daaf8dc35b4cdcd693a95",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/meshes/visual/wheel.stl",
+      "bytes": 31084,
+      "sha256": "271c0010537d172e7a5ecc16a15efa2351c6b9bcb453e47ab17aebc84be48f72",
+      "committedBlobSha256": "271c0010537d172e7a5ecc16a15efa2351c6b9bcb453e47ab17aebc84be48f72",
+      "archivePreNormalizationSha256": "271c0010537d172e7a5ecc16a15efa2351c6b9bcb453e47ab17aebc84be48f72",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/package.xml",
+      "bytes": 632,
+      "sha256": "a84175043bdf6673ec3f5f4077839400b64e88f9d3bcc81ade16653b8ffeb0fe",
+      "committedBlobSha256": "a84175043bdf6673ec3f5f4077839400b64e88f9d3bcc81ade16653b8ffeb0fe",
+      "archivePreNormalizationSha256": "a84175043bdf6673ec3f5f4077839400b64e88f9d3bcc81ade16653b8ffeb0fe",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/rviz/mir_description.rviz",
+      "bytes": 6395,
+      "sha256": "9505f72e9fb83dce91e6aecc955aacf9bac7e765c82d5d2e561409b251a0df09",
+      "committedBlobSha256": "9505f72e9fb83dce91e6aecc955aacf9bac7e765c82d5d2e561409b251a0df09",
+      "archivePreNormalizationSha256": "9505f72e9fb83dce91e6aecc955aacf9bac7e765c82d5d2e561409b251a0df09",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/urdf/include/common.gazebo.xacro",
+      "bytes": 520,
+      "sha256": "829d232401d732716682b8785d64352be2e9616d17c030a99369fe49d4018222",
+      "committedBlobSha256": "829d232401d732716682b8785d64352be2e9616d17c030a99369fe49d4018222",
+      "archivePreNormalizationSha256": "829d232401d732716682b8785d64352be2e9616d17c030a99369fe49d4018222",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/urdf/include/common_properties.urdf.xacro",
+      "bytes": 2919,
+      "sha256": "eeb0dd1a796df04e9d91625a0f98d2b1eb06d688923613b7b2c195a04e636082",
+      "committedBlobSha256": "eeb0dd1a796df04e9d91625a0f98d2b1eb06d688923613b7b2c195a04e636082",
+      "archivePreNormalizationSha256": "eeb0dd1a796df04e9d91625a0f98d2b1eb06d688923613b7b2c195a04e636082",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/urdf/include/imu.gazebo.urdf.xacro",
+      "bytes": 1634,
+      "sha256": "11b1b70021601930315183e91c91e9e3e98c968389884dcc2f79e8f1b9fd4a17",
+      "committedBlobSha256": "11b1b70021601930315183e91c91e9e3e98c968389884dcc2f79e8f1b9fd4a17",
+      "archivePreNormalizationSha256": "11b1b70021601930315183e91c91e9e3e98c968389884dcc2f79e8f1b9fd4a17",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/urdf/include/mir.gazebo.xacro",
+      "bytes": 2633,
+      "sha256": "3111b7288d215e0336d326cc564a6a586f72c5301b1855232dd6ffc41c61d0c4",
+      "committedBlobSha256": "3111b7288d215e0336d326cc564a6a586f72c5301b1855232dd6ffc41c61d0c4",
+      "archivePreNormalizationSha256": "3111b7288d215e0336d326cc564a6a586f72c5301b1855232dd6ffc41c61d0c4",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/urdf/include/mir.transmission.xacro",
+      "bytes": 944,
+      "sha256": "21d5aff08471376312ffab6d4ad71e7693b0f26e75f0f76df690fb207606bbb8",
+      "committedBlobSha256": "21d5aff08471376312ffab6d4ad71e7693b0f26e75f0f76df690fb207606bbb8",
+      "archivePreNormalizationSha256": "21d5aff08471376312ffab6d4ad71e7693b0f26e75f0f76df690fb207606bbb8",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/urdf/include/mir_100_v1.urdf.xacro",
+      "bytes": 386,
+      "sha256": "8ead9e6745bf74b228b39cc418d917a3a89ce99ab8227459df541d566e96e656",
+      "committedBlobSha256": "8ead9e6745bf74b228b39cc418d917a3a89ce99ab8227459df541d566e96e656",
+      "archivePreNormalizationSha256": "8ead9e6745bf74b228b39cc418d917a3a89ce99ab8227459df541d566e96e656",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/urdf/include/mir_v1.urdf.xacro",
+      "bytes": 11142,
+      "sha256": "1d5161320477d277980f73493eea96f942a4ebaaa0bca9c6979cc4a7dd62504b",
+      "committedBlobSha256": "1d5161320477d277980f73493eea96f942a4ebaaa0bca9c6979cc4a7dd62504b",
+      "archivePreNormalizationSha256": "1d5161320477d277980f73493eea96f942a4ebaaa0bca9c6979cc4a7dd62504b",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/urdf/include/sick_s300.urdf.xacro",
+      "bytes": 2572,
+      "sha256": "513fd7fe6243e14a7bbc0ef414f8f1d8ce4e948d5824b36b395901239d5db2c5",
+      "committedBlobSha256": "513fd7fe6243e14a7bbc0ef414f8f1d8ce4e948d5824b36b395901239d5db2c5",
+      "archivePreNormalizationSha256": "513fd7fe6243e14a7bbc0ef414f8f1d8ce4e948d5824b36b395901239d5db2c5",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/mir_description/urdf/mir.urdf.xacro",
+      "bytes": 1051,
+      "sha256": "2b3650f2a4da13952b3ea64c222401f659d6cb036a48c709edf16f679c725943",
+      "committedBlobSha256": "2b3650f2a4da13952b3ea64c222401f659d6cb036a48c709edf16f679c725943",
+      "archivePreNormalizationSha256": "2b3650f2a4da13952b3ea64c222401f659d6cb036a48c709edf16f679c725943",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_bringup/CMakeLists.txt",
+      "bytes": 654,
+      "sha256": "a358138d0793c9f7827813e4f8935f043641aae7364a4ef6e13252e28ab6c584",
+      "committedBlobSha256": "a358138d0793c9f7827813e4f8935f043641aae7364a4ef6e13252e28ab6c584",
+      "archivePreNormalizationSha256": "a358138d0793c9f7827813e4f8935f043641aae7364a4ef6e13252e28ab6c584",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_bringup/launch/ur16e_start.launch.py",
+      "bytes": 11744,
+      "sha256": "cde00e41eec54d9899830b38a54bb10ad9907c7b71dbab7b28f745b681788a32",
+      "committedBlobSha256": "cde00e41eec54d9899830b38a54bb10ad9907c7b71dbab7b28f745b681788a32",
+      "archivePreNormalizationSha256": "cde00e41eec54d9899830b38a54bb10ad9907c7b71dbab7b28f745b681788a32",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_bringup/package.xml",
+      "bytes": 1298,
+      "sha256": "dc5a324c3e257c3a62778dea22d21c9d4cd183f3f8ac74afde4ffdfad440397a",
+      "committedBlobSha256": "dc5a324c3e257c3a62778dea22d21c9d4cd183f3f8ac74afde4ffdfad440397a",
+      "archivePreNormalizationSha256": "dc5a324c3e257c3a62778dea22d21c9d4cd183f3f8ac74afde4ffdfad440397a",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_bringup/test/test_model_consistency.py",
+      "bytes": 19974,
+      "sha256": "d6d41163504db9634d1461bd18726008bc9bb04dcdecf46d1c0c6d6b6997c155",
+      "committedBlobSha256": "d6d41163504db9634d1461bd18726008bc9bb04dcdecf46d1c0c6d6b6997c155",
+      "archivePreNormalizationSha256": "d6d41163504db9634d1461bd18726008bc9bb04dcdecf46d1c0c6d6b6997c155",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_commander/CMakeLists.txt",
+      "bytes": 1810,
+      "sha256": "26b9dd548b8f8ff8f061970b083654f37c4af0f434cc121fc50c1777bcf55dec",
+      "committedBlobSha256": "26b9dd548b8f8ff8f061970b083654f37c4af0f434cc121fc50c1777bcf55dec",
+      "archivePreNormalizationSha256": "26b9dd548b8f8ff8f061970b083654f37c4af0f434cc121fc50c1777bcf55dec",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_commander/include/ur16e_commander/command_sequence.hpp",
+      "bytes": 1268,
+      "sha256": "e3de3c635025a6541e143b03431fc7f1e2c53cc923c75becb6f814f22b2c483a",
+      "committedBlobSha256": "e3de3c635025a6541e143b03431fc7f1e2c53cc923c75becb6f814f22b2c483a",
+      "archivePreNormalizationSha256": "e3de3c635025a6541e143b03431fc7f1e2c53cc923c75becb6f814f22b2c483a",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_commander/include/ur16e_commander/pose_targets.hpp",
+      "bytes": 6297,
+      "sha256": "eed742a35a14b1f0b957feb99fdc1841ff67f76fd9658fd5528f14ce01e1e667",
+      "committedBlobSha256": "eed742a35a14b1f0b957feb99fdc1841ff67f76fd9658fd5528f14ce01e1e667",
+      "archivePreNormalizationSha256": "eed742a35a14b1f0b957feb99fdc1841ff67f76fd9658fd5528f14ce01e1e667",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_commander/package.xml",
+      "bytes": 972,
+      "sha256": "b9a5ec83c9662eb4353f65ec40a71288d85e3cc2f2f30354269af9a1e206b45e",
+      "committedBlobSha256": "b9a5ec83c9662eb4353f65ec40a71288d85e3cc2f2f30354269af9a1e206b45e",
+      "archivePreNormalizationSha256": "b9a5ec83c9662eb4353f65ec40a71288d85e3cc2f2f30354269af9a1e206b45e",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_commander/src/test_moveit.cpp",
+      "bytes": 2672,
+      "sha256": "e757dd964ac90a13ef901ea1ae9a47e23fcf4fe6483ab407d9a41a0d91aa2a74",
+      "committedBlobSha256": "e757dd964ac90a13ef901ea1ae9a47e23fcf4fe6483ab407d9a41a0d91aa2a74",
+      "archivePreNormalizationSha256": "e757dd964ac90a13ef901ea1ae9a47e23fcf4fe6483ab407d9a41a0d91aa2a74",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_commander/src/test_send_pose.sh",
+      "bytes": 824,
+      "sha256": "157cc3f77bae573c5e24803f247dec913713e5542d54d0f3f06b9064eb97963b",
+      "committedBlobSha256": "157cc3f77bae573c5e24803f247dec913713e5542d54d0f3f06b9064eb97963b",
+      "archivePreNormalizationSha256": "157cc3f77bae573c5e24803f247dec913713e5542d54d0f3f06b9064eb97963b",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_commander/src/test_send_poseArray.sh",
+      "bytes": 1143,
+      "sha256": "0984913925d8232a51cdc52ee64daa01a10c115fdeb8f933f6177f36fc68d9f1",
+      "committedBlobSha256": "0984913925d8232a51cdc52ee64daa01a10c115fdeb8f933f6177f36fc68d9f1",
+      "archivePreNormalizationSha256": "0984913925d8232a51cdc52ee64daa01a10c115fdeb8f933f6177f36fc68d9f1",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_commander/src/ur16e_commander.cpp",
+      "bytes": 11151,
+      "sha256": "51a09ad94a7de4c6310e04d6b7a89a5cec1aedfb853ce88e92d9ba8225f4f7b4",
+      "committedBlobSha256": "51a09ad94a7de4c6310e04d6b7a89a5cec1aedfb853ce88e92d9ba8225f4f7b4",
+      "archivePreNormalizationSha256": "51a09ad94a7de4c6310e04d6b7a89a5cec1aedfb853ce88e92d9ba8225f4f7b4",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_commander/test/test_command_sequence.cpp",
+      "bytes": 7904,
+      "sha256": "8559a7b75258e796a6b7fa7781164a3cf7b895fa481d52d7abff3e6c0627b172",
+      "committedBlobSha256": "8559a7b75258e796a6b7fa7781164a3cf7b895fa481d52d7abff3e6c0627b172",
+      "archivePreNormalizationSha256": "8559a7b75258e796a6b7fa7781164a3cf7b895fa481d52d7abff3e6c0627b172",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_commander/test/test_pose_targets.cpp",
+      "bytes": 9504,
+      "sha256": "819ef93949736af355687df8fb423c8dacee3b340f8b418a87782e677e668673",
+      "committedBlobSha256": "819ef93949736af355687df8fb423c8dacee3b340f8b418a87782e677e668673",
+      "archivePreNormalizationSha256": "819ef93949736af355687df8fb423c8dacee3b340f8b418a87782e677e668673",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_environment/CMakeLists.txt",
+      "bytes": 743,
+      "sha256": "84fe883ea87b6f86b4e5d73da5c48f7716f67d52c4dc7da08398b4e31fd0da55",
+      "committedBlobSha256": "84fe883ea87b6f86b4e5d73da5c48f7716f67d52c4dc7da08398b4e31fd0da55",
+      "archivePreNormalizationSha256": "84fe883ea87b6f86b4e5d73da5c48f7716f67d52c4dc7da08398b4e31fd0da55",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_environment/package.xml",
+      "bytes": 788,
+      "sha256": "ac9b2c86caf1ce6753d369cc3c69d9cca993a80537e52b1763cf1045cc3723dc",
+      "committedBlobSha256": "ac9b2c86caf1ce6753d369cc3c69d9cca993a80537e52b1763cf1045cc3723dc",
+      "archivePreNormalizationSha256": "ac9b2c86caf1ce6753d369cc3c69d9cca993a80537e52b1763cf1045cc3723dc",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_environment/src/environment_updater.cpp",
+      "bytes": 5378,
+      "sha256": "6220186ca3d1e26b317bdbcc54cddbbc6eefbf936235d6401e28033c59794b28",
+      "committedBlobSha256": "6220186ca3d1e26b317bdbcc54cddbbc6eefbf936235d6401e28033c59794b28",
+      "archivePreNormalizationSha256": "6220186ca3d1e26b317bdbcc54cddbbc6eefbf936235d6401e28033c59794b28",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_interfaces/CMakeLists.txt",
+      "bytes": 767,
+      "sha256": "ad512eae2313b7a43131c4eea2dd85556a5ca27ad580acc4f8f2670352b0499b",
+      "committedBlobSha256": "ad512eae2313b7a43131c4eea2dd85556a5ca27ad580acc4f8f2670352b0499b",
+      "archivePreNormalizationSha256": "ad512eae2313b7a43131c4eea2dd85556a5ca27ad580acc4f8f2670352b0499b",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_interfaces/msg/Box.msg",
+      "bytes": 171,
+      "sha256": "baa81759252ba42b10e6074a8a235e1bd422aff321e856e9a5af5e5ac6d81cd8",
+      "committedBlobSha256": "baa81759252ba42b10e6074a8a235e1bd422aff321e856e9a5af5e5ac6d81cd8",
+      "archivePreNormalizationSha256": "baa81759252ba42b10e6074a8a235e1bd422aff321e856e9a5af5e5ac6d81cd8",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_interfaces/msg/FixtureTilingTask.msg",
+      "bytes": 1621,
+      "sha256": "c58532a0cfdb9137a8ac13a8000c82974133698c73c31e27c50376b41f9129b4",
+      "committedBlobSha256": "c58532a0cfdb9137a8ac13a8000c82974133698c73c31e27c50376b41f9129b4",
+      "archivePreNormalizationSha256": "c58532a0cfdb9137a8ac13a8000c82974133698c73c31e27c50376b41f9129b4",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_interfaces/msg/PickPlacePoses.msg",
+      "bytes": 72,
+      "sha256": "e0341cff23de5976723d0f7aeacc52b629b9497a146efdc3ec1bd3098f99ab40",
+      "committedBlobSha256": "e0341cff23de5976723d0f7aeacc52b629b9497a146efdc3ec1bd3098f99ab40",
+      "archivePreNormalizationSha256": "e0341cff23de5976723d0f7aeacc52b629b9497a146efdc3ec1bd3098f99ab40",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_interfaces/msg/PoseArrayRpy.msg",
+      "bytes": 122,
+      "sha256": "2e404cdc54ae16b42c5a251385431211ea834de055b7788cf41cff67ec19da4e",
+      "committedBlobSha256": "2e404cdc54ae16b42c5a251385431211ea834de055b7788cf41cff67ec19da4e",
+      "archivePreNormalizationSha256": "2e404cdc54ae16b42c5a251385431211ea834de055b7788cf41cff67ec19da4e",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_interfaces/msg/PoseRpy.msg",
+      "bytes": 125,
+      "sha256": "0deaf3b561fd19a85c7ffa3cb8bfc0a50b0fa0a433a3ff0a115b2e0e5535cd0b",
+      "committedBlobSha256": "0deaf3b561fd19a85c7ffa3cb8bfc0a50b0fa0a433a3ff0a115b2e0e5535cd0b",
+      "archivePreNormalizationSha256": "0deaf3b561fd19a85c7ffa3cb8bfc0a50b0fa0a433a3ff0a115b2e0e5535cd0b",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_interfaces/msg/Rpy.msg",
+      "bytes": 99,
+      "sha256": "24a8323a0af9f2bf831749c7a8993be9f01bfaa33110de24da265a6a82d4075d",
+      "committedBlobSha256": "24a8323a0af9f2bf831749c7a8993be9f01bfaa33110de24da265a6a82d4075d",
+      "archivePreNormalizationSha256": "24a8323a0af9f2bf831749c7a8993be9f01bfaa33110de24da265a6a82d4075d",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_interfaces/package.xml",
+      "bytes": 801,
+      "sha256": "3ed38bde7d49a35e325c3f965baae300e85b59d1cd9533da121a8f87cfe6f13a",
+      "committedBlobSha256": "3ed38bde7d49a35e325c3f965baae300e85b59d1cd9533da121a8f87cfe6f13a",
+      "archivePreNormalizationSha256": "3ed38bde7d49a35e325c3f965baae300e85b59d1cd9533da121a8f87cfe6f13a",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_interfaces/srv/SaveFixtureCalibration.srv",
+      "bytes": 378,
+      "sha256": "262806166d3ca34bdd03c97b74137b7a59675e7c3ce587a2ac200fa0b9172fcc",
+      "committedBlobSha256": "262806166d3ca34bdd03c97b74137b7a59675e7c3ce587a2ac200fa0b9172fcc",
+      "archivePreNormalizationSha256": "262806166d3ca34bdd03c97b74137b7a59675e7c3ce587a2ac200fa0b9172fcc",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/CMakeLists.txt",
+      "bytes": 1903,
+      "sha256": "30829bea9d40b409c76c5b4805ec8b29c49f79f684f657789c8693574992f976",
+      "committedBlobSha256": "30829bea9d40b409c76c5b4805ec8b29c49f79f684f657789c8693574992f976",
+      "archivePreNormalizationSha256": "30829bea9d40b409c76c5b4805ec8b29c49f79f684f657789c8693574992f976",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/config/gpio_controllers.yaml",
+      "bytes": 263,
+      "sha256": "9f8af94333ed8733660daab467795d2ce66482eddb5078c872b81e4edde8d424",
+      "committedBlobSha256": "9f8af94333ed8733660daab467795d2ce66482eddb5078c872b81e4edde8d424",
+      "archivePreNormalizationSha256": "9f8af94333ed8733660daab467795d2ce66482eddb5078c872b81e4edde8d424",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/config/ur16e_calibration.yaml",
+      "bytes": 1009,
+      "sha256": "8af0d7b730534cd55fc22aaac90f6b19fa952dd919555c7d4d10aae120b1fa6c",
+      "committedBlobSha256": "8af0d7b730534cd55fc22aaac90f6b19fa952dd919555c7d4d10aae120b1fa6c",
+      "archivePreNormalizationSha256": "8af0d7b730534cd55fc22aaac90f6b19fa952dd919555c7d4d10aae120b1fa6c",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/config/ur16e_controllers.yaml",
+      "bytes": 6748,
+      "sha256": "e150a731da5273119f4d691f9a80cbd2b7e6535283b6ba4f223512f85c7161b4",
+      "committedBlobSha256": "e150a731da5273119f4d691f9a80cbd2b7e6535283b6ba4f223512f85c7161b4",
+      "archivePreNormalizationSha256": "e150a731da5273119f4d691f9a80cbd2b7e6535283b6ba4f223512f85c7161b4",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/config/ur16e_update_rate.yaml",
+      "bytes": 65,
+      "sha256": "9fc40bda4501757d50caf5595ee5b38bd6bfe63b3037db00d4e540c983656561",
+      "committedBlobSha256": "9fc40bda4501757d50caf5595ee5b38bd6bfe63b3037db00d4e540c983656561",
+      "archivePreNormalizationSha256": "9fc40bda4501757d50caf5595ee5b38bd6bfe63b3037db00d4e540c983656561",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/launch/start_robot.launch.py",
+      "bytes": 7537,
+      "sha256": "c20d41c3acef5d00fea8fbce60012b4336d79cfc2317ff45a686f6746cef1ee1",
+      "committedBlobSha256": "c20d41c3acef5d00fea8fbce60012b4336d79cfc2317ff45a686f6746cef1ee1",
+      "archivePreNormalizationSha256": "c20d41c3acef5d00fea8fbce60012b4336d79cfc2317ff45a686f6746cef1ee1",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/launch/urmir_rsp.launch.py",
+      "bytes": 17820,
+      "sha256": "e885226ae733e6c009cc0f85e87d73b879ff975fb194bfe2f90a76b01ec6e10e",
+      "committedBlobSha256": "e885226ae733e6c009cc0f85e87d73b879ff975fb194bfe2f90a76b01ec6e10e",
+      "archivePreNormalizationSha256": "e885226ae733e6c009cc0f85e87d73b879ff975fb194bfe2f90a76b01ec6e10e",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/launch/urmir_rsp_kenos.launch.py",
+      "bytes": 13137,
+      "sha256": "21fbff804a8905f6892399bc45958af101fc2fe9a044f1237c63cff1479bc9b6",
+      "committedBlobSha256": "f7f961174d8598ca690ae2429fed5b90c08496fed74f5b4d52551ee99eab9a6e",
+      "archivePreNormalizationSha256": "f7f961174d8598ca690ae2429fed5b90c08496fed74f5b4d52551ee99eab9a6e",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/launch/urmir_rsp_kenos_sl.launch.py",
+      "bytes": 14538,
+      "sha256": "1bc137ae8ba147eb40d4afed445b1f7973a8e55aa5882df00f623f21a3132e22",
+      "committedBlobSha256": "1bc137ae8ba147eb40d4afed445b1f7973a8e55aa5882df00f623f21a3132e22",
+      "archivePreNormalizationSha256": "1bc137ae8ba147eb40d4afed445b1f7973a8e55aa5882df00f623f21a3132e22",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/launch/urmir_rsp_none.launch.py",
+      "bytes": 13135,
+      "sha256": "7c1bfb4f9bdfee6ebac25f342bdeeb1e7e06f1ea1ce994d5394a52abf9425cab",
+      "committedBlobSha256": "a24f1201ed91cc35ba4c61e0471c88ec334af0d864a74b913a089810fcc4cfe6",
+      "archivePreNormalizationSha256": "a24f1201ed91cc35ba4c61e0471c88ec334af0d864a74b913a089810fcc4cfe6",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/package.xml",
+      "bytes": 966,
+      "sha256": "176ad26b6fde07d93cb87a2f5bf75c40a6141caa6b2aae5bacf555c82de82c7f",
+      "committedBlobSha256": "176ad26b6fde07d93cb87a2f5bf75c40a6141caa6b2aae5bacf555c82de82c7f",
+      "archivePreNormalizationSha256": "176ad26b6fde07d93cb87a2f5bf75c40a6141caa6b2aae5bacf555c82de82c7f",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/scripts/generate_control_xacro.py",
+      "bytes": 2117,
+      "sha256": "4944d1512ffd0bff70d9d8e34ecfed7063bdcadda6844ee81bc94a661e1f32c5",
+      "committedBlobSha256": "4944d1512ffd0bff70d9d8e34ecfed7063bdcadda6844ee81bc94a661e1f32c5",
+      "archivePreNormalizationSha256": "4944d1512ffd0bff70d9d8e34ecfed7063bdcadda6844ee81bc94a661e1f32c5",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/test/test_generate_control_xacro.py",
+      "bytes": 4144,
+      "sha256": "4865406e887c1a3fb8aab5195495d1856e2781c7636e5fb97afc250e0815f0e0",
+      "committedBlobSha256": "4865406e887c1a3fb8aab5195495d1856e2781c7636e5fb97afc250e0815f0e0",
+      "archivePreNormalizationSha256": "4865406e887c1a3fb8aab5195495d1856e2781c7636e5fb97afc250e0815f0e0",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_control/urdf/ur16e_mir250.urdf.xacro.in",
+      "bytes": 3383,
+      "sha256": "c359ce14e6828e0114ab4c0cb4e09857685d4bdd9d6cbd34cadb8a82575f3251",
+      "committedBlobSha256": "c359ce14e6828e0114ab4c0cb4e09857685d4bdd9d6cbd34cadb8a82575f3251",
+      "archivePreNormalizationSha256": "c359ce14e6828e0114ab4c0cb4e09857685d4bdd9d6cbd34cadb8a82575f3251",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_description/CMakeLists.txt",
+      "bytes": 384,
+      "sha256": "489fbf5ebcb10a9e968d15ff562d40ded35a1d60ec42d700ca64f2129bfeaaf6",
+      "committedBlobSha256": "489fbf5ebcb10a9e968d15ff562d40ded35a1d60ec42d700ca64f2129bfeaaf6",
+      "archivePreNormalizationSha256": "489fbf5ebcb10a9e968d15ff562d40ded35a1d60ec42d700ca64f2129bfeaaf6",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_description/include/bw_ur16e_macro.xacro",
+      "bytes": 3407,
+      "sha256": "365757dd334cb18e50999e25453b8ebb5bf8adf18cd2938bd9ac6a08ae26fc88",
+      "committedBlobSha256": "365757dd334cb18e50999e25453b8ebb5bf8adf18cd2938bd9ac6a08ae26fc88",
+      "archivePreNormalizationSha256": "365757dd334cb18e50999e25453b8ebb5bf8adf18cd2938bd9ac6a08ae26fc88",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_description/include/common_properties.urdf.xacro",
+      "bytes": 159,
+      "sha256": "c58d95ed0c13d7779371d2c188bc3630fe523b7f37adc4afb938e2acb8f2b7fe",
+      "committedBlobSha256": "c58d95ed0c13d7779371d2c188bc3630fe523b7f37adc4afb938e2acb8f2b7fe",
+      "archivePreNormalizationSha256": "c58d95ed0c13d7779371d2c188bc3630fe523b7f37adc4afb938e2acb8f2b7fe",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_description/package.xml",
+      "bytes": 688,
+      "sha256": "588f05b7f13500e001a11d1a5a295dcb097c4067df6d284cd841c46e3c18a5d8",
+      "committedBlobSha256": "588f05b7f13500e001a11d1a5a295dcb097c4067df6d284cd841c46e3c18a5d8",
+      "archivePreNormalizationSha256": "588f05b7f13500e001a11d1a5a295dcb097c4067df6d284cd841c46e3c18a5d8",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_description/rviz/urdf.rviz",
+      "bytes": 9025,
+      "sha256": "d6c28e0cd9aee80862e954ed3df35be647957f58dfc03af462fb687af48fb47d",
+      "committedBlobSha256": "d6c28e0cd9aee80862e954ed3df35be647957f58dfc03af462fb687af48fb47d",
+      "archivePreNormalizationSha256": "d6c28e0cd9aee80862e954ed3df35be647957f58dfc03af462fb687af48fb47d",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_description/scripts/generate_urdf.sh",
+      "bytes": 7605,
+      "sha256": "f841eec03faf8e68aaf2f0b00870fa82a6beeae731239a6009efbc00075fe011",
+      "committedBlobSha256": "f841eec03faf8e68aaf2f0b00870fa82a6beeae731239a6009efbc00075fe011",
+      "archivePreNormalizationSha256": "f841eec03faf8e68aaf2f0b00870fa82a6beeae731239a6009efbc00075fe011",
+      "mode": "0o775"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_description/urdf/mir250_ur16e.urdf.xacro",
+      "bytes": 3583,
+      "sha256": "0df71ecb6f732f6fc194a45b8e724c102704898bf870c754c013a4c38830dfb1",
+      "committedBlobSha256": "0df71ecb6f732f6fc194a45b8e724c102704898bf870c754c013a4c38830dfb1",
+      "archivePreNormalizationSha256": "0df71ecb6f732f6fc194a45b8e724c102704898bf870c754c013a4c38830dfb1",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/.setup_assistant",
+      "bytes": 547,
+      "sha256": "b93592b8ac6308432e5dd7044b802a0ab49871d66cf38732099ebabe8a040013",
+      "committedBlobSha256": "b93592b8ac6308432e5dd7044b802a0ab49871d66cf38732099ebabe8a040013",
+      "archivePreNormalizationSha256": "b93592b8ac6308432e5dd7044b802a0ab49871d66cf38732099ebabe8a040013",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/CMakeLists.txt",
+      "bytes": 426,
+      "sha256": "3d8ed8a155638ff9cb97f7e27c643086ef36e98b971ea97bd6eb1adfd1e05916",
+      "committedBlobSha256": "3d8ed8a155638ff9cb97f7e27c643086ef36e98b971ea97bd6eb1adfd1e05916",
+      "archivePreNormalizationSha256": "3d8ed8a155638ff9cb97f7e27c643086ef36e98b971ea97bd6eb1adfd1e05916",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/config/joint_limits.yaml",
+      "bytes": 1487,
+      "sha256": "dbc22cba1d4023676690332c045bd8ad82e2f0d80ed0a26ebea8723edd0ae0f4",
+      "committedBlobSha256": "dbc22cba1d4023676690332c045bd8ad82e2f0d80ed0a26ebea8723edd0ae0f4",
+      "archivePreNormalizationSha256": "dbc22cba1d4023676690332c045bd8ad82e2f0d80ed0a26ebea8723edd0ae0f4",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/config/kinematics.yaml",
+      "bytes": 182,
+      "sha256": "43acf93cecba0addfce563ba3216a9213d13573487388cd813cade99d21892e9",
+      "committedBlobSha256": "43acf93cecba0addfce563ba3216a9213d13573487388cd813cade99d21892e9",
+      "archivePreNormalizationSha256": "43acf93cecba0addfce563ba3216a9213d13573487388cd813cade99d21892e9",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/config/moveit.rviz",
+      "bytes": 26840,
+      "sha256": "4f8902c7cc1889c3977cfe7eac9fc43fa161d16555216c3f62319cf4d65abee5",
+      "committedBlobSha256": "4f8902c7cc1889c3977cfe7eac9fc43fa161d16555216c3f62319cf4d65abee5",
+      "archivePreNormalizationSha256": "4f8902c7cc1889c3977cfe7eac9fc43fa161d16555216c3f62319cf4d65abee5",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/config/moveit_controllers.yaml",
+      "bytes": 775,
+      "sha256": "b1b5901423620ca863f1a72aa32f91c17abdac1278336d2f9117dcc9b81412ee",
+      "committedBlobSha256": "b1b5901423620ca863f1a72aa32f91c17abdac1278336d2f9117dcc9b81412ee",
+      "archivePreNormalizationSha256": "b1b5901423620ca863f1a72aa32f91c17abdac1278336d2f9117dcc9b81412ee",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/config/ompl_planning.yaml",
+      "bytes": 871,
+      "sha256": "970ad0e2904aead22178a176e031133d4f1d2fbfb9f9fa574c18db9310cf2e73",
+      "committedBlobSha256": "970ad0e2904aead22178a176e031133d4f1d2fbfb9f9fa574c18db9310cf2e73",
+      "archivePreNormalizationSha256": "970ad0e2904aead22178a176e031133d4f1d2fbfb9f9fa574c18db9310cf2e73",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/config/pilz_cartesian_limits.yaml",
+      "bytes": 133,
+      "sha256": "fed80b213b77f13fb7b913d703609a66caa72ccb0617b41e83d3057e31749047",
+      "committedBlobSha256": "fed80b213b77f13fb7b913d703609a66caa72ccb0617b41e83d3057e31749047",
+      "archivePreNormalizationSha256": "fed80b213b77f13fb7b913d703609a66caa72ccb0617b41e83d3057e31749047",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/config/ur16e_mir250.srdf.xacro",
+      "bytes": 16454,
+      "sha256": "3e4e9d656bab032a96d8a25c916e619389a15d00ef1b5d45aff942547b3b8554",
+      "committedBlobSha256": "3e4e9d656bab032a96d8a25c916e619389a15d00ef1b5d45aff942547b3b8554",
+      "archivePreNormalizationSha256": "3e4e9d656bab032a96d8a25c916e619389a15d00ef1b5d45aff942547b3b8554",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/launch/move_group.launch.py",
+      "bytes": 6097,
+      "sha256": "ab5c44384a0eb663d08a25c623056d2244944595827bdb59516e1274ad5c40fd",
+      "committedBlobSha256": "ab5c44384a0eb663d08a25c623056d2244944595827bdb59516e1274ad5c40fd",
+      "archivePreNormalizationSha256": "ab5c44384a0eb663d08a25c623056d2244944595827bdb59516e1274ad5c40fd",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/launch/moveit_rviz.launch.py",
+      "bytes": 335,
+      "sha256": "87d3e4fea3916c0952643dff8e2f264f66ad6d2ce3184a183d7e083b193e4323",
+      "committedBlobSha256": "87d3e4fea3916c0952643dff8e2f264f66ad6d2ce3184a183d7e083b193e4323",
+      "archivePreNormalizationSha256": "87d3e4fea3916c0952643dff8e2f264f66ad6d2ce3184a183d7e083b193e4323",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/launch/setup_assistant.launch.py",
+      "bytes": 343,
+      "sha256": "3d48d0aca9e89d7a18b5f9bb8e4b998d6427b7c1611b0cdf6df0648b9e9cd248",
+      "committedBlobSha256": "3d48d0aca9e89d7a18b5f9bb8e4b998d6427b7c1611b0cdf6df0648b9e9cd248",
+      "archivePreNormalizationSha256": "3d48d0aca9e89d7a18b5f9bb8e4b998d6427b7c1611b0cdf6df0648b9e9cd248",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/package.xml",
+      "bytes": 2071,
+      "sha256": "2b5c01a6b3ac79eb27ac3610364ac801d89ad82900758e3402d30e0bb0360732",
+      "committedBlobSha256": "2b5c01a6b3ac79eb27ac3610364ac801d89ad82900758e3402d30e0bb0360732",
+      "archivePreNormalizationSha256": "2b5c01a6b3ac79eb27ac3610364ac801d89ad82900758e3402d30e0bb0360732",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mir250_moveit_config/patch_moveit_config.sh",
+      "bytes": 4252,
+      "sha256": "a707d30fc11591c343ed82e45770c3a64bdb72d733d93b7ccaa544d29a3d8d11",
+      "committedBlobSha256": "a707d30fc11591c343ed82e45770c3a64bdb72d733d93b7ccaa544d29a3d8d11",
+      "archivePreNormalizationSha256": "a707d30fc11591c343ed82e45770c3a64bdb72d733d93b7ccaa544d29a3d8d11",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/CMakeLists.txt",
+      "bytes": 6642,
+      "sha256": "31773a0715b05762dc15ae44146771cef4894c2c3f16a44baa991f0aec822cbc",
+      "committedBlobSha256": "31773a0715b05762dc15ae44146771cef4894c2c3f16a44baa991f0aec822cbc",
+      "archivePreNormalizationSha256": "31773a0715b05762dc15ae44146771cef4894c2c3f16a44baa991f0aec822cbc",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/config/fixture.yaml",
+      "bytes": 1046,
+      "sha256": "b6517160f382605b5117851c89d7e7c76831bb4b5e559c53778596508b916298",
+      "committedBlobSha256": "b6517160f382605b5117851c89d7e7c76831bb4b5e559c53778596508b916298",
+      "archivePreNormalizationSha256": "b6517160f382605b5117851c89d7e7c76831bb4b5e559c53778596508b916298",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/custom_executor.hpp",
+      "bytes": 11497,
+      "sha256": "223c22403b9487d62d408aa2ffe5336c684ab996b131da433f138c61bd925bb9",
+      "committedBlobSha256": "223c22403b9487d62d408aa2ffe5336c684ab996b131da433f138c61bd925bb9",
+      "archivePreNormalizationSha256": "223c22403b9487d62d408aa2ffe5336c684ab996b131da433f138c61bd925bb9",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/execution_sequence.hpp",
+      "bytes": 686,
+      "sha256": "a87bc8ffa92c1c93adf8bb7dca618831a06e7349c1b19ef092719aed44e1457a",
+      "committedBlobSha256": "a87bc8ffa92c1c93adf8bb7dca618831a06e7349c1b19ef092719aed44e1457a",
+      "archivePreNormalizationSha256": "a87bc8ffa92c1c93adf8bb7dca618831a06e7349c1b19ef092719aed44e1457a",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/fixture_cycle_builder.hpp",
+      "bytes": 21528,
+      "sha256": "7130b9f16dd2c77d75bb4f08f1dff2f53961c862f44b829c64594ba820a7e9b5",
+      "committedBlobSha256": "7130b9f16dd2c77d75bb4f08f1dff2f53961c862f44b829c64594ba820a7e9b5",
+      "archivePreNormalizationSha256": "7130b9f16dd2c77d75bb4f08f1dff2f53961c862f44b829c64594ba820a7e9b5",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/fixture_startup.hpp",
+      "bytes": 2785,
+      "sha256": "cc33f585c3c17ebe5225038f7fafe2a66b6ab14829e654901d64633b6e01d81a",
+      "committedBlobSha256": "cc33f585c3c17ebe5225038f7fafe2a66b6ab14829e654901d64633b6e01d81a",
+      "archivePreNormalizationSha256": "cc33f585c3c17ebe5225038f7fafe2a66b6ab14829e654901d64633b6e01d81a",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/fixture_tiling_geometry.hpp",
+      "bytes": 16758,
+      "sha256": "c59c4aab694d0cd7d37706e5cb439def57e14ca9a3c1ca07324931b969f77d0e",
+      "committedBlobSha256": "c59c4aab694d0cd7d37706e5cb439def57e14ca9a3c1ca07324931b969f77d0e",
+      "archivePreNormalizationSha256": "c59c4aab694d0cd7d37706e5cb439def57e14ca9a3c1ca07324931b969f77d0e",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/pick_place_targets.hpp",
+      "bytes": 2393,
+      "sha256": "af1d52afc8d68fa796aa731d9d0d820cc2c56594e99c80654a71cb02fffc35b8",
+      "committedBlobSha256": "af1d52afc8d68fa796aa731d9d0d820cc2c56594e99c80654a71cb02fffc35b8",
+      "archivePreNormalizationSha256": "af1d52afc8d68fa796aa731d9d0d820cc2c56594e99c80654a71cb02fffc35b8",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_gate.hpp",
+      "bytes": 2012,
+      "sha256": "f0cd9e26e84296b6aa6ab949990c18e9faca37d4c0a4783bd8f48eb79f817d65",
+      "committedBlobSha256": "f0cd9e26e84296b6aa6ab949990c18e9faca37d4c0a4783bd8f48eb79f817d65",
+      "archivePreNormalizationSha256": "f0cd9e26e84296b6aa6ab949990c18e9faca37d4c0a4783bd8f48eb79f817d65",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/plan_validation.hpp",
+      "bytes": 12703,
+      "sha256": "60cf660bf21f02584f87b2e92b6cbeabab0a1b532c4c9570d5aa8cbb6a554515",
+      "committedBlobSha256": "60cf660bf21f02584f87b2e92b6cbeabab0a1b532c4c9570d5aa8cbb6a554515",
+      "archivePreNormalizationSha256": "60cf660bf21f02584f87b2e92b6cbeabab0a1b532c4c9570d5aa8cbb6a554515",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/repeat_execution.hpp",
+      "bytes": 3471,
+      "sha256": "b61ccd01ab0139d578aa580f4871ea496f0a92a0279f5882c0e4b9b040a878d9",
+      "committedBlobSha256": "b61ccd01ab0139d578aa580f4871ea496f0a92a0279f5882c0e4b9b040a878d9",
+      "archivePreNormalizationSha256": "b61ccd01ab0139d578aa580f4871ea496f0a92a0279f5882c0e4b9b040a878d9",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/scene_effects.hpp",
+      "bytes": 720,
+      "sha256": "32cdfbf1f338a7f9808d0ffc1676a07e9b255ea30126956afa3e1bf6793dac05",
+      "committedBlobSha256": "32cdfbf1f338a7f9808d0ffc1676a07e9b255ea30126956afa3e1bf6793dac05",
+      "archivePreNormalizationSha256": "32cdfbf1f338a7f9808d0ffc1676a07e9b255ea30126956afa3e1bf6793dac05",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/set_io_stage.hpp",
+      "bytes": 3645,
+      "sha256": "38ab16192821f99fa8b96a25641a198c2bd8ca08a30746be60e25ac20c54b066",
+      "committedBlobSha256": "38ab16192821f99fa8b96a25641a198c2bd8ca08a30746be60e25ac20c54b066",
+      "archivePreNormalizationSha256": "38ab16192821f99fa8b96a25641a198c2bd8ca08a30746be60e25ac20c54b066",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/startup_parameter.hpp",
+      "bytes": 3011,
+      "sha256": "81a6cbe13f04cb2bab88cdabc2c1a719fbe08b35a80f294f6e9ba27ec106d42b",
+      "committedBlobSha256": "81a6cbe13f04cb2bab88cdabc2c1a719fbe08b35a80f294f6e9ba27ec106d42b",
+      "archivePreNormalizationSha256": "81a6cbe13f04cb2bab88cdabc2c1a719fbe08b35a80f294f6e9ba27ec106d42b",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/startup_robot_model.hpp",
+      "bytes": 585,
+      "sha256": "b6c7fb5b5fcd32c45a21775c0c34db3aeed6885651485574f5e18beec8be769c",
+      "committedBlobSha256": "b6c7fb5b5fcd32c45a21775c0c34db3aeed6885651485574f5e18beec8be769c",
+      "archivePreNormalizationSha256": "b6c7fb5b5fcd32c45a21775c0c34db3aeed6885651485574f5e18beec8be769c",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/tcp_waypoints.hpp",
+      "bytes": 2370,
+      "sha256": "a8238f060551c1ffd16c8701ef8455fe3679afecaadb3d4057b94d4f17961635",
+      "committedBlobSha256": "a8238f060551c1ffd16c8701ef8455fe3679afecaadb3d4057b94d4f17961635",
+      "archivePreNormalizationSha256": "a8238f060551c1ffd16c8701ef8455fe3679afecaadb3d4057b94d4f17961635",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/tool_definition.hpp",
+      "bytes": 3105,
+      "sha256": "592a3e92905e87b8adfa9920947747f2270f578689dabecf5d10ee50e6e397d4",
+      "committedBlobSha256": "592a3e92905e87b8adfa9920947747f2270f578689dabecf5d10ee50e6e397d4",
+      "archivePreNormalizationSha256": "592a3e92905e87b8adfa9920947747f2270f578689dabecf5d10ee50e6e397d4",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/tool_model_validation.hpp",
+      "bytes": 5158,
+      "sha256": "0d525ebb4ffd9418841d44f01b24d7420a0766e08169af73c97441a5b9db7dff",
+      "committedBlobSha256": "0d525ebb4ffd9418841d44f01b24d7420a0766e08169af73c97441a5b9db7dff",
+      "archivePreNormalizationSha256": "0d525ebb4ffd9418841d44f01b24d7420a0766e08169af73c97441a5b9db7dff",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/wait_marker.hpp",
+      "bytes": 982,
+      "sha256": "ed822dcd8b2f2593daa891a37ccb7f65514a036b01ea201f92c22686f04509d3",
+      "committedBlobSha256": "ed822dcd8b2f2593daa891a37ccb7f65514a036b01ea201f92c22686f04509d3",
+      "archivePreNormalizationSha256": "ed822dcd8b2f2593daa891a37ccb7f65514a036b01ea201f92c22686f04509d3",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/include/ur16e_mtc_gpio_stage/wait_stage.hpp",
+      "bytes": 1370,
+      "sha256": "2c47e879fb5a8394138eb1eff113ecf11443c962cc90716f549cdf9d66df7faa",
+      "committedBlobSha256": "2c47e879fb5a8394138eb1eff113ecf11443c962cc90716f549cdf9d66df7faa",
+      "archivePreNormalizationSha256": "2c47e879fb5a8394138eb1eff113ecf11443c962cc90716f549cdf9d66df7faa",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/launch/mtc_commander.launch.py",
+      "bytes": 6647,
+      "sha256": "117048a864e05217f580d7a9666d6caf1a09d66fea58122df84d330b867e5efd",
+      "committedBlobSha256": "117048a864e05217f580d7a9666d6caf1a09d66fea58122df84d330b867e5efd",
+      "archivePreNormalizationSha256": "117048a864e05217f580d7a9666d6caf1a09d66fea58122df84d330b867e5efd",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/package.xml",
+      "bytes": 1629,
+      "sha256": "030f311f6444cab068b61ea10d24b999f2b19a97948c3230e44aa8a69a2eb60f",
+      "committedBlobSha256": "030f311f6444cab068b61ea10d24b999f2b19a97948c3230e44aa8a69a2eb60f",
+      "archivePreNormalizationSha256": "030f311f6444cab068b61ea10d24b999f2b19a97948c3230e44aa8a69a2eb60f",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/scripts/execute_task.sh",
+      "bytes": 366,
+      "sha256": "765c2025fced563781098827b31c3a1109c28279d9a70c85e888adc00ba17c39",
+      "committedBlobSha256": "765c2025fced563781098827b31c3a1109c28279d9a70c85e888adc00ba17c39",
+      "archivePreNormalizationSha256": "765c2025fced563781098827b31c3a1109c28279d9a70c85e888adc00ba17c39",
+      "mode": "0o775"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/scripts/publish_fixture_tiling.sh",
+      "bytes": 460,
+      "sha256": "07812e2e3555be1a4cc172c1c9e75065ac56e17ce95393e95863bb3cc905dd6c",
+      "committedBlobSha256": "07812e2e3555be1a4cc172c1c9e75065ac56e17ce95393e95863bb3cc905dd6c",
+      "archivePreNormalizationSha256": "07812e2e3555be1a4cc172c1c9e75065ac56e17ce95393e95863bb3cc905dd6c",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/scripts/publish_pick_place_poses.sh",
+      "bytes": 1571,
+      "sha256": "405e5baa2085933838f341149c7418cdf7acb401401bdbb8c14cff4d55660593",
+      "committedBlobSha256": "405e5baa2085933838f341149c7418cdf7acb401401bdbb8c14cff4d55660593",
+      "archivePreNormalizationSha256": "405e5baa2085933838f341149c7418cdf7acb401401bdbb8c14cff4d55660593",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/src/test_task.cpp",
+      "bytes": 105285,
+      "sha256": "6aa1369ddb3517106ece01dbcdfb96f790f6d53212f90f0711999e1e6afa8805",
+      "committedBlobSha256": "6aa1369ddb3517106ece01dbcdfb96f790f6d53212f90f0711999e1e6afa8805",
+      "archivePreNormalizationSha256": "6aa1369ddb3517106ece01dbcdfb96f790f6d53212f90f0711999e1e6afa8805",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/fixture_planning_replay.py",
+      "bytes": 20046,
+      "sha256": "95bcad921fa8f8cb43bef2e03756949b319455dd37088734f95c7e02b052a1fc",
+      "committedBlobSha256": "95bcad921fa8f8cb43bef2e03756949b319455dd37088734f95c7e02b052a1fc",
+      "archivePreNormalizationSha256": "95bcad921fa8f8cb43bef2e03756949b319455dd37088734f95c7e02b052a1fc",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/planning_regression_replay.py",
+      "bytes": 21530,
+      "sha256": "09143ea7e70a2fd79b62300bee47b31964877b424db899da4532fe241c949b04",
+      "committedBlobSha256": "09143ea7e70a2fd79b62300bee47b31964877b424db899da4532fe241c949b04",
+      "archivePreNormalizationSha256": "09143ea7e70a2fd79b62300bee47b31964877b424db899da4532fe241c949b04",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_execution_sequence.cpp",
+      "bytes": 9640,
+      "sha256": "291e4092eb91036907e94e261b0f279a5b4abdd5f5ac66411fc2900fd52302d4",
+      "committedBlobSha256": "291e4092eb91036907e94e261b0f279a5b4abdd5f5ac66411fc2900fd52302d4",
+      "archivePreNormalizationSha256": "291e4092eb91036907e94e261b0f279a5b4abdd5f5ac66411fc2900fd52302d4",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_fixture_cycle_builder.cpp",
+      "bytes": 7973,
+      "sha256": "28f3c0b04362ff74996e8e13949b5c3414e3d1175771032186e759fe34e230e6",
+      "committedBlobSha256": "28f3c0b04362ff74996e8e13949b5c3414e3d1175771032186e759fe34e230e6",
+      "archivePreNormalizationSha256": "28f3c0b04362ff74996e8e13949b5c3414e3d1175771032186e759fe34e230e6",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_fixture_tiling_geometry.cpp",
+      "bytes": 13473,
+      "sha256": "a936c862f509285d041b7f905c0c1919d4e871e439891ea2b2eac9856b7156b4",
+      "committedBlobSha256": "a936c862f509285d041b7f905c0c1919d4e871e439891ea2b2eac9856b7156b4",
+      "archivePreNormalizationSha256": "a936c862f509285d041b7f905c0c1919d4e871e439891ea2b2eac9856b7156b4",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_pick_place_targets.cpp",
+      "bytes": 3043,
+      "sha256": "17644b69fd2336051f3055bb83e5cc911c1b9530eae64a6b1056fc9ca7d22dbc",
+      "committedBlobSha256": "17644b69fd2336051f3055bb83e5cc911c1b9530eae64a6b1056fc9ca7d22dbc",
+      "archivePreNormalizationSha256": "17644b69fd2336051f3055bb83e5cc911c1b9530eae64a6b1056fc9ca7d22dbc",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_gate.cpp",
+      "bytes": 10201,
+      "sha256": "2cae790efda749275824d843706bfe4a90ed2d2c351150222b24f63c34c320ba",
+      "committedBlobSha256": "2cae790efda749275824d843706bfe4a90ed2d2c351150222b24f63c34c320ba",
+      "archivePreNormalizationSha256": "2cae790efda749275824d843706bfe4a90ed2d2c351150222b24f63c34c320ba",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_plan_validation.cpp",
+      "bytes": 21373,
+      "sha256": "1d838f780c24621684137c454c3bc0c56fda6cf9b15ffd7d8c158c9c6aa9148f",
+      "committedBlobSha256": "1d838f780c24621684137c454c3bc0c56fda6cf9b15ffd7d8c158c9c6aa9148f",
+      "archivePreNormalizationSha256": "1d838f780c24621684137c454c3bc0c56fda6cf9b15ffd7d8c158c9c6aa9148f",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_repeat_execution.cpp",
+      "bytes": 4477,
+      "sha256": "c5a0a8ac41cbad942812c9cb4708dd0a74738777ab401e529d54a4a4367b8f65",
+      "committedBlobSha256": "c5a0a8ac41cbad942812c9cb4708dd0a74738777ab401e529d54a4a4367b8f65",
+      "archivePreNormalizationSha256": "c5a0a8ac41cbad942812c9cb4708dd0a74738777ab401e529d54a4a4367b8f65",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_scene_effects.cpp",
+      "bytes": 10687,
+      "sha256": "f79e3f3bd1837d044ac9ee76b667b2d958905cb2f7b6524cc949b7f481aeecb6",
+      "committedBlobSha256": "f79e3f3bd1837d044ac9ee76b667b2d958905cb2f7b6524cc949b7f481aeecb6",
+      "archivePreNormalizationSha256": "f79e3f3bd1837d044ac9ee76b667b2d958905cb2f7b6524cc949b7f481aeecb6",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_startup_parameter.cpp",
+      "bytes": 5938,
+      "sha256": "4ca5050f09f2abb57ae946656e660915e4c447131aa0a436132dc776bd530f8a",
+      "committedBlobSha256": "4ca5050f09f2abb57ae946656e660915e4c447131aa0a436132dc776bd530f8a",
+      "archivePreNormalizationSha256": "4ca5050f09f2abb57ae946656e660915e4c447131aa0a436132dc776bd530f8a",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_startup_robot_model.cpp",
+      "bytes": 4993,
+      "sha256": "0ad42218624fec55b574a1b2779cef8b5ab399371c3726924518ee97db2252e9",
+      "committedBlobSha256": "0ad42218624fec55b574a1b2779cef8b5ab399371c3726924518ee97db2252e9",
+      "archivePreNormalizationSha256": "0ad42218624fec55b574a1b2779cef8b5ab399371c3726924518ee97db2252e9",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_tcp_waypoints.cpp",
+      "bytes": 4852,
+      "sha256": "391fb85ab41db32e09ddbd4130bc6325d7840cf12f206282d2a5f4aa99eabd95",
+      "committedBlobSha256": "391fb85ab41db32e09ddbd4130bc6325d7840cf12f206282d2a5f4aa99eabd95",
+      "archivePreNormalizationSha256": "391fb85ab41db32e09ddbd4130bc6325d7840cf12f206282d2a5f4aa99eabd95",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_tool_definition.cpp",
+      "bytes": 6121,
+      "sha256": "d5daee1f8cdfdc51a06feb79ade1b2d6d4fdb14d492445769d9ba7789ced8f90",
+      "committedBlobSha256": "d5daee1f8cdfdc51a06feb79ade1b2d6d4fdb14d492445769d9ba7789ced8f90",
+      "archivePreNormalizationSha256": "d5daee1f8cdfdc51a06feb79ade1b2d6d4fdb14d492445769d9ba7789ced8f90",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_tool_model_validation.cpp",
+      "bytes": 9876,
+      "sha256": "9092a6a93a8ea4fbef5ebe0a4a6c77ea014c6e7f5039cb275d06ba74a6cd571f",
+      "committedBlobSha256": "9092a6a93a8ea4fbef5ebe0a4a6c77ea014c6e7f5039cb275d06ba74a6cd571f",
+      "archivePreNormalizationSha256": "9092a6a93a8ea4fbef5ebe0a4a6c77ea014c6e7f5039cb275d06ba74a6cd571f",
+      "mode": "0o664"
+    },
+    {
+      "path": "ros_ws/src/ur16e_mtc_gpio_stage/test/test_wait_marker.cpp",
+      "bytes": 1030,
+      "sha256": "4b8eaf5ac9a6d5311124f665cfb2003aa8e0342ceb48c2e2f134bada38a44db9",
+      "committedBlobSha256": "4b8eaf5ac9a6d5311124f665cfb2003aa8e0342ceb48c2e2f134bada38a44db9",
+      "archivePreNormalizationSha256": "4b8eaf5ac9a6d5311124f665cfb2003aa8e0342ceb48c2e2f134bada38a44db9",
+      "mode": "0o664"
+    }
+  ],
+  "changedSincePrerequisite": [
+    "ros_ws/src/ur16e_bringup/test/test_model_consistency.py"
+  ],
+  "validation": "14/14 bringup model-consistency tests passed in isolated Nordbo image before commit; no runtime source changes."
+}

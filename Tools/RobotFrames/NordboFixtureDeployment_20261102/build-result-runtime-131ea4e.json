@@ -1,0 +1,31 @@
+{
+  "completedUtc": "2026-11-02T11:09:03.982129+00:00",
+  "exitCode": 0,
+  "command": [
+    "docker",
+    "build",
+    "--network",
+    "none",
+    "--pull=false",
+    "--progress=plain",
+    "-t",
+    "urmir-jazzy:fixture-tiling-20261102",
+    "/home/nordbo/.cache/codex/fixture-tiling-20261102/source"
+  ],
+  "packages": [
+    "kenos_flexigrip",
+    "mir_description",
+    "ur16e_bringup",
+    "ur16e_commander",
+    "ur16e_environment",
+    "ur16e_interfaces",
+    "ur16e_mir250_control",
+    "ur16e_mir250_description",
+    "ur16e_mir250_moveit_config",
+    "ur16e_mtc_gpio_stage"
+  ],
+  "network": "none",
+  "dependencyInstallation": false,
+  "liveContainerChanged": false,
+  "image": "sha256:6317dfabf1fee2afbe60ca18b77cc2b041b360d34e6845a89eaeb47750cbdbec"
+}
