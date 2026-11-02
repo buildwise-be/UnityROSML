@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 public class URInputManager : MonoBehaviour
 {
+    public enum WorkflowMode { Unrestricted = 0, SimplePickAndPlace = 1, RepetitivePickAndPlace = 2 }
     public enum PoseCaptureMode
     {
         [InspectorName("Pick/place tool contact poses")] TileSurface,
@@ -15,6 +16,7 @@ public class URInputManager : MonoBehaviour
     [SerializeField] private TcpTargetPreview _tcpTargetPreview;
     [SerializeField] private TcpPlanningController _tcpPlanningController;
     [SerializeField] private FixtureTilingController _fixtureTilingController;
+    [SerializeField] private WorkflowMode _workflowMode;
     [SerializeField, Tooltip("OpenXR tracking-space transform. Automatically uses the single XR Origin's Camera Offset when empty.")]
     private Transform _trackingSpace;
     [SerializeField, Tooltip("TCP fixes full tool orientation; pick/place captures contact normals; fixture tiling captures item and fixture points.")]
@@ -27,12 +29,15 @@ public class URInputManager : MonoBehaviour
     private float _contextBumperConsumedUntil;
     private RobotPointRegistration PointRegistration => _URInstantiator != null
         ? _URInstantiator.GetComponent<RobotPointRegistration>() : null;
-    public bool IsTcpMode => _poseCaptureMode == PoseCaptureMode.TcpPreview;
-    public bool IsFixtureMode => _poseCaptureMode == PoseCaptureMode.FixtureTiling;
+    public bool IsTcpMode => _workflowMode != WorkflowMode.RepetitivePickAndPlace && _poseCaptureMode == PoseCaptureMode.TcpPreview;
+    public bool IsFixtureMode => _workflowMode == WorkflowMode.RepetitivePickAndPlace ||
+        (_workflowMode == WorkflowMode.Unrestricted && _poseCaptureMode == PoseCaptureMode.FixtureTiling);
+    public WorkflowMode SelectedWorkflow => _workflowMode;
     public FixtureTilingController FixtureController
     {
         get
         {
+            if (_workflowMode == WorkflowMode.SimplePickAndPlace) return null;
             if (_fixtureTilingController == null) _fixtureTilingController = GetComponent<FixtureTilingController>();
             if (_fixtureTilingController == null) _fixtureTilingController = gameObject.AddComponent<FixtureTilingController>();
             return _fixtureTilingController;
@@ -41,6 +46,7 @@ public class URInputManager : MonoBehaviour
 
     private void Start()
     {
+        ApplyWorkflowConstraint();
         if (_tcpTargetPreview == null)
             _tcpTargetPreview = GetComponent<TcpTargetPreview>();
         if (_tcpPlanningController == null)
@@ -95,6 +101,7 @@ public class URInputManager : MonoBehaviour
 
     private void ApplyCaptureMode()
     {
+        ApplyWorkflowConstraint();
         if (_appliedMode == _poseCaptureMode) return;
         bool modeChanged = _appliedMode.HasValue;
         _appliedMode = _poseCaptureMode;
@@ -110,7 +117,22 @@ public class URInputManager : MonoBehaviour
         if (_tcpTargetPreview != null) _tcpTargetPreview.SetTargetsVisible(IsTcpMode);
         if (_pickPlaceController != null)
             _pickPlaceController.SetTilePlanningEnabled(_poseCaptureMode == PoseCaptureMode.TileSurface);
-        FixtureController.SetTaskActive(IsFixtureMode);
+        if (_workflowMode != WorkflowMode.SimplePickAndPlace) FixtureController.SetTaskActive(IsFixtureMode);
+        else if (_fixtureTilingController != null) _fixtureTilingController.SetTaskActive(false);
+    }
+
+    public void ConfigureWorkflow(WorkflowMode workflow)
+    {
+        _workflowMode = workflow;
+        ApplyWorkflowConstraint();
+        ApplyCaptureMode();
+    }
+
+    private void ApplyWorkflowConstraint()
+    {
+        if (_workflowMode == WorkflowMode.RepetitivePickAndPlace) _poseCaptureMode = PoseCaptureMode.FixtureTiling;
+        else if (_workflowMode == WorkflowMode.SimplePickAndPlace && _poseCaptureMode == PoseCaptureMode.FixtureTiling)
+            _poseCaptureMode = PoseCaptureMode.TcpPreview;
     }
 
     public void UseTcpPreview() => SelectMode(PoseCaptureMode.TcpPreview);
@@ -118,6 +140,8 @@ public class URInputManager : MonoBehaviour
     public void UseFixtureTiling() => SelectMode(PoseCaptureMode.FixtureTiling);
     private void SelectMode(PoseCaptureMode mode)
     {
+        if ((_workflowMode == WorkflowMode.SimplePickAndPlace && mode == PoseCaptureMode.FixtureTiling) ||
+            (_workflowMode == WorkflowMode.RepetitivePickAndPlace && mode != PoseCaptureMode.FixtureTiling)) return;
         // A programmatic mode change revokes local review even while an earlier
         // command awaits its outcome. Plan/Execute retain the global command lock.
         _poseCaptureMode = mode;

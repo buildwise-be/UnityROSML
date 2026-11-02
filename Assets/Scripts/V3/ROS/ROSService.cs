@@ -32,6 +32,10 @@ public class ROSService : MonoBehaviour
 
     private ROSConnection _rosConnection;
     private bool _isInitialized = false;
+    [SerializeField, Tooltip("Optional initial ROS address. Empty preserves the connector prefab settings.")]
+    private string _rosIPAddress = "";
+    [SerializeField, Range(0, 65535), Tooltip("Optional initial ROS port. Zero preserves the connector prefab settings.")]
+    private int _rosPort;
 
     private void Awake()
 
@@ -51,8 +55,19 @@ public class ROSService : MonoBehaviour
     private void Initialize()
     {
         _rosConnection = ROSConnection.GetOrCreateInstance();
+        if (!string.IsNullOrWhiteSpace(_rosIPAddress)) _rosConnection.RosIPAddress = _rosIPAddress;
+        if (_rosPort > 0 && _rosPort <= 65535) _rosConnection.RosPort = _rosPort;
+        // The service outlives workflow scenes, so its transport must share that
+        // lifetime. New workflow scenes contain only this service, not another
+        // auto-connecting ROSConnection prefab.
+        DontDestroyOnLoad(_rosConnection.transform.root.gameObject);
         _isInitialized = true;
         Debug.Log("ROSService: Initialized");
+    }
+
+    private void EnsureInitialized()
+    {
+        if (!_isInitialized || _rosConnection == null) Initialize();
     }
 
     /// <summary>
@@ -60,6 +75,7 @@ public class ROSService : MonoBehaviour
     /// </summary>
     public void RegisterPublisher<T>(string topicName) where T : Message, new()
     {
+        EnsureInitialized();
         if (!_isInitialized)
         {
             Debug.LogError("ROSService: Not initialized!");
@@ -73,6 +89,7 @@ public class ROSService : MonoBehaviour
     /// </summary>
     public void Publish<T>(string topicName, T message) where T : Message
     {
+        EnsureInitialized();
         if (!_isInitialized)
         {
             Debug.LogError("ROSService: Not initialized!");
@@ -86,6 +103,7 @@ public class ROSService : MonoBehaviour
     /// </summary>
     public void Subscribe<T>(string topicName, System.Action<T> callback) where T : Message, new()
     {
+        EnsureInitialized();
         if (!_isInitialized)
         {
             Debug.LogError("ROSService: Not initialized!");
@@ -99,10 +117,11 @@ public class ROSService : MonoBehaviour
     /// </summary>
     public ROSConnection GetROSConnection()
     {
+        EnsureInitialized();
         return _rosConnection;
     }
 
-    public bool IsInitialized => _isInitialized;
+    public bool IsInitialized => _isInitialized && _rosConnection != null;
     public bool IsConnected => _isInitialized && _rosConnection != null && _rosConnection.HasConnectionThread &&
     !_rosConnection.HasConnectionError;
 
@@ -115,7 +134,7 @@ public class ROSService : MonoBehaviour
 
     private IEnumerator CheckConnectionCoroutine(Action<bool> onResult)
     {
-        ROSConnection ros = ROSConnection.GetOrCreateInstance();
+        ROSConnection ros = GetROSConnection();
 
         bool gotReply = false;
         Dictionary<string, string> topics = null;
@@ -148,6 +167,12 @@ public class ROSService : MonoBehaviour
         {
             Debug.LogWarning("ROS connection check timed out or connection error occurred.");
         }
+    }
+
+    private void OnDestroy()
+    {
+        if (_instance == this) _instance = null;
+        _isInitialized = false;
     }
 }
 

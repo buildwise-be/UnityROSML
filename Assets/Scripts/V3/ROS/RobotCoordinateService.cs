@@ -99,6 +99,17 @@ public class RobotCoordinateService : MonoBehaviour
         NotifyCalibrationChanged();
     }
 
+    /// <summary>Discard scene-local alignment and edit state before loading another workflow.</summary>
+    public void ResetForSceneChange()
+    {
+        _isInitialized = false;
+        IsCalibrationInProgress = false;
+        _robotRootArticulation = null;
+        _calibrationFrame = null;
+        _baseInCalibrationFrame = Pose.identity;
+        NotifyCalibrationChanged();
+    }
+
     /// <summary>Release the authoritative root while editing the virtual QR-to-base extrinsic.</summary>
     public void BeginCalibrationEdit()
     {
@@ -180,6 +191,12 @@ public class RobotCoordinateService : MonoBehaviour
         if (!TryGetRobotBaseWorldPose(out Pose worldBase) || !RobotFrameMath.IsValidPose(localPose))
             throw new System.InvalidOperationException("Robot base calibration or target pose is invalid.");
         return RobotFrameMath.Compose(worldBase, localPose);
+    }
+
+    private void OnDestroy()
+    {
+        if (_instance == this) _instance = null;
+        CalibrationChanged = null;
     }
 }
 

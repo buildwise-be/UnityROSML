@@ -6,3 +6,7 @@ Assets/**/*.obj filter=lfs diff=lfs merge=lfs -text
 Tools/RobotFrames/RosMessageSchemas/** -text whitespace=-blank-at-eol
 # Preserve the upstream message generator's comments verbatim.
 Assets/RosMessages/FixtureVisualization/msg/MarkerMsg.cs whitespace=-blank-at-eol
+# Unity-generated scene YAML retains empty serialized field values.
+Assets/Scenes/Welcome.unity whitespace=-blank-at-eol
+Assets/Scenes/SimplePickAndPlace.unity whitespace=-blank-at-eol
+Assets/Scenes/RepetitivePickAndPlace.unity whitespace=-blank-at-eol

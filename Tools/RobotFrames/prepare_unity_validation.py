@@ -92,6 +92,8 @@ def main():
                     "Assets/Scripts/V3/UI/RobotRegistrationGuide.cs",
                     "Assets/Scripts/V3/ROS/TcpPlanningController.cs", "Assets/Scripts/V3/TcpTargetPreview.cs",
                     "Assets/Scripts/V3/URInputManager.cs", "Assets/Scripts/V3/TargetRotationHandles.cs",
+                    "Assets/Scripts/V3/RobotAppNavigation.cs", "Assets/Scripts/V3/UI/RobotWelcomeMenu.cs",
+                    "Assets/Scripts/V3/UI/ToolSelectionMenu.Navigation.cs",
                     "Assets/Scripts/V3/TargetPoseContextMenu.cs", "Assets/Scripts/V3/ToolPoseVisual.cs",
                     "Assets/Scripts/V3/NormalTargetMarker.cs",
                     "Assets/Scripts/V3/TargetNameLabel.cs",

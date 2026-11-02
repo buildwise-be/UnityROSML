@@ -14,11 +14,20 @@ public sealed class FixtureTilingMenuTests
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
 
     [SetUp]
-    public void BuildMenuWithoutRuntimeStart()
+    public void BuildMenuWithoutRuntimeStart() => BuildMenuForWorkflow(null);
+
+    private void BuildMenuForWorkflow(string workflow)
     {
         _owner = new GameObject("Offline fixture menu");
         _owner.SetActive(false);
         _menu = _owner.AddComponent(RuntimeType("ToolSelectionMenu"));
+        if (!string.IsNullOrEmpty(workflow))
+        {
+            Type mode = RuntimeType("URInputManager").GetNestedType("WorkflowMode");
+            _menu.GetType().GetField("_workflowMode", Private).SetValue(_menu, Enum.Parse(mode, workflow));
+            _menu.GetType().GetField("_appLogo", Private).SetValue(_menu,
+                AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Branding/UnityROSML/UnityROSML-Logo-Transparent.png"));
+        }
         Invoke("BuildMenu");
     }
 
@@ -141,6 +150,9 @@ public sealed class FixtureTilingMenuTests
         string directory = Environment.GetEnvironmentVariable("FIXTURE_TILING_PREVIEW_DIR");
         if (string.IsNullOrEmpty(directory)) directory = Path.GetFullPath("FixtureTilingPreviews");
         Directory.CreateDirectory(directory);
+        string workflow = Environment.GetEnvironmentVariable("FIXTURE_TILING_WORKFLOW");
+        bool simple = workflow == "SimplePickAndPlace";
+        bool repetitive = workflow == "RepetitivePickAndPlace";
         var fixture = new FixtureTilingMenuTests();
         GameObject cameraOwner = null;
         RenderTexture target = null;
@@ -148,9 +160,12 @@ public sealed class FixtureTilingMenuTests
         Texture2D pixels = null;
         try
         {
-            fixture.BuildMenuWithoutRuntimeStart();
-            Component controller = fixture._owner.AddComponent(RuntimeType("FixtureTilingController"));
-            fixture._menu.GetType().GetField("_fixtureTiling", Private).SetValue(fixture._menu, controller);
+            fixture.BuildMenuForWorkflow(workflow);
+            if (!simple)
+            {
+                Component controller = fixture._owner.AddComponent(RuntimeType("FixtureTilingController"));
+                fixture._menu.GetType().GetField("_fixtureTiling", Private).SetValue(fixture._menu, controller);
+            }
             Canvas canvas = fixture.Field<Canvas>("_canvas");
             canvas.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             fixture.Field<RectTransform>("_panel").gameObject.SetActive(true);
@@ -170,7 +185,9 @@ public sealed class FixtureTilingMenuTests
             target.Create();
             camera.targetTexture = target;
             pixels = new Texture2D(600, 960, TextureFormat.RGB24, false);
-            sheet = new Texture2D(1800, 2880, TextureFormat.RGB24, false);
+            int imageCount = simple ? 1 : 9;
+            int columns = Mathf.Min(3, imageCount), rows = (imageCount + columns - 1) / columns;
+            sheet = new Texture2D(columns * 600, rows * 960, TextureFormat.RGB24, false);
             Type textType = RuntimeType("TMPro.TMP_Text");
             Type fontType = RuntimeType("TMPro.TMP_FontAsset");
             UnityEngine.Object font = Resources.Load("Fonts & Materials/LiberationSans SDF", fontType);
@@ -180,19 +197,24 @@ public sealed class FixtureTilingMenuTests
                 if (guid != null) font = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), fontType);
             }
             if (font == null) throw new FileNotFoundException("No font is available for fixture previews.");
-            for (int image = 0; image < 9; image++)
+            for (int image = 0; image < imageCount; image++)
             {
                 fixture.Field<RectTransform>("_taskView").gameObject.SetActive(image == 0);
                 if (image == 0)
                 {
                     fixture.Invoke("RefreshTask");
-                    fixture.Field<Component>("_fixtureSetupButton").gameObject.SetActive(true);
+                    Component setup = fixture.Field<Component>("_fixtureSetupButton");
+                    if (setup != null) setup.gameObject.SetActive(true);
                     fixture.SetPreviewText("_status", "Kenos SL selected · matching ROS model");
-                    fixture.SetPreviewText("_taskHelp", "Set tile, stack, pattern and fixture.\nChoose a point, then trigger to capture.");
-                    fixture.Field<Component>("_taskHelp").GetComponent<RectTransform>().sizeDelta = new Vector2(268, 45);
-                    fixture.SetPreviewText("_taskStatus", "Fixture tiling selected. Set up measured tile dimensions, the stack, release region and placement pattern.");
+                    fixture.SetPreviewText("_taskHelp", simple
+                        ? "Hold bumper: TCP A. Double press: TCP B.\nPlace the tool preview; drag it to set exact orientation."
+                        : "Set tile, stack, pattern and fixture.\nChoose a point, then trigger to capture.");
+                    fixture.Field<Component>("_taskHelp").GetComponent<RectTransform>().sizeDelta = new Vector2(simple || repetitive ? 408 : 268, 45);
+                    fixture.SetPreviewText("_taskStatus", simple
+                        ? "Capture TCP A and B to prepare a reviewed preview, or select MTC pick / place for contact targets."
+                        : "Set up measured tile dimensions, the stack, release region and placement pattern.");
                     fixture.SetPreviewText("_qrStatus", "Robot alignment valid · calibrated coordinates in ur_base_link.\nRepresentative offline UI state; no ROS connection.");
-                    fixture.SetPreviewButtonColor("_tcpTaskButton", false);
+                    fixture.SetPreviewButtonColor("_tcpTaskButton", simple);
                     fixture.SetPreviewButtonColor("_pickPlaceTaskButton", false);
                     fixture.SetPreviewButtonColor("_fixtureTaskButton", true);
                 }
@@ -201,7 +223,8 @@ public sealed class FixtureTilingMenuTests
                     fixture._menu.GetType().GetField("_fixturePage", Private).SetValue(fixture._menu, image - 1);
                     fixture.Invoke("BuildFixturePage");
                 }
-                fixture.Field<RectTransform>("_fixtureView").gameObject.SetActive(image > 0);
+                RectTransform fixtureView = fixture.Field<RectTransform>("_fixtureView");
+                if (fixtureView != null) fixtureView.gameObject.SetActive(image > 0);
                 foreach (Component text in canvas.GetComponentsInChildren(textType, true))
                     textType.GetProperty("font").SetValue(text, font);
                 foreach (Component button in canvas.GetComponentsInChildren(RuntimeType("UnityEngine.UI.Button"), true))
@@ -221,7 +244,7 @@ public sealed class FixtureTilingMenuTests
                 pixels.Apply();
                 string name = image == 0 ? "fixture-task-entry" : "fixture-page-" + image;
                 File.WriteAllBytes(Path.Combine(directory, name + ".png"), pixels.EncodeToPNG());
-                sheet.SetPixels((image % 3) * 600, (2 - image / 3) * 960, 600, 960, pixels.GetPixels());
+                sheet.SetPixels((image % columns) * 600, (rows - 1 - image / columns) * 960, 600, 960, pixels.GetPixels());
             }
             sheet.Apply();
             string output = Path.Combine(directory, "fixture-menu-contact-sheet.png");
@@ -241,6 +264,29 @@ public sealed class FixtureTilingMenuTests
         }
     }
 
+    /// <summary>Explicit export of the two dedicated workflow presentations.</summary>
+    public static void RenderDedicatedWorkflowPreviews()
+    {
+        string directory = Environment.GetEnvironmentVariable("FIXTURE_TILING_PREVIEW_DIR");
+        if (string.IsNullOrEmpty(directory)) directory = Path.GetFullPath("WorkflowMenuPreviews");
+        string previousWorkflow = Environment.GetEnvironmentVariable("FIXTURE_TILING_WORKFLOW");
+        string previousDirectory = Environment.GetEnvironmentVariable("FIXTURE_TILING_PREVIEW_DIR");
+        try
+        {
+            foreach (string workflow in new[] { "SimplePickAndPlace", "RepetitivePickAndPlace" })
+            {
+                Environment.SetEnvironmentVariable("FIXTURE_TILING_WORKFLOW", workflow);
+                Environment.SetEnvironmentVariable("FIXTURE_TILING_PREVIEW_DIR", Path.Combine(directory, workflow));
+                RenderFixtureTilingPreviews();
+            }
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("FIXTURE_TILING_WORKFLOW", previousWorkflow);
+            Environment.SetEnvironmentVariable("FIXTURE_TILING_PREVIEW_DIR", previousDirectory);
+        }
+    }
+
     private void SetPreviewText(string field, string value)
     {
         Component text = Field<Component>(field);
@@ -250,6 +296,7 @@ public sealed class FixtureTilingMenuTests
     private void SetPreviewButtonColor(string field, bool selected)
     {
         Component button = Field<Component>(field);
+        if (button == null) return;
         object image = button.GetType().GetProperty("image").GetValue(button);
         image.GetType().GetProperty("color").SetValue(image, selected
             ? new Color(0.08f, 0.42f, 0.52f, 1) : new Color(0.12f, 0.17f, 0.23f, 1));

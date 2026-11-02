@@ -15,6 +15,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 {
     [SerializeField] private ToolSelectionController _controller;
     [SerializeField] private URInputManager _input;
+    [SerializeField] private URInputManager.WorkflowMode _workflowMode;
     [SerializeField] private TcpPlanningController _tcpPlanning;
     [SerializeField] private QRDetector _qrDetector;
     [SerializeField] private URInstantiator _instantiator;
@@ -135,6 +136,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     private string _localNotice;
 
     public bool IsVisible => isActiveAndEnabled && _panel != null && _panel.gameObject.activeInHierarchy;
+    public URInputManager.WorkflowMode SelectedWorkflow => _workflowMode;
 
     private void Start()
     {
@@ -143,6 +145,8 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         BindTaskControls();
         RefreshMenu();
         if (!_hasPositioned) RecenterMenu();
+        if (_workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace && Application.isPlaying && isActiveAndEnabled)
+            StartCoroutine(OpenRepetitiveSetupAfterStart());
     }
 
     private void LateUpdate()
@@ -276,6 +280,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         if (_lastTcpMode != tcp || _lastFixtureMode != (_input != null && _input.IsFixtureMode) || _lastQrValidated != qr || _lastTargetRotation != TargetRotationHandles.IsInteracting) RefreshTask();
         RefreshPlayback();
         RefreshPathThickness();
+        RefreshSceneNavigation();
         if (_pointGuide != null && _pointGuidePose != null && IsPointCollecting)
             _pointGuidePose.text = _pointGuide.PoseStatus;
     }
@@ -450,6 +455,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     public void SelectPickPlaceTask() => SelectTaskMode(false);
     public void SelectFixtureTask()
     {
+        if (_workflowMode == URInputManager.WorkflowMode.SimplePickAndPlace) return;
         BindTaskControls();
         if (IsPlacementBusy || TargetRotationHandles.IsInteracting || RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
         if (_input != null) _input.UseFixtureTiling();
@@ -459,6 +465,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void SelectTaskMode(bool tcp)
     {
+        if (_workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace) return;
         BindTaskControls();
         if (IsPlacementBusy || TargetRotationHandles.IsInteracting || RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
         if (_input == null)
@@ -645,6 +652,8 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     private void BindTaskControls()
     {
         if (_input == null) _input = FindFirstObjectByType<URInputManager>();
+        if (_input != null && _workflowMode != URInputManager.WorkflowMode.Unrestricted &&
+            _input.SelectedWorkflow != _workflowMode) _input.ConfigureWorkflow(_workflowMode);
         BindFixtureControls();
         if (_tcpPlanning == null) _tcpPlanning = _input != null ? _input.GetComponent<TcpPlanningController>() : FindFirstObjectByType<TcpPlanningController>();
         if (_qrDetector == null) _qrDetector = FindFirstObjectByType<QRDetector>();
@@ -707,7 +716,8 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         RefreshTaskChoice(_pickPlaceTaskButton, !tcp && !fixture, canSelectMode);
         RefreshTaskChoice(_fixtureTaskButton, fixture, canSelectMode);
         if (_fixtureSetupButton != null) _fixtureSetupButton.gameObject.SetActive(fixture);
-        if (_taskHelp != null) _taskHelp.rectTransform.sizeDelta = new Vector2(fixture ? 268f : 408f, 45f);
+        if (_taskHelp != null) _taskHelp.rectTransform.sizeDelta = new Vector2(
+            fixture && _workflowMode == URInputManager.WorkflowMode.Unrestricted ? 268f : 408f, 45f);
         if (_taskHelp != null) _taskHelp.text = fixture
             ? "Set tile, stack, pattern and fixture.\nChoose a point, then trigger to capture."
             : tcp
@@ -755,6 +765,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         RefreshAlignmentControls();
         RefreshPointPlacementControls();
         RefreshFixtureMenu();
+        RefreshSceneNavigation();
     }
 
     private static void RefreshTaskChoice(Button button, bool selected, bool enabled)
@@ -920,7 +931,9 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         _taskView = Rect("Task view", _panel, Vector2.zero, new Vector2(440f, 756f));
         _alignmentView = Rect("Alignment view", _panel, Vector2.zero, new Vector2(440f, 756f));
         _pointView = Rect("Four-point placement view", _panel, Vector2.zero, new Vector2(440f, 756f));
-        BuildHeader(_taskView, "Title", "Robot tool");
+        BuildHeader(_taskView, "Title", _workflowMode == URInputManager.WorkflowMode.SimplePickAndPlace
+            ? "Simple Pick and Place" : _workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace
+            ? "Repetitive Pick and Place" : "Robot tool");
         Text("Subtitle", _taskView, new Vector2(16f, -44f), new Vector2(216f, 29f),
             "Match mounted tool and ROS.", 13f).color = new Color(0.73f, 0.81f, 0.87f);
         BuildContourToggle();
@@ -929,12 +942,16 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         CreateChoice("kenos_sl", "Kenos SL", 294f);
         _status = Text("Tool status", _taskView, new Vector2(16f, -138f), new Vector2(408f, 55f), string.Empty, 15f);
         _status.color = new Color(0.83f, 0.9f, 0.94f);
-        _tcpTaskButton = CreateButton("TCP A → B", _taskView, new Vector2(16f, -204f), new Vector2(130f, 32f), out TextMeshProUGUI tcpLabel);
-        tcpLabel.fontSize = 16f;
-        _tcpTaskButton.onClick.AddListener(SelectTcpTask);
-        _pickPlaceTaskButton = CreateButton("MTC pick / place", _taskView, new Vector2(155f, -204f), new Vector2(130f, 32f), out TextMeshProUGUI pickPlaceLabel);
-        pickPlaceLabel.fontSize = 13f;
-        _pickPlaceTaskButton.onClick.AddListener(SelectPickPlaceTask);
+        if (_workflowMode != URInputManager.WorkflowMode.RepetitivePickAndPlace)
+        {
+            bool simple = _workflowMode == URInputManager.WorkflowMode.SimplePickAndPlace;
+            _tcpTaskButton = CreateButton("TCP A → B", _taskView, new Vector2(16f, -204f), new Vector2(simple ? 198f : 130f, 32f), out TextMeshProUGUI tcpLabel);
+            tcpLabel.fontSize = 16f;
+            _tcpTaskButton.onClick.AddListener(SelectTcpTask);
+            _pickPlaceTaskButton = CreateButton("MTC pick / place", _taskView, new Vector2(simple ? 226f : 155f, -204f), new Vector2(simple ? 198f : 130f, 32f), out TextMeshProUGUI pickPlaceLabel);
+            pickPlaceLabel.fontSize = simple ? 16f : 13f;
+            _pickPlaceTaskButton.onClick.AddListener(SelectPickPlaceTask);
+        }
         BuildFixtureEntry();
         _taskHelp = Text("Target instructions", _taskView, new Vector2(16f, -239f), new Vector2(408f, 45f), string.Empty, 14f);
         _taskHelp.color = new Color(0.73f, 0.81f, 0.87f);
@@ -968,6 +985,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         _qrStatus.enableAutoSizing = true;
         _qrStatus.fontSizeMin = 10f;
         _qrStatus.fontSizeMax = 12f;
+        BuildSceneNavigation();
         BuildAlignmentView();
         BuildPointPlacementView();
         BuildFixtureView();

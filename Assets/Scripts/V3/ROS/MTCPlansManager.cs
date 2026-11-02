@@ -2,6 +2,7 @@ using RosMessageTypes.Moveit;
 using RosMessageTypes.Std;
 using UnityEngine;
 using UnityEngine.Events;
+using Unity.Robotics.ROSTCPConnector;
 
 public class MTCPlansManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class MTCPlansManager : MonoBehaviour
     [SerializeField, Min(1f)] private float _executionAcknowledgementTimeout = 10f;
     private bool _isLastPlanSuccessful = false;
     private RobotCoordinateService _coordinates;
+    private ROSConnection _connection;
     private bool _tilePlanningEnabled = true;
     private bool _hasPlanningRequest;
     private bool _acceptingResults;
@@ -212,9 +214,10 @@ public class MTCPlansManager : MonoBehaviour
     {
         _coordinates = RobotCoordinateService.Instance;
         _coordinates.CalibrationChanged += InvalidatePlan;
-        ROSService.Instance.Subscribe<StringMsg>("/mtc/planning_status", OnPlanningStatus);
-        ROSService.Instance.Subscribe<RobotTrajectoryMsg>("/mtc/planned_trajectory", OnPlannedTrajectory);
-        ROSService.Instance.Subscribe<StringMsg>("/mtc/execution_status", OnExecutionStatus);
+        _connection = ROSService.Instance.GetROSConnection();
+        _connection.Subscribe<StringMsg>("/mtc/planning_status", OnPlanningStatus);
+        _connection.Subscribe<RobotTrajectoryMsg>("/mtc/planned_trajectory", OnPlannedTrajectory);
+        _connection.Subscribe<StringMsg>("/mtc/execution_status", OnExecutionStatus);
     }
 
     private void Update()
@@ -382,6 +385,12 @@ public class MTCPlansManager : MonoBehaviour
     {
         RobotExecutionState.SetBusy(this, false);
         if (_coordinates != null) _coordinates.CalibrationChanged -= InvalidatePlan;
+        if (_connection != null)
+        {
+            _connection.Unsubscribe("/mtc/planning_status");
+            _connection.Unsubscribe("/mtc/planned_trajectory");
+            _connection.Unsubscribe("/mtc/execution_status");
+        }
     }
 
     [System.Serializable]

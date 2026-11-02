@@ -1,8 +1,11 @@
 # Fixture regrasp and tile batches in Unity
 
-The **Fixture tiling** task implements the Unity side of the ROS
-`codex/fixture-tiling` workflow. It is added at runtime to the existing V3 task
-menu and input object; existing scenes need no manual component wiring.
+The **Repetitive Pick and Place** scene implements the Unity side of the ROS
+`codex/fixture-tiling` workflow. The app starts at **Welcome**, where the user
+chooses **Simple Pick and Place** or **Repetitive Pick and Place**. Each opens
+its own scene; the simple scene retains TCP A/B and single-item MTC controls.
+The repetitive scene contains the fixture controller and its dedicated setup
+and review controls. The build contains these three scenes in that order.
 
 This first version accepts square tiles, a horizontal aligned stack and centred
 suction on the large top face. Tile dimensions are configurable placeholders,
@@ -11,8 +14,9 @@ ROS v1 contract.
 
 ## Configure and capture
 
-1. Align the XR robot with the real robot and select the matching ROS suction
-   tool. Choose **Fixture tiling → Fixture setup**.
+1. Choose **Repetitive Pick and Place** on Welcome. Align the XR robot with the
+   real robot and select the matching ROS suction tool. Use **Configure task**
+   to open the fixture setup pages.
 2. On **Tile dimensions**, enter the measured square side, thickness, source
    count, job count and stack pitch. Zero pitch uses thickness. Length steppers
    have 0.1, 1, 10 and 100 mm increments.
@@ -52,6 +56,14 @@ the menu. Trigger does not place the robot while fixture mode is selected.
 The app stores completed setup in `fixture-tiling.json` in Unity's per-user app
 data directory, and stores fixture calibration on ROS through the save service.
 Persistence requires the fixture-to-robot relationship to remain fixed.
+
+The **Welcome** button in the workflow header returns to the welcome scene.
+Scene changes discard local review permission and require fresh XR robot
+alignment in the next workflow. Saved calibration profiles and fixture setup
+remain available. Navigation is blocked while an execution outcome is pending,
+including an unknown acknowledgement outcome, so scene unloading cannot discard
+the active command's feedback. One established ROS connection is retained
+across scene changes; scene-owned subscriptions are removed on unload.
 
 ## Plan, review and execute
 

@@ -5,15 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/UR16eViewer.unity
-    guid: b874c91a1bdab534bbf1c42c2b99109b
-  - enabled: 0
-    path: Assets/Samples/Magic Leap SDK/2.6.0/Marker Understanding sample/MarkerUnderstandingSample.unity
-    guid: 9cde533f07cffca40959a5f5483f8ee0
   - enabled: 1
-    path: Assets/Scenes/UR16eInteraction.unity
-    guid: 9c0f6fed0740707498a479d724a047b2
+    path: Assets/Scenes/Welcome.unity
+    guid: d0185037817fb1aadeed5c0dc8a51a01
+  - enabled: 1
+    path: Assets/Scenes/SimplePickAndPlace.unity
+    guid: f1222a7fd985727c4778e9999b42d15c
+  - enabled: 1
+    path: Assets/Scenes/RepetitivePickAndPlace.unity
+    guid: 319c05e17fa346a6c9297f56596110ce
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: bb4daeceea261404d9e9069323220d1b, type: 3}
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 16c7b1ee74f218742a86da34712e51fb, type: 2}

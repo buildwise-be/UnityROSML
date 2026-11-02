@@ -29,7 +29,7 @@ public class RobotStateService : MonoBehaviour
     private ArticulationBody _robotRootArticulation = null;
     private Pose _robotPose = new Pose();
     private bool _isInitialized = false;
-    public bool IsInitialized => _isInitialized;
+    public bool IsInitialized => _isInitialized && _robotInstance != null && _robotRootArticulation != null;
     private bool _isReadyForPlanning = false;
     public bool IsReadyForPlanning
     {
@@ -88,6 +88,17 @@ public class RobotStateService : MonoBehaviour
         if (_isInitialized) RobotContourDisplay.SetLiveRobot(_robotInstance.GetComponent<RosRobotRig>());
     }
 
+    /// <summary>Release scene-owned robot references without changing saved calibration profiles.</summary>
+    public void ResetForSceneChange()
+    {
+        _isReadyForPlanning = false;
+        _isInitialized = false;
+        _robotInstance = null;
+        _robotRootArticulation = null;
+        _robotPose = Pose.identity;
+        RobotContourDisplay.SetLiveRobot(null);
+    }
+
     /// <summary>
     /// Get the robot GameObject instance.
     /// </summary>
@@ -115,6 +126,11 @@ public class RobotStateService : MonoBehaviour
             return new Pose(_robotRootArticulation.transform.position, _robotRootArticulation.transform.rotation);
         }
         return _robotPose;
+    }
+
+    private void OnDestroy()
+    {
+        if (_instance == this) _instance = null;
     }
 }
 

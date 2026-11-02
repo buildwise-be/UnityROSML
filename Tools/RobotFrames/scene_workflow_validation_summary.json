@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-11-02 09:20:14Z",
+  "unityVersion": "6000.0.84f1",
+  "scope": "Welcome scene and physically separate simple/repetitive scenes with guarded navigation and scene-safe robot/ROS lifecycle",
+  "baselineThrowingService": {
+    "total": 609,
+    "passed": 608,
+    "failed": 0,
+    "skipped": 1,
+    "completedUtc": "2026-11-02 09:16:00Z",
+    "evidence": {
+      "path": "Library/FixtureTilingValidation/scene-baseline-results.xml",
+      "sha256": "4ebd0c0adc42923cc81e7d63a5dadd8012fb17b122e656b82b556b3f07d7b7f0"
+    }
+  },
+  "actualServiceFocused": {
+    "total": 23,
+    "passed": 23,
+    "failed": 0,
+    "skipped": 0,
+    "completedUtc": "2026-11-02 09:20:14Z",
+    "evidence": {
+      "path": "Library/FixtureTilingValidation/scene-real-service-results.xml",
+      "sha256": "c1248b4d50d5f3dbd15b36fb7132126a4f0022da16ce73f5fb5e351e3016a8df"
+    }
+  },
+  "uniqueSuccessfulTestCases": 609,
+  "intentionalBaselineSkip": "The actual ROSService reuse/recovery case runs successfully in the focused real-service harness instead of the baseline throwing-factory harness.",
+  "runtimeCompile": {
+    "helperSources": 9,
+    "mainSources": 112,
+    "errors": 0,
+    "warnings": [
+      "Assets\\Samples\\Magic Leap SDK\\2.6.0\\ML Rig & OpenXR Input\\MagicLeapController.cs(45,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'",
+      "Assets\\Scripts\\PickAndPlaceScriptableObject.cs(29,26): warning CS0618: 'CoordinatesConverter' is obsolete: 'Use RobotCoordinateService instead'",
+      "Assets\\Scripts\\UR16eServiceCaller.cs(55,18): warning CS0414: The field 'Ur16EServiceCaller.debugEnabled' is assigned but its value is never used"
+    ],
+    "evidence": {
+      "path": "Library/SceneWorkflowValidationSupport/runtime_compile_summary.json",
+      "sha256": "cafe506eb224f7a0ac65f1d6c77f7a0f0b43c9a90018cdee612fbb3eee6b940d"
+    }
+  },
+  "sceneBuildOrder": [
+    {
+      "name": "Welcome",
+      "path": "Assets/Scenes/Welcome.unity",
+      "resource": "RobotAppScenes/Welcome",
+      "sha256": "9c9fe5441b79ddad43d67b1440186be11bb1f53174181d36575d7805c02fcd33",
+      "guid": "d0185037817fb1aadeed5c0dc8a51a01"
+    },
+    {
+      "name": "SimplePickAndPlace",
+      "path": "Assets/Scenes/SimplePickAndPlace.unity",
+      "resource": "RobotAppScenes/SimplePickAndPlace",
+      "sha256": "b004374028998168967e5296cb475e7eaaf92cadc0c10ed98c0b04e406e1d7ce",
+      "guid": "f1222a7fd985727c4778e9999b42d15c"
+    },
+    {
+      "name": "RepetitivePickAndPlace",
+      "path": "Assets/Scenes/RepetitivePickAndPlace.unity",
+      "resource": "RobotAppScenes/RepetitivePickAndPlace",
+      "sha256": "aa9faf81e8be86b3d5eb1a6ca7c590fe4a73f975bcf669ebf1f978d5f78a687d",
+      "guid": "319c05e17fa346a6c9297f56596110ce"
+    }
+  ],
+  "buildSettings": {
+    "path": "ProjectSettings/EditorBuildSettings.asset",
+    "sha256": "3369fad11f76d598eac2e9e2f899b97d3b4880c5684f7055edbe54885da8c87f"
+  },
+  "serializedChecks": [
+    "Exactly three enabled scenes; Welcome first",
+    "Unique document IDs and resolved local references",
+    "Welcome contains no robot task controllers or ROS service",
+    "Simple and repetitive scope values and controller wiring",
+    "Repetitive physically omits legacy TCP/pick-place controllers",
+    "One XR rig per scene, no duplicate auto-connecting ROS prefab",
+    "Task services retain the configured 10.200.101.144:10000 initial endpoint"
+  ],
+  "navigationChecks": [
+    "Known destinations only",
+    "Old alignment/readiness reset before loading",
+    "Duplicate clicks blocked during transition",
+    "Pending/unknown robot commands block navigation before reset",
+    "Loader failure releases navigation lock"
+  ],
+  "visualQa": {
+    "renderedViews": 11,
+    "textOverflowWarnings": 0,
+    "humanInspection": "Root and UI agent inspected Welcome, Simple main and all repetitive pages",
+    "log": {
+      "path": "Library/FixtureTilingValidation/scene-baseline-tests.log",
+      "sha256": "51082f9789811b59225824b9c2364a588308a47d339b263fe0b1381233b91649"
+    },
+    "previews": [
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/RepetitivePickAndPlace/fixture-menu-contact-sheet.png",
+        "sha256": "2f954d160b2f7192587c78bccb5727ee228b7184e2cb45845128ea7d0c29c7b2"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/RepetitivePickAndPlace/fixture-page-1.png",
+        "sha256": "1eb478d37ee2aa2bb2ac1f79a1ec6a792e279a5e69d99657c8ff989ab720edfe"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/RepetitivePickAndPlace/fixture-page-2.png",
+        "sha256": "3d32f890df52384a4765dcf6adb530c535536175b4aaaf9c75cc9711d18976ce"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/RepetitivePickAndPlace/fixture-page-3.png",
+        "sha256": "3e6afce9ccb2bdea199397847ce72bcbfafd0446e1b6e28efa5eecc8f9f128e0"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/RepetitivePickAndPlace/fixture-page-4.png",
+        "sha256": "b82bda68fac37ef7fcef37a883eb4f8e3ed5a4d93a4abc54a1f6c9b3819ded49"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/RepetitivePickAndPlace/fixture-page-5.png",
+        "sha256": "c9d2e0a284cb2f63e8171051991bc907c75c8d0792f42f75ad562462341baf95"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/RepetitivePickAndPlace/fixture-page-6.png",
+        "sha256": "afadc873298c29803d20c789fe9703de93ffc45a7ac04ec7cea8df1f188be60e"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/RepetitivePickAndPlace/fixture-page-7.png",
+        "sha256": "ace87b96654ae70dd34a5f07aeefbd845378b851289efddf34b4295cb1d4650b"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/RepetitivePickAndPlace/fixture-page-8.png",
+        "sha256": "443f4529321ce288d4c82ba7c60e9cb3b0ad56acb16a927d811a3afe54cf3b57"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/RepetitivePickAndPlace/fixture-task-entry.png",
+        "sha256": "66a37776ed38f5320d029d09a9adc7d2dbdf7a343046e3792288dfdb8f0b7319"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/SimplePickAndPlace/fixture-menu-contact-sheet.png",
+        "sha256": "7950984bf22c8ed164fe786ef33fed97b07c6e7b7ec215927e12e5f7e4275cc9"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/SimplePickAndPlace/fixture-task-entry.png",
+        "sha256": "7950984bf22c8ed164fe786ef33fed97b07c6e7b7ec215927e12e5f7e4275cc9"
+      },
+      {
+        "path": "Library/FixtureTilingValidation/WorkflowMenuPreviews/Welcome.png",
+        "sha256": "1b1e0b8fc8f15a1d8ed462c829280dee71b7b8240ed9da49ccd16a282df0bed6"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "path": "Assets/Scripts/V3/RobotAppNavigation.cs",
+      "sha256": "2eabc9ba991493849e954f3971e1d00080d31a1e1453bafc7157ff03553a509a"
+    },
+    {
+      "path": "Assets/Scripts/V3/URInputManager.cs",
+      "sha256": "5d1d8241f256a79a5e905b9001e641ecbfa134d3c412389f1b8bf2c229aa53da"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/RobotWelcomeMenu.cs",
+      "sha256": "ed168b1e337f3a6a986fe0a671165f9fdb07755d8bfea93303fdaae954e897e3"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "636f3cd435fe6c214d1563659466f8a065c9219f9af363d4d6bdb7b719db387d"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.Fixture.cs",
+      "sha256": "263e7315254cc2d7281ac5a309916f1c6b87e4173dd2694be96e7bb81df03ba3"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.Navigation.cs",
+      "sha256": "1242bd14bb41b68e2f57d69b6ad1334cc59035d3f87a5b9a2f5272ec589f334a"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/ROSService.cs",
+      "sha256": "11d87334a4597927a88daacf8ec205ade96604923ffc1169084834934735862a"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotStateService.cs",
+      "sha256": "e54fb4ee3ee7e8d5a8e933c96b64e6a4e2e2db2acf87818b9aa9b5e20f5cb0f3"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotCoordinateService.cs",
+      "sha256": "70b762078de80613b5902e792e5d3a230c2f4d8cce1a9788c797522f1c4714e0"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/MTCPlansManager.cs",
+      "sha256": "30b8f6ad73a857c850249812365fe0268a1dd81456b8e72ed23eda6ebd96cf96"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotAppSceneTests.cs",
+      "sha256": "280e0f9091ebe0791fd2b0fb51dbaa8c39019379d5e60159db00a07f0f18c912"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/WorkflowMenuTests.cs",
+      "sha256": "ca0e1b7b41b22863509d31c645ca40fc743c5434c49256df4ad359843e9eae51"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/WorkflowServiceLifecycleTests.cs",
+      "sha256": "2158a0fc0dc771c112d1ace3a8696f74f8c92bb16df2776edf0af5128753275a"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/FixtureTilingMenuTests.cs",
+      "sha256": "1a2b06f86716f719bd4a5df9614ca2913765995dbc7ba61167f79d88d3403803"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "Tools/RobotFrames/prepare_unity_validation.py",
+      "sha256": "cf86ecb2cb411af164689467c8825d5b5708e951fc5a063a592990e2fff7cbdf"
+    },
+    {
+      "path": "Tools/RobotFrames/prepare_scene_workflow_validation.py",
+      "sha256": "44ec71387fadf8cb8e0659e1de8eb231da31a4bed1c8a0a5f598192aa6d30fe9"
+    },
+    {
+      "path": "Tools/RobotFrames/record_scene_workflow_validation.py",
+      "sha256": "514491b9cc4d14b847afe46aba7c322211c605c62aea13fd6f2993a3b2eafd58"
+    }
+  ],
+  "transport": "Actual ROSService and connector are tested disabled, with ConnectOnStart false; no transport Start/Connect or ROS messages are sent",
+  "realServicePersistenceTest": "One UnityTest enters PlayMode in the isolated empty test scene, verifies DontDestroyOnLoad membership of service/connector/replacement, destroys them before ExitPlayMode, and starts no transport",
+  "nativeXrSceneLoaded": false,
+  "headsetTested": false,
+  "liveRosTested": false,
+  "robotMotionRequested": false,
+  "deploymentPerformed": false,
+  "limits": "Serialized scenes are verified through hash-matched text snapshots; scene loading uses the actual guarded router with an injected loader. Native XR scene startup and headset transitions still require device validation."
+}

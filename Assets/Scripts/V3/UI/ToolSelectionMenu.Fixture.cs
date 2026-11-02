@@ -11,6 +11,7 @@ public sealed partial class ToolSelectionMenu
     private FixtureTilingController _fixtureTiling;
     private FixtureTilingController _subscribedFixtureTiling;
     private Button _fixtureTaskButton, _fixtureSetupButton;
+    private Button _fixtureReviewButton;
     private RectTransform _fixtureView, _fixturePageContent;
     private TextMeshProUGUI _fixturePageTitle, _fixtureStatus, _fixtureCaptureHelp;
     private bool _showFixtureSetup;
@@ -26,6 +27,13 @@ public sealed partial class ToolSelectionMenu
 
     private void BindFixtureControls()
     {
+        if (_workflowMode == URInputManager.WorkflowMode.SimplePickAndPlace ||
+            (_input != null && _input.SelectedWorkflow == URInputManager.WorkflowMode.SimplePickAndPlace))
+        {
+            UnbindFixtureControls();
+            _fixtureTiling = null;
+            return;
+        }
         if (_fixtureTiling == null && _input != null) _fixtureTiling = _input.FixtureController;
         if (_subscribedFixtureTiling == _fixtureTiling) return;
         UnbindFixtureControls();
@@ -48,6 +56,21 @@ public sealed partial class ToolSelectionMenu
 
     private void BuildFixtureEntry()
     {
+        if (_workflowMode == URInputManager.WorkflowMode.SimplePickAndPlace) return;
+        if (_workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace)
+        {
+            _fixtureSetupButton = CreateButton("Configure repetitive task", _taskView, new Vector2(16f, -204f),
+                new Vector2(198f, 32f), out TextMeshProUGUI configure);
+            configure.text = "Configure task";
+            configure.fontSize = 16f;
+            _fixtureSetupButton.onClick.AddListener(OpenFixtureSetup);
+            _fixtureReviewButton = CreateButton("Review repetitive task", _taskView, new Vector2(226f, -204f),
+                new Vector2(198f, 32f), out TextMeshProUGUI review);
+            review.text = "Review task steps";
+            review.fontSize = 16f;
+            _fixtureReviewButton.onClick.AddListener(OpenFixtureReview);
+            return;
+        }
         _fixtureTaskButton = CreateButton("Fixture tiling", _taskView, new Vector2(294f, -204f),
             new Vector2(130f, 32f), out TextMeshProUGUI title);
         title.fontSize = 14f;
@@ -61,6 +84,7 @@ public sealed partial class ToolSelectionMenu
 
     public void OpenFixtureSetup()
     {
+        if (_workflowMode == URInputManager.WorkflowMode.SimplePickAndPlace) return;
         BindTaskControls();
         if (IsPlacementBusy || _input == null) return;
         if (!_input.IsFixtureMode && !RobotExecutionState.IsBusy) _input.UseFixtureTiling();
@@ -68,6 +92,27 @@ public sealed partial class ToolSelectionMenu
         _showFixtureSetup = true;
         BuildFixturePage();
         RefreshTask();
+    }
+
+    public void OpenFixtureReview()
+    {
+        _fixturePage = 7;
+        OpenFixtureSetup();
+    }
+
+    private System.Collections.IEnumerator OpenRepetitiveSetupAfterStart()
+    {
+        // A controller created during Start loads its saved profile before the
+        // next frame; build form callbacks against that loaded settings object.
+        yield return null;
+        if (_workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace)
+        {
+            // Initial robot placement can still own the canvas. Keep setup
+            // selected so it appears as soon as that placement is finished.
+            _showFixtureSetup = true;
+            BuildFixturePage();
+            RefreshTask();
+        }
     }
 
     public void CloseFixtureSetup()
@@ -86,8 +131,10 @@ public sealed partial class ToolSelectionMenu
 
     private void BuildFixtureView()
     {
+        if (_workflowMode == URInputManager.WorkflowMode.SimplePickAndPlace) return;
         _fixtureView = Rect("Fixture tiling setup view", _panel, Vector2.zero, new Vector2(440f, 756f));
-        BuildHeader(_fixtureView, "Fixture setup title", "Fixture tile batch");
+        BuildHeader(_fixtureView, "Fixture setup title", _workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace
+            ? "Repetitive Pick and Place" : "Fixture tile batch");
         _fixturePageTitle = Text("Fixture page title", _fixtureView, new Vector2(64f, -57f),
             new Vector2(312f, 32f), string.Empty, 19f);
         _fixturePageTitle.alignment = TextAlignmentOptions.Center;
