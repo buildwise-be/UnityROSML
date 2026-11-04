@@ -141,6 +141,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     private void Start()
     {
         BuildMenu();
+        BindForceReadout();
         BindController();
         BindTaskControls();
         RefreshMenu();
@@ -281,6 +282,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         RefreshPlayback();
         RefreshPathThickness();
         RefreshSceneNavigation();
+        RefreshForceReadout();
         if (_pointGuide != null && _pointGuidePose != null && IsPointCollecting)
             _pointGuidePose.text = _pointGuide.PoseStatus;
     }
@@ -995,6 +997,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         _qrStatus.enableAutoSizing = true;
         _qrStatus.fontSizeMin = 10f;
         _qrStatus.fontSizeMax = 12f;
+        BuildForceReadout();
         BuildSceneNavigation();
         BuildAlignmentView();
         BuildPointPlacementView();

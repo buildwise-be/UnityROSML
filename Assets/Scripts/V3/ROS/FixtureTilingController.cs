@@ -249,6 +249,7 @@ public class FixtureTilingController : MonoBehaviour
     public void Plan()
     {
         if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null || IsPlanning) return;
+        RobotExecutionState.NotifyPlanningStarted();
         if (!ContextValid()) { SetStatus("Select fixture tiling, finish alignment/capture and match the ROS suction-tool model."); return; }
         if (!FixtureTilingGeometry.TryBuildCalibration(_calibration, out _, out string reason)) { SetStatus(reason); return; }
         string requestId = Guid.NewGuid().ToString("N");

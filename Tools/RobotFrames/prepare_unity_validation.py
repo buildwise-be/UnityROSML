@@ -88,6 +88,7 @@ def main():
                 raise ValueError("Refusing to remove a file outside the isolated project")
             stale.unlink()
     for runtime in ("Assets/Scripts/V3/ROS/RosRobotRig.cs", "Assets/Scripts/V3/ROS/RobotExecutionState.cs", "Assets/Scripts/V3/ROS/RobotDescriptionMessages.cs",
+                    "Assets/Scripts/V3/ROS/ForceTorqueSubscriber.cs",
                     "Assets/Scripts/V3/ROS/ToolSelectionController.cs", "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
                     "Assets/Scripts/V3/UI/RobotRegistrationGuide.cs",
                     "Assets/Scripts/V3/ROS/TcpPlanningController.cs", "Assets/Scripts/V3/TcpTargetPreview.cs",

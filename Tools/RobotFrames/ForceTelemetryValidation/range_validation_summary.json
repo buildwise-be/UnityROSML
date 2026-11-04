@@ -1,0 +1,22 @@
+{
+  "completedUtc": "2026-11-04T08:50:54.7028524Z",
+  "forceGaugeMaximumN": 100,
+  "torqueGaugeMaximumNm": 20,
+  "scaleBehavior": "Fixed; clamp visual fill/marker only; numeric readings and peak tracking remain uncapped",
+  "testFilter": "ForceTorqueSubscriberTests",
+  "passed": 46,
+  "failed": 0,
+  "runtimeCompilation": "115 runtime and 9 helper sources; zero errors",
+  "previews": "14 states rendered with overflow checks; peak preview visually verified",
+  "sourceHashes": [
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.Force.cs",
+      "sha256": "fec5829cd85ae81ef601627d1597d8110d62ba0a91b001d71e57d131082a390c"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/ForceTorqueSubscriberTests.cs",
+      "sha256": "7264b0d8aa711d376608e379adef226cd486ab23e2e3d9c5ce1a41811c500060"
+    }
+  ],
+  "hardwareCommandsSent": false
+}

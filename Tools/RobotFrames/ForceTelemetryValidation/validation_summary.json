@@ -1,0 +1,49 @@
+{
+  "completedUtc": "2026-11-03T13:42:16.4729629Z",
+  "unityVersion": "6000.0.84f1",
+  "testResult": "Passed",
+  "passed": 136,
+  "failed": 0,
+  "testFilter": "ForceTorqueSubscriberTests;WorkflowMenuTests;WorkflowServiceLifecycleTests;TcpPlanningControllerTests;FixtureTilingWorkflowTests;MtcExecutionWorkflowTests;RepeatExecutionWorkflowTests;PickPlaceToolContactTests",
+  "sourceHashes": [
+    {
+      "sha256": "df025e7f7c11823d7506f05add9e2ce9746421723deacfbcccdfffcdf15e041c",
+      "path": "Assets/Scripts/V3/ROS/ForceTorqueSubscriber.cs"
+    },
+    {
+      "sha256": "e1c4274d56a295db5832c69743a65fb7d9131b55ae87c1b18aff7eec7bb16bf5",
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs"
+    },
+    {
+      "sha256": "55f6042457644e14620bb8dc53a8cd662d6d949921e2344c4e1dd99d9cd63392",
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.Force.cs"
+    },
+    {
+      "sha256": "888a256a1199cd88793124bd15ca79678b0eb7d55932735385f63d037b091b29",
+      "path": "Assets/Scripts/V3/ROS/RobotExecutionState.cs"
+    },
+    {
+      "sha256": "9b275fb99371d343a6a9f81a77d9d203407084c0fba933e40b7ff7ade50f8b5e",
+      "path": "Assets/Scripts/V3/ROS/TcpPlanningController.cs"
+    },
+    {
+      "sha256": "eeb2f6f2f397bde65eb4a892820231219a708070d91467d4b44981653456b82f",
+      "path": "Assets/Scripts/V3/ROS/PickPlaceController.cs"
+    },
+    {
+      "sha256": "61536cda91bfb2a493d674d3ee6f4646e972831a07e1233cb40542004899ead0",
+      "path": "Assets/Scripts/V3/ROS/FixtureTilingController.cs"
+    },
+    {
+      "sha256": "8240d0250e271e4d5bf81be9575ff1b4bfebf3a3d862ddf0fcc5d550fc81a2dc",
+      "path": "Assets/Tests/RobotFrames/ForceTorqueSubscriberTests.cs"
+    }
+  ],
+  "runtimeCompilation": "115 main and 9 frame helper sources; zero errors",
+  "visualExport": "Fourteen offline previews rendered with visible text overflow checks; held peak, stale retained peak and reset marker states inspected",
+  "peakLifecycle": "No mark initially; new Plan or accepted Execute clears marks; valid execution samples raise independent magnitude peaks; terminal outcome freezes; stale/disabled preserve; disabled observers notice missed commands",
+  "previewValues": "Synthetic test fixture, not live hardware readings",
+  "liveEndpointEvidence": "live_endpoint.json (earlier read-only transport verification)",
+  "hardwareCommandsSent": false,
+  "headsetBuildInstalled": false
+}

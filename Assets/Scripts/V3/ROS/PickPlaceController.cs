@@ -189,7 +189,9 @@ public class PickPlaceController : MonoBehaviour
     public void SendPickAndPlacePlanningRequest()
     {
         if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
-        if (!ValidatePlanningRequest() || IsPlanning) return;
+        if (IsPlanning) return;
+        RobotExecutionState.NotifyPlanningStarted();
+        if (!ValidatePlanningRequest()) return;
         InvalidatePlanningRequest();
         if (!TryGetContactPoses(out PickPlacePosesMsg message))
         { RejectPlanningRequest("Cannot plan MTC pick/place without valid tool targets and robot alignment."); return; }

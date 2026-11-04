@@ -1,0 +1,907 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="136" result="Passed" total="136" passed="136" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-03 13:41:17Z" end-time="2026-11-03 13:41:17Z" duration="0,375754">
+  <test-suite type="TestSuite" id="1000" name="ForceTorqueValidation" fullname="ForceTorqueValidation" runstate="Runnable" testcasecount="709" result="Passed" start-time="2026-11-03 13:41:17Z" end-time="2026-11-03 13:41:17Z" duration="0.375754" total="136" passed="136" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1833" name="UnityROSML.RobotFrames.EditorTests.dll" fullname="C:/Users/aca/unity-source/UnityROSML/Library/ForceTorqueValidation/Library/ScriptAssemblies/UnityROSML.RobotFrames.EditorTests.dll" runstate="Runnable" testcasecount="709" result="Passed" start-time="2026-11-03 13:41:17Z" end-time="2026-11-03 13:41:17Z" duration="0.334931" total="136" passed="136" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="53348" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestFixture" id="1071" name="FixtureTilingWorkflowTests" fullname="FixtureTilingWorkflowTests" classname="FixtureTilingWorkflowTests" runstate="Runnable" testcasecount="19" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.535720" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="ParameterizedMethod" id="1083" name="ChangesRevokeTheVisiblePlanAndItsExecutionPermission" fullname="FixtureTilingWorkflowTests.ChangesRevokeTheVisiblePlanAndItsExecutionPermission" classname="FixtureTilingWorkflowTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.244573" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1080" name="ChangesRevokeTheVisiblePlanAndItsExecutionPermission(&quot;edit&quot;)" fullname="FixtureTilingWorkflowTests.ChangesRevokeTheVisiblePlanAndItsExecutionPermission(&quot;edit&quot;)" methodname="ChangesRevokeTheVisiblePlanAndItsExecutionPermission" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="1241614590" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.204855" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1081" name="ChangesRevokeTheVisiblePlanAndItsExecutionPermission(&quot;mode&quot;)" fullname="FixtureTilingWorkflowTests.ChangesRevokeTheVisiblePlanAndItsExecutionPermission(&quot;mode&quot;)" methodname="ChangesRevokeTheVisiblePlanAndItsExecutionPermission" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="452879891" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.018273" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1082" name="ChangesRevokeTheVisiblePlanAndItsExecutionPermission(&quot;calibration&quot;)" fullname="FixtureTilingWorkflowTests.ChangesRevokeTheVisiblePlanAndItsExecutionPermission(&quot;calibration&quot;)" methodname="ChangesRevokeTheVisiblePlanAndItsExecutionPermission" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="804677800" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.017240" asserts="0">
+            <properties />
+          </test-case>
+        </test-suite>
+        <test-case id="1084" name="ExecuteConsumesOnceAndUnknownAcknowledgementRemainsLockedUntilMatchingTerminal" fullname="FixtureTilingWorkflowTests.ExecuteConsumesOnceAndUnknownAcknowledgementRemainsLockedUntilMatchingTerminal" methodname="ExecuteConsumesOnceAndUnknownAcknowledgementRemainsLockedUntilMatchingTerminal" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="1466183750" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.022469" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1079" name="ForeignOrMissingOutputsNeverArmAndLateCallbacksCannotRestoreEditedReview" fullname="FixtureTilingWorkflowTests.ForeignOrMissingOutputsNeverArmAndLateCallbacksCannotRestoreEditedReview" methodname="ForeignOrMissingOutputsNeverArmAndLateCallbacksCannotRestoreEditedReview" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="424382613" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.018767" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1085" name="IdentifiedPreflightRejectionCanReleaseTheLockWithoutARequestId" fullname="FixtureTilingWorkflowTests.IdentifiedPreflightRejectionCanReleaseTheLockWithoutARequestId" methodname="IdentifiedPreflightRejectionCanReleaseTheLockWithoutARequestId" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="1008126786" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.018664" asserts="0">
+          <properties />
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1078" name="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder" fullname="FixtureTilingWorkflowTests.OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder" classname="FixtureTilingWorkflowTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.144452" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1072" name="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder(&quot;RSL&quot;)" fullname="FixtureTilingWorkflowTests.OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder(&quot;RSL&quot;)" methodname="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="834910759" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.020844" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1073" name="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder(&quot;RLS&quot;)" fullname="FixtureTilingWorkflowTests.OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder(&quot;RLS&quot;)" methodname="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="2050496326" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.018383" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1074" name="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder(&quot;SRL&quot;)" fullname="FixtureTilingWorkflowTests.OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder(&quot;SRL&quot;)" methodname="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="435062805" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.016140" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1075" name="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder(&quot;SLR&quot;)" fullname="FixtureTilingWorkflowTests.OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder(&quot;SLR&quot;)" methodname="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="746057219" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.016499" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1076" name="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder(&quot;LRS&quot;)" fullname="FixtureTilingWorkflowTests.OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder(&quot;LRS&quot;)" methodname="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="1233156120" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.016221" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1077" name="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder(&quot;LSR&quot;)" fullname="FixtureTilingWorkflowTests.OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder(&quot;LSR&quot;)" methodname="OnlyAllThreeMatchingOutputsArmExecutionInEveryDeliveryOrder" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="1717699451" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.014982" asserts="0">
+            <properties />
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1093" name="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture" fullname="FixtureTilingWorkflowTests.PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture" classname="FixtureTilingWorkflowTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.068467" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1087" name="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(&quot;matching&quot;,True)" fullname="FixtureTilingWorkflowTests.PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(&quot;matching&quot;,True)" methodname="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="784207257" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.013322" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1088" name="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(&quot;opposite quaternion&quot;,True)" fullname="FixtureTilingWorkflowTests.PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(&quot;opposite quaternion&quot;,True)" methodname="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="1839790672" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.010523" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1089" name="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(&quot;disabled&quot;,False)" fullname="FixtureTilingWorkflowTests.PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(&quot;disabled&quot;,False)" methodname="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="562519035" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.010966" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1090" name="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(&quot;foreign frame&quot;,False)" fullname="FixtureTilingWorkflowTests.PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(&quot;foreign frame&quot;,False)" methodname="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="2032908412" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.010818" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1091" name="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(&quot;different board&quot;,False)" fullname="FixtureTilingWorkflowTests.PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(&quot;different board&quot;,False)" methodname="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="1905597730" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.010307" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1092" name="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(&quot;nonfinite thickness&quot;,False)" fullname="FixtureTilingWorkflowTests.PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(&quot;nonfinite thickness&quot;,False)" methodname="PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="1347733991" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.009888" asserts="0">
+            <properties />
+          </test-case>
+        </test-suite>
+        <test-case id="1086" name="StartingOutsideFixtureModeDoesNotRequestOrRegisterRosTransport" fullname="FixtureTilingWorkflowTests.StartingOutsideFixtureModeDoesNotRequestOrRegisterRosTransport" methodname="StartingOutsideFixtureModeDoesNotRequestOrRegisterRosTransport" classname="FixtureTilingWorkflowTests" runstate="Runnable" seed="1699807847" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.011245" asserts="0">
+          <properties />
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1094" name="ForceTorqueSubscriberTests" fullname="ForceTorqueSubscriberTests" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="46" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:13Z" duration="0.285236" total="46" passed="46" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="ParameterizedMethod" id="1132" name="ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable" fullname="ForceTorqueSubscriberTests.ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.004793" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1130" name="ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable(False)" fullname="ForceTorqueSubscriberTests.ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable(False)" methodname="ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="267435125" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.003746" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1131" name="ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable(True)" fullname="ForceTorqueSubscriberTests.ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable(True)" methodname="ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="347381271" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:12Z" duration="0.000753" asserts="0">
+            <properties />
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1143" name="BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry" fullname="ForceTorqueSubscriberTests.BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:13Z" duration="0.093748" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1141" name="BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry(&quot;SimplePickAndPlace&quot;)" fullname="ForceTorqueSubscriberTests.BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry(&quot;SimplePickAndPlace&quot;)" methodname="BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1317503821" result="Passed" start-time="2026-11-03 13:41:12Z" end-time="2026-11-03 13:41:13Z" duration="0.063142" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1142" name="BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry(&quot;RepetitivePickAndPlace&quot;)" fullname="ForceTorqueSubscriberTests.BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry(&quot;RepetitivePickAndPlace&quot;)" methodname="BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="658933657" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.030032" asserts="0">
+            <properties />
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1140" name="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak" fullname="ForceTorqueSubscriberTests.BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.010109" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1137" name="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak(&quot;TcpPlanningController&quot;,&quot;Plan&quot;)" fullname="ForceTorqueSubscriberTests.BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak(&quot;TcpPlanningController&quot;,&quot;Plan&quot;)" methodname="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1863915051" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.004854" asserts="0">
+            <properties />
+            <output><![CDATA[TCP planning: An MTC execution request is unresolved. Wait for its ROS outcome before planning another task.
+]]></output>
+          </test-case>
+          <test-case id="1138" name="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak(&quot;FixtureTilingController&quot;,&quot;Plan&quot;)" fullname="ForceTorqueSubscriberTests.BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak(&quot;FixtureTilingController&quot;,&quot;Plan&quot;)" methodname="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="145170406" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.001339" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1139" name="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak(&quot;PickPlaceController&quot;,&quot;SendPickAndPlacePlanningRequest&quot;)" fullname="ForceTorqueSubscriberTests.BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak(&quot;PickPlaceController&quot;,&quot;SendPickAndPlacePlanningRequest&quot;)" methodname="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1846928871" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.001216" asserts="0">
+            <properties />
+          </test-case>
+        </test-suite>
+        <test-case id="1096" name="CopiesSixSignedRosAxesWithoutUnityCoordinateConversion" fullname="ForceTorqueSubscriberTests.CopiesSixSignedRosAxesWithoutUnityCoordinateConversion" methodname="CopiesSixSignedRosAxesWithoutUnityCoordinateConversion" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1806150076" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.002482" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1118" name="DisableDiscardsTheOldSampleBeforeTheWorkflowCanBeReenabled" fullname="ForceTorqueSubscriberTests.DisableDiscardsTheOldSampleBeforeTheWorkflowCanBeReenabled" methodname="DisableDiscardsTheOldSampleBeforeTheWorkflowCanBeReenabled" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="976101326" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.001906" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1119" name="DisconnectedTransportHidesAndDiscardsAnOtherwiseFreshReading" fullname="ForceTorqueSubscriberTests.DisconnectedTransportHidesAndDiscardsAnOtherwiseFreshReading" methodname="DisconnectedTransportHidesAndDiscardsAnOtherwiseFreshReading" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="23400073" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.003158" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1097" name="DisplayUsesInvariantUnitsAndThePublishedReferenceFrame" fullname="ForceTorqueSubscriberTests.DisplayUsesInvariantUnitsAndThePublishedReferenceFrame" methodname="DisplayUsesInvariantUnitsAndThePublishedReferenceFrame" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="190279793" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.002866" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1123" name="EveryDeliveredSamplePushesIndependentForceAndTorquePeaks" fullname="ForceTorqueSubscriberTests.EveryDeliveredSamplePushesIndependentForceAndTorquePeaks" methodname="EveryDeliveredSamplePushesIndependentForceAndTorquePeaks" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1606647904" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.001361" asserts="0">
+          <properties />
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1136" name="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt" fullname="ForceTorqueSubscriberTests.EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.012274" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1133" name="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt(&quot;TcpPlanningController&quot;,&quot;Plan&quot;)" fullname="ForceTorqueSubscriberTests.EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt(&quot;TcpPlanningController&quot;,&quot;Plan&quot;)" methodname="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="2058559901" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.003243" asserts="0">
+            <properties />
+            <output><![CDATA[TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+          </test-case>
+          <test-case id="1134" name="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt(&quot;FixtureTilingController&quot;,&quot;Plan&quot;)" fullname="ForceTorqueSubscriberTests.EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt(&quot;FixtureTilingController&quot;,&quot;Plan&quot;)" methodname="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="225845408" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.001152" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1135" name="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt(&quot;PickPlaceController&quot;,&quot;SendPickAndPlacePlanningRequest&quot;)" fullname="ForceTorqueSubscriberTests.EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt(&quot;PickPlaceController&quot;,&quot;SendPickAndPlacePlanningRequest&quot;)" methodname="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1571620853" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.002436" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Select MTC pick/place mode to plan from tool contact points.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1147" name="GaugeScaleExpandsForLargeValuesAndDoesNotShrinkWithASmallerReading" fullname="ForceTorqueSubscriberTests.GaugeScaleExpandsForLargeValuesAndDoesNotShrinkWithASmallerReading" methodname="GaugeScaleExpandsForLargeValuesAndDoesNotShrinkWithASmallerReading" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="307236590" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.063390" asserts="0">
+          <properties />
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1146" name="GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale" fullname="ForceTorqueSubscriberTests.GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.053127" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1144" name="GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale(&quot;SimplePickAndPlace&quot;)" fullname="ForceTorqueSubscriberTests.GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale(&quot;SimplePickAndPlace&quot;)" methodname="GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="190090201" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.023910" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1145" name="GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale(&quot;RepetitivePickAndPlace&quot;)" fullname="ForceTorqueSubscriberTests.GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale(&quot;RepetitivePickAndPlace&quot;)" methodname="GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="864254387" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.028041" asserts="0">
+            <properties />
+          </test-case>
+        </test-suite>
+        <test-case id="1127" name="InvalidAndDisconnectedSamplesCannotRaiseRecordedPeaks" fullname="ForceTorqueSubscriberTests.InvalidAndDisconnectedSamplesCannotRaiseRecordedPeaks" methodname="InvalidAndDisconnectedSamplesCannotRaiseRecordedPeaks" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1276260777" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.001510" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1121" name="MagnitudesAvoidIntermediateOverflowButRejectAnUnrepresentableNorm" fullname="ForceTorqueSubscriberTests.MagnitudesAvoidIntermediateOverflowButRejectAnUnrepresentableNorm" methodname="MagnitudesAvoidIntermediateOverflowButRejectAnUnrepresentableNorm" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1500787064" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000573" asserts="0">
+          <properties />
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1110" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.011617" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1099" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;null&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;null&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1811653668" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.001585" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1100" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;header&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;header&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1609146045" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000712" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1101" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;stamp&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;stamp&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="343835295" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.001109" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1102" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;wrench&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;wrench&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="120103254" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000844" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1103" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;force&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;force&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="497464888" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000618" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1104" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;torque&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;torque&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="334215055" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000618" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1105" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;frame-empty&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;frame-empty&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1867714880" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000826" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1106" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;frame-space&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;frame-space&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="294850504" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000877" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1107" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;frame-control&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;frame-control&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="79847979" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000920" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1108" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;seconds&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;seconds&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1455649107" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000768" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1109" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;nanoseconds&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;nanoseconds&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1978599835" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000796" asserts="0">
+            <properties />
+          </test-case>
+        </test-suite>
+        <test-case id="1126" name="MeasuredZeroCreatesARealPeakMarkDuringExecution" fullname="ForceTorqueSubscriberTests.MeasuredZeroCreatesARealPeakMarkDuringExecution" methodname="MeasuredZeroCreatesARealPeakMarkDuringExecution" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="553781247" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000930" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1122" name="PeakStartsEmptyAndDoesNotSeedFromTheReadingBeforeExecute" fullname="ForceTorqueSubscriberTests.PeakStartsEmptyAndDoesNotSeedFromTheReadingBeforeExecute" methodname="PeakStartsEmptyAndDoesNotSeedFromTheReadingBeforeExecute" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1983357913" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.001228" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1098" name="ReceiptTimeoutHidesOldValuesAndTheNextValidSampleRecovers" fullname="ForceTorqueSubscriberTests.ReceiptTimeoutHidesOldValuesAndTheNextValidSampleRecovers" methodname="ReceiptTimeoutHidesOldValuesAndTheNextValidSampleRecovers" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="537501402" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.001789" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1129" name="ReenablingDuringTheSameExecutionResumesItsExistingPeak" fullname="ForceTorqueSubscriberTests.ReenablingDuringTheSameExecutionResumesItsExistingPeak" methodname="ReenablingDuringTheSameExecutionResumesItsExistingPeak" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1393604960" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000991" asserts="0">
+          <properties />
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1117" name="RejectsNonfiniteValuesOnEveryAxis" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.004335" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1111" name="RejectsNonfiniteValuesOnEveryAxis(&quot;force&quot;,&quot;x&quot;,double.NaN)" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis(&quot;force&quot;,&quot;x&quot;,double.NaN)" methodname="RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="144187487" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000789" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1112" name="RejectsNonfiniteValuesOnEveryAxis(&quot;force&quot;,&quot;y&quot;,double.PositiveInfinity)" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis(&quot;force&quot;,&quot;y&quot;,double.PositiveInfinity)" methodname="RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1245730285" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000420" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1113" name="RejectsNonfiniteValuesOnEveryAxis(&quot;force&quot;,&quot;z&quot;,double.NegativeInfinity)" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis(&quot;force&quot;,&quot;z&quot;,double.NegativeInfinity)" methodname="RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="844232638" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000382" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1114" name="RejectsNonfiniteValuesOnEveryAxis(&quot;torque&quot;,&quot;x&quot;,double.NaN)" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis(&quot;torque&quot;,&quot;x&quot;,double.NaN)" methodname="RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1472838689" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000808" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1115" name="RejectsNonfiniteValuesOnEveryAxis(&quot;torque&quot;,&quot;y&quot;,double.PositiveInfinity)" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis(&quot;torque&quot;,&quot;y&quot;,double.PositiveInfinity)" methodname="RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1453476145" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000407" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1116" name="RejectsNonfiniteValuesOnEveryAxis(&quot;torque&quot;,&quot;z&quot;,double.NegativeInfinity)" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis(&quot;torque&quot;,&quot;z&quot;,double.NegativeInfinity)" methodname="RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1543315701" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000414" asserts="0">
+            <properties />
+          </test-case>
+        </test-suite>
+        <test-case id="1125" name="RepeatExecuteClearsTheOldMarkAndWaitsForItsOwnFirstSample" fullname="ForceTorqueSubscriberTests.RepeatExecuteClearsTheOldMarkAndWaitsForItsOwnFirstSample" methodname="RepeatExecuteClearsTheOldMarkAndWaitsForItsOwnFirstSample" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="504145054" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000937" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1120" name="SceneTeardownUnsubscribesTheForceTopicFromTheRetainedConnector" fullname="ForceTorqueSubscriberTests.SceneTeardownUnsubscribesTheForceTopicFromTheRetainedConnector" methodname="SceneTeardownUnsubscribesTheForceTopicFromTheRetainedConnector" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="587255320" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.004387" asserts="0">
+          <properties />
+          <output><![CDATA[More than one message was registered as "geometry_msgs/WrenchStamped" "Default"
+]]></output>
+        </test-case>
+        <test-case id="1128" name="StaleAndDisabledReadingsPreserveTheFinishedPeak" fullname="ForceTorqueSubscriberTests.StaleAndDisabledReadingsPreserveTheFinishedPeak" methodname="StaleAndDisabledReadingsPreserveTheFinishedPeak" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1203220106" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.001254" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1124" name="TerminalExecutionFreezesTheMarkUntilAnotherPlanOrExecute" fullname="ForceTorqueSubscriberTests.TerminalExecutionFreezesTheMarkUntilAnotherPlanOrExecute" methodname="TerminalExecutionFreezesTheMarkUntilAnotherPlanOrExecute" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1910096515" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.001012" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1095" name="WaitingDoesNotPretendAZeroWrenchHasBeenMeasured" fullname="ForceTorqueSubscriberTests.WaitingDoesNotPretendAZeroWrenchHasBeenMeasured" methodname="WaitingDoesNotPretendAZeroWrenchHasBeenMeasured" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="381267413" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.000813" asserts="0">
+          <properties />
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1161" name="MtcExecutionWorkflowTests" fullname="MtcExecutionWorkflowTests" classname="MtcExecutionWorkflowTests" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:14Z" duration="1.148018" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1170" name="AcknowledgedExecutionDoesNotUseThePlanningOrAcknowledgementDeadline" fullname="MtcExecutionWorkflowTests.AcknowledgedExecutionDoesNotUseThePlanningOrAcknowledgementDeadline" methodname="AcknowledgedExecutionDoesNotUseThePlanningOrAcknowledgementDeadline" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="980666024" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.064923" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC executing: Motion started
+]]></output>
+        </test-case>
+        <test-case id="1168" name="AcknowledgementTimeoutReportsUnknownOutcomeWithoutRetryingOrRearming" fullname="MtcExecutionWorkflowTests.AcknowledgementTimeoutReportsUnknownOutcomeWithoutRetryingOrRearming" methodname="AcknowledgementTimeoutReportsUnknownOutcomeWithoutRetryingOrRearming" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="941936693" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.054300" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution acknowledgement timed out. The outcome is unknown; inspect the robot and ROS logs. Execute will not be resent.
+MTC: MTC executing: Delayed acknowledgement
+MTC: MTC execution succeeded: Completed after delayed acknowledgement Plan again before another execution.
+]]></output>
+        </test-case>
+        <test-case id="1171" name="ActualExecuteActionPublishesOnceAndDisplaysTheSubsequentBackendRejection" fullname="MtcExecutionWorkflowTests.ActualExecuteActionPublishesOnceAndDisplaysTheSubsequentBackendRejection" methodname="ActualExecuteActionPublishesOnceAndDisplaysTheSubsequentBackendRejection" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="837113213" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.056849" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution rejected: world collision geometry or octomap changed Plan again before another execution.
+]]></output>
+        </test-case>
+        <test-case id="1173" name="ActualExecuteRefusesTargetsMovedSinceTheReviewedPlanWithoutPublishing" fullname="MtcExecutionWorkflowTests.ActualExecuteRefusesTargetsMovedSinceTheReviewedPlanWithoutPublishing" methodname="ActualExecuteRefusesTargetsMovedSinceTheReviewedPlanWithoutPublishing" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="1227639869" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.048994" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC Execute requires a new successful pick/place plan and its visible trajectory preview.
+]]></output>
+        </test-case>
+        <test-case id="1172" name="ActualExecuteTransportFailureConsumesTheReviewAndDisplaysTheReason" fullname="MtcExecutionWorkflowTests.ActualExecuteTransportFailureConsumesTheReviewAndDisplaysTheReason" methodname="ActualExecuteTransportFailureConsumesTheReviewAndDisplaysTheReason" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="2132959161" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.054849" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution request failed: Offline transport refused request Plan again before another execution.
+]]></output>
+        </test-case>
+        <test-case id="1183" name="ARejectionAfterModeSwitchAndUnknownTimeoutStillExplainsTheSentCommand" fullname="MtcExecutionWorkflowTests.ARejectionAfterModeSwitchAndUnknownTimeoutStillExplainsTheSentCommand" methodname="ARejectionAfterModeSwitchAndUnknownTimeoutStillExplainsTheSentCommand" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="2113355634" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.058878" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: MTC execution acknowledgement timed out. The outcome is unknown; inspect the robot and ROS logs. Execute will not be resent.
+MTC: MTC execution rejected: world collision geometry or octomap changed Plan again before another execution.
+]]></output>
+        </test-case>
+        <test-case id="1169" name="DelayedPlanningAndReadyMessagesCannotOverwriteExecutionFeedback" fullname="MtcExecutionWorkflowTests.DelayedPlanningAndReadyMessagesCannotOverwriteExecutionFeedback" methodname="DelayedPlanningAndReadyMessagesCannotOverwriteExecutionFeedback" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="2128179" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.048869" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC executing: Motion started
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1167" name="ExecutionTerminalReasonsReachTheMenuAndNeverRestoreTheSpentReview" fullname="MtcExecutionWorkflowTests.ExecutionTerminalReasonsReachTheMenuAndNeverRestoreTheSpentReview" classname="MtcExecutionWorkflowTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.168747" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1164" name="ExecutionTerminalReasonsReachTheMenuAndNeverRestoreTheSpentReview(&quot;failed&quot;,&quot;Controller refused the trajectory&quot;)" fullname="MtcExecutionWorkflowTests.ExecutionTerminalReasonsReachTheMenuAndNeverRestoreTheSpentReview(&quot;failed&quot;,&quot;Controller refused the trajectory&quot;)" methodname="ExecutionTerminalReasonsReachTheMenuAndNeverRestoreTheSpentReview" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="1884704689" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.056161" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC executing: Motion started
+MTC: MTC execution failed: Controller refused the trajectory Plan again before another execution.
+]]></output>
+          </test-case>
+          <test-case id="1165" name="ExecutionTerminalReasonsReachTheMenuAndNeverRestoreTheSpentReview(&quot;rejected&quot;,&quot;Robot state differs from the reviewed start&quot;)" fullname="MtcExecutionWorkflowTests.ExecutionTerminalReasonsReachTheMenuAndNeverRestoreTheSpentReview(&quot;rejected&quot;,&quot;Robot state differs from the reviewed start&quot;)" methodname="ExecutionTerminalReasonsReachTheMenuAndNeverRestoreTheSpentReview" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="1485440664" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.059116" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC executing: Motion started
+MTC: MTC execution rejected: Robot state differs from the reviewed start Plan again before another execution.
+]]></output>
+          </test-case>
+          <test-case id="1166" name="ExecutionTerminalReasonsReachTheMenuAndNeverRestoreTheSpentReview(&quot;invalidated&quot;,&quot;Robot tool changed&quot;)" fullname="MtcExecutionWorkflowTests.ExecutionTerminalReasonsReachTheMenuAndNeverRestoreTheSpentReview(&quot;invalidated&quot;,&quot;Robot tool changed&quot;)" methodname="ExecutionTerminalReasonsReachTheMenuAndNeverRestoreTheSpentReview" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="1432878719" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.050728" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC executing: Motion started
+MTC: MTC execution invalidated: Robot tool changed Plan again before another execution.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1182" name="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome" fullname="MtcExecutionWorkflowTests.LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome" classname="MtcExecutionWorkflowTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:14Z" duration="0.487582" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1174" name="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;targets&quot;,False)" fullname="MtcExecutionWorkflowTests.LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;targets&quot;,False)" methodname="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="1962773740" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.053034" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+TCP planning: An MTC execution request is unresolved. Wait for its ROS outcome before planning another task.
+MTC: MTC executing: Late motion notification
+MTC: MTC execution succeeded: Late completion Plan again before another execution.
+TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC: MTC pick / place is inactive.
+TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+          </test-case>
+          <test-case id="1175" name="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;targets&quot;,True)" fullname="MtcExecutionWorkflowTests.LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;targets&quot;,True)" methodname="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="123705241" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.053991" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution acknowledgement timed out. The outcome is unknown; inspect the robot and ROS logs. Execute will not be resent.
+TCP planning: An MTC execution request is unresolved. Wait for its ROS outcome before planning another task.
+MTC: MTC executing: Late motion notification
+MTC: MTC execution succeeded: Late completion Plan again before another execution.
+TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC: MTC pick / place is inactive.
+TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+          </test-case>
+          <test-case id="1176" name="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;mode&quot;,False)" fullname="MtcExecutionWorkflowTests.LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;mode&quot;,False)" methodname="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="1632890406" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:13Z" duration="0.058647" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+TCP planning: Task mode changed. Plan again in the selected mode.
+TCP planning: An MTC execution request is unresolved. Wait for its ROS outcome before planning another task.
+MTC: MTC executing: Late motion notification
+MTC: MTC execution succeeded: Late completion Plan again before another execution.
+TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+          </test-case>
+          <test-case id="1177" name="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;mode&quot;,True)" fullname="MtcExecutionWorkflowTests.LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;mode&quot;,True)" methodname="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="1476490880" result="Passed" start-time="2026-11-03 13:41:13Z" end-time="2026-11-03 13:41:14Z" duration="0.060847" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution acknowledgement timed out. The outcome is unknown; inspect the robot and ROS logs. Execute will not be resent.
+TCP planning: Task mode changed. Plan again in the selected mode.
+TCP planning: An MTC execution request is unresolved. Wait for its ROS outcome before planning another task.
+MTC: MTC executing: Late motion notification
+MTC: MTC execution succeeded: Late completion Plan again before another execution.
+TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+          </test-case>
+          <test-case id="1178" name="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;calibration&quot;,False)" fullname="MtcExecutionWorkflowTests.LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;calibration&quot;,False)" methodname="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="857800921" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.061554" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+TCP planning: An MTC execution request is unresolved. Wait for its ROS outcome before planning another task.
+MTC: MTC executing: Late motion notification
+MTC: MTC execution succeeded: Late completion Plan again before another execution.
+TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC: MTC pick / place is inactive.
+TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+          </test-case>
+          <test-case id="1179" name="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;calibration&quot;,True)" fullname="MtcExecutionWorkflowTests.LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;calibration&quot;,True)" methodname="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="1176337858" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.093548" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution acknowledgement timed out. The outcome is unknown; inspect the robot and ROS logs. Execute will not be resent.
+TCP planning: An MTC execution request is unresolved. Wait for its ROS outcome before planning another task.
+MTC: MTC executing: Late motion notification
+MTC: MTC execution succeeded: Late completion Plan again before another execution.
+TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC: MTC pick / place is inactive.
+TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+          </test-case>
+          <test-case id="1180" name="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;disable&quot;,False)" fullname="MtcExecutionWorkflowTests.LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;disable&quot;,False)" methodname="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="1346814038" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.052691" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+TCP planning: An MTC execution request is unresolved. Wait for its ROS outcome before planning another task.
+MTC: MTC executing: Late motion notification
+MTC: MTC execution succeeded: Late completion Plan again before another execution.
+TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC: MTC pick / place is inactive.
+TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+          </test-case>
+          <test-case id="1181" name="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;disable&quot;,True)" fullname="MtcExecutionWorkflowTests.LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome(&quot;disable&quot;,True)" methodname="LocalReviewInvalidationPreservesTheSentCommandAndItsLateOutcome" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="1425680632" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.049912" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution acknowledgement timed out. The outcome is unknown; inspect the robot and ROS logs. Execute will not be resent.
+TCP planning: An MTC execution request is unresolved. Wait for its ROS outcome before planning another task.
+MTC: MTC executing: Late motion notification
+MTC: MTC execution succeeded: Late completion Plan again before another execution.
+TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC: MTC pick / place is inactive.
+TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1163" name="RecordedNordboExecutionRejectionIsVisibleAfterTheSuccessfulPlanWasConsumed" fullname="MtcExecutionWorkflowTests.RecordedNordboExecutionRejectionIsVisibleAfterTheSuccessfulPlanWasConsumed" methodname="RecordedNordboExecutionRejectionIsVisibleAfterTheSuccessfulPlanWasConsumed" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="817232688" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.054828" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution rejected: world collision geometry or octomap changed Plan again before another execution.
+]]></output>
+        </test-case>
+        <test-case id="1162" name="TheConsumedReviewedPlanAcceptsExecutingAndSucceededAndUpdatesTheMenu" fullname="MtcExecutionWorkflowTests.TheConsumedReviewedPlanAcceptsExecutingAndSucceededAndUpdatesTheMenu" methodname="TheConsumedReviewedPlanAcceptsExecutingAndSucceededAndUpdatesTheMenu" classname="MtcExecutionWorkflowTests" runstate="Runnable" seed="1716436112" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.044950" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC executing: Executing the reviewed plan
+MTC: MTC execution succeeded: Task completed Plan again before another execution.
+]]></output>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1184" name="PickPlaceToolContactTests" fullname="PickPlaceToolContactTests" classname="PickPlaceToolContactTests" runstate="Runnable" testcasecount="16" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.204434" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1187" name="ActualControllerKeepsBallAndArrowVisibleWhenLabelsFaceTheViewerAndTargetsAreRecaptured" fullname="PickPlaceToolContactTests.ActualControllerKeepsBallAndArrowVisibleWhenLabelsFaceTheViewerAndTargetsAreRecaptured" methodname="ActualControllerKeepsBallAndArrowVisibleWhenLabelsFaceTheViewerAndTargetsAreRecaptured" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1708312905" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.022984" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC: MTC pick / place is inactive.
+MTC: MTC pick / place selected. Capture tool contacts, then Plan.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1190" name="CapturedAndLiveMaterialsUseBundledUrpVariantsWithoutRecoloringTheirTemplates" fullname="PickPlaceToolContactTests.CapturedAndLiveMaterialsUseBundledUrpVariantsWithoutRecoloringTheirTemplates" methodname="CapturedAndLiveMaterialsUseBundledUrpVariantsWithoutRecoloringTheirTemplates" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1114205590" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.010803" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1194" name="DelayedCapabilityResponseCannotRearmAfterAContactChanges" fullname="PickPlaceToolContactTests.DelayedCapabilityResponseCannotRearmAfterAContactChanges" methodname="DelayedCapabilityResponseCannotRearmAfterAContactChanges" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1618591010" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.010224" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1191" name="DepthClickMovesExportedContactFiveMillimetresAlongToolZAndRevokesReview" fullname="PickPlaceToolContactTests.DepthClickMovesExportedContactFiveMillimetresAlongToolZAndRevokesReview" methodname="DepthClickMovesExportedContactFiveMillimetresAlongToolZAndRevokesReview" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1265472790" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.011638" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC: Planning MTC pick / place from tool contact poses...
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1185" name="DisplayedBallAndArrowExportTheExactContactPointAndNormal" fullname="PickPlaceToolContactTests.DisplayedBallAndArrowExportTheExactContactPointAndNormal" methodname="DisplayedBallAndArrowExportTheExactContactPointAndNormal" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1359978071" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.010877" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1201" name="GroundLockIsReappliedAtRecaptureAndBeforeExportAfterTrackingFrameRotation" fullname="PickPlaceToolContactTests.GroundLockIsReappliedAtRecaptureAndBeforeExportAfterTrackingFrameRotation" methodname="GroundLockIsReappliedAtRecaptureAndBeforeExportAfterTrackingFrameRotation" classname="PickPlaceToolContactTests" runstate="Runnable" seed="241075896" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.011849" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1200" name="GroundLockKeepsThePickNormalDownThroughRotationAndExportsTheDisplayedRosPose" fullname="PickPlaceToolContactTests.GroundLockKeepsThePickNormalDownThroughRotationAndExportsTheDisplayedRosPose" methodname="GroundLockKeepsThePickNormalDownThroughRotationAndExportsTheDisplayedRosPose" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1204262229" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.012424" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC: Planning MTC pick / place from tool contact poses...
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC: Planning MTC pick / place from tool contact poses...
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1193" name="InactiveModeHidesNormalAimAndRejectsCaptureAndExportWhileKeepingPreviousPoints" fullname="PickPlaceToolContactTests.InactiveModeHidesNormalAimAndRejectsCaptureAndExportWhileKeepingPreviousPoints" methodname="InactiveModeHidesNormalAimAndRejectsCaptureAndExportWhileKeepingPreviousPoints" classname="PickPlaceToolContactTests" runstate="Runnable" seed="511982516" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.009765" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+MTC: MTC pick / place is inactive.
+MTC: MTC pick / place selected. Capture tool contacts, then Plan.
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1199" name="InterruptedContextBumperDoesNotBlockTheNextCapture" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.060125" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1195" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;focus&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;focus&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="816045450" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.018303" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+          <test-case id="1196" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;pause&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;pause&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1820739617" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.014165" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+          <test-case id="1197" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;tracking&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;tracking&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1814056381" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.013620" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+          <test-case id="1198" name="InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;disabled&quot;)" fullname="PickPlaceToolContactTests.InterruptedContextBumperDoesNotBlockTheNextCapture(&quot;disabled&quot;)" methodname="InterruptedContextBumperDoesNotBlockTheNextCapture" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1398173689" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.010934" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+Cannot capture a target without a tracked controller and a valid XR tracking frame.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1186" name="LegacyPlanePrefabsAreNeverInstantiatedForContactTargets" fullname="PickPlaceToolContactTests.LegacyPlanePrefabsAreNeverInstantiatedForContactTargets" methodname="LegacyPlanePrefabsAreNeverInstantiatedForContactTargets" classname="PickPlaceToolContactTests" runstate="Runnable" seed="322344726" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.009437" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1188" name="RecapturingALabelOnlyReferenceRebuildsTheContactGeometry" fullname="PickPlaceToolContactTests.RecapturingALabelOnlyReferenceRebuildsTheContactGeometry" methodname="RecapturingALabelOnlyReferenceRebuildsTheContactGeometry" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1533645761" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.008978" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1192" name="RecapturingResetsDepthBaselineWithoutKeepingTheOldOffset" fullname="PickPlaceToolContactTests.RecapturingResetsDepthBaselineWithoutKeepingTheOldOffset" methodname="RecapturingResetsDepthBaselineWithoutKeepingTheOldOffset" classname="PickPlaceToolContactTests" runstate="Runnable" seed="1253343907" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.009513" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+        <test-case id="1189" name="RecapturingRestoresHiddenBallAndArrowGeometryWithoutChangingTheRequestedPose" fullname="PickPlaceToolContactTests.RecapturingRestoresHiddenBallAndArrowGeometryWithoutChangingTheRequestedPose" methodname="RecapturingRestoresHiddenBallAndArrowGeometryWithoutChangingTheRequestedPose" classname="PickPlaceToolContactTests" runstate="Runnable" seed="2105196937" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.010316" asserts="0">
+          <properties />
+          <output><![CDATA[MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+]]></output>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1214" name="RepeatExecutionWorkflowTests" fullname="RepeatExecutionWorkflowTests" classname="RepeatExecutionWorkflowTests" runstate="Runnable" testcasecount="17" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:15Z" duration="0.954074" total="17" passed="17" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1237" name="AnExpiredTcpRepeatCanBeRejectedWithoutRequestIdOnlyForTheExactPlanAndAttempt" fullname="RepeatExecutionWorkflowTests.AnExpiredTcpRepeatCanBeRejectedWithoutRequestIdOnlyForTheExactPlanAndAttempt" methodname="AnExpiredTcpRepeatCanBeRejectedWithoutRequestIdOnlyForTheExactPlanAndAttempt" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="1760920054" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.072635" asserts="0">
+          <properties />
+          <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+TCP A — exact tool pose: ur_base_link TCP (0,6893, 0,1575, 0,3000) m. No command sent.
+TCP B — exact tool pose: ur_base_link TCP (0,8478, 0,8610, 0,2000) m. No command sent.
+TCP planning: TCP plan succeeded. Waiting for its matching trajectory preview...
+TCP planning: TCP plan ready. Inspect the ghost path and A/B orientations, then Execute when ready.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+TCP planning: TCP execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+TCP planning: TCP execution rejected: Plan is no longer retained Plan again before another execution.
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1233" name="InitialCompletionForAnOlderRetainedPlanCannotGrantRepeatPermission" fullname="RepeatExecutionWorkflowTests.InitialCompletionForAnOlderRetainedPlanCannotGrantRepeatPermission" classname="RepeatExecutionWorkflowTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.104817" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1231" name="InitialCompletionForAnOlderRetainedPlanCannotGrantRepeatPermission(False)" fullname="RepeatExecutionWorkflowTests.InitialCompletionForAnOlderRetainedPlanCannotGrantRepeatPermission(False)" methodname="InitialCompletionForAnOlderRetainedPlanCannotGrantRepeatPermission" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="744438071" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.051937" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+]]></output>
+          </test-case>
+          <test-case id="1232" name="InitialCompletionForAnOlderRetainedPlanCannotGrantRepeatPermission(True)" fullname="RepeatExecutionWorkflowTests.InitialCompletionForAnOlderRetainedPlanCannotGrantRepeatPermission(True)" methodname="InitialCompletionForAnOlderRetainedPlanCannotGrantRepeatPermission" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="1718245497" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.051641" asserts="0">
+            <properties />
+            <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+TCP A — exact tool pose: ur_base_link TCP (0,6893, 0,1575, 0,3000) m. No command sent.
+TCP B — exact tool pose: ur_base_link TCP (0,8478, 0,8610, 0,2000) m. No command sent.
+TCP planning: TCP plan succeeded. Waiting for its matching trajectory preview...
+TCP planning: TCP plan ready. Inspect the ghost path and A/B orientations, then Execute when ready.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+TCP planning: TCP execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1227" name="InvalidatingReviewWhileAnExecutionIsPendingPreventsLaterSuccessFromRearmingIt" fullname="RepeatExecutionWorkflowTests.InvalidatingReviewWhileAnExecutionIsPendingPreventsLaterSuccessFromRearmingIt" classname="RepeatExecutionWorkflowTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.145730" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1225" name="InvalidatingReviewWhileAnExecutionIsPendingPreventsLaterSuccessFromRearmingIt(False)" fullname="RepeatExecutionWorkflowTests.InvalidatingReviewWhileAnExecutionIsPendingPreventsLaterSuccessFromRearmingIt(False)" methodname="InvalidatingReviewWhileAnExecutionIsPendingPreventsLaterSuccessFromRearmingIt" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="602746789" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.057330" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution succeeded: Offline execution outcome Plan again before another execution.
+]]></output>
+          </test-case>
+          <test-case id="1226" name="InvalidatingReviewWhileAnExecutionIsPendingPreventsLaterSuccessFromRearmingIt(True)" fullname="RepeatExecutionWorkflowTests.InvalidatingReviewWhileAnExecutionIsPendingPreventsLaterSuccessFromRearmingIt(True)" methodname="InvalidatingReviewWhileAnExecutionIsPendingPreventsLaterSuccessFromRearmingIt" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="964826543" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.086386" asserts="0">
+            <properties />
+            <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+TCP A — exact tool pose: ur_base_link TCP (0,6893, 0,1575, 0,3000) m. No command sent.
+TCP B — exact tool pose: ur_base_link TCP (0,8478, 0,8610, 0,2000) m. No command sent.
+TCP planning: TCP plan succeeded. Waiting for its matching trajectory preview...
+TCP planning: TCP plan ready. Inspect the ghost path and A/B orientations, then Execute when ready.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+TCP planning: TCP execution succeeded: Offline execution outcome Plan again before another execution.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1230" name="LegacySuccessfulStatusWithoutServerRepeatSupportLeavesThePlanSpent" fullname="RepeatExecutionWorkflowTests.LegacySuccessfulStatusWithoutServerRepeatSupportLeavesThePlanSpent" classname="RepeatExecutionWorkflowTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:15Z" duration="0.099328" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1228" name="LegacySuccessfulStatusWithoutServerRepeatSupportLeavesThePlanSpent(False)" fullname="RepeatExecutionWorkflowTests.LegacySuccessfulStatusWithoutServerRepeatSupportLeavesThePlanSpent(False)" methodname="LegacySuccessfulStatusWithoutServerRepeatSupportLeavesThePlanSpent" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="1960930282" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:14Z" duration="0.047265" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution succeeded: Offline execution outcome Plan again before another execution.
+]]></output>
+          </test-case>
+          <test-case id="1229" name="LegacySuccessfulStatusWithoutServerRepeatSupportLeavesThePlanSpent(True)" fullname="RepeatExecutionWorkflowTests.LegacySuccessfulStatusWithoutServerRepeatSupportLeavesThePlanSpent(True)" methodname="LegacySuccessfulStatusWithoutServerRepeatSupportLeavesThePlanSpent" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="784740255" result="Passed" start-time="2026-11-03 13:41:14Z" end-time="2026-11-03 13:41:15Z" duration="0.050559" asserts="0">
+            <properties />
+            <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+TCP A — exact tool pose: ur_base_link TCP (0,6893, 0,1575, 0,3000) m. No command sent.
+TCP B — exact tool pose: ur_base_link TCP (0,8478, 0,8610, 0,2000) m. No command sent.
+TCP planning: TCP plan succeeded. Waiting for its matching trajectory preview...
+TCP planning: TCP plan ready. Inspect the ghost path and A/B orientations, then Execute when ready.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+TCP planning: TCP execution succeeded: Offline execution outcome Plan again before another execution.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1217" name="PublicRepeatUsesTheRetainedPlanAndAFreshNonceAndConsumesOnlyOneClick" fullname="RepeatExecutionWorkflowTests.PublicRepeatUsesTheRetainedPlanAndAFreshNonceAndConsumesOnlyOneClick" classname="RepeatExecutionWorkflowTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.102638" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1215" name="PublicRepeatUsesTheRetainedPlanAndAFreshNonceAndConsumesOnlyOneClick(False)" fullname="RepeatExecutionWorkflowTests.PublicRepeatUsesTheRetainedPlanAndAFreshNonceAndConsumesOnlyOneClick(False)" methodname="PublicRepeatUsesTheRetainedPlanAndAFreshNonceAndConsumesOnlyOneClick" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="1620806107" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.051969" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+]]></output>
+          </test-case>
+          <test-case id="1216" name="PublicRepeatUsesTheRetainedPlanAndAFreshNonceAndConsumesOnlyOneClick(True)" fullname="RepeatExecutionWorkflowTests.PublicRepeatUsesTheRetainedPlanAndAFreshNonceAndConsumesOnlyOneClick(True)" methodname="PublicRepeatUsesTheRetainedPlanAndAFreshNonceAndConsumesOnlyOneClick" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="1465522779" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.049148" asserts="0">
+            <properties />
+            <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+TCP A — exact tool pose: ur_base_link TCP (0,6893, 0,1575, 0,3000) m. No command sent.
+TCP B — exact tool pose: ur_base_link TCP (0,8478, 0,8610, 0,2000) m. No command sent.
+TCP planning: TCP plan succeeded. Waiting for its matching trajectory preview...
+TCP planning: TCP plan ready. Inspect the ghost path and A/B orientations, then Execute when ready.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+TCP planning: TCP execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+TCP planning: TCP execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1236" name="RepeatPublicationFailureReleasesBusyStateWithoutRestoringSpentPermission" fullname="RepeatExecutionWorkflowTests.RepeatPublicationFailureReleasesBusyStateWithoutRestoringSpentPermission" classname="RepeatExecutionWorkflowTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.111155" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1234" name="RepeatPublicationFailureReleasesBusyStateWithoutRestoringSpentPermission(False)" fullname="RepeatExecutionWorkflowTests.RepeatPublicationFailureReleasesBusyStateWithoutRestoringSpentPermission(False)" methodname="RepeatPublicationFailureReleasesBusyStateWithoutRestoringSpentPermission" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="1396399716" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.056079" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution request failed: Offline repeat transport refused request Plan again before another execution.
+]]></output>
+          </test-case>
+          <test-case id="1235" name="RepeatPublicationFailureReleasesBusyStateWithoutRestoringSpentPermission(True)" fullname="RepeatExecutionWorkflowTests.RepeatPublicationFailureReleasesBusyStateWithoutRestoringSpentPermission(True)" methodname="RepeatPublicationFailureReleasesBusyStateWithoutRestoringSpentPermission" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="1826347473" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.053593" asserts="0">
+            <properties />
+            <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+TCP A — exact tool pose: ur_base_link TCP (0,6893, 0,1575, 0,3000) m. No command sent.
+TCP B — exact tool pose: ur_base_link TCP (0,8478, 0,8610, 0,2000) m. No command sent.
+TCP planning: TCP plan succeeded. Waiting for its matching trajectory preview...
+TCP planning: TCP plan ready. Inspect the ghost path and A/B orientations, then Execute when ready.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+TCP planning: TCP execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+TCP planning: TCP execution request failed: Offline TCP transport refused request Plan again before another execution.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1224" name="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding" fullname="RepeatExecutionWorkflowTests.RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding" classname="RepeatExecutionWorkflowTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.312921" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1218" name="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding(False,&quot;away&quot;)" fullname="RepeatExecutionWorkflowTests.RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding(False,&quot;away&quot;)" methodname="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="1021858431" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.050084" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+]]></output>
+          </test-case>
+          <test-case id="1219" name="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding(True,&quot;away&quot;)" fullname="RepeatExecutionWorkflowTests.RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding(True,&quot;away&quot;)" methodname="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="424379910" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.053382" asserts="0">
+            <properties />
+            <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+TCP A — exact tool pose: ur_base_link TCP (0,6893, 0,1575, 0,3000) m. No command sent.
+TCP B — exact tool pose: ur_base_link TCP (0,8478, 0,8610, 0,2000) m. No command sent.
+TCP planning: TCP plan succeeded. Waiting for its matching trajectory preview...
+TCP planning: TCP plan ready. Inspect the ghost path and A/B orientations, then Execute when ready.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+TCP planning: TCP execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+]]></output>
+          </test-case>
+          <test-case id="1220" name="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding(False,&quot;full turn&quot;)" fullname="RepeatExecutionWorkflowTests.RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding(False,&quot;full turn&quot;)" methodname="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="450484054" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.051461" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+]]></output>
+          </test-case>
+          <test-case id="1221" name="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding(True,&quot;full turn&quot;)" fullname="RepeatExecutionWorkflowTests.RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding(True,&quot;full turn&quot;)" methodname="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="1088096465" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.053150" asserts="0">
+            <properties />
+            <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+TCP A — exact tool pose: ur_base_link TCP (0,6893, 0,1575, 0,3000) m. No command sent.
+TCP B — exact tool pose: ur_base_link TCP (0,8478, 0,8610, 0,2000) m. No command sent.
+TCP planning: TCP plan succeeded. Waiting for its matching trajectory preview...
+TCP planning: TCP plan ready. Inspect the ghost path and A/B orientations, then Execute when ready.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+TCP planning: TCP execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+]]></output>
+          </test-case>
+          <test-case id="1222" name="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding(False,&quot;stale&quot;)" fullname="RepeatExecutionWorkflowTests.RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding(False,&quot;stale&quot;)" methodname="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="943400842" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.046237" asserts="0">
+            <properties />
+            <output><![CDATA[MTC: Planning MTC pick / place from tool contact poses...
+MTC: MTC plan succeeded. Waiting for its trajectory preview...
+MTC: MTC pick / place plan ready. Review the ghost path, then Execute.
+MTC: MTC execution requested. Waiting for ROS acknowledgement...
+MTC: MTC execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+]]></output>
+          </test-case>
+          <test-case id="1223" name="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding(True,&quot;stale&quot;)" fullname="RepeatExecutionWorkflowTests.RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding(True,&quot;stale&quot;)" methodname="RepeatWaitsForFreshFeedbackAtTheExactReviewedJointWinding" classname="RepeatExecutionWorkflowTests" runstate="Runnable" seed="516993289" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.056024" asserts="0">
+            <properties />
+            <output><![CDATA[TCP planning: Task mode changed. Plan again in the selected mode.
+MTC: Targets, tool or calibration changed. Plan MTC pick / place again.
+TCP A — exact tool pose: ur_base_link TCP (0,6893, 0,1575, 0,3000) m. No command sent.
+TCP B — exact tool pose: ur_base_link TCP (0,8478, 0,8610, 0,2000) m. No command sent.
+TCP planning: TCP plan succeeded. Waiting for its matching trajectory preview...
+TCP planning: TCP plan ready. Inspect the ghost path and A/B orientations, then Execute when ready.
+TCP planning: TCP execution requested. Waiting for ROS acknowledgement...
+TCP planning: TCP execution succeeded: Offline execution outcome Return to the initial joints to execute again; ROS will recheck the scene.
+]]></output>
+          </test-case>
+        </test-suite>
+      </test-suite>
+      <test-suite type="TestFixture" id="1723" name="TcpPlanningControllerTests" fullname="TcpPlanningControllerTests" classname="TcpPlanningControllerTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.013366" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1735" name="HistoricalResetListenerCannotOverwriteVisibleTcpBlockedReason" fullname="TcpPlanningControllerTests.HistoricalResetListenerCannotOverwriteVisibleTcpBlockedReason" methodname="HistoricalResetListenerCannotOverwriteVisibleTcpBlockedReason" classname="TcpPlanningControllerTests" runstate="Runnable" seed="332019704" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.002965" asserts="0">
+          <properties />
+          <output><![CDATA[TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1727" name="MatchingFailureConsumesTokenAndAbsorbsLateSuccess" fullname="TcpPlanningControllerTests.MatchingFailureConsumesTokenAndAbsorbsLateSuccess" classname="TcpPlanningControllerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.002951" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1725" name="MatchingFailureConsumesTokenAndAbsorbsLateSuccess(&quot;failed&quot;)" fullname="TcpPlanningControllerTests.MatchingFailureConsumesTokenAndAbsorbsLateSuccess(&quot;failed&quot;)" methodname="MatchingFailureConsumesTokenAndAbsorbsLateSuccess" classname="TcpPlanningControllerTests" runstate="Runnable" seed="156613505" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.001689" asserts="0">
+            <properties />
+            <output><![CDATA[TCP planning: Planning exact TCP A → B. No motion requested.
+TCP planning: TCP planning failed or invalidated. Changed or failed
+]]></output>
+          </test-case>
+          <test-case id="1726" name="MatchingFailureConsumesTokenAndAbsorbsLateSuccess(&quot;invalidated&quot;)" fullname="TcpPlanningControllerTests.MatchingFailureConsumesTokenAndAbsorbsLateSuccess(&quot;invalidated&quot;)" methodname="MatchingFailureConsumesTokenAndAbsorbsLateSuccess" classname="TcpPlanningControllerTests" runstate="Runnable" seed="1520814350" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.000738" asserts="0">
+            <properties />
+            <output><![CDATA[TCP planning: Planning exact TCP A → B. No motion requested.
+TCP planning: TCP planning failed or invalidated. Changed or failed
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1728" name="OtherClientsStatusCannotChangePendingReview" fullname="TcpPlanningControllerTests.OtherClientsStatusCannotChangePendingReview" methodname="OtherClientsStatusCannotChangePendingReview" classname="TcpPlanningControllerTests" runstate="Runnable" seed="2016985843" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.000315" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1724" name="PlanningProgressRetainsTokenAndReadyResultWaitsForMatchingPreview" fullname="TcpPlanningControllerTests.PlanningProgressRetainsTokenAndReadyResultWaitsForMatchingPreview" methodname="PlanningProgressRetainsTokenAndReadyResultWaitsForMatchingPreview" classname="TcpPlanningControllerTests" runstate="Runnable" seed="370862982" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.000954" asserts="0">
+          <properties />
+          <output><![CDATA[TCP planning: Planning exact TCP A → B. No motion requested.
+TCP planning: TCP plan succeeded. Waiting for its matching trajectory preview...
+]]></output>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1734" name="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets" fullname="TcpPlanningControllerTests.PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets" classname="TcpPlanningControllerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.001421" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1732" name="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets(1.0d)" fullname="TcpPlanningControllerTests.PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets(1.0d)" methodname="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets" classname="TcpPlanningControllerTests" runstate="Runnable" seed="1877983245" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.000687" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1733" name="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets(-1.0d)" fullname="TcpPlanningControllerTests.PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets(-1.0d)" methodname="PoseComparisonNormalizesFloatQuaternionsButRejectsChangedTargets" classname="TcpPlanningControllerTests" runstate="Runnable" seed="1462388095" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.000212" asserts="0">
+            <properties />
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1731" name="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus" fullname="TcpPlanningControllerTests.UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus" classname="TcpPlanningControllerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.000992" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1729" name="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus(null)" fullname="TcpPlanningControllerTests.UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus(null)" methodname="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus" classname="TcpPlanningControllerTests" runstate="Runnable" seed="1613798894" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.000340" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1730" name="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus(&quot;&quot;)" fullname="TcpPlanningControllerTests.UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus(&quot;&quot;)" methodname="UnsolicitedProgressWithNoRequestCannotReplaceCurrentStatus" classname="TcpPlanningControllerTests" runstate="Runnable" seed="287471004" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.000197" asserts="0">
+            <properties />
+          </test-case>
+        </test-suite>
+      </test-suite>
+      <test-suite type="TestFixture" id="1821" name="WorkflowMenuTests" fullname="WorkflowMenuTests" classname="WorkflowMenuTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.108148" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="ParameterizedMethod" id="1826" name="DedicatedWorkflowNavigationFitsAndStaysLockedWhileACommandIsUnresolved" fullname="WorkflowMenuTests.DedicatedWorkflowNavigationFitsAndStaysLockedWhileACommandIsUnresolved" classname="WorkflowMenuTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.053684" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1824" name="DedicatedWorkflowNavigationFitsAndStaysLockedWhileACommandIsUnresolved(&quot;SimplePickAndPlace&quot;)" fullname="WorkflowMenuTests.DedicatedWorkflowNavigationFitsAndStaysLockedWhileACommandIsUnresolved(&quot;SimplePickAndPlace&quot;)" methodname="DedicatedWorkflowNavigationFitsAndStaysLockedWhileACommandIsUnresolved" classname="WorkflowMenuTests" runstate="Runnable" seed="1580783492" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.022135" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1825" name="DedicatedWorkflowNavigationFitsAndStaysLockedWhileACommandIsUnresolved(&quot;RepetitivePickAndPlace&quot;)" fullname="WorkflowMenuTests.DedicatedWorkflowNavigationFitsAndStaysLockedWhileACommandIsUnresolved(&quot;RepetitivePickAndPlace&quot;)" methodname="DedicatedWorkflowNavigationFitsAndStaysLockedWhileACommandIsUnresolved" classname="WorkflowMenuTests" runstate="Runnable" seed="690260591" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.031178" asserts="0">
+            <properties />
+          </test-case>
+        </test-suite>
+        <test-case id="1823" name="RepetitiveWorkflowHasSetupAndReviewWithoutOldModeControls" fullname="WorkflowMenuTests.RepetitiveWorkflowHasSetupAndReviewWithoutOldModeControls" methodname="RepetitiveWorkflowHasSetupAndReviewWithoutOldModeControls" classname="WorkflowMenuTests" runstate="Runnable" seed="1089148346" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.032460" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1822" name="SimpleWorkflowRetainsBothSimpleModesAndNeverCreatesFixtureBindings" fullname="WorkflowMenuTests.SimpleWorkflowRetainsBothSimpleModesAndNeverCreatesFixtureBindings" methodname="SimpleWorkflowRetainsBothSimpleModesAndNeverCreatesFixtureBindings" classname="WorkflowMenuTests" runstate="Runnable" seed="1301841958" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.020650" asserts="0">
+          <properties />
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1827" name="WorkflowServiceLifecycleTests" fullname="WorkflowServiceLifecycleTests" classname="WorkflowServiceLifecycleTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-11-03 13:41:17Z" end-time="2026-11-03 13:41:17Z" duration="0.280144" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1830" name="ASceneDestroyedRobotCannotLeaveStateReportingInitialized" fullname="WorkflowServiceLifecycleTests.ASceneDestroyedRobotCannotLeaveStateReportingInitialized" methodname="ASceneDestroyedRobotCannotLeaveStateReportingInitialized" classname="WorkflowServiceLifecycleTests" runstate="Runnable" seed="1774931906" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.003190" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1832" name="MtcManagerDestructionCleanupUnsubscribesAllThreeTopicsFromTheRetainedConnector" fullname="WorkflowServiceLifecycleTests.MtcManagerDestructionCleanupUnsubscribesAllThreeTopicsFromTheRetainedConnector" methodname="MtcManagerDestructionCleanupUnsubscribesAllThreeTopicsFromTheRetainedConnector" classname="WorkflowServiceLifecycleTests" runstate="Runnable" seed="1948782815" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.001725" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1829" name="ResetEndsAnOldCalibrationEditAndAllowsFreshAlignmentInTheNewWorkflow" fullname="WorkflowServiceLifecycleTests.ResetEndsAnOldCalibrationEditAndAllowsFreshAlignmentInTheNewWorkflow" methodname="ResetEndsAnOldCalibrationEditAndAllowsFreshAlignmentInTheNewWorkflow" classname="WorkflowServiceLifecycleTests" runstate="Runnable" seed="1134833586" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.001272" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1828" name="SceneResetReleasesRobotReferencesAndReadinessWithoutDestroyingTheOldRobot" fullname="WorkflowServiceLifecycleTests.SceneResetReleasesRobotReferencesAndReadinessWithoutDestroyingTheOldRobot" methodname="SceneResetReleasesRobotReferencesAndReadinessWithoutDestroyingTheOldRobot" classname="WorkflowServiceLifecycleTests" runstate="Runnable" seed="933910295" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:15Z" duration="0.001872" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1831" name="ServiceReusesTheConnectorPreservesHudEditsAndRecoversAReplacement" fullname="WorkflowServiceLifecycleTests.ServiceReusesTheConnectorPreservesHudEditsAndRecoversAReplacement" methodname="ServiceReusesTheConnectorPreservesHudEditsAndRecoversAReplacement" classname="WorkflowServiceLifecycleTests" runstate="Runnable" seed="1153976122" result="Passed" start-time="2026-11-03 13:41:15Z" end-time="2026-11-03 13:41:17Z" duration="2.165932" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[ROSService: Initialized
+ROSService: Initialized
+Saving results to: C:/Users/aca/AppData/LocalLow/DefaultCompany/ForceTorqueValidation\TestResults.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

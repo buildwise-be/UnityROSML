@@ -1,0 +1,85 @@
+{
+  "verified": true,
+  "completedUtc": "2026-11-03T13:06:01.111348+00:00",
+  "transport": "ROS-TCP v0.7.0 / ROS2 CDR1",
+  "topic": "/force_torque_sensor_broadcaster/wrench",
+  "messageType": "geometry_msgs/msg/WrenchStamped",
+  "sampleCount": 250,
+  "frameId": "ur_tool0",
+  "sourceElapsedSeconds": 2.4897894859313965,
+  "sourceRateHz": 100.0084550950911,
+  "receivedElapsedSeconds": 2.547000000002299,
+  "receivedRateHz": 97.76207302700244,
+  "sourceTimestampsStrictlyIncreasing": true,
+  "allWrenchComponentsFinite": true,
+  "samples": [
+    {
+      "stamp": {
+        "sec": 1793711159,
+        "nanosec": 286934400
+      },
+      "frame_id": "ur_tool0",
+      "force_N": [
+        -0.018199912694627493,
+        0.3367371977509123,
+        1.0208316622348566
+      ],
+      "torque_Nm": [
+        0.011476583087138352,
+        -0.0035296274584136434,
+        -0.015981641866736188
+      ]
+    },
+    {
+      "stamp": {
+        "sec": 1793711159,
+        "nanosec": 296825333
+      },
+      "frame_id": "ur_tool0",
+      "force_N": [
+        -0.1102412015165913,
+        0.37022729537394666,
+        0.7548387640676923
+      ],
+      "torque_Nm": [
+        0.01519218160170794,
+        0.0016670308228192124,
+        -0.023865454388691774
+      ]
+    },
+    {
+      "stamp": {
+        "sec": 1793711159,
+        "nanosec": 306735234
+      },
+      "frame_id": "ur_tool0",
+      "force_N": [
+        -0.6050692183350675,
+        0.07039768780537266,
+        0.9444191605132385
+      ],
+      "torque_Nm": [
+        -0.0025180819219221893,
+        0.004141540789232922,
+        -0.015679665395237997
+      ]
+    },
+    {
+      "stamp": {
+        "sec": 1793711161,
+        "nanosec": 776723922
+      },
+      "frame_id": "ur_tool0",
+      "force_N": [
+        -0.3660887885198019,
+        0.42064095071414437,
+        1.2972833261833334
+      ],
+      "torque_Nm": [
+        0.011767049785478538,
+        0.009337538216172494,
+        -0.022387673153787518
+      ]
+    }
+  ]
+}

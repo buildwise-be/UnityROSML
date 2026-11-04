@@ -112,6 +112,7 @@ public class TcpPlanningController : MonoBehaviour
         { SetStatus("An MTC execution request is unresolved. Wait for its ROS outcome before planning another task."); return; }
         MTCPlansManager.DismissCompletedExecutionFeedback();
         if (IsPlanning) { SetStatus("A TCP plan is already pending. Change a target to cancel it, or wait for the result."); return; }
+        RobotExecutionState.NotifyPlanningStarted();
         InvalidatePlan(null);
         if (!TryValidate(out string reason)) { SetStatus(reason); return; }
         if (_targets == null || !_targets.TryGetCapturedRosPose(true, out _requestedA) ||

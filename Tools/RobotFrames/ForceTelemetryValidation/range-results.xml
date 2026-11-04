@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="46" result="Passed" total="46" passed="46" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0,333387">
+  <test-suite type="TestSuite" id="1000" name="ForceTorqueValidation" fullname="ForceTorqueValidation" runstate="Runnable" testcasecount="709" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.333387" total="46" passed="46" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1833" name="UnityROSML.RobotFrames.EditorTests.dll" fullname="C:/Users/aca/unity-source/UnityROSML/Library/ForceTorqueValidation/Library/ScriptAssemblies/UnityROSML.RobotFrames.EditorTests.dll" runstate="Runnable" testcasecount="709" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.328587" total="46" passed="46" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="3492" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestFixture" id="1094" name="ForceTorqueSubscriberTests" fullname="ForceTorqueSubscriberTests" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="46" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.324397" total="46" passed="46" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="ParameterizedMethod" id="1132" name="ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable" fullname="ForceTorqueSubscriberTests.ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.028546" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1130" name="ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable(False)" fullname="ForceTorqueSubscriberTests.ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable(False)" methodname="ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="181186327" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.023753" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1131" name="ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable(True)" fullname="ForceTorqueSubscriberTests.ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable(True)" methodname="ANewPlanOrExecuteWhileDisabledClearsTheOldPeakOnReenable" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1966772608" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.001145" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1143" name="BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry" fullname="ForceTorqueSubscriberTests.BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.172477" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1141" name="BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry(&quot;SimplePickAndPlace&quot;)" fullname="ForceTorqueSubscriberTests.BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry(&quot;SimplePickAndPlace&quot;)" methodname="BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="47311632" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.140720" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1142" name="BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry(&quot;RepetitivePickAndPlace&quot;)" fullname="ForceTorqueSubscriberTests.BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry(&quot;RepetitivePickAndPlace&quot;)" methodname="BuildingEitherMenuShowsTheForceCardWithoutStartingTelemetry" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1046240026" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.031070" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-suite type="ParameterizedMethod" id="1140" name="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak" fullname="ForceTorqueSubscriberTests.BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.009894" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1137" name="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak(&quot;TcpPlanningController&quot;,&quot;Plan&quot;)" fullname="ForceTorqueSubscriberTests.BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak(&quot;TcpPlanningController&quot;,&quot;Plan&quot;)" methodname="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="412531854" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.005529" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[TCP planning: An MTC execution request is unresolved. Wait for its ROS outcome before planning another task.
+]]></output>
+          </test-case>
+          <test-case id="1138" name="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak(&quot;FixtureTilingController&quot;,&quot;Plan&quot;)" fullname="ForceTorqueSubscriberTests.BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak(&quot;FixtureTilingController&quot;,&quot;Plan&quot;)" methodname="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1895863094" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.001166" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1139" name="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak(&quot;PickPlaceController&quot;,&quot;SendPickAndPlacePlanningRequest&quot;)" fullname="ForceTorqueSubscriberTests.BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak(&quot;PickPlaceController&quot;,&quot;SendPickAndPlacePlanningRequest&quot;)" methodname="BusyGuardedPlanningDoesNotResetTheRunningExecutionPeak" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="105120446" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000999" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1096" name="CopiesSixSignedRosAxesWithoutUnityCoordinateConversion" fullname="ForceTorqueSubscriberTests.CopiesSixSignedRosAxesWithoutUnityCoordinateConversion" methodname="CopiesSixSignedRosAxesWithoutUnityCoordinateConversion" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="2007377508" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.001869" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1118" name="DisableDiscardsTheOldSampleBeforeTheWorkflowCanBeReenabled" fullname="ForceTorqueSubscriberTests.DisableDiscardsTheOldSampleBeforeTheWorkflowCanBeReenabled" methodname="DisableDiscardsTheOldSampleBeforeTheWorkflowCanBeReenabled" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1877771179" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.001514" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1119" name="DisconnectedTransportHidesAndDiscardsAnOtherwiseFreshReading" fullname="ForceTorqueSubscriberTests.DisconnectedTransportHidesAndDiscardsAnOtherwiseFreshReading" methodname="DisconnectedTransportHidesAndDiscardsAnOtherwiseFreshReading" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1297658152" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.002279" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1097" name="DisplayUsesInvariantUnitsAndThePublishedReferenceFrame" fullname="ForceTorqueSubscriberTests.DisplayUsesInvariantUnitsAndThePublishedReferenceFrame" methodname="DisplayUsesInvariantUnitsAndThePublishedReferenceFrame" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1803256550" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.001914" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1123" name="EveryDeliveredSamplePushesIndependentForceAndTorquePeaks" fullname="ForceTorqueSubscriberTests.EveryDeliveredSamplePushesIndependentForceAndTorquePeaks" methodname="EveryDeliveredSamplePushesIndependentForceAndTorquePeaks" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1955467918" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000980" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1136" name="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt" fullname="ForceTorqueSubscriberTests.EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.004750" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1133" name="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt(&quot;TcpPlanningController&quot;,&quot;Plan&quot;)" fullname="ForceTorqueSubscriberTests.EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt(&quot;TcpPlanningController&quot;,&quot;Plan&quot;)" methodname="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1353878064" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.001647" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[TCP planning: ROS is disconnected. Start the ROS stack and reconnect.
+]]></output>
+          </test-case>
+          <test-case id="1134" name="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt(&quot;FixtureTilingController&quot;,&quot;Plan&quot;)" fullname="ForceTorqueSubscriberTests.EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt(&quot;FixtureTilingController&quot;,&quot;Plan&quot;)" methodname="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="722682964" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000816" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1135" name="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt(&quot;PickPlaceController&quot;,&quot;SendPickAndPlacePlanningRequest&quot;)" fullname="ForceTorqueSubscriberTests.EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt(&quot;PickPlaceController&quot;,&quot;SendPickAndPlacePlanningRequest&quot;)" methodname="EveryPlanningEntryClearsTheFinishedPeakEvenWhenLocalValidationRejectsIt" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1619766858" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.001650" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+            <output><![CDATA[MTC: Select MTC pick/place mode to plan from tool contact points.
+]]></output>
+          </test-case>
+        </test-suite>
+        <test-case id="1147" name="GaugeRangesStayFixedAndClampOnlyTheGraphicsWhileKeepingActualReadingsAndPeaks" fullname="ForceTorqueSubscriberTests.GaugeRangesStayFixedAndClampOnlyTheGraphicsWhileKeepingActualReadingsAndPeaks" methodname="GaugeRangesStayFixedAndClampOnlyTheGraphicsWhileKeepingActualReadingsAndPeaks" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="2068932262" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.024141" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1146" name="GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale" fullname="ForceTorqueSubscriberTests.GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.043222" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1144" name="GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale(&quot;SimplePickAndPlace&quot;)" fullname="ForceTorqueSubscriberTests.GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale(&quot;SimplePickAndPlace&quot;)" methodname="GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1370164820" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.019820" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1145" name="GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale(&quot;RepetitivePickAndPlace&quot;)" fullname="ForceTorqueSubscriberTests.GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale(&quot;RepetitivePickAndPlace&quot;)" methodname="GaugesShowOnlyMagnitudesAndRetainPeakMarksWhenTheLiveReadingGoesStale" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="892830660" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.022618" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1127" name="InvalidAndDisconnectedSamplesCannotRaiseRecordedPeaks" fullname="ForceTorqueSubscriberTests.InvalidAndDisconnectedSamplesCannotRaiseRecordedPeaks" methodname="InvalidAndDisconnectedSamplesCannotRaiseRecordedPeaks" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1357269441" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.001833" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1121" name="MagnitudesAvoidIntermediateOverflowButRejectAnUnrepresentableNorm" fullname="ForceTorqueSubscriberTests.MagnitudesAvoidIntermediateOverflowButRejectAnUnrepresentableNorm" methodname="MagnitudesAvoidIntermediateOverflowButRejectAnUnrepresentableNorm" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="3037353" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.001380" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1110" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.007665" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1099" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;null&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;null&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1771314403" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.001076" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1100" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;header&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;header&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="923729809" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000590" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1101" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;stamp&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;stamp&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="80190362" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000547" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1102" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;wrench&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;wrench&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="399007760" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000531" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1103" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;force&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;force&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1548394164" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000540" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1104" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;torque&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;torque&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1723571724" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000529" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1105" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;frame-empty&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;frame-empty&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="636499543" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000525" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1106" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;frame-space&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;frame-space&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="2090695633" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000529" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1107" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;frame-control&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;frame-control&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1560057650" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000526" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1108" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;seconds&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;seconds&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="392510072" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000520" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1109" name="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;nanoseconds&quot;)" fullname="ForceTorqueSubscriberTests.MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot(&quot;nanoseconds&quot;)" methodname="MalformedSampleNeverRefreshesOrReplacesTheLastAcceptedSnapshot" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="82341372" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000520" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1126" name="MeasuredZeroCreatesARealPeakMarkDuringExecution" fullname="ForceTorqueSubscriberTests.MeasuredZeroCreatesARealPeakMarkDuringExecution" methodname="MeasuredZeroCreatesARealPeakMarkDuringExecution" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="351919026" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000591" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1122" name="PeakStartsEmptyAndDoesNotSeedFromTheReadingBeforeExecute" fullname="ForceTorqueSubscriberTests.PeakStartsEmptyAndDoesNotSeedFromTheReadingBeforeExecute" methodname="PeakStartsEmptyAndDoesNotSeedFromTheReadingBeforeExecute" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1677952736" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000715" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1098" name="ReceiptTimeoutHidesOldValuesAndTheNextValidSampleRecovers" fullname="ForceTorqueSubscriberTests.ReceiptTimeoutHidesOldValuesAndTheNextValidSampleRecovers" methodname="ReceiptTimeoutHidesOldValuesAndTheNextValidSampleRecovers" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="164900187" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.001419" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1129" name="ReenablingDuringTheSameExecutionResumesItsExistingPeak" fullname="ForceTorqueSubscriberTests.ReenablingDuringTheSameExecutionResumesItsExistingPeak" methodname="ReenablingDuringTheSameExecutionResumesItsExistingPeak" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="12139249" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000900" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1117" name="RejectsNonfiniteValuesOnEveryAxis" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.003031" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1111" name="RejectsNonfiniteValuesOnEveryAxis(&quot;force&quot;,&quot;x&quot;,double.NaN)" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis(&quot;force&quot;,&quot;x&quot;,double.NaN)" methodname="RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1479327464" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000591" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1112" name="RejectsNonfiniteValuesOnEveryAxis(&quot;force&quot;,&quot;y&quot;,double.PositiveInfinity)" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis(&quot;force&quot;,&quot;y&quot;,double.PositiveInfinity)" methodname="RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1156289410" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000386" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1113" name="RejectsNonfiniteValuesOnEveryAxis(&quot;force&quot;,&quot;z&quot;,double.NegativeInfinity)" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis(&quot;force&quot;,&quot;z&quot;,double.NegativeInfinity)" methodname="RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="10347530" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000356" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1114" name="RejectsNonfiniteValuesOnEveryAxis(&quot;torque&quot;,&quot;x&quot;,double.NaN)" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis(&quot;torque&quot;,&quot;x&quot;,double.NaN)" methodname="RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1042325349" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000354" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1115" name="RejectsNonfiniteValuesOnEveryAxis(&quot;torque&quot;,&quot;y&quot;,double.PositiveInfinity)" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis(&quot;torque&quot;,&quot;y&quot;,double.PositiveInfinity)" methodname="RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1660970040" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000348" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1116" name="RejectsNonfiniteValuesOnEveryAxis(&quot;torque&quot;,&quot;z&quot;,double.NegativeInfinity)" fullname="ForceTorqueSubscriberTests.RejectsNonfiniteValuesOnEveryAxis(&quot;torque&quot;,&quot;z&quot;,double.NegativeInfinity)" methodname="RejectsNonfiniteValuesOnEveryAxis" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1372576707" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000336" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1125" name="RepeatExecuteClearsTheOldMarkAndWaitsForItsOwnFirstSample" fullname="ForceTorqueSubscriberTests.RepeatExecuteClearsTheOldMarkAndWaitsForItsOwnFirstSample" methodname="RepeatExecuteClearsTheOldMarkAndWaitsForItsOwnFirstSample" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="59079039" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000786" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1120" name="SceneTeardownUnsubscribesTheForceTopicFromTheRetainedConnector" fullname="ForceTorqueSubscriberTests.SceneTeardownUnsubscribesTheForceTopicFromTheRetainedConnector" methodname="SceneTeardownUnsubscribesTheForceTopicFromTheRetainedConnector" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="276429409" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.004103" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[More than one message was registered as "geometry_msgs/WrenchStamped" "Default"
+]]></output>
+        </test-case>
+        <test-case id="1128" name="StaleAndDisabledReadingsPreserveTheFinishedPeak" fullname="ForceTorqueSubscriberTests.StaleAndDisabledReadingsPreserveTheFinishedPeak" methodname="StaleAndDisabledReadingsPreserveTheFinishedPeak" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1477898537" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000987" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1124" name="TerminalExecutionFreezesTheMarkUntilAnotherPlanOrExecute" fullname="ForceTorqueSubscriberTests.TerminalExecutionFreezesTheMarkUntilAnotherPlanOrExecute" methodname="TerminalExecutionFreezesTheMarkUntilAnotherPlanOrExecute" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="1026979335" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000932" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1095" name="WaitingDoesNotPretendAZeroWrenchHasBeenMeasured" fullname="ForceTorqueSubscriberTests.WaitingDoesNotPretendAZeroWrenchHasBeenMeasured" methodname="WaitingDoesNotPretendAZeroWrenchHasBeenMeasured" classname="ForceTorqueSubscriberTests" runstate="Runnable" seed="2119444096" result="Passed" start-time="2026-11-04 08:49:52Z" end-time="2026-11-04 08:49:52Z" duration="0.000451" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: C:/Users/aca/AppData/LocalLow/DefaultCompany/ForceTorqueValidation\TestResults.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

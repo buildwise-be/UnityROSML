@@ -37,6 +37,11 @@ scene components.
 
 See [fixture setup](FIXTURE_TILING.md) for the repetitive workflow.
 
+Both task menus include force and torque magnitude gauges using the shared ROS
+connection. Execution peak markers remain until a new Plan or Execute starts;
+waiting/disconnected and stale states hide the live readings and retain peaks. See
+[force telemetry](FORCE_TELEMETRY.md) for the topic, units and configuration.
+
 ## Offline checks
 
 `prepare_scene_workflow_validation.py` copies actual runtime/UI/navigation and
