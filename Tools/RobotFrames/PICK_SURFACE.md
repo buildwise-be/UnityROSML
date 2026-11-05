@@ -81,7 +81,7 @@ by the UI selection.
 Both updated Unity code and the new ROS interface/node must be built together.
 The ROS-TCP endpoint must run with the rebuilt message overlay. Source changes,
 isolated builds and synthetic tests do not update an installed headset app or
-activate the stopped Nordbo stack.
+activate the production stack.
 
 ## Validation
 
