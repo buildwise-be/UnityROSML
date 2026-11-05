@@ -13,7 +13,7 @@ public class RosRobotRigPrefabTests
     private static Type RigType => AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType("RosRobotRig"))
         .FirstOrDefault(type => type != null) ?? throw new InvalidOperationException("RosRobotRig was not compiled.");
 
-    /// <summary>Render the real regenerated adapter and detailed CAD before/after the existing5mm correction.</summary>
+    /// <summary>Render the real regenerated adapter and detailed CAD before/after the historical 5 mm correction.</summary>
     public static void RenderToolMountPreviews()
     {
         if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
@@ -26,6 +26,10 @@ public class RosRobotRigPrefabTests
         {
             Component rig = robot.AddComponent(RigType);
             RosRobotModel corrected = RosRobotModelCatalog.Load().Find("kenos_sl");
+            // This helper preserves the historical 60.25 -> 55.25 mm preview pair.
+            corrected.FindLink("kenos_sl_base").position[2] = 0.05525f;
+            foreach (RosRobotGeometry shape in corrected.FindLink("kenos_sl_mount").visuals.Concat(corrected.FindLink("kenos_sl_mount").collisions))
+            { shape.length = 0.05525f; shape.position[2] = 0.027625f; }
             RosRobotModel previous = JsonUtility.FromJson<RosRobotModel>(JsonUtility.ToJson(corrected));
             previous.FindLink("kenos_sl_base").position[2] = 0.06025f;
             foreach (RosRobotGeometry cylinder in previous.FindLink("kenos_sl_mount").visuals
@@ -251,23 +255,28 @@ public class RosRobotRigPrefabTests
         }
     }
 
-    [TestCase(false)]
-    [TestCase(true)]
-    public void SafeLightRenderedAdapterAndToolMoveFiveMillimetresWithoutScalingTheCad(bool transparent)
+    [TestCase(false, 0.05325f, 0.05525f, 0.002f)]
+    [TestCase(true, 0.05325f, 0.05525f, 0.002f)]
+    [TestCase(false, 0.05525f, 0.06025f, 0.005f)]
+    [TestCase(true, 0.05525f, 0.06025f, 0.005f)]
+    public void SafeLightRenderedAdapterAndToolMoveByMeasuredReductionWithoutScalingTheCad(bool transparent, float height, float previousHeight, float reduction)
     {
         GameObject robot = Instantiate(transparent);
         SimulationMode previousMode = Physics.simulationMode;
         try
         {
             Physics.simulationMode = SimulationMode.Script;
-            RosRobotModel corrected = RosRobotModelCatalog.Load().Find("kenos_sl");
+            RosRobotModel corrected = JsonUtility.FromJson<RosRobotModel>(JsonUtility.ToJson(RosRobotModelCatalog.Load().Find("kenos_sl")));
+            corrected.FindLink("kenos_sl_base").position[2] = height;
+            foreach (RosRobotGeometry shape in corrected.FindLink("kenos_sl_mount").visuals.Concat(corrected.FindLink("kenos_sl_mount").collisions))
+            { shape.length = height; shape.position[2] = height / 2f; }
             RosRobotModel previous = JsonUtility.FromJson<RosRobotModel>(JsonUtility.ToJson(corrected));
-            previous.FindLink("kenos_sl_base").position[2] = 0.06025f;
+            previous.FindLink("kenos_sl_base").position[2] = previousHeight;
             foreach (RosRobotGeometry cylinder in previous.FindLink("kenos_sl_mount").visuals
                 .Concat(previous.FindLink("kenos_sl_mount").collisions))
             {
-                cylinder.length = 0.06025f;
-                cylinder.position[2] = 0.030125f;
+                cylinder.length = previousHeight;
+                cylinder.position[2] = previousHeight / 2f;
             }
             Component rig = robot.AddComponent(RigType);
             Pose basePose = new Pose(new Vector3(0.6f, -0.2f, 1.3f), Quaternion.Euler(19f, -33f, 7f));
@@ -280,7 +289,7 @@ public class RosRobotRigPrefabTests
             Physics.SyncTransforms();
             Physics.Simulate(0.02f);
             Transform oldMount = Link(rig, "kenos_sl_mount");
-            Vector3 change = oldMount.rotation * Vector3.up * -0.005f;
+            Vector3 change = oldMount.rotation * Vector3.up * -reduction;
             Vector3 oldToolPosition = Link(rig, "kenos_sl_base").position;
             Vector3 oldTcpPosition = Link(rig, "tcp").position;
 
@@ -292,9 +301,9 @@ public class RosRobotRigPrefabTests
             Assert.That(Vector3.Distance(Link(rig, "tcp").position, oldTcpPosition + change), Is.LessThan(0.00002f));
             Transform cylinderVisual = Link(rig, "kenos_sl_mount").Cast<Transform>()
                 .Single(child => child.name == "ROS visual: cylinder");
-            Assert.That(Vector3.Distance(cylinderVisual.localPosition, Vector3.up * 0.027625f), Is.LessThan(0.000001f));
+            Assert.That(Vector3.Distance(cylinderVisual.localPosition, Vector3.up * (height / 2f)), Is.LessThan(0.000001f));
             Mesh cylinderMesh = cylinderVisual.GetComponent<MeshFilter>().sharedMesh;
-            Assert.That(cylinderMesh.bounds.size.y * cylinderVisual.localScale.y, Is.EqualTo(0.05525f).Within(0.000001f));
+            Assert.That(cylinderMesh.bounds.size.y * cylinderVisual.localScale.y, Is.EqualTo(height).Within(0.000001f));
             Transform detail = Link(rig, "kenos_sl_base").Cast<Transform>()
                 .Single(child => child.name.StartsWith("ROS visual:"));
             Assert.That(detail.localPosition, Is.EqualTo(Vector3.zero));

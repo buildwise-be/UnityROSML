@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 
 
 PROJECT = Path(__file__).resolve().parents[2]
-HEIGHT = 0.05525
+HEIGHT = 0.05325
 LAUNCHES = (
     "ur16e_bringup/launch/ur16e_start.launch.py",
     "ur16e_mir250_control/launch/start_robot.launch.py",
@@ -94,7 +94,7 @@ def main():
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print(f"Verified {len(args.ros_root)} ROS source trees, six launch defaults per tree, and the Unity145mm tool chain")
+    print(f"Verified {len(args.ros_root)} ROS source trees, six launch defaults per tree, and the Unity 143 mm tool chain")
 
 
 if __name__ == "__main__":

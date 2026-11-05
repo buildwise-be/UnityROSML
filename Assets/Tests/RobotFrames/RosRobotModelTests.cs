@@ -170,30 +170,35 @@ public sealed class RosRobotModelTests
         Assert.That(RosRobotDescription.Equivalent(_catalog.Find("kenos_sl"), model, out _), Is.False);
     }
 
-    [Test]
-    public void SafeLightMountCorrectionShortensOnlyTheAdapterAndDistalReach()
+    [TestCase(0.05325f, 0.05525f, 0.002f)]
+    [TestCase(0.05525f, 0.06025f, 0.005f)]
+    public void SafeLightMountCorrectionShortensOnlyTheAdapterAndDistalReach(float height, float previousHeight, float reduction)
     {
-        RosRobotModel corrected = _catalog.Find("kenos_sl");
+        Assert.That(_catalog.Find("kenos_sl").FindLink("kenos_sl_base").position[2], Is.EqualTo(0.05325f));
+        RosRobotModel corrected = Clone(_catalog.Find("kenos_sl"));
+        corrected.FindLink("kenos_sl_base").position[2] = height;
+        foreach (RosRobotGeometry shape in corrected.FindLink("kenos_sl_mount").visuals.Concat(corrected.FindLink("kenos_sl_mount").collisions))
+        { shape.length = height; shape.position[2] = height / 2f; }
         RosRobotLink mount = corrected.FindLink("kenos_sl_mount");
         foreach (RosRobotGeometry cylinder in mount.visuals.Concat(mount.collisions))
         {
             Assert.That(cylinder.kind, Is.EqualTo("cylinder"));
-            Assert.That(cylinder.length, Is.EqualTo(0.05525f).Within(0.000001f));
+            Assert.That(cylinder.length, Is.EqualTo(height).Within(0.000001f));
             Assert.That(cylinder.radius, Is.EqualTo(0.05f).Within(0.000001f));
-            CollectionAssert.AreEqual(new[] { 0f, 0f, 0.027625f }, cylinder.position);
+            CollectionAssert.AreEqual(new[] { 0f, 0f, height / 2f }, cylinder.position);
         }
-        CollectionAssert.AreEqual(new[] { 0f, 0f, 0.05525f }, corrected.FindLink("kenos_sl_base").position);
+        CollectionAssert.AreEqual(new[] { 0f, 0f, height }, corrected.FindLink("kenos_sl_base").position);
         CollectionAssert.AreEqual(new[] { 0.034f, 0f, 0.08975f }, corrected.FindLink("tcp").position);
 
         // The prior stack remains an explicit valid model override. Compare
         // every pose with that stack, without changing the tool's local shape.
         RosRobotModel previous = Clone(corrected);
-        previous.FindLink("kenos_sl_base").position[2] = 0.06025f;
+        previous.FindLink("kenos_sl_base").position[2] = previousHeight;
         foreach (RosRobotGeometry cylinder in previous.FindLink("kenos_sl_mount").visuals
             .Concat(previous.FindLink("kenos_sl_mount").collisions))
         {
-            cylinder.length = 0.06025f;
-            cylinder.position[2] = 0.030125f;
+            cylinder.length = previousHeight;
+            cylinder.position[2] = previousHeight / 2f;
         }
         foreach (RosRobotGoldenCase sample in corrected.goldenCases)
         {
@@ -201,7 +206,7 @@ public sealed class RosRobotModelTests
             for (int index = 0; index < sample.jointNames.Length; index++) joints[sample.jointNames[index]] = sample.jointPositions[index];
             Dictionary<string, Pose> current = RosRobotModelMath.ForwardKinematics(corrected, joints);
             Dictionary<string, Pose> old = RosRobotModelMath.ForwardKinematics(previous, joints);
-            Vector3 change = old["kenos_sl_mount"].rotation * Vector3.up * -0.005f;
+            Vector3 change = old["kenos_sl_mount"].rotation * Vector3.up * -reduction;
             foreach (RosRobotLink link in corrected.links)
             {
                 Vector3 expected = old[link.name].position +
@@ -210,7 +215,7 @@ public sealed class RosRobotModelTests
                 Assert.That(Quaternion.Angle(old[link.name].rotation, current[link.name].rotation), Is.LessThan(0.001f));
             }
             Pose flangeToTcp = RobotFrameMath.RelativeTo(current["ur_flange"], current["tcp"]);
-            AssertVector(new Vector3(0f, -0.034f, 0.145f), flangeToTcp.position, PositionTolerance, "corrected flange TCP");
+            AssertVector(new Vector3(0f, -0.034f, height + 0.08975f), flangeToTcp.position, PositionTolerance, "corrected flange TCP");
         }
     }
 

@@ -1,0 +1,106 @@
+{
+  "baselineUnityCommit": "f397551c119cfc80f76d04afb3881e0824486f42",
+  "mountBeforeM": 0.05525,
+  "mountAfterM": 0.05325,
+  "additionalReductionM": 0.002,
+  "axialFlangeToTcpBeforeM": 0.145,
+  "axialFlangeToTcpAfterM": 0.143,
+  "movedDistalLinkPoses": 42,
+  "unchangedOtherLinkPoses": 861,
+  "maximumExpectedPositionErrorM": 1.594436429147036e-16,
+  "noneAndKenosModelsUnchanged": true,
+  "slLocalToolGeometryAndTcpUnchanged": true,
+  "cadMeshBytesUnchanged": true,
+  "cadProvenanceContentUnchanged": true,
+  "upstreamDependencies": [
+    {
+      "name": "ur_description",
+      "revision": "39242984dc8d1fff9584c922c17c69c58df3591d"
+    },
+    {
+      "name": "xacro",
+      "revision": "da4b3849f8320903d625250089f67f0632be86f2"
+    },
+    {
+      "name": "ament_index",
+      "revision": "2ccdcb8fd19a364fc793273b5793459207a440b9"
+    },
+    {
+      "name": "ur_driver",
+      "revision": "d497de33da6e756cd6b7c1e307a43d9bc41f60ab"
+    }
+  ],
+  "portableTests": {
+    "passed": 17,
+    "command": "python -B -m unittest discover -s Tools/RobotFrames -p test_model_export.py"
+  },
+  "unity": {
+    "version": "6000.0.84f1",
+    "filter": "RosRobotModelTests;RosRobotRigPrefabTests",
+    "total": 121,
+    "passed": 121,
+    "failed": 0,
+    "resultXmlSha256": "9402e87ac9129dde0f7d10cc30a69df11e60bb11bf0567a7dd1d47a3dafb4553",
+    "isolatedProject": "Library/ToolMount2mmValidation",
+    "fixtureScope": "Actual model, rig, rendering and support sources; unrelated UI/workflow copies excluded after the shared preparer omitted their dependencies",
+    "preparationReportSha256": "0560a4038748f2eb72023d14b344ca4b39f62800165ad395eb43a19dfc317f2d"
+  },
+  "files": [
+    {
+      "path": "Assets/Resources/RobotModels/Models.json",
+      "sha256": "f63822ef35b6388141919e96236dd7f86fa8db460524500c422ab39de9984f13"
+    },
+    {
+      "path": "Assets/Resources/RobotModels/kenos_sl.urdf.txt",
+      "sha256": "6fd6ced6f19cd3ecf8bb8a9dc30e89566595369a878578990e9c115bda2f46cd"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RobotFrameMath.cs",
+      "sha256": "9776aa4a05be4d8db0d463283f666bb15b156bf5f9f615d5251fc6df084dac31"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotDescription.cs",
+      "sha256": "ff33d874821b402e9f7a27b6abcd24dbbe23fa5902bc55fca8d2657961fb12b1"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/RosRobotModel.cs",
+      "sha256": "7fbfe618978cc0d3c78ab69660ffa56ca7f2c233ef97a1f5033bca133ea42fb0"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RobotExecutionState.cs",
+      "sha256": "9b54b5ce0109bcbfdc84fedbfbf74af58c1c09f51629d527558f24d79082d68b"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/RosRobotRig.cs",
+      "sha256": "ac6865a741503b42657c1bfa21d93c9813e085680b89b5119ed4979bd25244ca"
+    },
+    {
+      "path": "Assets/Scripts/V3/Rendering/RobotContourDisplay.cs",
+      "sha256": "c22a56927ed177c57a78ef3ceeb0561a15863bbc9167cd7c9a8e595e8c3496bc"
+    },
+    {
+      "path": "Assets/Scripts/V3/Rendering/RobotContourRendererFeature.cs",
+      "sha256": "5e376cce18a2af738329e977befbd3e0ce46312f9d20fa8bcb8bb19bab59de66"
+    },
+    {
+      "path": "Assets/Scripts/V3/TargetMarkerMaterials.cs",
+      "sha256": "00e559f332523099b428dc7c5881c8722db25642472b49cda925948ef58d2bb0"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotModelTests.cs",
+      "sha256": "c503238bd38192c99933d4bdffdcb6a2ffc751f5bccdeaa03f73f879e4a6618f"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RosRobotRigPrefabTests.cs",
+      "sha256": "93928edfce5c909e1c85d2374a6b0fe913f214de50f4a0b2e245a67077ee1353"
+    }
+  ],
+  "historicalFiveMillimetreEvidencePreserved": true,
+  "hardwareExercised": false,
+  "rosNodesStarted": false,
+  "deploymentPerformed": false,
+  "limitations": [
+    "No Android/player build or headset deployment",
+    "Active ROS runtime must be rebuilt/restarted separately to consume the changed source defaults"
+  ]
+}

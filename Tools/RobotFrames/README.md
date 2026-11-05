@@ -443,11 +443,12 @@ The menu displays a mismatch or waiting status when this cannot be established.
 
 The Kenos SL link transforms match the ROS model, including the 34 mm lateral
 contact-centre offset. Matching software does not measure the physical adapter:
-its default height is **55.25 mm**, shortened from 60.25 mm by the owner's
-requested 5 mm overlay correction on 2026-10-30. The cylinder's visual/collision
-centres are at 27.625 mm, and the gripper attaches at 55.25 mm. This moves the
-whole gripper and TCP toward the flange without scaling the tool CAD. Axial
-flange-to-TCP reach is now **145 mm**, with the same 34 mm eccentric offset and
+its default height is **53.25 mm**. The owner's 2026-11-03 correction removes
+another 2 mm from the previous 55.25 mm support; the historical 60.25 -> 55.25 mm
+correction remains recorded separately. The cylinder's visual/collision centres
+are at 26.625 mm, and the gripper attaches at 53.25 mm. This moves the whole
+gripper and TCP toward the flange without scaling the tool CAD. Axial
+flange-to-TCP reach is now **143 mm**, with the same 34 mm eccentric offset and
 89.75 mm tool-local contact depth. Mount height remains an empirical adjustment;
 the 50 mm radius and zero clocking remain provisional mounting assumptions.
 Calibrate those in ROS; the connected Unity replica uses the actual expanded
@@ -468,8 +469,23 @@ tests. Rebuilding Unity alone cannot change an old live ROS description.
 `tool_mount_validation_summary.json` records 532 passing Unity checks and 11
 source launch-model cases, plus a comparison of all 903 baseline link poses:
 only the 42 Kenos SL body/TCP poses move, exactly 5 mm, with all orientations,
-other-tool models and detailed CAD bytes preserved. The separate portable
-model suite passes 16 checks, and the standalone ROS tool Xacro suite passes 7.
+other-tool models and detailed CAD bytes preserved. The historical portable
+model suite passed 16 checks, and the standalone ROS tool Xacro suite passed 7.
+
+
+The further 2 mm correction is checked against Unity commit `f397551` rather
+than `main`, which predates the first correction. The portable model suite now
+has 17 passing checks, including independent current 2 mm and historical 5 mm
+fixtures. `record_tool_mount_2mm_validation.py` validates all 903 baseline poses,
+the unchanged other-tool models, tool-local geometry, detailed CAD bytes and
+pinned dependency revisions, then records the **121/121 passing targeted Unity model/prefab tests** in
+`tool_mount_2mm_validation_summary.json`. The new ignored fixture uses the actual
+model, rig, rendering and support sources; unrelated UI/workflow copies were
+excluded because the shared preparer omits their current dependencies. The dated
+`ToolMountValidation/source-default-parity-20261103.json` records source parity.
+The historical validation summaries and 5 mm preview pair remain unchanged.
+This geometry check does not build an Android player, deploy a headset, or
+activate the updated ROS model on the robot.
 
 Kenos SL also loads the detailed supplied STEP geometry from the preconverted
 `RobotModels/KenosSLVisual.bytes` resource. This mesh is local to

@@ -70,7 +70,7 @@ class ExpandedModelTests(unittest.TestCase):
             joints = [parse_joint(joint) for joint in root.findall("joint")]
             transforms[model["tool"]] = compose(chain(joints, "ur_flange", "tcp", require_fixed=True))
         self.assertLess(compare_transforms(transforms["none"], transform([0, 0, 0], [0, 0, 0]))["position_error_mm"], 1e-12)
-        self.assertAlmostEqual(transforms["kenos_sl"][0][3], 0.145, places=12)
+        self.assertAlmostEqual(transforms["kenos_sl"][0][3], 0.143, places=12)
         self.assertAlmostEqual(transforms["kenos_sl"][2][3], -0.034, places=12)
         self.assertGreater(compare_transforms(transforms["kenos"], transforms["kenos_sl"])["position_error_mm"], 40)
         # The no-tool contract is flange identity, not tool0 identity.
@@ -95,10 +95,10 @@ class ExpandedModelTests(unittest.TestCase):
         links = {link["name"]: link for link in model["links"]}
         mount = links["kenos_sl_mount"]["visuals"][0]
         self.assertEqual(mount["kind"], "cylinder")
-        self.assertEqual(mount["length"], 0.05525)
-        self.assertEqual(mount["position"], [0.0, 0.0, 0.027625])
+        self.assertEqual(mount["length"], 0.05325)
+        self.assertEqual(mount["position"], [0.0, 0.0, 0.026625])
         self.assertEqual(mount["radius"], 0.05)
-        self.assertEqual(links["kenos_sl_base"]["position"], [0.0, 0.0, 0.05525])
+        self.assertEqual(links["kenos_sl_base"]["position"], [0.0, 0.0, 0.05325])
         self.assertEqual(links["tcp"]["position"], [0.034, 0.0, 0.08975])
         pad = links["kenos_sl_base"]["visuals"][2]
         self.assertEqual(pad["size"], [0.240, 0.120, 0.024])
@@ -109,16 +109,20 @@ class ExpandedModelTests(unittest.TestCase):
                 for key in ("kind", "position", "rotation", "size", "radius", "length"):
                     self.assertEqual(visual[key], collision[key])
 
-    def test_shorter_mount_moves_only_the_sl_body_and_tcp_five_mm_toward_the_flange(self):
+    def assert_mount_reduction(self, current_height, previous_height):
         model = next(model for model in self.catalog["models"] if model["tool"] == "kenos_sl")
         root = ET.parse(RESOURCES / "kenos_sl.urdf.txt").getroot()
-        # Reconstruct the old measured assumption through the same supported
-        # parameterized URDF fields, independently of the stored golden poses.
-        root.find("joint[@name='kenos_sl_tool_joint']/origin").set("xyz", "0 0 0.06025")
-        for shape in root.findall("link[@name='kenos_sl_mount']/*/geometry/cylinder"):
-            shape.set("length", "0.06025")
-        for origin in root.findall("link[@name='kenos_sl_mount']/*/origin"):
-            origin.set("xyz", "0 0 0.030125")
+        # Both historical and current reductions are explicit, independent fixtures.
+        def set_height(height):
+            root.find("joint[@name='kenos_sl_tool_joint']/origin").set("xyz", f"0 0 {height}")
+            for shape in root.findall("link[@name='kenos_sl_mount']/*/geometry/cylinder"):
+                shape.set("length", str(height))
+            for origin in root.findall("link[@name='kenos_sl_mount']/*/origin"):
+                origin.set("xyz", f"0 0 {height / 2}")
+        set_height(current_height)
+        model = parse_model(ET.tostring(root, encoding="unicode"), "kenos_sl", model["calibrationHash"])
+        reduction = previous_height - current_height
+        set_height(previous_height)
         previous = parse_model(ET.tostring(root, encoding="unicode"), "kenos_sl", model["calibrationHash"])
         old_links = {link["name"]: link for link in previous["links"]}
         for link in model["links"]:
@@ -131,18 +135,24 @@ class ExpandedModelTests(unittest.TestCase):
         for current_case, previous_case in zip(model["goldenCases"], previous["goldenCases"]):
             angles = dict(zip(current_case["jointNames"], current_case["jointPositions"]))
             mount = compose(chain(joints, "ur_base_link", "kenos_sl_mount"), angles)
-            delta = [-0.005 * mount[axis][2] for axis in range(3)]
+            delta = [-reduction * mount[axis][2] for axis in range(3)]
             previous_poses = {pose["name"]: pose for pose in previous_case["links"]}
             for pose in current_case["links"]:
                 old = previous_poses[pose["name"]]
                 if pose["name"] in ("kenos_sl_base", "tcp"):
                     for axis in range(3):
                         self.assertAlmostEqual(pose["position"][axis] - old["position"][axis], delta[axis], places=12)
-                    self.assertAlmostEqual(math.dist(pose["position"], old["position"]), 0.005, places=12)
+                    self.assertAlmostEqual(math.dist(pose["position"], old["position"]), reduction, places=12)
                     self.assertLess(pose_error(pose, old)[1], 1e-10)
                 else:
                     self.assertLess(pose_error(pose, old)[0], 1e-12)
                     self.assertLess(pose_error(pose, old)[1], 1e-10)
+
+    def test_current_mount_reduction_moves_only_the_sl_body_and_tcp_two_mm(self):
+        self.assert_mount_reduction(0.05325, 0.05525)
+
+    def test_historical_mount_reduction_remains_five_mm(self):
+        self.assert_mount_reduction(0.05525, 0.06025)
 
     def test_sl_cad_contact_frame_and_mesh_remain_local_to_the_unchanged_tool_body(self):
         provenance = json.loads((RESOURCES / "KenosSLVisualProvenance.json").read_text())

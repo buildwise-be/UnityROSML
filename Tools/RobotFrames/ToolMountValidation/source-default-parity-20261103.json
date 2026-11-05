@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-11-03T13:07:23.173648+00:00",
+  "mountHeightM": 0.05325,
+  "axialFlangeToTcpM": 0.143,
+  "toolLocalTcpRosM": [
+    0.034,
+    0.0,
+    0.08975
+  ],
+  "sources": [
+    {
+      "root": "C:\\Users\\aca\\source\\UR16UnityControl",
+      "files": [
+        {
+          "path": "ros_ws/src/ur16e_bringup/launch/ur16e_start.launch.py",
+          "sha256": "9500136276ac9c714ed37988cc745454f4fecafab910736ccf9f951ee4033bac"
+        },
+        {
+          "path": "ros_ws/src/ur16e_mir250_control/launch/start_robot.launch.py",
+          "sha256": "91e090b142c97495ec727952761c72e49a52a7e8da0a95db98f992a0c2981da5"
+        },
+        {
+          "path": "ros_ws/src/ur16e_mir250_control/launch/urmir_rsp.launch.py",
+          "sha256": "800da48277b9d3876ca02a9ada0f9067a664c138516b52aaf54cbffdf462de6c"
+        },
+        {
+          "path": "ros_ws/src/ur16e_mir250_control/launch/urmir_rsp_kenos_sl.launch.py",
+          "sha256": "6757e75648090597cda45d4aa6c072c2dba6771def068e52a41bab45181f35ea"
+        },
+        {
+          "path": "ros_ws/src/ur16e_mir250_moveit_config/launch/move_group.launch.py",
+          "sha256": "5889bb14aed3768d7d99583d39121845b7e162c4b7026903eceda89e26c00e55"
+        },
+        {
+          "path": "ros_ws/src/ur16e_mtc_gpio_stage/launch/mtc_commander.launch.py",
+          "sha256": "2ed0ef1123edc9a1584eb0062a1b531e4fc88a4bb2569b20ffdf398d9149deb3"
+        },
+        {
+          "path": "ros_ws/src/kenos-flexigrip/urdf/kenos_sl.urdf.xacro",
+          "sha256": "0889f3d454e13758bb129c6b889eb3d886c232c44cad4f60bd4f4042b949fa9c"
+        },
+        {
+          "path": "ros_ws/src/ur16e_mir250_description/include/bw_ur16e_macro.xacro",
+          "sha256": "908d7f787b466e69144f3ea05869c5f471af6a18ca92b06894e35282c08d9cad"
+        },
+        {
+          "path": "ros_ws/src/ur16e_mir250_description/urdf/mir250_ur16e.urdf.xacro",
+          "sha256": "ccafe525faf7687d2ecdb5f850dc64856ec2f67818a0d091072f9b824adba2af"
+        }
+      ]
+    }
+  ],
+  "unityCatalogSha256": "f63822ef35b6388141919e96236dd7f86fa8db460524500c422ab39de9984f13",
+  "launchValidation": "AST defaults and Xacro XML; ROS launch libraries not executed",
+  "hardwareExercised": false,
+  "rosNodesStarted": false,
+  "deploymentPerformed": false
+}
