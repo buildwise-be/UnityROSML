@@ -1,0 +1,154 @@
+{
+  "completedUtc": "2026-11-05T15:24:08.6626584Z",
+  "backendBranch": "codex/pick-surface-speed",
+  "baseCommit": "01c5505",
+  "dependencyImage": "sha256:3aed8d03f4aae368e4405e71a0e62596fd3abbf47b9e665ae3901fd0aac64306",
+  "executableSha256": "03c3d8056c123a0c3f70d67def732c056e3916e3183ba2f1154cd505b01f2bf0",
+  "packagesBuilt": [
+    "ur16e_interfaces",
+    "ur16e_mtc_gpio_stage"
+  ],
+  "networkDisabled": true,
+  "ctest": {
+    "targets": 20,
+    "passed": 19,
+    "knownBaselineFailure": "SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder",
+    "relevantContactAndNewRequestCases": 104,
+    "relevantPassed": 104
+  },
+  "planOnlyReplays": [
+    {
+      "name": "new-tile-5",
+      "passed": true,
+      "item": "tile",
+      "surface": false,
+      "selectedSpeedMps": 0.005,
+      "dimensionsM": [
+        0.2,
+        0.2,
+        0.007
+      ],
+      "estimatedMassKg": 0.672,
+      "maximumPreviewDescentSegmentSpeedMps": 0.004946685729182263,
+      "liveAndFrozenItemPoseVerified": true,
+      "invalidRequests": [
+        {
+          "kind": "speed",
+          "scene_updates": 0,
+          "reason": "Cartesian pick descent must be 0.005, 0.010 or 0.020 m/s"
+        },
+        {
+          "kind": "corners",
+          "scene_updates": 0,
+          "reason": "Capture three consecutive top corners: length edge, then width edge, matching the selected item"
+        }
+      ],
+      "elapsedSeconds": 0.8589744209311903
+    },
+    {
+      "name": "new-tile-10",
+      "passed": true,
+      "item": "tile",
+      "surface": false,
+      "selectedSpeedMps": 0.01,
+      "dimensionsM": [
+        0.2,
+        0.2,
+        0.007
+      ],
+      "estimatedMassKg": 0.672,
+      "maximumPreviewDescentSegmentSpeedMps": 0.009893371458364527,
+      "liveAndFrozenItemPoseVerified": true,
+      "invalidRequests": [
+        {
+          "kind": "speed",
+          "scene_updates": 0,
+          "reason": "Cartesian pick descent must be 0.005, 0.010 or 0.020 m/s"
+        },
+        {
+          "kind": "corners",
+          "scene_updates": 0,
+          "reason": "Capture three consecutive top corners: length edge, then width edge, matching the selected item"
+        }
+      ],
+      "elapsedSeconds": 0.7364905192516744
+    },
+    {
+      "name": "new-tile-20",
+      "passed": true,
+      "item": "tile",
+      "surface": false,
+      "selectedSpeedMps": 0.02,
+      "dimensionsM": [
+        0.2,
+        0.2,
+        0.007
+      ],
+      "estimatedMassKg": 0.672,
+      "maximumPreviewDescentSegmentSpeedMps": 0.019786742916729053,
+      "liveAndFrozenItemPoseVerified": true,
+      "invalidRequests": [
+        {
+          "kind": "speed",
+          "scene_updates": 0,
+          "reason": "Cartesian pick descent must be 0.005, 0.010 or 0.020 m/s"
+        },
+        {
+          "kind": "corners",
+          "scene_updates": 0,
+          "reason": "Capture three consecutive top corners: length edge, then width edge, matching the selected item"
+        }
+      ],
+      "elapsedSeconds": 0.7106204717420042
+    },
+    {
+      "name": "new-brick-surface-20",
+      "passed": true,
+      "item": "brick",
+      "surface": true,
+      "selectedSpeedMps": 0.02,
+      "dimensionsM": [
+        0.28,
+        0.185,
+        0.135
+      ],
+      "estimatedMassKg": 11.1888,
+      "maximumPreviewDescentSegmentSpeedMps": 0.019980020059397533,
+      "liveAndFrozenItemPoseVerified": true,
+      "invalidRequests": [
+        {
+          "kind": "speed",
+          "scene_updates": 0,
+          "reason": "Cartesian pick descent must be 0.005, 0.010 or 0.020 m/s"
+        },
+        {
+          "kind": "corners",
+          "scene_updates": 0,
+          "reason": "Capture three consecutive top corners: length edge, then width edge, matching the selected item"
+        }
+      ],
+      "elapsedSeconds": 0.7524898392148316
+    }
+  ],
+  "simulatedExecution": {
+    "passed": true,
+    "elapsedSeconds": 30.857938895002007,
+    "startupSpeedMps": 0.05,
+    "requestedSpeedMps": 0.02,
+    "repeatSpeedMps": 0.02,
+    "guardGoalMaximumSegmentSpeedsMps": [
+      0.019980019980022332,
+      0.07969916540971704,
+      0.019980019980022332,
+      0.07970229798212848
+    ],
+    "syntheticOnly": true
+  },
+  "rosCdrFixtures": "Assets/Tests/RobotFrames/Resources/PickPlaceTaskCdr.json",
+  "productionContainerStatus": "exited",
+  "deployed": false,
+  "robotMotionRequested": false,
+  "ioCommandsSentToProduction": false,
+  "evidenceDirectory": "Library/PickSurfaceValidation/evidence",
+  "backendCommit": "6853620032b4926d02d591aa48183f3574a6d1fd"
+}

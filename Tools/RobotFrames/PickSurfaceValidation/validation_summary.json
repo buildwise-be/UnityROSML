@@ -1,0 +1,68 @@
+{
+  "completedUtc": "2026-11-05T15:33:58.7294133Z",
+  "unityVersion": "6000.0.84f1",
+  "result": "Passed",
+  "passed": 280,
+  "failed": 0,
+  "testFilter": "PickSurfaceWorkflowTests;PickSurfaceGeometryTests;PickPlaceToolContactTests;MtcExecutionWorkflowTests;RepeatExecutionWorkflowTests;WorkflowMenuTests;RobotPointRegistrationWorkflowTests;TaskModeSwitchTests;ForceTorqueSubscriberTests",
+  "sources": [
+    {
+      "path": "Assets/RosMessages/Ur16eInterfaces/msg/PickPlaceTaskMsg.cs",
+      "sha256": "ecb5dcb05018154f1af18fc6d5fce10ec73b48c92f56471d4514427e571e6099"
+    },
+    {
+      "path": "Assets/Scripts/V3/Frames/PickSurfaceGeometry.cs",
+      "sha256": "651944438c37229a51dc61c529db1a8e87ff2577443dd8b66220cd0af68c69da"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/PickSurfaceCapture.cs",
+      "sha256": "fac0d247422d576d124a4268b982dbaa7ac06659d1abb438fa57ed7b14363922"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/PickPlaceController.cs",
+      "sha256": "d731fadff8181571b50d8dc24f8e617748abd79cd8f0c98ad7da3468e0c13f82"
+    },
+    {
+      "path": "Assets/Scripts/V3/RobotPointRegistration.cs",
+      "sha256": "3b4a0ca6d9723f9bee2854b3e9bc9e04b96cd3034f716bb18e437efd287c55ab"
+    },
+    {
+      "path": "Assets/Scripts/V3/URInputManager.cs",
+      "sha256": "aa202f03a8b227da5b5b9411c80974cdad436a96b09fcaf2c050c37ad3ae10b1"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/PickSurfaceGuide.cs",
+      "sha256": "89f848c01ea50f08c5493a5a4051dc1c08563268d1d7a5a153d423d490fb9167"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.PickSettings.cs",
+      "sha256": "8847340105788112a4577958cf611b0bcd5b34d561078a5f23dc46598148f2c9"
+    },
+    {
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
+      "sha256": "d81013c10a3e93408ee7b14d4c2d7805b88656bd02c49a051b4a294ce9d41745"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/PickSurfaceGeometryTests.cs",
+      "sha256": "1c51f39c89cccbd0c51410a77baa03a829439f86c5c36f4d609dfc1690831c22"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/PickSurfaceWorkflowTests.cs",
+      "sha256": "4e673f59f4069dc69463544d4adbacc8d206c001b917ede54b342bb45c03b10f"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/Resources/PickPlaceTaskCdr.json",
+      "sha256": "f50334c61fa56c319540376fe54600c491424c3f90d42efe37b87a59aaa091ca"
+    }
+  ],
+  "runtimeCompilation": "119 main and 10 helper sources, zero errors",
+  "wireVerification": "Four ROS-native CDR fixtures: all three speeds plus tilted-brick corners; exact canonical byte comparison",
+  "visualVerification": "Six rendered item/corner stages with text overflow checks; tile and brick images inspected",
+  "backendCommit": "6853620032b4926d02d591aa48183f3574a6d1fd",
+  "backendEvidence": "backend-summary.json",
+  "backendRelevantTestsPassed": 104,
+  "knownBackendBaselineFailure": "SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder",
+  "headsetDeployed": false,
+  "productionStackStarted": false,
+  "physicalMotionOrIORequested": false
+}

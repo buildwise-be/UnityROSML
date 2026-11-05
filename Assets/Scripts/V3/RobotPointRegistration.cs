@@ -13,6 +13,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
     [SerializeField] private RobotCoverLandmark[] _landmarks = RobotCoverLandmarks.CreateDefaults();
     [SerializeField, Tooltip("Physical contact tip relative to the ML2 OpenXR POINTER pose, in Unity local metres. Zero uses the pointer origin; verify/measure on the headset.")]
     private Vector3 _tipOffsetInPointer = Vector3.zero;
+    public Vector3 TipOffsetInPointer => _tipOffsetInPointer;
     [SerializeField, Min(0.001f)] private float _maximumRmsErrorMeters = 0.01f;
     [SerializeField, Min(0.001f)] private float _maximumPointErrorMeters = 0.02f;
     [SerializeField, Min(0.1f)] private float _maximumJointAgeSeconds = 1f;

@@ -37,6 +37,10 @@ scene components.
 
 See [fixture setup](FIXTURE_TILING.md) for the repetitive workflow.
 
+Simple MTC pick/place has **Pick settings** for 5/10/20 mm/s descent and Center
+or three-corner Item surface pickup. See [surface picking](PICK_SURFACE.md) for
+the item presets, floating guide, measured frame and additive ROS contract.
+
 Both task menus include force and torque magnitude gauges using the shared ROS
 connection. Execution peak markers remain until a new Plan or Execute starts;
 waiting/disconnected and stale states hide the live readings and retain peaks. See
