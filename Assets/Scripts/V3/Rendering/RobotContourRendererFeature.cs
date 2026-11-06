@@ -30,7 +30,7 @@ public sealed class RobotContourRendererFeature : ScriptableRendererFeature, IRo
     {
         bool available = IsContourRenderingAvailable;
         RobotContourDisplay.SetRenderingAvailable(this, available);
-        if (!RobotContourDisplay.Enabled || renderingData.cameraData.renderType != CameraRenderType.Base) return;
+        if (!RobotContourDisplay.HasContourSources || renderingData.cameraData.renderType != CameraRenderType.Base) return;
         CameraType type = renderingData.cameraData.camera.cameraType;
         if (type != CameraType.Game && type != CameraType.SceneView) return;
         if (!available) return;
@@ -120,7 +120,7 @@ public sealed class RobotContourRendererFeature : ScriptableRendererFeature, IRo
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-            if (!RobotContourDisplay.Enabled || _normalDepth == null || !Prepare()) return;
+            if (!RobotContourDisplay.HasContourSources || _normalDepth == null || !Prepare()) return;
             CameraData cameraData = renderingData.cameraData;
             float range = Mathf.Clamp(cameraData.camera.farClipPlane, 1f, 100f);
             _depthMaterial.SetFloat(DepthRangeId, range);
@@ -165,7 +165,7 @@ public sealed class RobotContourRendererFeature : ScriptableRendererFeature, IRo
 
         public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
         {
-            if (!RobotContourDisplay.Enabled || !Prepare()) return;
+            if (!RobotContourDisplay.HasContourSources || !Prepare()) return;
             UniversalCameraData cameraData = frameData.Get<UniversalCameraData>();
             UniversalResourceData resources = frameData.Get<UniversalResourceData>();
             RenderTextureDescriptor color = ColorDescriptor(cameraData.cameraTargetDescriptor);

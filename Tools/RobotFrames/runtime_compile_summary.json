@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
-  "completedUtc": "2026-11-04T08:48:41.7734205Z",
+  "completedUtc": "2026-11-06T09:59:28.0375618Z",
   "unityVersion": "6000.0.84f1",
   "command": "powershell -NoProfile -File Tools/RobotFrames/compile_runtime.ps1",
   "compiler": "C:\\Program Files\\Unity 6000.0.84f1\\Editor\\Data\\DotNetSdkRoslyn\\csc.dll",
   "compilerInvocation": "dotnet exec csc.dll /noconfig /nostdlib @response.rsp",
   "settingsResponseFile": "Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.rsp",
   "responseSha256": "9c2e3b9483a0b732212ed8c3291306800e2fdae77069e602ad1c1d19ce9b6cb3",
-  "helperSourceCount": 9,
-  "mainSourceCount": 115,
+  "helperSourceCount": 10,
+  "mainSourceCount": 119,
   "exitCode": 0,
   "errorCount": 0,
   "warnings": [
-    "Assets\\Samples\\Magic Leap SDK\\2.6.0\\ML Rig & OpenXR Input\\MagicLeapController.cs(45,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'",
     "Assets\\Scripts\\PickAndPlaceScriptableObject.cs(29,26): warning CS0618: 'CoordinatesConverter' is obsolete: 'Use RobotCoordinateService instead'",
+    "Assets\\Samples\\Magic Leap SDK\\2.6.0\\ML Rig & OpenXR Input\\MagicLeapController.cs(45,27): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'",
     "Assets\\Scripts\\UR16eServiceCaller.cs(55,18): warning CS0414: The field 'Ur16EServiceCaller.debugEnabled' is assigned but its value is never used"
   ],
   "ros2": true,
@@ -109,6 +109,10 @@
     {
       "sha256": "0ceaef005b1d7027733289e8862c7bcd924d54031913ea203ada5471ad19b105",
       "path": "Assets/RosMessages/Ur16eInterfaces/msg/PickPlacePosesMsg.cs"
+    },
+    {
+      "sha256": "ecb5dcb05018154f1af18fc6d5fce10ec73b48c92f56471d4514427e571e6099",
+      "path": "Assets/RosMessages/Ur16eInterfaces/msg/PickPlaceTaskMsg.cs"
     },
     {
       "sha256": "7497e26efa719b089b927d35d1c5c802a9d596a5d486530a04eab0d9ebea7eff",
@@ -283,6 +287,10 @@
       "path": "Assets/Scripts/V2/RobotCoordinatesConverter.cs"
     },
     {
+      "sha256": "651944438c37229a51dc61c529db1a8e87ff2577443dd8b66220cd0af68c69da",
+      "path": "Assets/Scripts/V3/Frames/PickSurfaceGeometry.cs"
+    },
+    {
       "sha256": "09a84795fb0983bb1cf4239fb1a345e983b1941bb1d5b7fe4201975f0ac3ee36",
       "path": "Assets/Scripts/V3/Frames/RobotCalibrationStore.cs"
     },
@@ -351,11 +359,11 @@
       "path": "Assets/Scripts/V3/RemoteExecution/RemotePoseMessages.cs"
     },
     {
-      "sha256": "c22a56927ed177c57a78ef3ceeb0561a15863bbc9167cd7c9a8e595e8c3496bc",
+      "sha256": "e36656a825165c39a31920513fea5fddf99f315b697a21e7c770b2a979609cbe",
       "path": "Assets/Scripts/V3/Rendering/RobotContourDisplay.cs"
     },
     {
-      "sha256": "5e376cce18a2af738329e977befbd3e0ce46312f9d20fa8bcb8bb19bab59de66",
+      "sha256": "ff3c406ff81c4d1c406c869a0da2fd323d85ccfb485389c81e4fd8520a6d3dd1",
       "path": "Assets/Scripts/V3/Rendering/RobotContourRendererFeature.cs"
     },
     {
@@ -363,7 +371,7 @@
       "path": "Assets/Scripts/V3/RobotAppNavigation.cs"
     },
     {
-      "sha256": "1ae1b674d09c4e34129f5a256cdc9886329df5faea2fb5ac74d5493a3f18f0d8",
+      "sha256": "3b4a0ca6d9723f9bee2854b3e9bc9e04b96cd3034f716bb18e437efd287c55ab",
       "path": "Assets/Scripts/V3/RobotPointRegistration.cs"
     },
     {
@@ -399,8 +407,12 @@
       "path": "Assets/Scripts/V3/ROS/MTCPlansManager.cs"
     },
     {
-      "sha256": "eeb2f6f2f397bde65eb4a892820231219a708070d91467d4b44981653456b82f",
+      "sha256": "057eca62b65ed32fd1fbfe723e0304bb1d469e621ca9f3e5ea535b0be481b55c",
       "path": "Assets/Scripts/V3/ROS/PickPlaceController.cs"
+    },
+    {
+      "sha256": "cb83b5a5c03a38b002f18da373f8440bf1e117be11528d32f495d47add89187f",
+      "path": "Assets/Scripts/V3/ROS/PickSurfaceCapture.cs"
     },
     {
       "sha256": "70b762078de80613b5902e792e5d3a230c2f4d8cce1a9788c797522f1c4714e0",
@@ -471,6 +483,10 @@
       "path": "Assets/Scripts/V3/UI/MTCPlanUIManager.cs"
     },
     {
+      "sha256": "89f848c01ea50f08c5493a5a4051dc1c08563268d1d7a5a153d423d490fb9167",
+      "path": "Assets/Scripts/V3/UI/PickSurfaceGuide.cs"
+    },
+    {
       "sha256": "bac99b3e72a82097929733fa0afeebb8e69168a62813a5c71f4d3dc04c0895b5",
       "path": "Assets/Scripts/V3/UI/RobotRegistrationGuide.cs"
     },
@@ -479,7 +495,7 @@
       "path": "Assets/Scripts/V3/UI/RobotWelcomeMenu.cs"
     },
     {
-      "sha256": "e1c4274d56a295db5832c69743a65fb7d9131b55ae87c1b18aff7eec7bb16bf5",
+      "sha256": "d81013c10a3e93408ee7b14d4c2d7805b88656bd02c49a051b4a294ce9d41745",
       "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs"
     },
     {
@@ -495,11 +511,15 @@
       "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.Navigation.cs"
     },
     {
+      "sha256": "8847340105788112a4577958cf611b0bcd5b34d561078a5f23dc46598148f2c9",
+      "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.PickSettings.cs"
+    },
+    {
       "sha256": "3fbf22c720736d91bdf75bd740f622a079ca7d67ff57625ba0eca505241b8362",
       "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.PointRegistration.cs"
     },
     {
-      "sha256": "5d1d8241f256a79a5e905b9001e641ecbfa134d3c412389f1b8bf2c229aa53da",
+      "sha256": "aa202f03a8b227da5b5b9411c80974cdad436a96b09fcaf2c050c37ad3ae10b1",
       "path": "Assets/Scripts/V3/URInputManager.cs"
     },
     {

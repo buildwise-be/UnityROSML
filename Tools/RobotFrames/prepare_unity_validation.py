@@ -89,6 +89,7 @@ def main():
             stale.unlink()
     for runtime in ("Assets/Scripts/V3/ROS/RosRobotRig.cs", "Assets/Scripts/V3/ROS/RobotExecutionState.cs", "Assets/Scripts/V3/ROS/RobotDescriptionMessages.cs",
                     "Assets/Scripts/V3/ROS/ForceTorqueSubscriber.cs",
+                    "Assets/Scripts/V3/ROS/PickSurfaceCapture.cs", "Assets/Scripts/V3/UI/PickSurfaceGuide.cs",
                     "Assets/Scripts/V3/ROS/ToolSelectionController.cs", "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
                     "Assets/Scripts/V3/UI/RobotRegistrationGuide.cs",
                     "Assets/Scripts/V3/ROS/TcpPlanningController.cs", "Assets/Scripts/V3/TcpTargetPreview.cs",

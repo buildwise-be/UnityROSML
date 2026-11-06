@@ -11,8 +11,9 @@ using UnityEngine;
 public class PickPlaceController : MonoBehaviour
 {
     public const string ContactPlanTopic = "/pick_place_tcp_target";
+    public const string TaskPlanTopic = "/pick_place_task_target";
     private const string CapabilityService = "/mtc_test_task_node/get_parameters";
-    private const string CapabilityParameter = "pick_place_tcp_planning_enabled";
+    private const string CapabilityParameter = "pick_place_task_planning_enabled";
     // Retain old scene fields during migration; tool poses never use the old surface API or planes.
     [SerializeField, HideInInspector] private string _pickPlaceTopicName = ContactPlanTopic;
     [SerializeField, HideInInspector] private GameObject _pickPointPrefab;
@@ -29,10 +30,24 @@ public class PickPlaceController : MonoBehaviour
     private int _generation, _requestCalibrationRevision;
     private float _capabilityDeadline;
     private PickPlacePosesMsg _requestedContactPoses;
+    private PickPlaceTaskMsg _requestedTask;
+    [SerializeField] private int _descentSpeedMmPerSecond = 5;
+    [SerializeField] private bool _pickBySurface;
+    [SerializeField] private PickItem _selectedItem = PickItem.Tile;
+    private PickSurfaceCapture _surfaceCapture;
+    private bool _applyingSurface;
     private RobotCoordinateService _coordinates;
     private ROSConnection _connection;
     public bool IsTilePlanningEnabled => _tilePlanningEnabled;
     public bool IsPlanning => _checkingCapability || (PlansManager != null && PlansManager.IsPlanning);
+    public int DescentSpeedMmPerSecond => _descentSpeedMmPerSecond;
+    public bool PickBySurface => _pickBySurface;
+    public PickItem SelectedItem => _selectedItem;
+    public PickSurfaceCapture SurfaceCapture => _surfaceCapture != null ? _surfaceCapture : GetComponent<PickSurfaceCapture>();
+    public bool HasValidSurface => SurfaceCapture != null && SurfaceCapture.HasSurface &&
+        SurfaceCapture.SurfaceItem == _selectedItem && !SurfaceCapture.IsCapturing &&
+        SurfaceCapture.TryGetWorldTopSurfacePose(out _);
+    public event Action SettingsChanged;
     private MTCPlansManager PlansManager
     {
         get { if (_plansManager == null) _plansManager = FindFirstObjectByType<MTCPlansManager>(); return _plansManager; }
@@ -43,8 +58,8 @@ public class PickPlaceController : MonoBehaviour
         _coordinates = RobotCoordinateService.Instance;
         _coordinates.CalibrationChanged += InvalidatePlanningRequest;
         _connection = ROSService.Instance.GetROSConnection();
-        _pickPlaceTopicName = ContactPlanTopic;
-        _connection.RegisterPublisher<PickPlacePosesMsg>(_pickPlaceTopicName);
+        _pickPlaceTopicName = TaskPlanTopic;
+        _connection.RegisterPublisher<PickPlaceTaskMsg>(_pickPlaceTopicName);
         _connection.RegisterPublisher<BoolMsg>("execute_task");
         _connection.RegisterPublisher<StringMsg>("/repeat_reviewed_plan");
         _connection.RegisterRosService<GetParametersRequest, GetParametersResponse>(CapabilityService);
@@ -66,6 +81,84 @@ public class PickPlaceController : MonoBehaviour
         unchecked { _generation++; }
         _checkingCapability = false;
         _requestedContactPoses = null;
+        _requestedTask = null;
+    }
+
+    public bool SetDescentSpeedMmPerSecond(int speed)
+    {
+        if ((speed != 5 && speed != 10 && speed != 20) || RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return false;
+        if (_descentSpeedMmPerSecond == speed) return true;
+        _descentSpeedMmPerSecond = speed;
+        InvalidatePlanningRequest();
+        SettingsChanged?.Invoke();
+        return true;
+    }
+
+    public bool SetPickBySurface(bool surface)
+    {
+        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return false;
+        if (_pickBySurface == surface) return true;
+        SurfaceCapture?.Cancel();
+        _pickBySurface = surface;
+        RefreshSurfacePresentation();
+        if (!surface && _pickPointInstance != null)
+            SetContactPose(true, new Pose(_pickPointInstance.transform.position, _pickPointInstance.transform.rotation));
+        else if (surface && HasValidSurface) OnSurfaceCaptured();
+        InvalidatePlanningRequest();
+        SettingsChanged?.Invoke();
+        return true;
+    }
+
+    public bool SetSelectedItem(PickItem item)
+    {
+        if ((item != PickItem.Tile && item != PickItem.Brick) || RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return false;
+        if (_selectedItem == item) return true;
+        SurfaceCapture?.Cancel();
+        _selectedItem = item;
+        RefreshSurfacePresentation();
+        InvalidatePlanningRequest();
+        SettingsChanged?.Invoke();
+        return true;
+    }
+
+    public PickSurfaceCapture GetOrCreateSurfaceCapture()
+    {
+        PickSurfaceCapture capture = SurfaceCapture;
+        if (capture == null) capture = gameObject.AddComponent<PickSurfaceCapture>();
+        if (_surfaceCapture != capture)
+        {
+            if (_surfaceCapture != null) { _surfaceCapture.SurfaceCaptured -= OnSurfaceCaptured; _surfaceCapture.Changed -= OnSurfaceChanged; }
+            _surfaceCapture = capture;
+            _surfaceCapture.SurfaceCaptured += OnSurfaceCaptured;
+            _surfaceCapture.Changed += OnSurfaceChanged;
+        }
+        RobotPointRegistration registration = FindFirstObjectByType<RobotPointRegistration>();
+        if (registration != null) capture.SetTipOffset(registration.TipOffsetInPointer);
+        RefreshSurfacePresentation();
+        return capture;
+    }
+
+    private void RefreshSurfacePresentation()
+    {
+        PickSurfaceCapture capture = SurfaceCapture;
+        if (capture != null) capture.SetItemPresentationEnabled(isActiveAndEnabled && _tilePlanningEnabled &&
+            _pickBySurface && _selectedItem == capture.SurfaceItem);
+    }
+
+    private void OnSurfaceChanged()
+    {
+        RefreshSurfacePresentation();
+        InvalidatePlanningRequest();
+        SettingsChanged?.Invoke();
+    }
+
+    private void OnSurfaceCaptured()
+    {
+        if (!_pickBySurface || !HasValidSurface || !_surfaceCapture.TryGetWorldPickTcpPose(out Pose pick)) return;
+        _applyingSurface = true;
+        try { SetPickPlace(pick.position, pick.rotation); }
+        finally { _applyingSurface = false; }
+        SettingsChanged?.Invoke();
     }
 
     public void InvalidatePlanningRequest()
@@ -78,8 +171,10 @@ public class PickPlaceController : MonoBehaviour
 
     public void SetTilePlanningEnabled(bool enabled)
     {
+        if (!enabled) SurfaceCapture?.Cancel();
         bool changed = _tilePlanningEnabled != enabled;
         _tilePlanningEnabled = enabled;
+        RefreshSurfacePresentation();
         if (changed) { CancelCapabilityRequest(); _hasPlanningRequestBeenSent = false; SetTrackingLost(); }
         if (PlansManager != null) PlansManager.SetTilePlanningEnabled(enabled);
         if (_pickPointInstance != null) _pickPointInstance.SetActive(enabled);
@@ -90,6 +185,7 @@ public class PickPlaceController : MonoBehaviour
     private void UpdatePlanningReadiness()
     {
         RobotStateService.Instance.IsReadyForPlanning = _tilePlanningEnabled &&
+            (!_pickBySurface || HasValidSurface) &&
             ToolSelectionController.CanPlanPickPlace && RobotCoordinateService.Instance.IsInitialized &&
             _pickPointInstance != null && _placePointInstance != null;
         if (_remoteExecutionController != null)
@@ -114,7 +210,11 @@ public class PickPlaceController : MonoBehaviour
 
     public void SetTrackingLost() { if (_livePointInstance != null) _livePointInstance.SetActive(false); }
     // Inputs are canonical TCP contact poses. Pointer conversion belongs to URInputManager.
-    public void SetPickPlace(Vector3 position, Quaternion rotation) => SetContactPose(true, new Pose(position, rotation));
+    public void SetPickPlace(Vector3 position, Quaternion rotation)
+    {
+        if (_pickBySurface && !_applyingSurface) return;
+        SetContactPose(true, new Pose(position, rotation));
+    }
     public void SetPlacePlace(Vector3 position, Quaternion rotation) => SetContactPose(false, new Pose(position, rotation));
 
     private void SetContactPose(bool pick, Pose pose)
@@ -129,6 +229,21 @@ public class PickPlaceController : MonoBehaviour
         }
         // Reapply visuals on recapture as well, including after an interrupted first capture.
         NormalTargetMarker marker = NormalTargetMarker.Attach(point.transform, tint);
+        if (pick && _pickBySurface)
+        {
+            // A measured surface owns the pick centre and orientation. Its marker is read-only.
+            marker.SetBallVisible(true);
+            if (_pickRotationHandles != null) { _pickRotationHandles.enabled = false; Unbind(_pickRotationHandles); Dispose(_pickRotationHandles); _pickRotationHandles = null; }
+            TargetPoseContextMenu oldContext = point.GetComponent<TargetPoseContextMenu>();
+            if (oldContext != null) { oldContext.enabled = false; Dispose(oldContext); }
+            Transform surfaceTracking = null;
+            if (XRTrackingSpaceResolver.TryResolve(ref surfaceTracking)) point.transform.SetParent(surfaceTracking, true);
+            point.transform.SetPositionAndRotation(pose.position, pose.rotation);
+            TargetNameLabel.Attach(point.transform, "Pick", tint);
+            point.SetActive(_tilePlanningEnabled);
+            InvalidatePlanningRequest();
+            return;
+        }
         // The rotation handle supplies the visible, highlightable ball and its collider.
         marker.SetBallVisible(false);
         TargetRotationHandles handles = pick ? _pickRotationHandles : _placeRotationHandles;
@@ -186,6 +301,38 @@ public class PickPlaceController : MonoBehaviour
         return true;
     }
 
+    public bool TryGetTaskRequest(out PickPlaceTaskMsg task, out string reason)
+    {
+        task = null;
+        reason = null;
+        if (_descentSpeedMmPerSecond != 5 && _descentSpeedMmPerSecond != 10 && _descentSpeedMmPerSecond != 20)
+        { reason = "Choose a Cartesian descent speed of 5, 10 or 20 mm/s."; return false; }
+        if (_selectedItem != PickItem.Tile && _selectedItem != PickItem.Brick)
+        { reason = "Choose the tile or brick item."; return false; }
+        if (_pickBySurface && !HasValidSurface)
+        { reason = "Capture all three top-surface corners of the selected item first."; return false; }
+        if (!TryGetContactPoses(out PickPlacePosesMsg contacts))
+        { reason = "Capture both pick and place contacts with a valid robot placement."; return false; }
+        task = new PickPlaceTaskMsg {
+            contacts = contacts,
+            cartesian_descent_speed_mps = _descentSpeedMmPerSecond / 1000d,
+            item_type = _selectedItem == PickItem.Tile ? "tile" : "brick",
+            pick_from_surface = _pickBySurface
+        };
+        if (_pickBySurface)
+        {
+            Vector3[] corners = SurfaceCapture.GetWorldCorners();
+            if (corners == null || corners.Length != 3) { task = null; reason = "Surface corners are unavailable."; return false; }
+            for (int i = 0; i < 3; i++)
+            {
+                if (!RobotCoordinateService.Instance.TryConvertWorldPoseToLocalPose(new Pose(corners[i], Quaternion.identity), out Pose local))
+                { task = null; reason = "Surface corners cannot be converted to the robot frame."; return false; }
+                task.top_corners[i] = local.position.To<FLU>();
+            }
+        }
+        return true;
+    }
+
     public void SendPickAndPlacePlanningRequest()
     {
         if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
@@ -193,20 +340,21 @@ public class PickPlaceController : MonoBehaviour
         RobotExecutionState.NotifyPlanningStarted();
         if (!ValidatePlanningRequest()) return;
         InvalidatePlanningRequest();
-        if (!TryGetContactPoses(out PickPlacePosesMsg message))
-        { RejectPlanningRequest("Cannot plan MTC pick/place without valid tool targets and robot alignment."); return; }
+        if (!TryGetTaskRequest(out PickPlaceTaskMsg task, out string requestReason))
+        { RejectPlanningRequest(requestReason); return; }
         try
         {
             if (_connection == null) _connection = ROSService.Instance.GetROSConnection();
             if (_connection == null || !_connection.HasConnectionThread || _connection.HasConnectionError)
             { RejectPlanningRequest("ROS is disconnected. Reconnect before planning MTC pick/place."); return; }
-            _requestedContactPoses = message;
+            _requestedContactPoses = task.contacts;
+            _requestedTask = task;
             _requestCalibrationRevision = RobotCoordinateService.Instance.CalibrationRevision;
             _checkingCapability = true;
             _capabilityDeadline = Time.realtimeSinceStartup + _capabilityTimeout;
             int generation = _generation;
             // Show progress without arming callbacks for a planning request that has not been sent.
-            PlansManager.RejectPlanningRequest("Checking ROS pick/place tool-pose support...");
+            PlansManager.RejectPlanningRequest("Checking ROS item/speed pick support...");
             _connection.SendServiceMessage<GetParametersResponse>(CapabilityService,
                 new GetParametersRequest(new[] { CapabilityParameter }), response => OnCapabilityResponse(response, generation));
         }
@@ -220,13 +368,13 @@ public class PickPlaceController : MonoBehaviour
         if (!CanKeepCapabilityRequest())
         { RejectPlanningRequest("Tool targets, mode, model or alignment changed. Plan pick/place again."); return; }
         if (response?.values == null || response.values.Length != 1 || response.values[0].type != 1 || !response.values[0].bool_value)
-        { RejectPlanningRequest("ROS needs the pick/place tool-pose update. Update the MTC backend; surface-pose fallback is disabled."); return; }
-        PickPlacePosesMsg message = _requestedContactPoses;
+        { RejectPlanningRequest("ROS needs the item/speed pick update before using these settings. Update the MTC backend."); return; }
+        PickPlaceTaskMsg message = _requestedTask;
         _checkingCapability = false;
         try
         {
             if (PlansManager == null || !PlansManager.BeginPlanningRequest()) return;
-            _connection.Publish(ContactPlanTopic, message);
+            _connection.Publish(TaskPlanTopic, message);
             _hasPlanningRequestBeenSent = true;
         }
         catch (Exception)
@@ -242,8 +390,18 @@ public class PickPlaceController : MonoBehaviour
     private bool TargetsMatchRequest()
     {
         PickPlacePosesMsg requested = _requestedContactPoses;
-        return requested != null && TryGetContactPoses(out PickPlacePosesMsg current) && _requestedContactPoses == requested &&
-            SamePose(requested.pick_pose, current.pick_pose) && SamePose(requested.place_pose, current.place_pose);
+        if (requested == null || !TryGetContactPoses(out PickPlacePosesMsg current) || _requestedContactPoses != requested ||
+            !SamePose(requested.pick_pose, current.pick_pose) || !SamePose(requested.place_pose, current.place_pose)) return false;
+        // Legacy offline review fixtures have no additive request snapshot.
+        if (_requestedTask == null) return true;
+        if (!TryGetTaskRequest(out PickPlaceTaskMsg task, out _) ||
+            task.cartesian_descent_speed_mps != _requestedTask.cartesian_descent_speed_mps ||
+            task.item_type != _requestedTask.item_type || task.pick_from_surface != _requestedTask.pick_from_surface) return false;
+        for (int i = 0; i < 3; i++)
+            if (Math.Abs(task.top_corners[i].x - _requestedTask.top_corners[i].x) >= 0.00001 ||
+                Math.Abs(task.top_corners[i].y - _requestedTask.top_corners[i].y) >= 0.00001 ||
+                Math.Abs(task.top_corners[i].z - _requestedTask.top_corners[i].z) >= 0.00001) return false;
+        return true;
     }
     private static bool SamePose(PoseStampedMsg a, PoseStampedMsg b)
     {
@@ -351,10 +509,12 @@ public class PickPlaceController : MonoBehaviour
         reason = null;
         return true;
     }
-    private void OnDisable() { CancelCapabilityRequest(); _hasPlanningRequestBeenSent = false; SetTrackingLost(); }
+    private void OnEnable() => RefreshSurfacePresentation();
+    private void OnDisable() { SurfaceCapture?.Cancel(); SurfaceCapture?.SetItemPresentationEnabled(false); CancelCapabilityRequest(); _hasPlanningRequestBeenSent = false; SetTrackingLost(); }
     private void OnDestroy()
     {
         if (_coordinates != null) _coordinates.CalibrationChanged -= InvalidatePlanningRequest;
+        if (_surfaceCapture != null) { _surfaceCapture.SurfaceCaptured -= OnSurfaceCaptured; _surfaceCapture.Changed -= OnSurfaceChanged; }
         Unbind(_pickRotationHandles); Unbind(_placeRotationHandles);
         Dispose(_livePointInstance); Dispose(_pickPointInstance); Dispose(_placePointInstance);
         Dispose(_pickHandleMaterial); Dispose(_placeHandleMaterial);

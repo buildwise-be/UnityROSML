@@ -1,0 +1,80 @@
+{
+  "completedUtc": "2026-11-06T10:10:16.044904+00:00",
+  "unity": {
+    "total": "751",
+    "passed": "749",
+    "failed": "2",
+    "skipped": "0"
+  },
+  "unchangedBaseline": {
+    "total": "737",
+    "passed": "735",
+    "failed": "2",
+    "skipped": "0"
+  },
+  "knownBaselineFailures": [
+    "ToolCalibrationMenuTests.AlignmentActionsFitTheExistingPanelAndOnlyTaskViewStartsVisible",
+    "WorkflowServiceLifecycleTests.ServiceReusesTheConnectorPreservesHudEditsAndRecoversAReplacement"
+  ],
+  "baselineCommit": "d0f70822cc05b079c9d6393df9d7540ba6a76f5a",
+  "baselineXmlSha256": "f57e76ced3b4bf0d90256232e074500d8a354f942a3d4c94292f86a0e880b56f",
+  "sourcesMatchTestedCopies": true,
+  "sources": [
+    {
+      "path": "Assets/Scripts/V3/ROS/PickPlaceController.cs",
+      "sha256": "057eca62b65ed32fd1fbfe723e0304bb1d469e621ca9f3e5ea535b0be481b55c"
+    },
+    {
+      "path": "Assets/Scripts/V3/ROS/PickSurfaceCapture.cs",
+      "sha256": "cb83b5a5c03a38b002f18da373f8440bf1e117be11528d32f495d47add89187f"
+    },
+    {
+      "path": "Assets/Scripts/V3/Rendering/RobotContourDisplay.cs",
+      "sha256": "e36656a825165c39a31920513fea5fddf99f315b697a21e7c770b2a979609cbe"
+    },
+    {
+      "path": "Assets/Scripts/V3/Rendering/RobotContourRendererFeature.cs",
+      "sha256": "ff3c406ff81c4d1c406c869a0da2fd323d85ccfb485389c81e4fd8520a6d3dd1"
+    },
+    {
+      "path": "Assets/Resources/RobotContours/RobotContourComposite.shader",
+      "sha256": "e26639d391c42648574d13606fc6122bcf2d91aca1f06c1574ae39bf9b51b87b"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/PickSurfaceWorkflowTests.cs",
+      "sha256": "b8717ca6f04f000fcd0399f05a6548e400ed16792c6643493cb2bc7cb7267b63"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotContourDisplayTests.cs",
+      "sha256": "466344980a319814361665c537aa821b64b1ae24e0a5e34df94eb69cdb429145"
+    },
+    {
+      "path": "Assets/Tests/RobotFrames/RobotContourRenderingTests.cs",
+      "sha256": "cd26d35d75bbb2a3908516c2b1c3e34b64872409eab8b784bc8aa69c76e24670"
+    }
+  ],
+  "runtimeCompilation": {
+    "mainSources": 119,
+    "helperSources": 10,
+    "errors": 0
+  },
+  "redEvidence": {
+    "initialItemCases": 8,
+    "grazingGraphicsCases": 4,
+    "backend": "Exact original rejection reproduced by helper and actual-node replay"
+  },
+  "targetedUnityCasesPassed": 305,
+  "graphicsCasesPassed": 62,
+  "previews": [
+    "tile-outline.png",
+    "tile-outline-moved-camera.png",
+    "brick-outline.png",
+    "brick-outline-moved-camera.png"
+  ],
+  "backendEvidence": "backend-summary.json",
+  "backendRelevantCasesPassed": 105,
+  "backendSyntheticReplaysPassed": 9,
+  "headsetDeployed": false,
+  "productionStackChanged": false,
+  "physicalMotionOrIORequested": false
+}

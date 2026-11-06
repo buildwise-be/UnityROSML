@@ -1,0 +1,279 @@
+{
+  "completedUtc": "2026-11-06T10:04:47.070984+00:00",
+  "environment": "Existing standard-user local WSL Docker; no network; source mounted read-only",
+  "image": "sha256:752aa09527488fce5baaa35ebbff1aad52c6e82e72a302db4f14ded79f2f615b",
+  "executableSha256": "0dec70be57f7cbcbf420e7e507a777ba15b3bf0167c948e2561794f962c86b87",
+  "baselineExecutableSha256": "e05886d9bf6432c4551eda016cccdcb1395a58fe416b2ca0f71393ffd4f93e46",
+  "redEvidence": [
+    "red.log",
+    "red-fixed-replay.json"
+  ],
+  "ctest": {
+    "targets": 20,
+    "passed": 19,
+    "knownBaselineFailure": "SceneEffectsTest.SerializedPickPlaceEffectsUpdateTheLiveSceneInOrder"
+  },
+  "relevantTests": {
+    "test_contact_force_monitor": {
+      "tests": 16,
+      "failures": 0,
+      "errors": 0
+    },
+    "test_contact_pick_plan": {
+      "tests": 11,
+      "failures": 0,
+      "errors": 0
+    },
+    "test_contact_pick_scene": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0
+    },
+    "test_guarded_contact_controller": {
+      "tests": 22,
+      "failures": 0,
+      "errors": 0
+    },
+    "test_contact_pick_startup": {
+      "tests": 11,
+      "failures": 0,
+      "errors": 0
+    },
+    "test_plan_validation": {
+      "tests": 21,
+      "failures": 0,
+      "errors": 0
+    },
+    "test_pick_place_task": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0
+    }
+  },
+  "relevantCases": 105,
+  "replays": {
+    "fixed-.005-plan.json": {
+      "passed": true,
+      "elapsed_seconds": 0.6543879179999976,
+      "selected_speed": 0.005,
+      "maximum_preview_descent_segment_speed": 0.004995004997334232,
+      "invalid_requests": [
+        {
+          "kind": "speed",
+          "scene_updates": 0,
+          "reason": "Cartesian pick descent must be 0.005, 0.010 or 0.020 m/s"
+        },
+        {
+          "kind": "corners",
+          "scene_updates": 0,
+          "reason": "Capture three consecutive top corners: length edge, then width edge, matching the selected item"
+        }
+      ]
+    },
+    "fixed-.005-execution.json": {
+      "passed": true,
+      "elapsed_seconds": 11.155412383999987,
+      "maximum_preview_descent_segment_speed": 0.004995004997334234,
+      "fixed_descent_goals": [
+        {
+          "maximum_tcp_segment_speed": 0.004995004997334234,
+          "duration": 39.557583087,
+          "start_tcp": [
+            -0.35,
+            -0.25,
+            0.5500000014901161
+          ],
+          "end_tcp": [
+            -0.35,
+            -0.25,
+            0.44999999999999996
+          ]
+        },
+        {
+          "maximum_tcp_segment_speed": 0.004995004997334234,
+          "duration": 39.557583087,
+          "start_tcp": [
+            -0.35,
+            -0.25,
+            0.5500000014901161
+          ],
+          "end_tcp": [
+            -0.35,
+            -0.25,
+            0.44999999999999996
+          ]
+        }
+      ],
+      "selected_speed_execution_verified": 0.005,
+      "selected_speed_repeat_verified": 0.005
+    },
+    "fixed-.010-plan.json": {
+      "passed": true,
+      "elapsed_seconds": 0.40491552899999306,
+      "selected_speed": 0.01,
+      "maximum_preview_descent_segment_speed": 0.009990009983374378,
+      "invalid_requests": [
+        {
+          "kind": "speed",
+          "scene_updates": 0,
+          "reason": "Cartesian pick descent must be 0.005, 0.010 or 0.020 m/s"
+        },
+        {
+          "kind": "corners",
+          "scene_updates": 0,
+          "reason": "Capture three consecutive top corners: length edge, then width edge, matching the selected item"
+        }
+      ]
+    },
+    "fixed-.010-execution.json": {
+      "passed": true,
+      "elapsed_seconds": 11.363393723000058,
+      "maximum_preview_descent_segment_speed": 0.00999000998337438,
+      "fixed_descent_goals": [
+        {
+          "maximum_tcp_segment_speed": 0.00999000998337438,
+          "duration": 19.778791543,
+          "start_tcp": [
+            -0.35,
+            -0.25,
+            0.5500000014901161
+          ],
+          "end_tcp": [
+            -0.35,
+            -0.25,
+            0.44999999999999996
+          ]
+        },
+        {
+          "maximum_tcp_segment_speed": 0.00999000998337438,
+          "duration": 19.778791543,
+          "start_tcp": [
+            -0.35,
+            -0.25,
+            0.5500000014901161
+          ],
+          "end_tcp": [
+            -0.35,
+            -0.25,
+            0.44999999999999996
+          ]
+        }
+      ],
+      "selected_speed_execution_verified": 0.01,
+      "selected_speed_repeat_verified": 0.01
+    },
+    "fixed-.020-plan.json": {
+      "passed": true,
+      "elapsed_seconds": 0.4350328130000207,
+      "selected_speed": 0.02,
+      "maximum_preview_descent_segment_speed": 0.019980019921572403,
+      "invalid_requests": [
+        {
+          "kind": "speed",
+          "scene_updates": 0,
+          "reason": "Cartesian pick descent must be 0.005, 0.010 or 0.020 m/s"
+        },
+        {
+          "kind": "corners",
+          "scene_updates": 0,
+          "reason": "Capture three consecutive top corners: length edge, then width edge, matching the selected item"
+        }
+      ]
+    },
+    "fixed-.020-execution.json": {
+      "passed": true,
+      "elapsed_seconds": 10.947354808,
+      "maximum_preview_descent_segment_speed": 0.019980019921572403,
+      "fixed_descent_goals": [
+        {
+          "maximum_tcp_segment_speed": 0.019980019921572403,
+          "duration": 9.889395771,
+          "start_tcp": [
+            -0.35,
+            -0.25,
+            0.5500000014901161
+          ],
+          "end_tcp": [
+            -0.35,
+            -0.25,
+            0.44999999999999996
+          ]
+        },
+        {
+          "maximum_tcp_segment_speed": 0.019980019921572403,
+          "duration": 9.889395771,
+          "start_tcp": [
+            -0.35,
+            -0.25,
+            0.5500000014901161
+          ],
+          "end_tcp": [
+            -0.35,
+            -0.25,
+            0.44999999999999996
+          ]
+        }
+      ],
+      "selected_speed_execution_verified": 0.02,
+      "selected_speed_repeat_verified": 0.02
+    },
+    "fixed-brick-surface-plan.json": {
+      "passed": true,
+      "elapsed_seconds": 0.3978720690000159,
+      "selected_speed": 0.02,
+      "maximum_preview_descent_segment_speed": 0.019757247132223283,
+      "invalid_requests": [
+        {
+          "kind": "speed",
+          "scene_updates": 0,
+          "reason": "Cartesian pick descent must be 0.005, 0.010 or 0.020 m/s"
+        },
+        {
+          "kind": "corners",
+          "scene_updates": 0,
+          "reason": "Capture three consecutive top corners: length edge, then width edge, matching the selected item"
+        }
+      ]
+    },
+    "guarded-plan.json": {
+      "passed": true,
+      "elapsed_seconds": 0.45394531199997346,
+      "selected_speed": 0.02,
+      "maximum_preview_descent_segment_speed": 0.019786742916729053,
+      "invalid_requests": [
+        {
+          "kind": "speed",
+          "scene_updates": 0,
+          "reason": "Cartesian pick descent must be 0.005, 0.010 or 0.020 m/s"
+        },
+        {
+          "kind": "corners",
+          "scene_updates": 0,
+          "reason": "Capture three consecutive top corners: length edge, then width edge, matching the selected item"
+        }
+      ]
+    },
+    "guarded-execution.json": {
+      "passed": true,
+      "elapsed_seconds": 30.839536294000027,
+      "selected_speed_execution_verified": 0.02,
+      "selected_speed_repeat_verified": 0.02
+    }
+  },
+  "sourceHashes": {
+    "include/ur16e_mtc_gpio_stage/pick_descent_planner.hpp": "2e5f10add0a089e8975db5a22facf00af2557bfb226d4f3f82a12289603f966f",
+    "include/ur16e_mtc_gpio_stage/pick_place_task.hpp": "372685071af20c79d00ba7b267f61adee25b04087be9e50a0b3d13306d85c8bf",
+    "src/test_task.cpp": "d20b6e0560544b966f8ed62d6fa1af92a5eb5839872f521a15f3d185adef3699",
+    "test/test_contact_pick_plan.cpp": "a1412cae0315fc47e8a60fd91343f14aa5c5319cac513b7cb64cf6a02cf10cda",
+    "test/test_pick_place_task.cpp": "7ed5d32f47b1867e9f33b2dc5c7494cb1fdc28652f7420c4be6631716864c70e",
+    "test/contact_pick_replay.py": "9f76589393ef0ac19dc202b99f566922abea88573dc992997a11e5849d904b97",
+    "test/contact_pick_simulation.py": "a832a7b6e74a19d2e68e6d447b22fc258de307d1bc657d14ecb67d3899bcb0ab"
+  },
+  "productionChanged": false,
+  "deployed": false,
+  "limitations": [
+    "Local dependency image differs from the current production image.",
+    "Synthetic tests establish software trajectory/scene behavior, not physical speed or item handling."
+  ],
+  "backendCommit": "926c1f75023f68e9c029abf01f62340b24119246"
+}

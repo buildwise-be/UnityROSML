@@ -33,6 +33,9 @@ public class URInputManager : MonoBehaviour
     public bool IsFixtureMode => _workflowMode == WorkflowMode.RepetitivePickAndPlace ||
         (_workflowMode == WorkflowMode.Unrestricted && _poseCaptureMode == PoseCaptureMode.FixtureTiling);
     public WorkflowMode SelectedWorkflow => _workflowMode;
+    public PickPlaceController PickPlaceController => _pickPlaceController;
+    private PickSurfaceCapture SurfaceCapture => _pickPlaceController != null ? _pickPlaceController.SurfaceCapture : null;
+    public bool IsCapturingPickSurface => SurfaceCapture != null && SurfaceCapture.IsCapturing;
     public FixtureTilingController FixtureController
     {
         get
@@ -68,6 +71,7 @@ public class URInputManager : MonoBehaviour
         RobotPointRegistration registration = PointRegistration;
         if (registration != null && registration.IsCollecting)
         {
+            CancelPickSurfaceCapture();
             if (_tcpTargetPreview != null) _tcpTargetPreview.SetTrackingLost();
             if (_pickPlaceController != null) _pickPlaceController.SetTrackingLost();
             if (!ToolSelectionMenu.IsHovered && TryGetPointerWorldPose(out Pose contactPointer))
@@ -77,9 +81,22 @@ public class URInputManager : MonoBehaviour
         }
         if (RobotCoordinateService.IsCalibrationEditActive)
         {
+            CancelPickSurfaceCapture();
             _robotPlacementRequested = false;
             if (_tcpTargetPreview != null) _tcpTargetPreview.SetTrackingLost();
             if (_pickPlaceController != null) _pickPlaceController.SetTrackingLost();
+            return;
+        }
+        if (IsCapturingPickSurface)
+        {
+            if (_tcpTargetPreview != null) _tcpTargetPreview.SetTrackingLost();
+            if (_pickPlaceController != null) _pickPlaceController.SetTrackingLost();
+            if (!IsTcpMode && !IsFixtureMode && !ToolSelectionMenu.IsHovered &&
+                !TargetPoseContextMenu.IsOpen && !TargetPoseContextMenu.IsHovered &&
+                !TargetRotationHandles.IsHovered && !TargetRotationHandles.IsInteracting &&
+                TryGetPointerWorldPose(out Pose surfacePointer))
+                SurfaceCapture.SetPointerPose(surfacePointer, _trackingSpace);
+            else SurfaceCapture.SetTrackingLost();
             return;
         }
         if (!TryGetPointerWorldPose(out Pose pointerWorld))
@@ -107,6 +124,7 @@ public class URInputManager : MonoBehaviour
         _appliedMode = _poseCaptureMode;
         if (modeChanged)
         {
+            CancelPickSurfaceCapture();
             _robotPlacementRequested = false;
             TargetPoseContextMenu.CloseAll();
             TargetRotationHandles.CancelAllInteractions();
@@ -207,6 +225,15 @@ public class URInputManager : MonoBehaviour
                 registration.CapturePointerPose(pointerWorld, _trackingSpace);
             return;
         }
+        if (IsCapturingPickSurface)
+        {
+            if (!IsTcpMode && !IsFixtureMode && !RobotCoordinateService.IsCalibrationEditActive &&
+                !ToolSelectionMenu.IsHovered && !TargetPoseContextMenu.IsOpen && !TargetPoseContextMenu.IsHovered &&
+                !TargetRotationHandles.IsHovered && !TargetRotationHandles.IsInteracting &&
+                TryGetPointerWorldPose(out Pose surfacePointer))
+                SurfaceCapture.CapturePointerPose(surfacePointer, _trackingSpace);
+            return;
+        }
         if (IsFixtureMode)
         {
             if (!RobotCoordinateService.IsCalibrationEditActive && !ToolSelectionMenu.IsHovered &&
@@ -228,7 +255,7 @@ public class URInputManager : MonoBehaviour
 
     private void HandleOnBumper(InputAction.CallbackContext context)
     {
-        if (IsFixtureMode) return;
+        if (IsFixtureMode || IsCapturingPickSurface) return;
         if (PointRegistration != null && PointRegistration.IsCollecting) return;
         if (TargetPoseContextMenu.TryOpenHovered() || TargetPoseContextMenu.IsOpen || TargetPoseContextMenu.IsHovered)
             _contextBumperConsumedUntil = float.PositiveInfinity;
@@ -243,7 +270,7 @@ public class URInputManager : MonoBehaviour
 
     private void Capture(bool isPick)
     {
-        if (IsFixtureMode) return;
+        if (IsFixtureMode || IsCapturingPickSurface || (PointRegistration != null && PointRegistration.IsCollecting)) return;
         if (Time.realtimeSinceStartup < _contextBumperConsumedUntil ||
             TargetPoseContextMenu.IsOpen || TargetPoseContextMenu.IsHovered ||
             RobotCoordinateService.IsCalibrationEditActive || ToolSelectionMenu.IsHovered ||
@@ -261,6 +288,7 @@ public class URInputManager : MonoBehaviour
             return;
         }
         if (_pickPlaceController == null) return;
+        if (isPick && _pickPlaceController.PickBySurface) return;
         Pose contactPose = RobotFrameMath.PointerToTcpPose(pointerWorld);
         if (isPick) _pickPlaceController.SetPickPlace(contactPose.position, contactPose.rotation);
         else _pickPlaceController.SetPlacePlace(contactPose.position, contactPose.rotation);
@@ -271,6 +299,7 @@ public class URInputManager : MonoBehaviour
     {
         // Disabling an action can synchronously report a canceled bumper; clear its latch afterwards.
         _magicLeapInputs?.Disable();
+        CancelPickSurfaceCapture();
         if (_fixtureTilingController != null) _fixtureTilingController.CancelCapture();
         ResetPendingInteraction();
     }
@@ -279,6 +308,7 @@ public class URInputManager : MonoBehaviour
     {
         if (!hasFocus)
         {
+            CancelPickSurfaceCapture();
             if (_fixtureTilingController != null) _fixtureTilingController.CancelCapture();
             ResetPendingInteraction();
         }
@@ -288,6 +318,7 @@ public class URInputManager : MonoBehaviour
     {
         if (isPaused)
         {
+            CancelPickSurfaceCapture();
             if (_fixtureTilingController != null) _fixtureTilingController.CancelCapture();
             ResetPendingInteraction();
         }
@@ -303,10 +334,17 @@ public class URInputManager : MonoBehaviour
         ToolSelectionMenu.CancelAllInteractions();
         if (_tcpTargetPreview != null) _tcpTargetPreview.SetTrackingLost();
         if (_pickPlaceController != null) _pickPlaceController.SetTrackingLost();
+        if (SurfaceCapture != null) SurfaceCapture.SetTrackingLost();
+    }
+
+    public void CancelPickSurfaceCapture()
+    {
+        if (SurfaceCapture != null && SurfaceCapture.IsCapturing) SurfaceCapture.Cancel();
     }
 
     private void OnDestroy()
     {
+        CancelPickSurfaceCapture();
         if (_magicLeapInputs == null) return;
         _controllerActions.Trigger.performed -= HandleOnTrigger;
         _controllerActions.Bumper.performed -= HandleOnBumper;

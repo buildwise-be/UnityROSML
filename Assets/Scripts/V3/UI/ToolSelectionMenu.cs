@@ -283,6 +283,8 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         RefreshPathThickness();
         RefreshSceneNavigation();
         RefreshForceReadout();
+        BindPickSettingsControls();
+        RefreshPickSettingsMenu();
         if (_pointGuide != null && _pointGuidePose != null && IsPointCollecting)
             _pointGuidePose.text = _pointGuide.PoseStatus;
     }
@@ -503,12 +505,14 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     private bool IsCalibrating => _instantiator != null && _instantiator.IsCalibrating;
     private bool IsPointCollecting => _pointRegistration != null && _pointRegistration.IsCollecting;
     private bool IsPositionAdjusting => _pointRegistration != null && _pointRegistration.IsAdjustingPosition;
-    private bool IsPlacementBusy => IsCalibrating || IsPointCollecting || IsPositionAdjusting;
+    private bool IsPlacementBusy => IsCalibrating || IsPointCollecting || IsPositionAdjusting || IsSurfaceCapturing;
 
     public void BeginPointPlacement()
     {
         BindTaskControls();
         if (IsCalibrating || MTCPlansManager.ActiveExecution != null) return;
+        CancelPickSurface();
+        _showPickSettings = false;
         _localNotice = null;
         if (_pointRegistration == null) _localNotice = "Five-point placement is unavailable in this scene.";
         else _pointRegistration.BeginRegistration();
@@ -547,6 +551,8 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     {
         BindTaskControls();
         if (IsPointCollecting) return;
+        CancelPickSurface();
+        _showPickSettings = false;
         if (_pointRegistration != null && _pointRegistration.HasPlacement)
         {
             BeginPositionAdjustment();
@@ -663,6 +669,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         if (_input != null && _workflowMode != URInputManager.WorkflowMode.Unrestricted &&
             _input.SelectedWorkflow != _workflowMode) _input.ConfigureWorkflow(_workflowMode);
         BindFixtureControls();
+        BindPickSettingsControls();
         if (_tcpPlanning == null) _tcpPlanning = _input != null ? _input.GetComponent<TcpPlanningController>() : FindFirstObjectByType<TcpPlanningController>();
         if (_qrDetector == null) _qrDetector = FindFirstObjectByType<QRDetector>();
         if (_instantiator == null) _instantiator = FindFirstObjectByType<URInstantiator>();
@@ -730,6 +737,8 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
             ? "Set tile, stack, pattern and fixture.\nChoose a point, then trigger to capture."
             : tcp
             ? "Hold bumper: TCP A. Double press: TCP B.\nPlace the tool preview; drag it to set exact orientation."
+            : _pickSettingsController != null && _pickSettingsController.PickBySurface
+            ? "Pick settings: capture the item top face.\nDouble bumper: place contact."
             : "Hold/double bumper: pick/place contact balls.\nTrigger-click a ball: depth / Force towards ground.";
         if (_taskStatus != null)
             _taskStatus.text = _fixtureTiling != null && _fixtureTiling.IsExecuting ? _fixtureTiling.StatusText : execution != null ? execution.StatusText : tcpExecution != null ? tcpExecution.StatusText : _localNotice ?? (tcp
@@ -775,6 +784,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         RefreshPointRegistrationPanels();
         RefreshFixtureMenu();
         RefreshSceneNavigation();
+        RefreshPickSettingsMenu();
     }
 
     private static void RefreshTaskChoice(Button button, bool selected, bool enabled)
@@ -788,7 +798,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     {
         bool editing = IsCalibrating;
         if (_taskView != null) _taskView.gameObject.SetActive(!editing && !IsPointCollecting && !IsPositionAdjusting &&
-            !(_showFixtureSetup && _input != null && _input.IsFixtureMode));
+            !(_showFixtureSetup && _input != null && _input.IsFixtureMode) && !IsShowingPickSettings);
         if (_alignmentView != null) _alignmentView.gameObject.SetActive(editing && !IsPointCollecting && !IsPositionAdjusting);
         if (_alignmentStatus != null)
             _alignmentStatus.text = _instantiator != null
@@ -998,6 +1008,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         _qrStatus.fontSizeMin = 10f;
         _qrStatus.fontSizeMax = 12f;
         BuildForceReadout();
+        BuildPickSettings();
         BuildSceneNavigation();
         BuildAlignmentView();
         BuildPointPlacementView();
@@ -1516,6 +1527,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     private void UnsubscribeTaskControls()
     {
         UnbindFixtureControls();
+        UnbindPickSettingsControls();
         if (_subscribedPointRegistration != null) _subscribedPointRegistration.StateChanged -= OnPointRegistrationChanged;
         _subscribedPointRegistration = null;
         if (_subscribedPlanning != null) _subscribedPlanning.StateChanged -= OnPlanningStateChanged;
@@ -1541,12 +1553,12 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void OnApplicationFocus(bool focused)
     {
-        if (!focused) ClearPointerState();
+        if (!focused) { CancelPickSurface(); ClearPointerState(); }
     }
 
     private void OnApplicationPause(bool paused)
     {
-        if (paused) ClearPointerState();
+        if (paused) { CancelPickSurface(); ClearPointerState(); }
     }
 
     private void ClearPointerState()
@@ -1564,6 +1576,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void OnDisable()
     {
+        CancelPickSurface();
         ActiveMenus.Remove(this);
         UnbindContourControls();
         Unsubscribe();
