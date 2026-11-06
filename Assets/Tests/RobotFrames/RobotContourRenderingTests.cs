@@ -34,6 +34,45 @@ public sealed class RobotContourRenderingTests
     }
 
     [Test]
+    [TestCase("Mobile", false)]
+    [TestCase("Mobile", true)]
+    [TestCase("PC", false)]
+    [TestCase("PC", true)]
+    public void AcceptedItemsRenderContoursWithNoLiveRobotAndTheRobotContourOptionOff(string renderer, bool compatibility)
+    {
+        if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+            Assert.Ignore("Item contour pixel validation needs a graphics device.");
+        using (var fixture = new Fixture(renderer, compatibility))
+            foreach (PickItem item in new[] { PickItem.Tile, PickItem.Brick }) fixture.ValidateCapturedItem(item, null);
+    }
+
+    [Test]
+    public void GrazingOrthographicItemFaceKeepsItsInteriorTransparent()
+    {
+        if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) Assert.Ignore("Contour pixels need a graphics device.");
+        using (var fixture = new Fixture("Mobile", false)) fixture.ValidateCapturedItem(PickItem.Tile, null, true);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void ParallelFacesKeepTheirRealDepthDiscontinuityContour(bool orthographic)
+    {
+        if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) Assert.Ignore("Contour pixels need a graphics device.");
+        using (var fixture = new Fixture("Mobile", false)) fixture.ValidateParallelDepthSeam(orthographic);
+    }
+
+    public static void RenderCapturedItemPreviews()
+    {
+        Assert.That(SystemInfo.graphicsDeviceType, Is.Not.EqualTo(GraphicsDeviceType.Null));
+        string directory = Path.GetFullPath("ItemContourPreviews"); Directory.CreateDirectory(directory);
+        foreach (string renderer in new[] { "Mobile", "PC" })
+            foreach (bool compatibility in new[] { false, true })
+                using (var fixture = new Fixture(renderer, compatibility))
+                    foreach (PickItem item in new[] { PickItem.Tile, PickItem.Brick }) fixture.ValidateCapturedItem(item, directory);
+        Debug.Log("AcceptedItemContourPixels passed: both items, both renderers and render paths, no live robot, robot option off. Images: " + directory);
+    }
+
+    [Test]
     public void DepthShaderUsesTheRenderTimeNativeViewInsteadOfPreparedMaterialMatrices()
     {
         if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
@@ -251,6 +290,64 @@ public sealed class RobotContourRenderingTests
                 "A camera texture keeps private and scene projections in the same orientation; URP performs the final XR/backbuffer flip.");
             Contour("SetEnabled", false);
             Debug.Log("RobotContourWorldAnchoring " + _renderer + ": perspectiveCameraPoses=3, filledContourBoundsMatch=true, lateNativeViewUpdate=true");
+        }
+
+        public void ValidateCapturedItem(PickItem item, string directory, bool orthographic = false)
+        {
+            _root.SetActive(false); Contour("SetLiveRobot", new object[] { null }); Contour("SetEnabled", false);
+            var workflow = new PickSurfaceWorkflowTests();
+            try
+            {
+                workflow.SetupActualPickControllerWithoutTransport();
+                MeshRenderer body = workflow.CreateAcceptedItemForRendering(item); body.gameObject.layer = 31;
+                Vector3 center = body.transform.position;
+                _camera.orthographic = orthographic; _camera.orthographicSize = .3f; _camera.fieldOfView = 40f;
+                foreach (Vector3 offset in new[] { new Vector3(.45f, .38f, -.58f), new Vector3(-.45f, .25f, -.65f) })
+                {
+                    _camera.transform.position = center + offset;
+                    _camera.transform.LookAt(center);
+                    Contour("UnregisterItem", body); Color32[] filled = Capture();
+                    Contour("RegisterItem", body); Color32[] contours = Capture();
+                    if (directory != null)
+                    {
+                        Save(directory, item.ToString().ToLowerInvariant() + (offset.x > 0 ? "-accepted" : "-accepted-moved-camera"), contours);
+                        Save(directory, item.ToString().ToLowerInvariant() + (offset.x > 0 ? "-filled-reference" : "-filled-reference-moved-camera"), filled);
+                    }
+                    Assert.That((bool)RuntimeType("RobotContourDisplay").GetProperty("Enabled").GetValue(null), Is.False);
+                    Assert.That(body.forceRenderingOff, Is.True);
+                    Assert.That(CyanPixels(contours), Is.GreaterThan(100), "The accepted full body must use the actual contour pass.");
+                    RectInt solid = PixelBounds(filled, false), outline = PixelBounds(contours, true);
+                    Assert.That(Math.Abs(solid.xMin - outline.xMin), Is.LessThanOrEqualTo(2));
+                    Assert.That(Math.Abs(solid.xMax - outline.xMax), Is.LessThanOrEqualTo(2));
+                    Assert.That(Math.Abs(solid.yMin - outline.yMin), Is.LessThanOrEqualTo(2));
+                    Assert.That(Math.Abs(solid.yMax - outline.yMax), Is.LessThanOrEqualTo(2));
+                    Color32 interior = contours[(Size / 2) * Size + Size / 2];
+                    Assert.That((int)interior.r + interior.g + interior.b, Is.LessThan(8), "The item contour interior stays transparent.");
+                }
+            }
+            finally { workflow.Cleanup(); }
+        }
+
+        public void ValidateParallelDepthSeam(bool orthographic)
+        {
+            _camera.orthographic = orthographic;
+            _front.enabled = true; _rear.enabled = true; _ghost.enabled = false;
+            _rear.transform.localPosition = new Vector3(0f, 0f, .6f);
+            _rear.transform.localScale = new Vector3(2.4f, 2.4f, .25f);
+            Contour("SetEnabled", true);
+            Vector3 seam = _camera.WorldToScreenPoint(_front.transform.TransformPoint(new Vector3(.5f, 0f, -.5f)));
+            Color32[] image = Capture();
+            Assert.That(CyanAround(image, seam), Is.True, "A real depth jump between parallel faces must retain its contour.");
+            _front.enabled = false;
+            Assert.That(CyanAround(Capture(), seam), Is.False, "The seam is an interior depth discontinuity, not the rear silhouette.");
+        }
+
+        private static bool CyanAround(Color32[] pixels, Vector3 screen)
+        {
+            for (int y = (int)screen.y - 3; y <= (int)screen.y + 3; y++)
+                for (int x = (int)screen.x - 3; x <= (int)screen.x + 3; x++)
+                    if (x >= 0 && y >= 0 && x < Size && y < Size && IsCyan(pixels[y * Size + x])) return true;
+            return false;
         }
 
         public void ValidateRenderTimeView()

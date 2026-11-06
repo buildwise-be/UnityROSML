@@ -36,6 +36,7 @@ public static class RobotContourDisplay
     private static bool _cameraEventsSubscribed;
     private static int _cameraScopeDepth;
     private static readonly List<MeshRenderer> Renderers = new List<MeshRenderer>();
+    private static readonly HashSet<MeshRenderer> ItemRenderers = new HashSet<MeshRenderer>();
     private static readonly Dictionary<Renderer, bool> OriginalForceRenderingOff = new Dictionary<Renderer, bool>();
     private static readonly HashSet<UnityEngine.Object> RenderingProviders = new HashSet<UnityEngine.Object>();
     private static readonly List<CameraScope> CameraScopes = new List<CameraScope>();
@@ -48,6 +49,7 @@ public static class RobotContourDisplay
     }
 
     public static bool Enabled => _enabled;
+    public static bool HasContourSources => _enabled || ItemRenderers.Count != 0;
     public static bool IsRenderingAvailable
     {
         get { RefreshAvailability(); return _renderingAvailable; }
@@ -102,13 +104,35 @@ public static class RobotContourDisplay
         StateChanged?.Invoke();
     }
 
+    /// <summary>Accepted items use this style independently of the robot's presentation option.</summary>
+    public static void RegisterItem(MeshRenderer renderer)
+    {
+        if (renderer == null || !ItemRenderers.Add(renderer)) return;
+        UpdateCameraSubscription();
+        ApplyRendererFlags();
+    }
+
+    public static void UnregisterItem(MeshRenderer renderer)
+    {
+        if (ReferenceEquals(renderer, null) || !ItemRenderers.Remove(renderer)) return;
+        ApplyRendererFlags();
+        UpdateCameraSubscription();
+    }
+
     /// <summary>Render passes draw these meshes into private depth, never the camera's scene depth.</summary>
     public static bool TryGetDraws(List<RobotContourDraw> draws)
     {
         if (draws == null) throw new ArgumentNullException(nameof(draws));
         draws.Clear();
-        if (!_enabled || !IsRenderingAvailable || _liveRig == null || !_liveRig.isActiveAndEnabled) return false;
-        foreach (MeshRenderer renderer in Renderers)
+        if (!IsRenderingAvailable) return false;
+        if (_enabled && _liveRig != null && _liveRig.isActiveAndEnabled) AppendDraws(Renderers, draws);
+        AppendDraws(ItemRenderers, draws);
+        return draws.Count > 0;
+    }
+
+    private static void AppendDraws(IEnumerable<MeshRenderer> sources, List<RobotContourDraw> draws)
+    {
+        foreach (MeshRenderer renderer in sources)
         {
             if (renderer == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy ||
                 !OriginalForceRenderingOff.TryGetValue(renderer, out bool originallyOff) || originallyOff) continue;
@@ -119,7 +143,6 @@ public static class RobotContourDisplay
             for (int index = 0; index < mesh.subMeshCount; index++)
                 draws.Add(new RobotContourDraw(mesh, matrix, index));
         }
-        return draws.Count > 0;
     }
 
     // These hooks keep forceRenderingOff owned by this presentation option,
@@ -131,7 +154,7 @@ public static class RobotContourDisplay
 
     public static void OnRigDisabled(RosRobotRig rig)
     {
-        if (ReferenceEquals(_liveRig, rig)) RestoreRendererFlags();
+        if (ReferenceEquals(_liveRig, rig)) ApplyRendererFlags();
     }
 
     public static void OnRigDestroyed(RosRobotRig rig)
@@ -141,6 +164,7 @@ public static class RobotContourDisplay
         RestoreRendererFlags();
         Renderers.Clear();
         _liveRig = null;
+        ApplyRendererFlags();
         StateChanged?.Invoke();
     }
 
@@ -149,8 +173,7 @@ public static class RobotContourDisplay
         _renderingAvailable = HasAvailableProvider();
         RestoreRendererFlags();
         Renderers.Clear();
-        if (_liveRig == null || _liveRig.Model == null) return;
-        foreach (GameObject visual in _liveRig.VisualRoots)
+        if (_liveRig != null && _liveRig.Model != null) foreach (GameObject visual in _liveRig.VisualRoots)
         {
             if (visual == null) continue;
             foreach (MeshRenderer renderer in visual.GetComponentsInChildren<MeshRenderer>(true))
@@ -162,10 +185,16 @@ public static class RobotContourDisplay
     private static void ApplyRendererFlags()
     {
         RestoreRendererFlags();
-        if (!_enabled || !_renderingAvailable || _liveRig == null || !_liveRig.isActiveAndEnabled) return;
-        foreach (MeshRenderer renderer in Renderers)
+        if (!_renderingAvailable) return;
+        if (_enabled && _liveRig != null && _liveRig.isActiveAndEnabled) SuppressRenderers(Renderers);
+        SuppressRenderers(ItemRenderers);
+    }
+
+    private static void SuppressRenderers(IEnumerable<MeshRenderer> sources)
+    {
+        foreach (MeshRenderer renderer in sources)
         {
-            if (renderer == null) continue;
+            if (renderer == null || OriginalForceRenderingOff.ContainsKey(renderer)) continue;
             OriginalForceRenderingOff.Add(renderer, renderer.forceRenderingOff);
             renderer.forceRenderingOff = true;
         }
@@ -219,7 +248,7 @@ public static class RobotContourDisplay
 
     private static void UpdateCameraSubscription()
     {
-        bool subscribe = _enabled || RenderingProviders.Count != 0 || _cameraScopeDepth != 0;
+        bool subscribe = HasContourSources || RenderingProviders.Count != 0 || _cameraScopeDepth != 0;
         if (_cameraEventsSubscribed == subscribe) return;
         _cameraEventsSubscribed = subscribe;
         if (subscribe)
@@ -249,6 +278,7 @@ public static class RobotContourDisplay
         if (_liveRig != null) _liveRig.ModelChanged -= RefreshRenderers;
         RestoreRendererFlags();
         Renderers.Clear();
+        ItemRenderers.Clear();
         _liveRig = null;
         _enabled = false;
         _renderingAvailable = false;

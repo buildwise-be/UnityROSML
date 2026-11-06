@@ -37,6 +37,36 @@ public sealed class RobotContourDisplayTests
     }
 
     [Test]
+    public void CapturedItemContoursAreIndependentAndRestoreTheirFilledFallbackForUnsupportedCameras()
+    {
+        GameObject item = GameObject.CreatePrimitive(PrimitiveType.Cube); _owned.Add(item);
+        MeshRenderer renderer = item.GetComponent<MeshRenderer>();
+        MethodInfo register = RuntimeType("RobotContourDisplay").GetMethod("RegisterItem");
+        Assert.That(register, Is.Not.Null, "Captured items need an independent contour source registration.");
+        register.Invoke(null, new object[] { renderer });
+        try
+        {
+            Assert.That(Enabled, Is.False);
+            Assert.That(Draws().Count, Is.EqualTo(1));
+            Assert.That(renderer.forceRenderingOff, Is.True);
+            Camera unsupported = New("Item camera without contour support").AddComponent<Camera>();
+            CameraEvent("OnBeginCameraRendering", unsupported);
+            try
+            {
+                Assert.That(Draws(), Is.Empty);
+                Assert.That(renderer.forceRenderingOff, Is.False, "Unsupported cameras must retain the full-body fallback.");
+            }
+            finally { CameraEvent("OnEndCameraRendering", unsupported); }
+            Assert.That(renderer.forceRenderingOff, Is.True);
+            Static("SetEnabled", true); Static("SetEnabled", false);
+            Assert.That(Draws().Count, Is.EqualTo(1));
+        }
+        finally { Static("UnregisterItem", renderer); }
+        Assert.That(renderer.forceRenderingOff, Is.False);
+        Assert.That(Draws(), Is.Empty);
+    }
+
+    [Test]
     public void ContoursSuppressOnlyTheExplicitLiveRobotAndLeaveTrajectoryGhostsUntouched()
     {
         Component live = Rig(false, "kenos");

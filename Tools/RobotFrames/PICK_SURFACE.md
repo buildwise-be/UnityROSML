@@ -29,6 +29,15 @@ a new valid surface capture. Rigid XR Origin movement preserves tracking-local
 contacts. The object uses the same configured physical controller-tip offset
 as five-point robot registration.
 
+After the third corner is accepted, the full-size item appears at the fitted
+pose with the same cyan visible-contour style as the robot. Its top face is
+the measured surface and its thickness extends below that face. The item
+outline does not require enabling the robot's outline checkbox. An accepted
+item remains during a replacement capture or cancellation, and hides when the
+selected method/item, workflow visibility or alignment/tracking context no
+longer applies. It represents the captured pick location; it does not track
+the physical item as the robot moves it.
+
 The fitted rectangle must agree with nominal length, width and diagonal within
 15 mm, with normalized edge dot product no greater than 0.15 in magnitude.
 The rigid fit allows at most 10 mm RMS and 15 mm worst-point residual. Rejected
@@ -72,11 +81,20 @@ fitted top face. The selected descent speed is copied into both the planned
 Cartesian timing and the immutable execution policy of the reviewed plan.
 Repeated execution uses that frozen choice.
 
-Selectable absolute descent currently uses the existing commissioned guarded
-contact implementation. A backend with that mode disabled rejects the new
-request explicitly; joint-velocity scaling is not treated as a millimetres per
-second setting. The existing startup force/contact parameters are not mutated
-by the UI selection.
+Selectable descent works with either the ordinary fixed-distance Cartesian
+approach or the optional commissioned guarded-contact approach. ROS retimes
+the ordinary pick approach at the selected TCP speed; joint-velocity scaling
+alone is not treated as a millimetres per second setting. With guarded contact
+enabled, the selected speed applies to its prepared descent instead. The UI
+does not enable that mode, change its commissioning flags, or modify startup
+force/contact parameters. Place approach and legacy requests retain their
+existing timing.
+
+The earlier implementation rejected this request when guarded contact was
+disabled with "Selectable Cartesian descent requires enabled, commissioned
+guarded contact". That was an unnecessary dependency in the new endpoint.
+Updating the MTC node supplies the ordinary approach timing fix; changing
+commissioning flags is not the remedy.
 
 Both updated Unity code and the new ROS interface/node must be built together.
 The ROS-TCP endpoint must run with the rebuilt message overlay. Source changes,
@@ -84,6 +102,35 @@ isolated builds and synthetic tests do not update an installed headset app or
 activate the production stack.
 
 ## Validation
+
+### Compatibility and item-outline repair — 2026-11-06
+
+The final full Unity graphics suite passes 749/751 checks with no skips. The
+same two failures reproduce on the unchanged baseline (735/737):
+`ToolCalibrationMenuTests.AlignmentActionsFitTheExistingPanelAndOnlyTaskViewStartsVisible`
+and `WorkflowServiceLifecycleTests.ServiceReusesTheConnectorPreservesHudEditsAndRecoversAReplacement`.
+The 305 targeted workflow checks and 62 focused contour/graphics checks pass.
+Runtime compilation has zero errors. Tests verify fitted size/pose, independent
+item contours, recapture/context behavior, transparent grazing-angle faces,
+orthographic views and real depth boundaries through both installed renderers.
+
+The ROS runtime builds in an existing local WSL image with networking disabled.
+All 105 relevant C++ cases and nine synthetic node replays pass. Ordinary
+Execute/repeat trajectories retain 4.995, 9.990 and 19.980 mm/s maxima for the
+three choices. The tilted brick and optional guarded path also pass. Full
+CTest remains 19/20 with the unchanged scene-effects failure. The local
+dependency image differs from the current production image; these checks do
+not establish physical speed or headset appearance. The running production
+stack was not changed, and the updated headset app was not installed.
+
+See [repair evidence](PickSurfaceRepairValidation/validation_summary.json),
+[ROS repair evidence](PickSurfaceRepairValidation/backend-summary.json),
+[tile outline](PickSurfaceRepairValidation/tile-outline-moved-camera.png) and
+[brick outline](PickSurfaceRepairValidation/brick-outline.png).
+This repair changes no ROS message schema; update the MTC executable for speed
+compatibility and rebuild the Unity app for accepted-item contours.
+
+### Initial implementation — 2026-11-05
 
 All 280 selected Unity checks pass, including point capture/cancellation,
 calibration and model invalidation, selected-speed export, older-backend

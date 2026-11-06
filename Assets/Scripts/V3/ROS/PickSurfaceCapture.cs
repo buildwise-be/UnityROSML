@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.XR;
 
 /// <summary>Three ordered physical contacts defining an item's top surface; never publishes ROS commands.</summary>
@@ -25,6 +26,10 @@ public sealed class PickSurfaceCapture : MonoBehaviour
     private GameObject _tipVisual;
     private Material _tipMaterial;
     private PickSurfaceGuide _guide;
+    private GameObject _itemVisual;
+    private MeshRenderer _itemRenderer;
+    private Material _itemMaterial;
+    private bool _itemPresentationEnabled = true;
 
     public bool IsCapturing { get; private set; }
     public int CapturedCount => _points.Count;
@@ -112,6 +117,7 @@ public sealed class PickSurfaceCapture : MonoBehaviour
         _hasSurface = true; _surfaceTrackingInvalidated = false; _lastSurfaceCurrent = true;
         IsCapturing = false; SetTrackingLost(); _guide?.Hide();
         ClearPointVisuals();
+        UpdateAcceptedItemVisual();
         StatusText = "Surface captured. RMS " + (rms * 1000f).ToString("F1") + " mm; worst " + (worst * 1000f).ToString("F1") + " mm.";
         SurfaceCaptured?.Invoke(); Changed?.Invoke();
         return true;
@@ -123,6 +129,40 @@ public sealed class PickSurfaceCapture : MonoBehaviour
         if (!IsSurfaceCurrent) return false;
         pose = RobotFrameMath.Compose(new Pose(_surfaceSpace.position, _surfaceSpace.rotation), _surfaceInTracking);
         return true;
+    }
+
+    /// <summary>The measured body is a pick snapshot; it follows the pick workflow's visibility.</summary>
+    public void SetItemPresentationEnabled(bool enabled)
+    {
+        _itemPresentationEnabled = enabled;
+        RefreshItemVisibility();
+    }
+
+    private void UpdateAcceptedItemVisual()
+    {
+        if (_itemVisual == null)
+        {
+            _itemVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            _itemVisual.name = "Captured item body"; _itemVisual.layer = 2;
+            Collider collider = _itemVisual.GetComponent<Collider>(); collider.enabled = false; Dispose(collider);
+            _itemRenderer = _itemVisual.GetComponent<MeshRenderer>();
+            _itemMaterial = TargetMarkerMaterials.Create(new Color(.35f, .9f, 1f));
+            _itemRenderer.sharedMaterial = _itemMaterial;
+            _itemRenderer.shadowCastingMode = ShadowCastingMode.Off; _itemRenderer.receiveShadows = false;
+            RobotContourDisplay.RegisterItem(_itemRenderer);
+        }
+        PickItemPreset preset = PickSurfaceGeometry.GetPreset(SurfaceItem);
+        _itemVisual.transform.SetParent(_surfaceSpace, false);
+        _itemVisual.transform.localPosition = _surfaceInTracking.position +
+            _surfaceInTracking.rotation * Vector3.down * (float)(preset.Thickness / 2d);
+        _itemVisual.transform.localRotation = _surfaceInTracking.rotation;
+        _itemVisual.transform.localScale = new Vector3((float)preset.Width, (float)preset.Thickness, (float)preset.Length);
+        RefreshItemVisibility();
+    }
+
+    private void RefreshItemVisibility()
+    {
+        if (_itemVisual != null) _itemVisual.SetActive(isActiveAndEnabled && _itemPresentationEnabled && IsSurfaceCurrent);
     }
 
     public bool TryGetWorldPickTcpPose(out Pose pose)
@@ -226,14 +266,15 @@ public sealed class PickSurfaceCapture : MonoBehaviour
         _pointVisuals.RemoveAt(index); _pointMaterials.RemoveAt(index);
     }
     private void ClearPointVisuals() { while (_pointVisuals.Count > 0) RemovePointVisual(); }
-    private void SetStatus(string status) { StatusText = status; Changed?.Invoke(); }
+    private void SetStatus(string status) { StatusText = status; RefreshItemVisibility(); Changed?.Invoke(); }
     private void Update()
     {
         if (IsCapturing && !CaptureContextValid(out string reason)) CancelWithReason(reason);
         bool current = IsSurfaceCurrent;
+        RefreshItemVisibility();
         if (_lastSurfaceCurrent != current) { _lastSurfaceCurrent = current; Changed?.Invoke(); }
     }
-    private void OnEnable() => SubscribeTracking();
+    private void OnEnable() { SubscribeTracking(); RefreshItemVisibility(); }
     private void SubscribeTracking()
     {
         foreach (XRInputSubsystem subsystem in _subsystems) subsystem.trackingOriginUpdated -= OnTrackingOriginUpdated;
@@ -252,12 +293,16 @@ public sealed class PickSurfaceCapture : MonoBehaviour
     private void OnDisable()
     {
         Cancel(); SetTrackingLost(); _guide?.Hide();
+        if (_itemVisual != null) _itemVisual.SetActive(false);
         foreach (XRInputSubsystem subsystem in _subsystems) subsystem.trackingOriginUpdated -= OnTrackingOriginUpdated;
         _subsystems.Clear();
     }
     private void OnDestroy()
     {
         ClearPointVisuals(); Dispose(_tipVisual); Dispose(_tipMaterial);
+        RobotContourDisplay.UnregisterItem(_itemRenderer);
+        if (_itemVisual != null) _itemVisual.SetActive(false);
+        Dispose(_itemVisual); Dispose(_itemMaterial);
         if (_guide != null) Dispose(_guide.gameObject);
         Changed = null; SurfaceCaptured = null;
     }

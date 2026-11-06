@@ -40,6 +40,23 @@ Shader "UnityROSML/RobotContourComposite"
                 value.xy += float2(value.x >= 0 ? -correction : correction, value.y >= 0 ? -correction : correction);
                 return normalize(value);
             }
+            float ContourPlaneValue(float depth)
+            {
+                // Linear eye depth is affine for orthographic projection; inverse
+                // eye depth is affine for perspective projection.
+                return unity_OrthoParams.w > 0.5 ? depth : rcp(depth);
+            }
+            float ContourPlaneSlope(float4 before, float4 after, float centerValue, float3 normal)
+            {
+                float beforeDepth = DecodeDepth(before), afterDepth = DecodeDepth(after);
+                if (beforeDepth <= 0 || afterDepth <= 0 ||
+                    dot(normal, DecodeNormal(before.rg)) < 0.99 || dot(normal, DecodeNormal(after.rg)) < 0.99) return 0;
+                float left = centerValue - ContourPlaneValue(beforeDepth);
+                float right = ContourPlaneValue(afterDepth) - centerValue;
+                // Minmod takes the continuous side of a depth jump, including a
+                // jump between parallel faces. It never treats that jump as a plane.
+                return left * right > 0 ? sign(left) * min(abs(left), abs(right)) : 0;
+            }
             float4 ContourFragment(Varyings input) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
@@ -48,6 +65,16 @@ Shader "UnityROSML/RobotContourComposite"
                 if (depth <= 0) discard;
                 float3 normal = DecodeNormal(center.rg);
                 float2 stepUV = _ContourTexelSize.xy * max(1, _ContourWidth);
+                // Compare against that plane rather than its centre depth: a grazing
+                // face can otherwise exceed the depth-jump threshold at every pixel.
+                float planeValue = ContourPlaneValue(depth);
+                float2 planeSlope = float2(
+                    ContourPlaneSlope(
+                        SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_PointClamp, input.texcoord - float2(stepUV.x, 0)),
+                        SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_PointClamp, input.texcoord + float2(stepUV.x, 0)), planeValue, normal),
+                    ContourPlaneSlope(
+                        SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_PointClamp, input.texcoord - float2(0, stepUV.y)),
+                        SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_PointClamp, input.texcoord + float2(0, stepUV.y)), planeValue, normal));
                 float edge = 0;
                 const float2 offsets[8] = {
                     float2(-1, 0), float2(1, 0), float2(0, -1), float2(0, 1),
@@ -57,7 +84,9 @@ Shader "UnityROSML/RobotContourComposite"
                 {
                     float4 adjacent = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_PointClamp, input.texcoord + offsets[i] * stepUV);
                     float otherDepth = DecodeDepth(adjacent);
-                    if (otherDepth <= 0 || abs(otherDepth - depth) > max(0.012, depth * 0.015))
+                    float expectedValue = planeValue + dot(planeSlope, offsets[i]);
+                    float expectedDepth = expectedValue > 0 ? ContourPlaneValue(expectedValue) : depth;
+                    if (otherDepth <= 0 || abs(otherDepth - expectedDepth) > max(0.012, depth * 0.015))
                     {
                         edge = 1;
                         break;

@@ -100,6 +100,7 @@ public class PickPlaceController : MonoBehaviour
         if (_pickBySurface == surface) return true;
         SurfaceCapture?.Cancel();
         _pickBySurface = surface;
+        RefreshSurfacePresentation();
         if (!surface && _pickPointInstance != null)
             SetContactPose(true, new Pose(_pickPointInstance.transform.position, _pickPointInstance.transform.rotation));
         else if (surface && HasValidSurface) OnSurfaceCaptured();
@@ -114,6 +115,7 @@ public class PickPlaceController : MonoBehaviour
         if (_selectedItem == item) return true;
         SurfaceCapture?.Cancel();
         _selectedItem = item;
+        RefreshSurfacePresentation();
         InvalidatePlanningRequest();
         SettingsChanged?.Invoke();
         return true;
@@ -132,11 +134,20 @@ public class PickPlaceController : MonoBehaviour
         }
         RobotPointRegistration registration = FindFirstObjectByType<RobotPointRegistration>();
         if (registration != null) capture.SetTipOffset(registration.TipOffsetInPointer);
+        RefreshSurfacePresentation();
         return capture;
+    }
+
+    private void RefreshSurfacePresentation()
+    {
+        PickSurfaceCapture capture = SurfaceCapture;
+        if (capture != null) capture.SetItemPresentationEnabled(isActiveAndEnabled && _tilePlanningEnabled &&
+            _pickBySurface && _selectedItem == capture.SurfaceItem);
     }
 
     private void OnSurfaceChanged()
     {
+        RefreshSurfacePresentation();
         InvalidatePlanningRequest();
         SettingsChanged?.Invoke();
     }
@@ -163,6 +174,7 @@ public class PickPlaceController : MonoBehaviour
         if (!enabled) SurfaceCapture?.Cancel();
         bool changed = _tilePlanningEnabled != enabled;
         _tilePlanningEnabled = enabled;
+        RefreshSurfacePresentation();
         if (changed) { CancelCapabilityRequest(); _hasPlanningRequestBeenSent = false; SetTrackingLost(); }
         if (PlansManager != null) PlansManager.SetTilePlanningEnabled(enabled);
         if (_pickPointInstance != null) _pickPointInstance.SetActive(enabled);
@@ -497,7 +509,8 @@ public class PickPlaceController : MonoBehaviour
         reason = null;
         return true;
     }
-    private void OnDisable() { SurfaceCapture?.Cancel(); CancelCapabilityRequest(); _hasPlanningRequestBeenSent = false; SetTrackingLost(); }
+    private void OnEnable() => RefreshSurfacePresentation();
+    private void OnDisable() { SurfaceCapture?.Cancel(); SurfaceCapture?.SetItemPresentationEnabled(false); CancelCapabilityRequest(); _hasPlanningRequestBeenSent = false; SetTrackingLost(); }
     private void OnDestroy()
     {
         if (_coordinates != null) _coordinates.CalibrationChanged -= InvalidatePlanningRequest;

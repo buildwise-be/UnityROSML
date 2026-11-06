@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,7 @@ public sealed class PickSurfaceWorkflowTests
     private readonly List<GameObject> _busyOwners = new List<GameObject>();
     private readonly List<GameObject> _previousMainCameras = new List<GameObject>();
     private Component _controller, _plans, _coordinates, _tools, _fakeConnector;
+    private GameObject _contourProvider;
     private Transform _tracking;
     private CancellationTokenSource _fakeCancellation;
     private bool _previousConnectionError;
@@ -22,6 +24,9 @@ public sealed class PickSurfaceWorkflowTests
     [SetUp]
     public void SetupActualPickControllerWithoutTransport()
     {
+        Contour("SetEnabled", false); Contour("SetLiveRobot", new object[] { null });
+        _contourProvider = New("Surface-test supported contour renderer");
+        Contour("SetRenderingAvailable", _contourProvider, true);
         _coordinates = Add("Surface-test coordinates", "RobotCoordinateService");
         Add("Surface-test robot readiness", "RobotStateService");
         _tracking = New("Surface-test tracking").transform;
@@ -55,6 +60,8 @@ public sealed class PickSurfaceWorkflowTests
         _fakeCancellation?.Dispose(); _fakeCancellation = null;
         Component capture = _controller != null ? Get<Component>(_controller, "SurfaceCapture") : null;
         if (capture != null) { Call(capture, "OnDisable"); Call(capture, "OnDestroy"); }
+        Assert.That(ItemDraws(), Is.Empty, "Destroying the capture must release its contour registration.");
+        Contour("SetRenderingAvailable", _contourProvider, false);
         if (_controller != null) Call(_controller, "OnDestroy");
         foreach (GameObject value in _owned.AsEnumerable().Reverse())
             if (value != null) UnityEngine.Object.DestroyImmediate(value);
@@ -169,15 +176,66 @@ public sealed class PickSurfaceWorkflowTests
         }
     }
 
+    [TestCase(PickItem.Tile, .200f, .007f, .200f)]
+    [TestCase(PickItem.Brick, .185f, .135f, .280f)]
+    public void AcceptedItemDrawsItsFullBodyAtTheFittedPhysicalPoseWithoutEnablingRobotContours(
+        PickItem item, float width, float thickness, float length)
+    {
+        BeginSurface(item); Component capture = Capture();
+        Vector3[] corners = WorldCorners(item);
+        Assert.That(ItemDraws(), Is.Empty);
+        for (int index = 0; index < 3; index++)
+        {
+            Assert.That(Call(capture, "CapturePointerPose", new Pose(corners[index], Quaternion.identity), _tracking), Is.EqualTo(true));
+            if (index < 2) Assert.That(ItemDraws(), Is.Empty, "Partial contacts must not display an accepted item.");
+        }
+        IList draws = ItemDraws();
+        Assert.That(draws.Count, Is.EqualTo(1), "The accepted item must render even with no live robot and its contour option off.");
+        Assert.That(ContourProperty("Enabled"), Is.EqualTo(false));
+        Matrix4x4 matrix = DrawMatrix(draws[0]);
+        Assert.That(Vector3.Distance(matrix.MultiplyPoint3x4(Vector3.up * .5f), SurfaceWorld.position), Is.LessThan(1e-5f));
+        Assert.That(Vector3.Distance(matrix.MultiplyVector(Vector3.right), SurfaceWorld.rotation * Vector3.right * width), Is.LessThan(1e-5f));
+        Assert.That(Vector3.Distance(matrix.MultiplyVector(Vector3.up), SurfaceWorld.rotation * Vector3.up * thickness), Is.LessThan(1e-5f));
+        Assert.That(Vector3.Distance(matrix.MultiplyVector(Vector3.forward), SurfaceWorld.rotation * Vector3.forward * length), Is.LessThan(1e-5f));
+        Assert.That(_tracking.GetComponentsInChildren<Collider>(true), Is.Empty);
+        Assert.That(_tracking.GetComponentsInChildren<ArticulationBody>(true), Is.Empty);
+        _tracking.position += new Vector3(.3f, .2f, -.1f);
+        Assert.That(Vector3.Distance(DrawMatrix(ItemDraws()[0]).MultiplyPoint3x4(Vector3.up * .5f), SurfaceWorld.position), Is.LessThan(1e-5f),
+            "The item follows the same tracking parent as the accepted contacts.");
+    }
+
+    [TestCase("method")]
+    [TestCase("item")]
+    [TestCase("workflow")]
+    [TestCase("disable")]
+    public void AcceptedItemHidesWhenThePickTargetIsInapplicableAndReturnsWithTheSameSettings(string change)
+    {
+        CompleteSurface(PickItem.Tile); Component capture = Capture();
+        Assert.That(ItemDraws(), Is.Not.Empty);
+        if (change == "method") Call(_controller, "SetPickBySurface", false);
+        else if (change == "item") Call(_controller, "SetSelectedItem", PickItem.Brick);
+        else if (change == "workflow") Call(_controller, "SetTilePlanningEnabled", false);
+        else Call(capture, "OnDisable");
+        Assert.That(ItemDraws(), Is.Empty);
+        if (change == "method") Call(_controller, "SetPickBySurface", true);
+        else if (change == "item") Call(_controller, "SetSelectedItem", PickItem.Tile);
+        else if (change == "workflow") Call(_controller, "SetTilePlanningEnabled", true);
+        else { Call(capture, "OnEnable"); Call(capture, "Update"); }
+        Assert.That(ItemDraws(), Is.Not.Empty);
+    }
+
     [Test]
     public void CancelAndRejectedReplacementFitsPreserveThePreviouslyAcceptedPickAndPlace()
     {
         CaptureCenterPair(); CompleteSurface(PickItem.Tile);
         Pose pick = PointPose(true), place = PointPose(false);
+        Assert.That(ItemDraws(), Is.Not.Empty);
+        Matrix4x4 acceptedBody = DrawMatrix(ItemDraws()[0]);
         Component capture = Capture(); BeginSurface(PickItem.Tile);
         Vector3[] corners = WorldCorners(PickItem.Tile);
         Assert.That(Call(capture, "CapturePointerPose", new Pose(corners[0]+Vector3.right, Quaternion.identity), _tracking), Is.EqualTo(true));
         Call(capture, "Cancel");
+        Assert.That(DrawMatrix(ItemDraws()[0]), Is.EqualTo(acceptedBody));
         AssertPose(PointPose(true), pick); AssertPose(PointPose(false), place);
         Assert.That(Get<bool>(_controller, "HasValidSurface"), Is.True);
         BeginSurface(PickItem.Tile);
@@ -187,6 +245,7 @@ public sealed class PickSurfaceWorkflowTests
         AssertPose(PointPose(true), pick); AssertPose(PointPose(false), place);
         Assert.That(Get<bool>(capture, "IsCapturing"), Is.True);
         Assert.That(Get<bool>(_controller, "HasValidSurface"), Is.False);
+        Assert.That(DrawMatrix(ItemDraws()[0]), Is.EqualTo(acceptedBody), "A rejected replacement must retain the last accepted full body.");
         Call(capture, "Cancel"); Assert.That(Get<bool>(_controller, "HasValidSurface"), Is.True);
         AssertPose(PointPose(true), pick);
     }
@@ -221,6 +280,8 @@ public sealed class PickSurfaceWorkflowTests
         if (change == "model") Call(_tools, "SelectTool", "kenos");
         else if (change == "calibration") Call(_coordinates, "BeginCalibrationEdit");
         else Call(capture, "OnTrackingOriginUpdated", new object[] { null });
+        Call(capture, "Update");
+        Assert.That(ItemDraws(), Is.Empty, "Invalid calibration, tool or tracking must remove the item outline.");
         Assert.That(Get<bool>(_controller, "HasValidSurface"), Is.False);
         object[] request = { null, null };
         Assert.That(Call(_controller, "TryGetTaskRequest", request), Is.EqualTo(false));
@@ -438,6 +499,11 @@ public sealed class PickSurfaceWorkflowTests
         foreach (Vector3 point in WorldCorners(item))
             Assert.That(Call(capture, "CapturePointerPose", new Pose(point, Quaternion.identity), _tracking), Is.EqualTo(true), Get<string>(capture, "StatusText"));
     }
+    internal MeshRenderer CreateAcceptedItemForRendering(PickItem item)
+    {
+        CompleteSurface(item);
+        return _tracking.GetComponentsInChildren<MeshRenderer>(true).Single(renderer => renderer.name == "Captured item body");
+    }
     private Pose SurfaceWorld => RobotFrameMath.Compose(new Pose(_tracking.position, _tracking.rotation),
         new Pose(new Vector3(.4f, .5f, .8f), Quaternion.Euler(15f, 33f, -9f)));
     private Vector3[] WorldCorners(PickItem item) => PickSurfaceGeometry.GetCanonicalCorners(item)
@@ -458,6 +524,14 @@ public sealed class PickSurfaceWorkflowTests
     private static Type TypeOf(string name) => AppDomain.CurrentDomain.GetAssemblies().Select(assembly => assembly.GetType(name, false)).First(type => type != null);
     private static object Msg(string name) => Activator.CreateInstance(TypeOf("RosMessageTypes."+name));
     private static object Read(object value, string field) => value.GetType().GetField(field, Instance).GetValue(value);
+    private static object Contour(string name, params object[] values) => TypeOf("RobotContourDisplay").GetMethod(name).Invoke(null, values);
+    private static object ContourProperty(string name) => TypeOf("RobotContourDisplay").GetProperty(name).GetValue(null);
+    private static IList ItemDraws()
+    {
+        var draws = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(TypeOf("RobotContourDraw")));
+        Contour("TryGetDraws", draws); return draws;
+    }
+    private static Matrix4x4 DrawMatrix(object draw) => (Matrix4x4)draw.GetType().GetField("LocalToWorld").GetValue(draw);
     private static void Set(object value, string field, object data) => value.GetType().GetField(field, Instance).SetValue(value, data);
     private static T Get<T>(object value, string name) => (T)value.GetType().GetProperty(name).GetValue(value);
     private static object Call(object value, string method, params object[] args) => value.GetType().GetMethods(Instance)

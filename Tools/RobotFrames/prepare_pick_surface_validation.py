@@ -40,9 +40,14 @@ def main():
         "Assets/Scripts/V3/UI/ToolSelectionMenu.PickSettings.cs",
         "Assets/Scripts/V3/URInputManager.cs",
         "Assets/Scripts/V3/Frames/PickSurfaceGeometry.cs",
+        "Assets/Scripts/V3/Rendering/RobotContourDisplay.cs",
+        "Assets/Scripts/V3/Rendering/RobotContourRendererFeature.cs",
+        "Assets/Resources/RobotContours/RobotContourComposite.shader",
         "Assets/RosMessages/Ur16eInterfaces/msg/PickPlaceTaskMsg.cs",
         "Assets/Tests/RobotFrames/PickSurfaceWorkflowTests.cs",
         "Assets/Tests/RobotFrames/PickSurfaceGeometryTests.cs",
+        "Assets/Tests/RobotFrames/RobotContourDisplayTests.cs",
+        "Assets/Tests/RobotFrames/RobotContourRenderingTests.cs",
         "Assets/Tests/RobotFrames/Resources/PickPlaceTaskCdr.json",
     )})
     for source in runtime:
@@ -55,6 +60,7 @@ def main():
                           for source in runtime],
         "testSelection": "PickSurfaceWorkflowTests;PickSurfaceGeometryTests;PickPlaceToolContactTests;MtcExecutionWorkflowTests;RepeatExecutionWorkflowTests;WorkflowMenuTests",
         "visualExport": "PickSurfaceWorkflowTests.RenderPickSurfacePreviews",
+        "acceptedVisualExport": "RobotContourRenderingTests.RenderCapturedItemPreviews",
         "transportBoundary": "No transport Start/Connect or network thread; direct contacts, CDR and capability-message injection.",
         "validationPerformed": False,
     }
