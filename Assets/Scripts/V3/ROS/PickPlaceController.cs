@@ -28,6 +28,7 @@ public class PickPlaceController : MonoBehaviour
     private bool _hasPlanningRequestBeenSent;
     private bool _tilePlanningEnabled = true;
     private bool _checkingCapability;
+    private int _requestedTimeoutSeconds = MtcPlanningSettings.DefaultTimeoutSeconds;
     private int _generation, _requestCalibrationRevision;
     private float _capabilityDeadline;
     private PickPlacePosesMsg _requestedContactPoses;
@@ -353,6 +354,7 @@ public class PickPlaceController : MonoBehaviour
             { RejectPlanningRequest("ROS is disconnected. Reconnect before planning MTC pick/place."); return; }
             _requestedContactPoses = task.contacts;
             _requestedTask = task;
+            _requestedTimeoutSeconds = MtcPlanningSettings.TimeoutSeconds;
             _requestCalibrationRevision = RobotCoordinateService.Instance.CalibrationRevision;
             _checkingCapability = true;
             _capabilityDeadline = Time.realtimeSinceStartup + _capabilityTimeout;
@@ -374,20 +376,33 @@ public class PickPlaceController : MonoBehaviour
         { RejectPlanningRequest("Tool targets, mode, model or alignment changed. Plan pick/place again."); return; }
         if (response?.values == null || response.values.Length == 0 || response.values[0].type != 1 || !response.values[0].bool_value)
         { RejectPlanningRequest("ROS needs the item/speed pick update before using these settings. Update the MTC backend."); return; }
+        bool timed = MtcPlanningStop.IsSupported(response.values, 2);
+        if (!timed && _requestedTimeoutSeconds != MtcPlanningSettings.DefaultTimeoutSeconds)
+        { RejectPlanningRequest(MtcPlanningStop.TimeoutUnsupported); return; }
         PickPlaceTaskMsg message = _requestedTask;
         _checkingCapability = false;
         MTCPlansManager plans = PlansManager;
         if (plans == null) return;
         try
         {
-            if (MtcPlanningStop.IsSupported(response.values, 1))
+            string requestId = null;
+            bool stopSupported = MtcPlanningStop.IsSupported(response.values, 1);
+            if (timed || stopSupported)
             {
                 var stamp = MtcPlanningStop.NewRequestStamp();
                 message.contacts.pick_pose.header.stamp = stamp;
-                if (!plans.BeginCorrelatedPlanningRequest(_connection, MtcPlanningStop.RequestId(stamp))) return;
+                requestId = MtcPlanningStop.RequestId(stamp);
             }
-            else if (!plans.BeginPlanningRequest()) return;
-            _connection.Publish(TaskPlanTopic, message);
+            bool started;
+            if (timed) started = plans.BeginTimedPlanningRequest(_connection, requestId, _requestedTimeoutSeconds, stopSupported);
+            else started = requestId == null ? plans.BeginPlanningRequest() : plans.BeginCorrelatedPlanningRequest(_connection, requestId);
+            if (!started) return;
+            if (timed)
+                MtcPlanningStop.PublishTimedPlan(_connection, new MtcPlanRequestMsg
+                {
+                    mode = MtcPlanRequestMsg.PICK, timeout_seconds = (uint)_requestedTimeoutSeconds, pick = message
+                });
+            else _connection.Publish(TaskPlanTopic, message);
             _hasPlanningRequestBeenSent = true;
         }
         catch (Exception)

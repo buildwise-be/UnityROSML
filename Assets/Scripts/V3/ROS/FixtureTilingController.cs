@@ -40,6 +40,8 @@ public class FixtureTilingController : MonoBehaviour
     private bool _active, _checkingCalibration, _acceptingResults, _ready, _executionRequested, _awaitingAcknowledgement;
     private bool _savingCalibration, _receivedPlanningTerminal;
     private bool _hasStarted;
+    private bool _requestHasTimeout;
+    private int _requestedTimeoutSeconds = MtcPlanningSettings.DefaultTimeoutSeconds;
     private float _deadline, _saveDeadline;
     private int _generation, _saveGeneration, _calibrationRevision;
     private string _requestId, _planId, _snapshot, _saveSnapshot;
@@ -264,6 +266,7 @@ public class FixtureTilingController : MonoBehaviour
         { SetStatus(reason); return; }
         InvalidateReview(null);
         _requestId = requestId; _request = request;
+        _requestedTimeoutSeconds = MtcPlanningSettings.TimeoutSeconds;
         _snapshot = CurrentSnapshot(); _calibrationRevision = RobotCoordinateService.Instance.CalibrationRevision;
         _requestModel = ToolSelectionController.Instance?.CurrentModel;
         try
@@ -285,13 +288,17 @@ public class FixtureTilingController : MonoBehaviour
         if (this == null || generation != _generation || !_checkingCalibration) return;
         if (!ContextValid() || !SnapshotMatches()) { InvalidateReview("Job, tool or alignment changed. Plan again."); return; }
         if (!RunningCalibrationMatches(response, out string reason)) { InvalidateReview(reason); return; }
+        _requestHasTimeout = MtcPlanningStop.IsSupported(response.values, 9);
+        if (!_requestHasTimeout && _requestedTimeoutSeconds != MtcPlanningSettings.DefaultTimeoutSeconds)
+        { InvalidateReview(MtcPlanningStop.TimeoutUnsupported); return; }
         _checkingCalibration = false; _acceptingResults = true;
-        double timeout = response.values[7].double_value;
-        _deadline = Time.realtimeSinceStartup + (float)(Math.Max(60, timeout) * _settings.ItemCount + 30);
+        double backendBudget = _requestHasTimeout ? _requestedTimeoutSeconds :
+            Math.Max(MtcPlanningSettings.DefaultTimeoutSeconds, response.values[7].double_value) * _settings.ItemCount;
+        _deadline = Time.realtimeSinceStartup + (float)backendBudget + MtcPlanningStop.ResultGraceSeconds;
         try
         {
-            if (MtcPlanningStop.IsSupported(response.values, 8))
-                PlanningStop.Begin(_connection, _requestId);
+            bool stopSupported = MtcPlanningStop.IsSupported(response.values, 8);
+            if (_requestHasTimeout || stopSupported) PlanningStop.Begin(_connection, _requestId, stopSupported, _deadline);
             if (!TryPublishPlan(_request, out reason))
             {
                 _planningStop?.ForgetUnsent();
@@ -335,6 +342,7 @@ public class FixtureTilingController : MonoBehaviour
     private void OnPlanningStopFinished(string status, string reason, bool stopRequested)
     {
         if (status == "cancelled") InvalidateReview("Fixture planning stopped. Plan again.");
+        else if (status == "timed_out" || status == "unconfirmed") InvalidateReview(reason + " Plan again.");
         else if (status == "rejected") InvalidateReview("ROS rejected fixture planning: " + reason);
         else if (stopRequested) InvalidateReview("Fixture preview discarded. Plan again.");
         else _receivedPlanningTerminal = true;
@@ -367,7 +375,16 @@ public class FixtureTilingController : MonoBehaviour
     }
 
     protected virtual bool TryPublishPlan(FixtureTilingTaskMsg request, out string reason)
-    { _connection.Publish(PlanTopic, request); reason = null; return true; }
+    {
+        if (_requestHasTimeout)
+            MtcPlanningStop.PublishTimedPlan(_connection, new MtcPlanRequestMsg
+            {
+                mode = MtcPlanRequestMsg.FIXTURE, timeout_seconds = (uint)_requestedTimeoutSeconds, fixture = request
+            });
+        else _connection.Publish(PlanTopic, request);
+        reason = null;
+        return true;
+    }
     protected virtual bool TryPublishExecution(string planId, out string reason)
     { _connection.Publish(ExecuteTopic, new StringMsg(planId)); reason = null; return true; }
 

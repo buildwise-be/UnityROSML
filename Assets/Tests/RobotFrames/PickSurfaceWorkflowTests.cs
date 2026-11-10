@@ -20,6 +20,7 @@ public sealed class PickSurfaceWorkflowTests
     private Transform _tracking;
     private CancellationTokenSource _fakeCancellation;
     private bool _previousConnectionError;
+    private object _publishedTimedPlan;
 
     [SetUp]
     public void SetupActualPickControllerWithoutTransport()
@@ -309,9 +310,89 @@ public sealed class PickSurfaceWorkflowTests
         Assert.That(TypeOf("PickPlaceController").GetField("TaskPlanTopic").GetRawConstantValue(), Is.EqualTo("/pick_place_task_target"));
         Assert.That(TypeOf("PickPlaceController").GetField("CapabilityParameter", BindingFlags.Static | BindingFlags.NonPublic).GetRawConstantValue(),
             Is.EqualTo("pick_place_task_planning_enabled"));
-        // A nonnull cancellation token makes the real connector's connection
-        // predicate true; no Connect, Start, socket or network thread is run.
-        _fakeConnector = Add("Surface-test disabled capability transport", "Unity.Robotics.ROSTCPConnector.ROSConnection", false);
+        ArmCapabilityCheck(task);
+        object response = Msg("RclInterfaces.GetParametersResponse"), value = BoolParameter(false);
+        ArrayField(response, "values", value);
+        Call(_controller, "OnCapabilityResponse", response, (int)Read(_controller, "_generation"));
+        Assert.That(Read(_controller, "_checkingCapability"), Is.EqualTo(false));
+        Assert.That(Read(_controller, "_hasPlanningRequestBeenSent"), Is.EqualTo(false));
+        Assert.That(Read(_controller, "_requestedTask"), Is.Null);
+        Assert.That(Get<string>(_plans, "StatusText"), Does.Contain("item/speed pick update"));
+        Assert.That(Get<bool>(_plans, "IsPlanning"), Is.False);
+        Assert.That(Call(_fakeConnector, "GetTopic", "/pick_place_task_target"), Is.Null);
+        Assert.That(Call(_fakeConnector, "GetTopic", "/pick_place_tcp_target"), Is.Null);
+    }
+
+    [TestCase(60)]
+    [TestCase(95)]
+    public void TimedPickSendsTheCapturedWholePlanBudgetAndKeepsItsCorrelation(int seconds)
+    {
+        CaptureCenterPair(); object task = TaskRequest();
+        ArmCapabilityCheck(task);
+        Set(_controller, "_requestedTimeoutSeconds", seconds);
+        const string topicName = "/mtc/plan_request";
+        MethodInfo register = _fakeConnector.GetType().GetMethods().Single(method =>
+            method.Name == "RegisterPublisher" && method.IsGenericMethodDefinition);
+        object topic = register.MakeGenericMethod(TypeOf("RosMessageTypes.Ur16eInterfaces.MtcPlanRequestMsg"))
+            .Invoke(_fakeConnector, new object[] { topicName, null, null });
+        MethodInfo subscribe = topic.GetType().GetMethod("AddSubscriber");
+        MethodInfo capture = GetType().GetMethod(nameof(CaptureTimedPlan), Instance);
+        subscribe.Invoke(topic, new[] { Delegate.CreateDelegate(subscribe.GetParameters()[0].ParameterType, this, capture) });
+        _publishedTimedPlan = null;
+        object response = Msg("RclInterfaces.GetParametersResponse");
+        ArrayField(response, "values", BoolParameter(true), BoolParameter(true), BoolParameter(true));
+
+        Call(_controller, "OnCapabilityResponse", response, (int)Read(_controller, "_generation"));
+
+        Assert.That(_publishedTimedPlan, Is.Not.Null);
+        Assert.That(Read(_publishedTimedPlan, "mode"), Is.EqualTo(1));
+        Assert.That(Read(_publishedTimedPlan, "timeout_seconds"), Is.EqualTo(seconds));
+        Assert.That(Read(_publishedTimedPlan, "pick"), Is.SameAs(task));
+        Assert.That(Read(_plans, "_planningRequestId"), Is.Not.Null.And.Not.EqualTo("0:0"));
+        Assert.That((float)Read(_plans, "_planningDeadline") - Time.realtimeSinceStartup, Is.GreaterThan(seconds));
+        Assert.That(Call(_fakeConnector, "GetTopic", "/pick_place_task_target"), Is.Null);
+
+        object writer = Activator.CreateInstance(TypeOf("Unity.Robotics.ROSTCPConnector.MessageGeneration.MessageSerializer"));
+        Call(writer, "SerializeMessage", _publishedTimedPlan);
+        byte[] wire = (byte[])Call(writer, "GetBytes");
+        object reader = Activator.CreateInstance(TypeOf("Unity.Robotics.ROSTCPConnector.MessageGeneration.MessageDeserializer"));
+        Call(reader, "InitWithBuffer", wire);
+        object decoded = _publishedTimedPlan.GetType()
+            .GetMethod("Deserialize", BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).Invoke(null, new[] { reader });
+        Assert.That(Read(decoded, "timeout_seconds"), Is.EqualTo(seconds));
+        Assert.That(Read(reader, "offset"), Is.EqualTo(wire.Length));
+        TestContext.WriteLine("Timed pick ROS CDR " + Convert.ToBase64String(wire));
+    }
+
+    [Test]
+    public void OlderBackendCannotSilentlyIgnoreACustomPlanningTime()
+    {
+        CaptureCenterPair(); ArmCapabilityCheck(TaskRequest());
+        Set(_controller, "_requestedTimeoutSeconds", 95);
+        object response = Msg("RclInterfaces.GetParametersResponse");
+        ArrayField(response, "values", BoolParameter(true), BoolParameter(true));
+
+        Call(_controller, "OnCapabilityResponse", response, (int)Read(_controller, "_generation"));
+
+        Assert.That(Get<bool>(_plans, "IsPlanning"), Is.False);
+        Assert.That(Get<string>(_plans, "StatusText"), Does.Contain("custom MTC planning time limit"));
+        Assert.That(Call(_fakeConnector, "GetTopic", "/mtc/plan_request"), Is.Null);
+        Assert.That(Call(_fakeConnector, "GetTopic", "/pick_place_task_target"), Is.Null);
+    }
+
+    private void CaptureTimedPlan(object message) => _publishedTimedPlan = message;
+
+    private static object BoolParameter(bool enabled)
+    {
+        object value = Msg("RclInterfaces.ParameterValueMsg");
+        Set(value, "type", (byte)1); Set(value, "bool_value", enabled);
+        return value;
+    }
+
+    private void ArmCapabilityCheck(object task)
+    {
+        // Exercise the actual connector's local publication without a socket or network thread.
+        _fakeConnector = Add("Surface-test capability transport", "Unity.Robotics.ROSTCPConnector.ROSConnection", false);
         ((Behaviour)_fakeConnector).enabled = false;
         _fakeConnector.GetType().GetProperty("ConnectOnStart").SetValue(_fakeConnector, false);
         _fakeConnector.GetType().GetProperty("ShowHud").SetValue(_fakeConnector, false); Call(_fakeConnector, "Awake");
@@ -321,16 +402,6 @@ public sealed class PickSurfaceWorkflowTests
         Set(_controller, "_connection", _fakeConnector); Set(_controller, "_checkingCapability", true);
         Set(_controller, "_requestedTask", task); Set(_controller, "_requestedContactPoses", Read(task, "contacts"));
         Set(_controller, "_requestCalibrationRevision", Get<int>(_coordinates, "CalibrationRevision"));
-        object response = Msg("RclInterfaces.GetParametersResponse"), value = Msg("RclInterfaces.ParameterValueMsg");
-        Set(value, "type", (byte)1); Set(value, "bool_value", false); ArrayField(response, "values", value);
-        Call(_controller, "OnCapabilityResponse", response, (int)Read(_controller, "_generation"));
-        Assert.That(Read(_controller, "_checkingCapability"), Is.EqualTo(false));
-        Assert.That(Read(_controller, "_hasPlanningRequestBeenSent"), Is.EqualTo(false));
-        Assert.That(Read(_controller, "_requestedTask"), Is.Null);
-        Assert.That(Get<string>(_plans, "StatusText"), Does.Contain("item/speed pick update"));
-        Assert.That(Get<bool>(_plans, "IsPlanning"), Is.False);
-        Assert.That(Call(_fakeConnector, "GetTopic", "/pick_place_task_target"), Is.Null);
-        Assert.That(Call(_fakeConnector, "GetTopic", "/pick_place_tcp_target"), Is.Null);
     }
 
     [Test]

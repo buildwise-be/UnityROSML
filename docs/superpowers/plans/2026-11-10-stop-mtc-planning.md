@@ -20,3 +20,18 @@ Use `/execute_pick_place_plan` to send the reviewed plan ID for a correlated pic
 The ROS repository carries its own replay procedure and results. The Unity tests
 used the actual connector assembly with offline message injection and local
 publish callbacks.
+
+## Whole-plan time limit
+
+Keep one saved whole-second setting for the three Unity task modes. Default to
+60 seconds and allow 1 to 600. Capture the setting on Plan before starting the
+capability checks. Send it together with the job in `MtcPlanRequest` on
+`/mtc/plan_request`. Older ROS versions can use their original request topics
+with the default Unity selection. Reject custom selections on those versions.
+
+Start one steady-clock deadline at ROS admission. Share it across setup,
+solving and all fixture cycles, then check it before accepting a result.
+Legacy ROS requests and zero-valued time limits also get 60 seconds. Keep the
+planner occupied until its current operation returns and publish `timed_out`
+on the matching planning-control topic after release. Unity discards the
+preview and enables another Plan after that outcome.

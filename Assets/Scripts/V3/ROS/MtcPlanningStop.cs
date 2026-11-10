@@ -3,6 +3,7 @@ using System.Globalization;
 using RosMessageTypes.BuiltinInterfaces;
 using RosMessageTypes.RclInterfaces;
 using RosMessageTypes.Std;
+using RosMessageTypes.Ur16eInterfaces;
 using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
 
@@ -10,6 +11,10 @@ using UnityEngine;
 internal sealed class MtcPlanningStop : IDisposable
 {
     public const string CapabilityParameter = "mtc_planning_stop_enabled";
+    public const string TimeoutUnsupported = "Update ROS to use a custom MTC planning time limit.";
+    public const float ResultGraceSeconds = 30f;
+    private const string TimeoutCapabilityParameter = "mtc_plan_timeout_enabled";
+    private const string TimedPlanTopic = "/mtc/plan_request";
     private const string CommandTopic = "/mtc/cancel_planning";
     private static long _lastRequestTicks;
 
@@ -18,12 +23,12 @@ internal sealed class MtcPlanningStop : IDisposable
     private readonly Action<string, string, bool> _finished;
     private ROSConnection _connection;
     private string _key;
-    private bool _sendFailed;
-    private float _retryAt;
+    private bool _canSendStop, _sendFailed;
+    private float _retryAt, _resultDeadline;
 
     public bool IsActive => _key != null;
     public bool StopRequested { get; private set; }
-    public bool CanRequestStop => IsActive && (!StopRequested || (Connected && Time.realtimeSinceStartup >= _retryAt));
+    public bool CanRequestStop => IsActive && _canSendStop && (!StopRequested || (Connected && Time.realtimeSinceStartup >= _retryAt));
     private bool Connected => _connection != null && _connection.HasConnectionThread && !_connection.HasConnectionError;
 
     public string Feedback
@@ -56,12 +61,14 @@ internal sealed class MtcPlanningStop : IDisposable
         _connection = connection;
     }
 
-    public void Begin(ROSConnection connection, string requestId)
+    public void Begin(ROSConnection connection, string requestId, bool canSendStop, float resultDeadline)
     {
         if (string.IsNullOrEmpty(requestId)) throw new ArgumentException("Planning request ID is required.", nameof(requestId));
         if (IsActive) throw new InvalidOperationException("A ROS planning request is already tracked.");
         Bind(connection);
         _key = _scope + "/" + requestId;
+        _canSendStop = canSendStop;
+        _resultDeadline = resultDeadline;
     }
 
     public bool RequestStop()
@@ -75,6 +82,13 @@ internal sealed class MtcPlanningStop : IDisposable
 
     public void Tick()
     {
+        if (IsActive && !_canSendStop && Time.realtimeSinceStartup > _resultDeadline)
+        {
+            Reset();
+            _finished?.Invoke("unconfirmed", "No planning outcome received from ROS.", false);
+            _changed?.Invoke();
+            return;
+        }
         if (!StopRequested || _retryAt <= 0f || Time.realtimeSinceStartup < _retryAt) return;
         _retryAt = 0f;
         _changed?.Invoke();
@@ -105,6 +119,7 @@ internal sealed class MtcPlanningStop : IDisposable
                 _changed?.Invoke();
                 return;
             case "cancelled":
+            case "timed_out":
             case "finished":
             case "rejected":
                 bool wasRequested = StopRequested;
@@ -121,7 +136,7 @@ internal sealed class MtcPlanningStop : IDisposable
     private void Reset()
     {
         _key = null;
-        StopRequested = _sendFailed = false;
+        StopRequested = _canSendStop = _sendFailed = false;
         _retryAt = 0;
     }
 
@@ -139,25 +154,28 @@ internal sealed class MtcPlanningStop : IDisposable
     public static void RequestCapabilities(ROSConnection connection, string service, string[] required,
         Func<bool> isCurrent, Action<GetParametersResponse> completed)
     {
-        var parameters = new string[required.Length + 1];
-        Array.Copy(required, parameters, required.Length);
-        parameters[required.Length] = CapabilityParameter;
-
-        connection.SendServiceMessage<GetParametersResponse>(service, new GetParametersRequest(parameters), response =>
+        Request(2);
+        void Request(int optionalCount)
         {
-            if (!isCurrent()) return;
-            if (response?.values != null && response.values.Length != 0)
+            var names = new string[required.Length + optionalCount];
+            Array.Copy(required, names, required.Length);
+            if (optionalCount >= 1) names[required.Length] = CapabilityParameter;
+            if (optionalCount >= 2) names[required.Length + 1] = TimeoutCapabilityParameter;
+            connection.SendServiceMessage<GetParametersResponse>(service, new GetParametersRequest(names), response =>
             {
-                completed(response);
-                return;
-            }
-
-            // Older ROS nodes may return an empty result for the whole request when one name is undeclared.
-            connection.SendServiceMessage<GetParametersResponse>(service, new GetParametersRequest(required), legacyResponse =>
-            {
-                if (isCurrent()) completed(legacyResponse);
+                if (!isCurrent()) return;
+                // Older nodes may return an empty result if any requested name is undeclared.
+                if (optionalCount > 0 && (response?.values == null || response.values.Length == 0)) Request(optionalCount - 1);
+                else completed(response);
             });
-        });
+        }
+    }
+
+    public static void PublishTimedPlan(ROSConnection connection, MtcPlanRequestMsg request)
+    {
+        if (connection.GetTopic(TimedPlanTopic)?.IsPublisher != true)
+            connection.RegisterPublisher<MtcPlanRequestMsg>(TimedPlanTopic);
+        connection.Publish(TimedPlanTopic, request);
     }
 
     public static TimeMsg NewRequestStamp()

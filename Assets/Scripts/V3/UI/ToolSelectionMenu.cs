@@ -88,6 +88,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     private Button _planButton;
     private Button _executeButton;
     private Button _stopPlanningButton;
+    private System.Action _refreshPlanningTime;
     private Button _rescanButton;
     private Button _recenterButton;
     private Button _alignButton;
@@ -801,6 +802,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         RefreshAlignmentControls();
         RefreshPointPlacementControls();
         RefreshPointRegistrationPanels();
+        _refreshPlanningTime?.Invoke();
         RefreshFixtureMenu();
         RefreshSceneNavigation();
         RefreshPickSettingsMenu();
@@ -1042,6 +1044,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         _qrStatus.fontSizeMax = 12f;
         BuildForceReadout();
         BuildPickSettings();
+        _refreshPlanningTime = BuildPlanningTimeControl(_taskView, new Vector2(456f, -574f));
         BuildSceneNavigation();
         BuildAlignmentView();
         BuildPointPlacementView();
@@ -1287,6 +1290,59 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         trigger.triggers.Add(pressed);
         trigger.triggers.Add(released);
         RefreshPlayback();
+    }
+
+    private bool CanEditPlanningTime => !IsPlacementBusy && !RobotExecutionState.IsBusy && MTCPlansManager.ActiveExecution == null &&
+        _pickSettingsController?.IsPlanning != true && _legacyPlans?.IsPlanning != true &&
+        _tcpPlanning?.IsPlanning != true && _fixtureTiling?.IsPlanning != true;
+
+    private System.Action BuildPlanningTimeControl(Transform parent, Vector2 position)
+    {
+        RectTransform card = Rect("Planning time control", parent, position, new Vector2(300f, 108f));
+        Image background = card.gameObject.AddComponent<Image>();
+        background.color = new Color(0.035f, 0.06f, 0.09f, 0.97f);
+        Outline border = card.gameObject.AddComponent<Outline>();
+        border.effectColor = new Color(0.2f, 0.44f, 0.53f, 0.8f);
+        border.effectDistance = new Vector2(1f, -1f);
+        AddHoverTracking(card.gameObject);
+        Text("Planning time title", card, new Vector2(12f, -8f), new Vector2(186f, 28f), "Planning time", 18f);
+        TextMeshProUGUI value = Text("Planning time value", card, new Vector2(198f, -8f), new Vector2(90f, 28f), "", 18f);
+        value.alignment = TextAlignmentOptions.MidlineRight;
+        Text("Planning time range", card, new Vector2(12f, -37f), new Vector2(276f, 20f),
+            "Whole plan · " + MtcPlanningSettings.MinTimeoutSeconds + "–" + MtcPlanningSettings.MaxTimeoutSeconds + " s", 13f)
+            .color = new Color(0.73f, 0.81f, 0.87f);
+
+        int[] steps = { -30, -1, 1, 30 };
+        var buttons = new Button[steps.Length];
+        for (int index = 0; index < steps.Length; index++)
+        {
+            int step = steps[index];
+            int magnitude = Mathf.Abs(step);
+            string name = (step < 0 ? "Decrease" : "Increase") + " planning time by " + magnitude +
+                (magnitude == 1 ? " second" : " seconds");
+            Button button = CreateButton(name, card, new Vector2(12f + index * 71f, -64f), new Vector2(63f, 32f), out TextMeshProUGUI label);
+            label.text = (step < 0 ? "−" : "+") + magnitude + " s";
+            label.fontSize = 14f;
+            button.onClick.AddListener(() =>
+            {
+                if (CanEditPlanningTime) MtcPlanningSettings.TimeoutSeconds += step;
+                RefreshTask();
+            });
+            buttons[index] = button;
+        }
+
+        void Refresh()
+        {
+            int seconds = MtcPlanningSettings.TimeoutSeconds;
+            value.text = seconds + " s";
+            bool editable = CanEditPlanningTime;
+            for (int index = 0; index < buttons.Length; index++)
+                buttons[index].interactable = editable && (steps[index] < 0
+                    ? seconds > MtcPlanningSettings.MinTimeoutSeconds : seconds < MtcPlanningSettings.MaxTimeoutSeconds);
+        }
+
+        Refresh();
+        return Refresh;
     }
 
     private void BuildPathThicknessSlider()

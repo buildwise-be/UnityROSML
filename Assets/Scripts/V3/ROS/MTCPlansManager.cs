@@ -121,12 +121,15 @@ public class MTCPlansManager : MonoBehaviour
     }
 
     /// <summary>Arm callbacks only for a deliberate local tile-plan request. Does not publish anything.</summary>
-    public bool BeginPlanningRequest() => BeginPlanningRequestCore(null, null);
+    public bool BeginPlanningRequest() => BeginPlanningRequestCore(null, null, _planningTimeout);
 
     public bool BeginCorrelatedPlanningRequest(ROSConnection connection, string requestId) =>
-        BeginPlanningRequestCore(connection, requestId);
+        BeginPlanningRequestCore(connection, requestId, _planningTimeout);
 
-    private bool BeginPlanningRequestCore(ROSConnection connection, string requestId)
+    internal bool BeginTimedPlanningRequest(ROSConnection connection, string requestId, int timeoutSeconds, bool stopSupported) =>
+        BeginPlanningRequestCore(connection, requestId, timeoutSeconds + MtcPlanningStop.ResultGraceSeconds, stopSupported);
+
+    private bool BeginPlanningRequestCore(ROSConnection connection, string requestId, float resultTimeout, bool stopSupported = true)
     {
         if (RobotExecutionState.IsBusy || ActiveExecution != null) return false;
         if (IsPlanning) return false;
@@ -140,8 +143,8 @@ public class MTCPlansManager : MonoBehaviour
         _acceptingResults = true;
         _planningRequestId = requestId;
         _requestCalibrationRevision = RobotCoordinateService.Instance.CalibrationRevision;
-        _planningDeadline = Time.realtimeSinceStartup + _planningTimeout;
-        if (!string.IsNullOrEmpty(requestId)) PlanningStop.Begin(connection, requestId);
+        _planningDeadline = Time.realtimeSinceStartup + resultTimeout;
+        if (!string.IsNullOrEmpty(requestId)) PlanningStop.Begin(connection, requestId, stopSupported, _planningDeadline);
         SetStatus("Planning MTC pick / place from tool contact poses...");
         return true;
     }
@@ -166,6 +169,7 @@ public class MTCPlansManager : MonoBehaviour
     private void OnPlanningStopFinished(string status, string reason, bool stopRequested)
     {
         if (status == "cancelled") RejectPlanningRequest("MTC planning stopped. Plan again.");
+        else if (status == "timed_out" || status == "unconfirmed") RejectPlanningRequest(reason + " Plan again.");
         else if (status == "rejected") RejectPlanningRequest("ROS rejected MTC planning: " + reason);
         else if (stopRequested) RejectPlanningRequest("MTC preview discarded. Plan again.");
         else SetStatus(StatusText);

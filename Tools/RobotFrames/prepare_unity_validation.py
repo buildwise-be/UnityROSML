@@ -93,6 +93,7 @@ def main():
                     "Assets/Scripts/V3/ROS/ToolSelectionController.cs", "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
                     "Assets/Scripts/V3/UI/RobotRegistrationGuide.cs",
                     "Assets/Scripts/V3/ROS/TcpPlanningController.cs", "Assets/Scripts/V3/ROS/MtcPlanningStop.cs", "Assets/Scripts/V3/TcpTargetPreview.cs",
+                    "Assets/Scripts/V3/ROS/MtcPlanningSettings.cs",
                     "Assets/Scripts/V3/URInputManager.cs", "Assets/Scripts/V3/TargetRotationHandles.cs",
                     "Assets/Scripts/V3/RobotAppNavigation.cs", "Assets/Scripts/V3/UI/RobotWelcomeMenu.cs",
                     "Assets/Scripts/V3/UI/ToolSelectionMenu.Navigation.cs",

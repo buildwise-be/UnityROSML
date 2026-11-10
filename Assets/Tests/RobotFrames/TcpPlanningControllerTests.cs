@@ -13,6 +13,7 @@ public class TcpPlanningControllerTests
     private Component _controller;
     private TcpPlanReview _review;
     private readonly List<string> _sentStopKeys = new List<string>();
+    private object _sentTimedPlan;
 
     [SetUp]
     public void SetUp()
@@ -100,7 +101,7 @@ public class TcpPlanningControllerTests
             var request = _controller.GetType().GetProperty("StopRequest", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.That(request, Is.Not.Null, "TCP needs separate ROS stop state that survives clearing its review.");
             stop = request.GetValue(_controller);
-            stop.GetType().GetMethod("Begin").Invoke(stop, new object[] { connection, "123:456" });
+            stop.GetType().GetMethod("Begin").Invoke(stop, new object[] { connection, "123:456", true, float.PositiveInfinity });
             // Observe the real connector's local publish callback without starting a connection thread.
             object topic = connection.GetType().GetMethod("GetTopic").Invoke(connection, new object[] { "/mtc/cancel_planning" });
             MethodInfo subscribe = topic.GetType().GetMethod("AddSubscriber");
@@ -146,6 +147,53 @@ public class TcpPlanningControllerTests
     }
 
     private void CaptureStopKey(object message) => _sentStopKeys.Add((string)GetMember(message, "data"));
+
+    [Test]
+    public void TimedTcpPlanCarriesTheBudgetAndTracksExpiryWithoutManualStop()
+    {
+        var transport = new GameObject("Offline timed TCP transport");
+        transport.SetActive(false);
+        try
+        {
+            Component connection = transport.AddComponent(RuntimeType("Unity.Robotics.ROSTCPConnector.ROSConnection"));
+            Field(_controller, "_connection").SetValue(_controller, connection);
+            foreach (string target in new[] { "_requestedA", "_requestedB" })
+            {
+                FieldInfo field = Field(_controller, target);
+                object pose = Activator.CreateInstance(field.FieldType);
+                SetMember(GetMember(pose, "header"), "frame_id", "ur_base_link");
+                field.SetValue(_controller, pose);
+            }
+            const string topicName = "/mtc/plan_request";
+            MethodInfo register = connection.GetType().GetMethods().Single(method =>
+                method.Name == "RegisterPublisher" && method.IsGenericMethodDefinition);
+            object topic = register.MakeGenericMethod(RuntimeType("RosMessageTypes.Ur16eInterfaces.MtcPlanRequestMsg"))
+                .Invoke(connection, new object[] { topicName, null, null });
+            MethodInfo subscribe = topic.GetType().GetMethod("AddSubscriber");
+            MethodInfo capture = GetType().GetMethod(nameof(CaptureTimedPlan), BindingFlags.Instance | BindingFlags.NonPublic);
+            subscribe.Invoke(topic, new[] { Delegate.CreateDelegate(subscribe.GetParameters()[0].ParameterType, this, capture) });
+            _sentTimedPlan = null;
+
+            _controller.GetType().GetMethod("PublishPlan", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(_controller, new object[] { true, 110, false });
+
+            Assert.That(_sentTimedPlan, Is.Not.Null);
+            Assert.That(GetMember(_sentTimedPlan, "mode"), Is.EqualTo(2));
+            Assert.That(GetMember(_sentTimedPlan, "timeout_seconds"), Is.EqualTo(110));
+            object poses = GetMember(_sentTimedPlan, "tcp");
+            Assert.That((Array)GetMember(poses, "poses"), Has.Length.EqualTo(2));
+            Assert.That(GetMember(_controller, "CanStopPlanning"), Is.False);
+            Assert.That(GetMember(_controller, "IsPlanning"), Is.True);
+            object stop = Field(_controller, "_planningStop").GetValue(_controller);
+            ControlStatus(stop, "tcp/" + _review.RequestId, "timed_out", "MTC planning timed out after 110 seconds.");
+            Assert.That(GetMember(_controller, "IsPlanning"), Is.False);
+            Assert.That(GetMember(_controller, "CanExecute"), Is.False);
+            Assert.That((string)GetMember(_controller, "StatusText"), Does.Contain("110 seconds"));
+        }
+        finally { UnityEngine.Object.DestroyImmediate(transport); }
+    }
+
+    private void CaptureTimedPlan(object message) => _sentTimedPlan = message;
 
     [TestCase(null)]
     [TestCase("")]
@@ -227,12 +275,12 @@ public class TcpPlanningControllerTests
         stop.Invoke(_controller, null);
     }
 
-    private static void ControlStatus(object stop, string key, string status)
+    private static void ControlStatus(object stop, string key, string status, string reason = "Stopped")
     {
         MethodInfo callback = stop.GetType().GetMethod("OnStatus", BindingFlags.Instance | BindingFlags.NonPublic);
         Type messageType = callback.GetParameters()[0].ParameterType;
         object message = Activator.CreateInstance(messageType,
-            new object[] { "{\"key\":\"" + key + "\",\"status\":\"" + status + "\",\"reason\":\"Stopped\"}" });
+            new object[] { "{\"key\":\"" + key + "\",\"status\":\"" + status + "\",\"reason\":\"" + reason + "\"}" });
         callback.Invoke(stop, new[] { message });
     }
 

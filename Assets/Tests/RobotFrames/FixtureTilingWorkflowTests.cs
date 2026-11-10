@@ -12,6 +12,7 @@ public sealed class FixtureTilingWorkflowTests
     private readonly List<GameObject> _owned = new List<GameObject>();
     private Component _controller, _visualizer, _coordinates, _tools;
     private object _scene, _solution;
+    private object _publishedTimedPlan;
     private const string Request = "fixture-test-request", Plan = "fixture-test-plan";
 
     [SetUp]
@@ -187,6 +188,37 @@ public sealed class FixtureTilingWorkflowTests
         Assert.That(Get<bool>(_controller, "IsPlanning") || Get<bool>(_controller, "CanExecute"), Is.False);
         Assert.That(Read(_controller, "PublishCount"), Is.EqualTo(0));
     }
+
+    [Test]
+    public void TimedFixturePublishesOneBudgetForTheWholeBatch()
+    {
+        Component actual = Add("Timed fixture controller", "FixtureTilingController");
+        Component transport = Add("Offline fixture timed transport", "Unity.Robotics.ROSTCPConnector.ROSConnection");
+        Set(actual, "_connection", transport);
+        Set(actual, "_requestHasTimeout", true);
+        Set(actual, "_requestedTimeoutSeconds", 85);
+        object fixture = Msg("Ur16eInterfaces.FixtureTilingTaskMsg");
+        Set(fixture, "request_id", Request);
+        Set(fixture, "item_count", 5u);
+        const string topicName = "/mtc/plan_request";
+        MethodInfo register = transport.GetType().GetMethods().Single(method =>
+            method.Name == "RegisterPublisher" && method.IsGenericMethodDefinition);
+        object topic = register.MakeGenericMethod(TypeOf("RosMessageTypes.Ur16eInterfaces.MtcPlanRequestMsg"))
+            .Invoke(transport, new object[] { topicName, null, null });
+        MethodInfo subscribe = topic.GetType().GetMethod("AddSubscriber");
+        MethodInfo capture = GetType().GetMethod(nameof(CaptureTimedPlan), BindingFlags.Instance | BindingFlags.NonPublic);
+        subscribe.Invoke(topic, new[] { Delegate.CreateDelegate(subscribe.GetParameters()[0].ParameterType, this, capture) });
+        _publishedTimedPlan = null;
+
+        Assert.That(Private(actual, "TryPublishPlan", fixture, null), Is.EqualTo(true));
+
+        Assert.That(_publishedTimedPlan, Is.Not.Null);
+        Assert.That(Read(_publishedTimedPlan, "mode"), Is.EqualTo(3));
+        Assert.That(Read(_publishedTimedPlan, "timeout_seconds"), Is.EqualTo(85));
+        Assert.That(Read(_publishedTimedPlan, "fixture"), Is.SameAs(fixture));
+    }
+
+    private void CaptureTimedPlan(object message) => _publishedTimedPlan = message;
 
     [Test]
     public void StartingOutsideFixtureModeDoesNotRequestOrRegisterRosTransport()

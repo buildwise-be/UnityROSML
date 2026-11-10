@@ -258,6 +258,7 @@ public sealed partial class ToolSelectionMenu
                 Button plan = FixtureButton("Plan fixture batch", _fixturePageContent, 0, 334, 198, 42, PlanTask, "Plan preview");
                 Button execute = FixtureButton("Execute fixture batch", _fixturePageContent, 210, 334, 198, 42, ExecuteTask, "Execute plan");
                 Button stop = FixtureButton("Stop fixture planning", _fixturePageContent, 210, 334, 198, 42, StopPlanningTask, "Stop Planning");
+                _fixtureRefreshValues.Add(BuildPlanningTimeControl(_fixturePageContent, new Vector2(440f, -334f)));
                 _fixtureRefreshValues.Add(() =>
                 {
                     bool motionFree = !RobotExecutionState.IsBusy && MTCPlansManager.ActiveExecution == null;

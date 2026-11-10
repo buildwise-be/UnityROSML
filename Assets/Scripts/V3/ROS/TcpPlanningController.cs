@@ -4,6 +4,7 @@ using RosMessageTypes.Geometry;
 using RosMessageTypes.Moveit;
 using RosMessageTypes.RclInterfaces;
 using RosMessageTypes.Std;
+using RosMessageTypes.Ur16eInterfaces;
 using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
 
@@ -132,6 +133,7 @@ public class TcpPlanningController : MonoBehaviour
         { SetStatus("Capture both TCP A (hold bumper) and B (double bumper) first."); return; }
 
         int generation = _generation;
+        int timeoutSeconds = MtcPlanningSettings.TimeoutSeconds;
         _checkingCapability = true;
         _deadline = Time.realtimeSinceStartup + _capabilityTimeout;
         SetStatus("Checking ROS plan-only TCP support...");
@@ -143,25 +145,38 @@ public class TcpPlanningController : MonoBehaviour
                 if (!TargetsMatchRequest()) { InvalidatePlan("Targets or calibration changed. Plan again."); return; }
                 if (!MtcPlanningStop.IsSupported(response?.values, 0))
                 { InvalidatePlan("ROS needs the plan-only TCP update. Existing direct-TCP topics execute immediately."); return; }
-                try
-                {
-                    TimeMsg stamp = MtcPlanningStop.NewRequestStamp();
-                    string requestId = MtcPlanningStop.RequestId(stamp);
-                    _review.Begin(requestId);
-                    _stopSupported = MtcPlanningStop.IsSupported(response.values, 1);
-                    if (_stopSupported) StopRequest.Begin(_connection, requestId);
-                    _deadline = Time.realtimeSinceStartup + _planningTimeout;
-                    _connection.Publish(PlanTopic, new PoseArrayMsg(
-                        new HeaderMsg { frame_id = _requestedA.header.frame_id, stamp = stamp },
-                        new[] { _requestedA.pose, _requestedB.pose }));
-                    SetStatus("Planning exact TCP A → B. No motion requested.");
-                }
-                catch (Exception)
-                {
-                    _planningStop?.ForgetUnsent();
-                    InvalidatePlan("TCP planning request could not be sent. Check ROS and plan again.");
-                }
+                bool timed = MtcPlanningStop.IsSupported(response.values, 2);
+                if (!timed && timeoutSeconds != MtcPlanningSettings.DefaultTimeoutSeconds)
+                { InvalidatePlan(MtcPlanningStop.TimeoutUnsupported); return; }
+                PublishPlan(timed, timeoutSeconds, MtcPlanningStop.IsSupported(response.values, 1));
             });
+    }
+
+    private void PublishPlan(bool timed, int timeoutSeconds, bool stopSupported)
+    {
+        try
+        {
+            TimeMsg stamp = MtcPlanningStop.NewRequestStamp();
+            string requestId = MtcPlanningStop.RequestId(stamp);
+            _review.Begin(requestId);
+            _stopSupported = stopSupported;
+            _deadline = Time.realtimeSinceStartup + (timed ? timeoutSeconds + MtcPlanningStop.ResultGraceSeconds : _planningTimeout);
+            if (timed || stopSupported) StopRequest.Begin(_connection, requestId, stopSupported, _deadline);
+            var poses = new PoseArrayMsg(new HeaderMsg { frame_id = _requestedA.header.frame_id, stamp = stamp },
+                new[] { _requestedA.pose, _requestedB.pose });
+            if (timed)
+                MtcPlanningStop.PublishTimedPlan(_connection, new MtcPlanRequestMsg
+                {
+                    mode = MtcPlanRequestMsg.TCP, timeout_seconds = (uint)timeoutSeconds, tcp = poses
+                });
+            else _connection.Publish(PlanTopic, poses);
+            SetStatus("Planning exact TCP A → B. No motion requested.");
+        }
+        catch (Exception)
+        {
+            _planningStop?.ForgetUnsent();
+            InvalidatePlan("TCP planning request could not be sent. Check ROS and plan again.");
+        }
     }
 
     public void StopPlanning()
@@ -182,6 +197,7 @@ public class TcpPlanningController : MonoBehaviour
     private void OnStopFinished(string status, string reason, bool requested)
     {
         if (status == "cancelled") InvalidatePlan("TCP planning stopped. Plan again.");
+        else if (status == "timed_out" || status == "unconfirmed") InvalidatePlan(reason + " Plan again.");
         else if (status == "rejected") InvalidatePlan("TCP planning rejected. " + reason);
         else if (requested) InvalidatePlan("TCP preview discarded. Plan again.");
     }
