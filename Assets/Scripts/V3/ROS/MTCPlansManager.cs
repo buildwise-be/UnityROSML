@@ -40,6 +40,7 @@ public class MTCPlansManager : MonoBehaviour
     public bool CanRepeat => !RobotExecutionState.IsBusy && IsReviewContextValid && _repeat.HasRetainedPlan &&
         _UR16eTrajectoryVisualizer != null && _UR16eTrajectoryVisualizer.IsShowingTrajectory(_pendingTrajectory) &&
         RepeatStartMatches(out _);
+    internal string RepeatConfirmationKey => CanRepeat ? _repeat.PlanId + "/" + _repeat.AttemptId : null;
     public bool HasPlanResult { get; private set; }
     public bool IsPlanning => _planningStop?.IsActive == true || (IsCurrentRequest && _acceptingResults);
     public bool CanStopPlanning => !_executionRequested && (_planningStop?.CanRequestStop == true ||
@@ -181,17 +182,25 @@ public class MTCPlansManager : MonoBehaviour
         SetReviewStatus(reason);
     }
 
-    public bool ConsumePlanForExecution()
+    public bool ConsumePlanForExecution() => ConsumeExecution(false);
+
+    internal bool ConsumeConfirmedRepeat(string confirmationKey) =>
+        !string.IsNullOrEmpty(confirmationKey) && confirmationKey == RepeatConfirmationKey && ConsumeExecution(true);
+
+    private bool ConsumeExecution(bool confirmedRepeat)
     {
-        if (!CanExecute) return false;
+        if (!CanExecute || _repeat.HasRetainedPlan != confirmedRepeat) return false;
         RepeatExecutionPayload = null;
         IdentifiedExecutionPlanId = null;
         _executionPlanId = _reviewedPlanId;
         _executionAttemptId = "";
-        if (_repeat.HasRetainedPlan)
+        if (confirmedRepeat)
         {
             if (!RepeatStartMatches(out _) || !_repeat.TryBeginAttempt(out _executionPlanId, out _executionAttemptId)) return false;
-            RepeatExecutionPayload = JsonUtility.ToJson(new RepeatRequest { plan_id = _executionPlanId, attempt_id = _executionAttemptId });
+            RepeatExecutionPayload = JsonUtility.ToJson(new RepeatRequest
+            {
+                plan_id = _executionPlanId, attempt_id = _executionAttemptId, placed_item_removed = true
+            });
         }
         else if (!string.IsNullOrEmpty(_planningRequestId)) IdentifiedExecutionPlanId = _executionPlanId;
         // Consuming permission must not stop listening for the outcome of the
@@ -215,9 +224,11 @@ public class MTCPlansManager : MonoBehaviour
         FinishExecution("request failed", reason);
     }
 
-    private void FinishExecution(string status, string reason, bool repeatable = false, string planId = null, string attemptId = null)
+    private void FinishExecution(string status, string reason, bool repeatable = false, string planId = null,
+        string attemptId = null, bool removalConfirmationSupported = false)
     {
-        _repeat.Complete(status == "succeeded", repeatable && !string.IsNullOrEmpty(_executionPlanId) && _executionPlanId == planId, planId, attemptId);
+        _repeat.Complete(status == "succeeded", repeatable && removalConfirmationSupported &&
+            !string.IsNullOrEmpty(_executionPlanId) && _executionPlanId == planId, planId, attemptId);
         if (!IsReviewContextValid || _pendingTrajectory == null) _repeat.Invalidate();
         _hasPlanningRequest = false;
         _executionRequested = false;
@@ -229,8 +240,11 @@ public class MTCPlansManager : MonoBehaviour
         _isLastPlanSuccessful = false;
         RobotExecutionState.SetBusy(this, false);
         _repeatStartReady = null;
-        SetStatus("MTC execution " + status + (string.IsNullOrEmpty(reason) ? "." : ": " + reason) +
-            (_repeat.HasRetainedPlan ? " Return to the initial joints to execute again; ROS will recheck the scene." : " Plan again before another execution."));
+        string next = " Plan again before another execution.";
+        if (_repeat.HasRetainedPlan) next = " Return to the initial joints to review the removal confirmation.";
+        else if (status == "succeeded" && repeatable && !removalConfirmationSupported)
+            next = " Update ROS to repeat with placed-item removal confirmation.";
+        SetStatus("MTC execution " + status + (string.IsNullOrEmpty(reason) ? "." : ": " + reason) + next);
     }
 
     private bool RepeatStartMatches(out string reason)
@@ -411,7 +425,8 @@ public class MTCPlansManager : MonoBehaviour
             }
             else if (status.status == "succeeded" || status.status == "failed" ||
                 status.status == "rejected" || status.status == "invalidated")
-                FinishExecution(status.status, status.reason, status.repeatable, status.plan_id, status.attempt_id);
+                FinishExecution(status.status, status.reason, status.repeatable, status.plan_id, status.attempt_id,
+                    status.placed_item_confirmation_required);
             return;
         }
         if (status.status == "planning_failed" || status.status == "rejected" || status.status == "failed")
@@ -472,8 +487,13 @@ public class MTCPlansManager : MonoBehaviour
         public string plan_id;
         public string attempt_id;
         public bool repeatable;
+        public bool placed_item_confirmation_required;
     }
-    [System.Serializable] private sealed class RepeatRequest { public string plan_id; public string attempt_id; }
+    [System.Serializable] private sealed class RepeatRequest
+    {
+        public string plan_id, attempt_id;
+        public bool placed_item_removed;
+    }
 }
 
 [System.Serializable]

@@ -498,6 +498,90 @@ public sealed class MtcExecutionWorkflowTests
         Private(helper, "OnStatus", msg);
     }
 
+    [TestCase(PickItem.Tile, "tile")]
+    [TestCase(PickItem.Brick, "brick")]
+    public void RepeatPromptsForThePlacedItemAndOnlyTheCurrentYesCanPublish(PickItem item, string label)
+    {
+        RetainPickForConfirmation(item);
+        Call(_menu, "ExecuteTask");
+        Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(1), "Opening the repeat prompt cannot request motion.");
+        Transform first = RepeatDialog();
+        Assert.That(first, Is.Not.Null, "A retained pick repeat needs a placed-item confirmation.");
+        Assert.That(ReadLabel(first, "Repeat confirmation title"), Is.EqualTo("Are you sure?"));
+        Assert.That(ReadLabel(first, "Repeat confirmation message"), Is.EqualTo(
+            "The previous run should have placed a " + label + " at the place location, re-executing will thus end up in a collision"));
+        object staleYes = ButtonClick(first, "Yes, I am sure, I removed it");
+        InvokeClick(ButtonClick(first, "No, cancel"));
+        Assert.That(RepeatDialog(), Is.Null);
+        Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(1));
+
+        Call(_input, "ExecuteCurrentTask");
+        Transform current = RepeatDialog();
+        Assert.That(current, Is.Not.Null, "Serialized Execute actions use the same prompt.");
+        Assert.That(ReferenceEquals(first, current), Is.False);
+        InvokeClick(staleYes);
+        Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(1));
+        InvokeClick(ButtonClick(current, "Yes, I am sure, I removed it"));
+        Assert.That(RepeatDialog(), Is.Null);
+        Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(2));
+        Assert.That(Field(_contacts, "RepeatPublishCount").GetValue(_contacts), Is.EqualTo(1));
+        Assert.That((string)Field(_contacts, "LastRepeatPayload").GetValue(_contacts), Does.Contain("\"plan_id\":\"offline-confirmation-plan\""));
+    }
+
+    [TestCase("invalidate")]
+    [TestCase("mode")]
+    public void ChangingTheReviewContextClosesTheRepeatPromptAndRejectsItsOldYes(string change)
+    {
+        RetainPickForConfirmation(PickItem.Tile);
+        Call(_input, "ExecuteCurrentTask");
+        Transform dialog = RepeatDialog();
+        Assert.That(dialog, Is.Not.Null, "The repeat must remain pending until the user confirms.");
+        object yes = ButtonClick(dialog, "Yes, I am sure, I removed it");
+        if (change == "invalidate") Call(_plans, "InvalidatePlan");
+        else Call(_input, "UseTcpPreview");
+        Private(_menu, "RefreshTask");
+        Assert.That(RepeatDialog(), Is.Null);
+        InvokeClick(yes);
+        Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(1));
+    }
+
+    private void RetainPickForConfirmation(PickItem item)
+    {
+        InstallOfflineContactController();
+        Assert.That(Call(_contacts, "SetSelectedItem", item), Is.EqualTo(true));
+        object[] exported = { null, null };
+        Assert.That(Call(_contacts, "TryGetTaskRequest", exported), Is.EqualTo(true));
+        Set(_contacts, "_requestedTask", exported[0]);
+        Set(_contacts, "_requestedContactPoses", Field(exported[0], "contacts").GetValue(exported[0]));
+        Set(_contacts, "_hasPlanningRequestBeenSent", true);
+        Private(_menu, "BindTaskControls");
+
+        Component feedback = Add("Repeat confirmation joint feedback", "JointStateSubscriber");
+        Set(_plans, "_jointFeedback", feedback);
+        Component tools = (Component)UnityEngine.Object.FindFirstObjectByType(TypeOf("ToolSelectionController"));
+        RosRobotModel model = Get<RosRobotModel>(tools, "CurrentModel");
+        string[] names = model.links.Where(RosRobotModelMath.IsRevolute).Select(link => link.jointName).ToArray();
+        double[] positions = { .1d, -1.2d, 1.6d, -.8d, -.9d, .3d };
+        object trajectory = NewTrajectory();
+        object joints = Field(trajectory, "joint_trajectory").GetValue(trajectory);
+        Set(joints, "joint_names", names);
+        Set(((Array)Field(joints, "points").GetValue(joints)).GetValue(0), "positions", positions);
+        Assert.That(Call(_plans, "BeginPlanningRequest"), Is.EqualTo(true));
+        Message("OnPlanningStatus", "{\"overall_success\":true,\"plan_id\":\"offline-confirmation-plan\"}");
+        Private(_plans, "OnPlannedTrajectory", trajectory);
+        Call(_menu, "ExecuteTask");
+        Assert.That(RepeatDialog(), Is.Null, "The initial execution remains direct.");
+        Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(1));
+        Message("OnExecutionStatus", "{\"status\":\"succeeded\",\"repeatable\":true,\"placed_item_confirmation_required\":true,\"plan_id\":\"offline-confirmation-plan\"}");
+        Assert.That(Call(feedback, "ObserveJointState", names, positions), Is.EqualTo(true));
+        Assert.That(Get<bool>(_plans, "CanRepeat"), Is.True);
+    }
+
+    private Transform RepeatDialog() => ((RectTransform)Field(_menu, "_panel").GetValue(_menu)).Find("Repeat execution confirmation");
+    private static string ReadLabel(Transform parent, string name) => Get<string>(parent.Find(name).GetComponent(TypeOf("TMPro.TextMeshProUGUI")), "text");
+    private static object ButtonClick(Transform parent, string name) => Get<object>(parent.Find(name).GetComponent(TypeOf("UnityEngine.UI.Button")), "onClick");
+    private static void InvokeClick(object click) => click.GetType().GetMethod("Invoke").Invoke(click, null);
+
     private void ReadyPlan()
     {
         Assert.That(Call(_plans, "BeginPlanningRequest"), Is.EqualTo(true));

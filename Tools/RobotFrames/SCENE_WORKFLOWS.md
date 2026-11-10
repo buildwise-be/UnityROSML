@@ -41,6 +41,11 @@ Simple MTC pick/place has **Pick settings** for 5/10/20 mm/s descent and Center
 or three-corner Item surface pickup. See [surface picking](PICK_SURFACE.md) for
 the item presets, floating guide, measured frame and additive ROS contract.
 
+After a successful tile or brick pick, **Execute again** asks you to confirm
+that the placed item has been removed. **No, cancel** leaves the reviewed plan
+available. On confirmation, ROS verifies the last placement, restores the
+reviewed source geometry, and checks the scene and start joints before replay.
+
 While ROS is planning a simple pick/place, TCP A/B, or fixture batch, select
 **Stop Planning** in the task menu. You can plan again once ROS releases the
 planner. **Stopping…** may stay visible until the current solver or scene

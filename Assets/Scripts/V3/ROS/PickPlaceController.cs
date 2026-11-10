@@ -44,6 +44,17 @@ public class PickPlaceController : MonoBehaviour
     public bool IsPlanning => _checkingCapability || (PlansManager != null && PlansManager.IsPlanning);
     public bool CanStopPlanning => _checkingCapability || (PlansManager != null && PlansManager.CanStopPlanning);
     public bool IsStoppingPlanning => PlansManager != null && PlansManager.IsStoppingPlanning;
+    public string RepeatConfirmationKey
+    {
+        get
+        {
+            if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return null;
+            string key = PlansManager?.RepeatConfirmationKey;
+            return key != null && CanExecuteCurrentTargets ? key : null;
+        }
+    }
+    public string RepeatItemLabel => _requestedTask?.item_type == "brick" ? "brick" : "tile";
+    public event Action RepeatConfirmationRequested;
     public int DescentSpeedMmPerSecond => _descentSpeedMmPerSecond;
     public bool PickBySurface => _pickBySurface;
     public PickItem SelectedItem => _selectedItem;
@@ -506,30 +517,48 @@ public class PickPlaceController : MonoBehaviour
         // Repeated clicks must not clear the acknowledgement/outcome window or
         // publish another command while the first request is unresolved.
         if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
+        MTCPlansManager plans = PlansManager;
+        if (plans != null && plans.HasRepeatablePlan)
+        {
+            if (RepeatConfirmationKey != null) RepeatConfirmationRequested?.Invoke();
+            return;
+        }
         if (TargetPoseContextMenu.IsOpen)
         { RejectPlanningRequest("Close the target menu before executing MTC pick/place."); return; }
-        if (_checkingCapability || TargetRotationHandles.IsInteracting || !ToolSelectionController.CanPlanPickPlace ||
-            !_tilePlanningEnabled || !RobotCoordinateService.Instance.IsInitialized ||
-            (!_hasPlanningRequestBeenSent && !(PlansManager != null && PlansManager.CanRepeat)) ||
-            !TargetsMatchRequest() || PlansManager == null || !PlansManager.CanExecute)
+        if (!_hasPlanningRequestBeenSent || !CanExecuteCurrentTargets || plans == null || !plans.CanExecute)
         { RejectPlanningRequest("MTC Execute requires a new successful pick/place plan and its visible trajectory preview."); return; }
+        PublishExecution(plans, null);
+    }
+
+    public void ConfirmRepeatExecution(string confirmationKey)
+    {
+        if (string.IsNullOrEmpty(confirmationKey) || confirmationKey != RepeatConfirmationKey) return;
+        PublishExecution(PlansManager, confirmationKey);
+    }
+
+    private bool CanExecuteCurrentTargets => !_checkingCapability && !TargetRotationHandles.IsInteracting &&
+        !TargetPoseContextMenu.IsOpen && ToolSelectionController.CanPlanPickPlace && _tilePlanningEnabled &&
+        RobotCoordinateService.Instance.IsInitialized && TargetsMatchRequest();
+
+    private void PublishExecution(MTCPlansManager plans, string confirmationKey)
+    {
         try
         {
-            if (!PlansManager.ConsumePlanForExecution()) return;
+            if (!(confirmationKey == null ? plans.ConsumePlanForExecution() : plans.ConsumeConfirmedRepeat(confirmationKey))) return;
             _hasPlanningRequestBeenSent = false;
-            string repeat = PlansManager.RepeatExecutionPayload;
-            string planId = PlansManager.IdentifiedExecutionPlanId;
+            string repeat = plans.RepeatExecutionPayload;
+            string planId = plans.IdentifiedExecutionPlanId;
             string reason;
             bool published;
             if (repeat != null) published = TryPublishRepeatExecutionRequest(repeat, out reason);
             else if (planId != null) published = TryPublishIdentifiedExecutionRequest(planId, out reason);
             else published = TryPublishExecutionRequest(out reason);
-            if (!published) PlansManager.RejectExecutionRequest(reason);
+            if (!published) plans.RejectExecutionRequest(reason);
         }
         catch (Exception exception)
         {
             Debug.LogWarning("MTC execution publication failed: " + exception.Message, this);
-            PlansManager.RejectExecutionRequest("The execution request could not be sent. Check ROS and plan again before retrying.");
+            plans.RejectExecutionRequest("The execution request could not be sent. Check ROS and plan again before retrying.");
         }
     }
 

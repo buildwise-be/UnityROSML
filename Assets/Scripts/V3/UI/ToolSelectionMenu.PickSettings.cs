@@ -97,14 +97,27 @@ public sealed partial class ToolSelectionMenu
 
     private void BindPickSettingsControls()
     {
-        if (_workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace) return;
-        if (_pickSettingsController == null)
-            _pickSettingsController = _input != null ? _input.PickPlaceController : FindFirstObjectByType<PickPlaceController>();
+        if (_workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace)
+        {
+            UnbindPickSettingsControls();
+            _pickSettingsController = null;
+            return;
+        }
+        if (_input != null) _pickSettingsController = _input.PickPlaceController;
+        else if (_pickSettingsController == null) _pickSettingsController = FindFirstObjectByType<PickPlaceController>();
         if (_subscribedPickSettings != _pickSettingsController)
         {
-            if (_subscribedPickSettings != null) _subscribedPickSettings.SettingsChanged -= OnPickSettingsChanged;
+            if (_subscribedPickSettings != null)
+            {
+                _subscribedPickSettings.SettingsChanged -= OnPickSettingsChanged;
+                _subscribedPickSettings.RepeatConfirmationRequested -= OpenRepeatConfirmation;
+            }
             _subscribedPickSettings = _pickSettingsController;
-            if (_subscribedPickSettings != null) _subscribedPickSettings.SettingsChanged += OnPickSettingsChanged;
+            if (_subscribedPickSettings != null)
+            {
+                _subscribedPickSettings.SettingsChanged += OnPickSettingsChanged;
+                _subscribedPickSettings.RepeatConfirmationRequested += OpenRepeatConfirmation;
+            }
         }
         PickSurfaceCapture capture = _pickSettingsController != null ? _pickSettingsController.SurfaceCapture : null;
         if (_subscribedPickSurface == capture) return;
@@ -115,7 +128,11 @@ public sealed partial class ToolSelectionMenu
 
     private void UnbindPickSettingsControls()
     {
-        if (_subscribedPickSettings != null) _subscribedPickSettings.SettingsChanged -= OnPickSettingsChanged;
+        if (_subscribedPickSettings != null)
+        {
+            _subscribedPickSettings.SettingsChanged -= OnPickSettingsChanged;
+            _subscribedPickSettings.RepeatConfirmationRequested -= OpenRepeatConfirmation;
+        }
         if (_subscribedPickSurface != null) _subscribedPickSurface.Changed -= OnPickSettingsChanged;
         _subscribedPickSettings = null;
         _subscribedPickSurface = null;

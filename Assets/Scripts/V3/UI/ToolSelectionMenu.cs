@@ -280,7 +280,8 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         if (_input == null || _tcpPlanning == null || _qrDetector == null || _instantiator == null || _pointRegistration == null) BindTaskControls();
         bool tcp = _input == null || _input.IsTcpMode;
         bool qr = _qrDetector != null && _qrDetector.HasValidatedPose;
-        if (_lastTcpMode != tcp || _lastFixtureMode != (_input != null && _input.IsFixtureMode) || _lastQrValidated != qr || _lastTargetRotation != TargetRotationHandles.IsInteracting) RefreshTask();
+        if (CloseStaleRepeatConfirmation() || _lastTcpMode != tcp || _lastFixtureMode != (_input != null && _input.IsFixtureMode) ||
+            _lastQrValidated != qr || _lastTargetRotation != TargetRotationHandles.IsInteracting) RefreshTask();
         RefreshPlayback();
         RefreshPathThickness();
         RefreshSceneNavigation();
@@ -730,6 +731,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void RefreshTask()
     {
+        CloseStaleRepeatConfirmation();
         bool tcp = _input == null || _input.IsTcpMode;
         bool fixture = _input != null && _input.IsFixtureMode;
         MTCPlansManager execution = MTCPlansManager.ActiveExecution;
@@ -830,7 +832,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     {
         bool editing = IsCalibrating;
         if (_taskView != null) _taskView.gameObject.SetActive(!editing && !IsPointCollecting && !IsPositionAdjusting &&
-            !(_showFixtureSetup && _input != null && _input.IsFixtureMode) && !IsShowingPickSettings);
+            !(_showFixtureSetup && _input != null && _input.IsFixtureMode) && !IsShowingPickSettings && _repeatConfirmationView == null);
         if (_alignmentView != null) _alignmentView.gameObject.SetActive(editing && !IsPointCollecting && !IsPositionAdjusting);
         if (_alignmentStatus != null)
             _alignmentStatus.text = _instantiator != null
@@ -1642,12 +1644,12 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void OnApplicationFocus(bool focused)
     {
-        if (!focused) { CancelPickSurface(); ClearPointerState(); }
+        if (!focused) { CancelRepeatConfirmation(); CancelPickSurface(); ClearPointerState(); }
     }
 
     private void OnApplicationPause(bool paused)
     {
-        if (paused) { CancelPickSurface(); ClearPointerState(); }
+        if (paused) { CancelRepeatConfirmation(); CancelPickSurface(); ClearPointerState(); }
     }
 
     private void ClearPointerState()
@@ -1665,6 +1667,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void OnDisable()
     {
+        ClearRepeatConfirmation();
         CancelPickSurface();
         ActiveMenus.Remove(this);
         UnbindContourControls();
@@ -1681,6 +1684,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void OnDestroy()
     {
+        ClearRepeatConfirmation();
         ActiveMenus.Remove(this);
         UnbindContourControls();
         Unsubscribe();
