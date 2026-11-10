@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -15,6 +16,7 @@ public sealed class MtcExecutionWorkflowTests
     private Component _plans, _visualizer, _coordinates, _input, _contacts, _statusText, _menu;
     private GameObject _pick, _place;
     private object _trajectory;
+    private readonly List<string> _identifiedExecutionIds = new List<string>();
 
     [SetUp]
     public void CreateActualReviewAndItsMenuStatusWithoutTransport()
@@ -332,6 +334,253 @@ public sealed class MtcExecutionWorkflowTests
         AssertMenuMatchesManager();
         AssertSpentPlanCannotBeRearmed();
     }
+
+    [Test]
+    public void StopPlanningButtonCancelsThePendingCapabilityCheckAndAllowsAnotherPlan()
+    {
+        InstallOfflineContactController();
+        Assert.That(_contacts.GetType().GetMethod("StopPlanning"), Is.Not.Null, "A pending pick plan needs a Stop Planning action.");
+        Set(_contacts, "_checkingCapability", true);
+        int generation = (int)Field(_contacts, "_generation").GetValue(_contacts);
+        Private(_menu, "BindTaskControls"); Private(_menu, "RefreshTask");
+        Component stop = (Component)Field(_menu, "_stopPlanningButton").GetValue(_menu);
+        Component plan = (Component)Field(_menu, "_planButton").GetValue(_menu);
+        Component execute = (Component)Field(_menu, "_executeButton").GetValue(_menu);
+        Assert.That(stop.gameObject.activeSelf && Get<bool>(stop, "interactable"), Is.True);
+        Assert.That(Get<bool>(plan, "interactable"), Is.False);
+        Assert.That(execute.gameObject.activeSelf, Is.False);
+        object clicked = Get<object>(stop, "onClick"); clicked.GetType().GetMethod("Invoke").Invoke(clicked, null);
+        Assert.That(Get<bool>(_contacts, "IsPlanning"), Is.False);
+        Assert.That(stop.gameObject.activeSelf, Is.False);
+        Assert.That(Get<bool>(plan, "interactable"), Is.True);
+        Assert.That(Get<bool>(execute, "interactable"), Is.False);
+        string stopped = Get<string>(_plans, "StatusText");
+        Assert.That(stopped, Does.Contain("stopped").IgnoreCase);
+        Private(_contacts, "OnCapabilityResponse", null, generation);
+        Assert.That(Get<string>(_plans, "StatusText"), Is.EqualTo(stopped), "A late capability response cannot send a stopped request.");
+    }
+
+    [Test]
+    public void ACorrelatedPickPlanCannotReviewAnotherRequestsTrajectoryOrReadiness()
+    {
+        Assert.That(_plans.GetType().GetMethod("BeginCorrelatedPlanningRequest"), Is.Not.Null,
+            "A retried pick plan needs request correlation before it can accept results.");
+        Component transport = Add("Offline pick planning messages", "Unity.Robotics.ROSTCPConnector.ROSConnection");
+        Assert.That(Call(_plans, "BeginCorrelatedPlanningRequest", transport, "102:4"), Is.EqualTo(true));
+        Message("OnExecutionStatus", "{\"status\":\"ready\",\"plan_id\":\"old-plan\"}");
+        Message("OnPlanningStatus", "{\"request_id\":\"101:4\",\"overall_success\":true,\"plan_id\":\"old-plan\"}");
+        Private(_plans, "OnPlannedTrajectory", StampedTrajectory(101));
+        Assert.That(Get<bool>(_plans, "HasPlanResult"), Is.False);
+        Message("OnPlanningStatus", "{\"request_id\":\"102:4\",\"overall_success\":true,\"plan_id\":\"new-plan\"}");
+        Assert.That(Get<bool>(_plans, "HasPlanResult"), Is.True);
+        Assert.That(Get<bool>(_plans, "CanExecute"), Is.False);
+        Private(_plans, "OnPlannedTrajectory", StampedTrajectory(102));
+        Assert.That(Get<bool>(_plans, "CanExecute"), Is.False, "Wait for ROS to release the planner slot.");
+        PlanningControl("pick/102:4", "finished");
+        Assert.That(Get<bool>(_plans, "CanExecute"), Is.True);
+    }
+
+    [Test]
+    public void StopDiscardsPickPreviewAndWaitsForTheMatchingTerminalBeforeRetry()
+    {
+        InstallOfflineContactController();
+        Assert.That(_plans.GetType().GetMethod("BeginCorrelatedPlanningRequest"), Is.Not.Null,
+            "Stopping a published plan requires a correlated ROS terminal result.");
+        Component transport = Add("Offline pick cancellation messages", "Unity.Robotics.ROSTCPConnector.ROSConnection");
+        Assert.That(Call(_plans, "BeginCorrelatedPlanningRequest", transport, "102:4"), Is.EqualTo(true));
+        Message("OnPlanningStatus", "{\"request_id\":\"102:4\",\"overall_success\":true,\"plan_id\":\"cancelled-plan\"}");
+        Private(_plans, "OnPlannedTrajectory", StampedTrajectory(102));
+        Assert.That(Get<bool>(_visualizer, "HasPlayback"), Is.True);
+        Call(_contacts, "StopPlanning");
+        Assert.That(Get<bool>(_contacts, "IsStoppingPlanning"), Is.True);
+        Assert.That(Get<bool>(_visualizer, "HasPlayback"), Is.False);
+        Call(_plans, "InvalidatePlan");
+        PlanningControl("pick/101:4", "cancelled");
+        Assert.That(Call(_plans, "BeginPlanningRequest"), Is.EqualTo(false));
+        PlanningControl("pick/102:4", "cancelled");
+        Assert.That(Get<bool>(_contacts, "IsStoppingPlanning"), Is.False);
+        Assert.That(Get<bool>(_contacts, "IsPlanning"), Is.False);
+        Assert.That(Call(_plans, "BeginCorrelatedPlanningRequest", transport, "103:4"), Is.EqualTo(true));
+        Message("OnPlanningStatus", "{\"request_id\":\"102:4\",\"overall_success\":true,\"plan_id\":\"cancelled-plan\"}");
+        Private(_plans, "OnPlannedTrajectory", StampedTrajectory(102));
+        Assert.That(Get<bool>(_plans, "HasPlanResult") || Get<bool>(_plans, "CanExecute"), Is.False);
+    }
+
+    [Test]
+    public void AFinishedPickRequestCanDiscardItsStillPendingPreviewLocally()
+    {
+        InstallOfflineContactController();
+        Component transport = Add("Offline pick preview messages", "Unity.Robotics.ROSTCPConnector.ROSConnection");
+        Assert.That(Call(_plans, "BeginCorrelatedPlanningRequest", transport, "102:4"), Is.EqualTo(true));
+        Message("OnPlanningStatus", "{\"request_id\":\"102:4\",\"overall_success\":true,\"plan_id\":\"ready-plan\"}");
+        PlanningControl("pick/102:4", "finished");
+        Assert.That(Get<bool>(_contacts, "IsPlanning") && Get<bool>(_contacts, "CanStopPlanning"), Is.True);
+        Call(_contacts, "StopPlanning");
+        Assert.That(Get<bool>(_contacts, "IsPlanning") || Get<bool>(_contacts, "IsStoppingPlanning"), Is.False);
+        Assert.That(Get<string>(_plans, "StatusText"), Does.Contain("preview discarded").IgnoreCase);
+        Private(_plans, "OnPlannedTrajectory", StampedTrajectory(102));
+        Assert.That(Get<bool>(_plans, "CanExecute") || Get<bool>(_visualizer, "HasPlayback"), Is.False);
+    }
+
+    [Test]
+    public void CorrelatedPickSuccessWithoutAPlanIdCannotEnableExecute()
+    {
+        Component transport = Add("Offline unidentified pick result", "Unity.Robotics.ROSTCPConnector.ROSConnection");
+        Assert.That(Call(_plans, "BeginCorrelatedPlanningRequest", transport, "102:4"), Is.EqualTo(true));
+        Message("OnPlanningStatus", "{\"request_id\":\"102:4\",\"overall_success\":true}");
+        Private(_plans, "OnPlannedTrajectory", StampedTrajectory(102));
+        PlanningControl("pick/102:4", "finished");
+        Assert.That(Get<bool>(_plans, "CanExecute"), Is.False, "A correlated review must identify the exact plan to execute.");
+    }
+
+    [Test]
+    public void CorrelatedPickExecutePublishesOnlyTheReviewedPlanId()
+    {
+        InstallOfflineContactController();
+        Component transport = Add("Offline identified pick execution", "Unity.Robotics.ROSTCPConnector.ROSConnection");
+        Type type = transport.GetType();
+        const string topicName = "/execute_pick_place_plan";
+        MethodInfo register = type.GetMethods().Single(method => method.Name == "RegisterPublisher" && method.IsGenericMethodDefinition);
+        object topic = register.MakeGenericMethod(TypeOf("RosMessageTypes.Std.StringMsg"))
+            .Invoke(transport, new object[] { topicName, null, null });
+        MethodInfo subscribe = topic.GetType().GetMethod("AddSubscriber");
+        MethodInfo capture = GetType().GetMethod(nameof(CaptureIdentifiedExecution), BindingFlags.Instance | BindingFlags.NonPublic);
+        subscribe.Invoke(topic, new object[] { Delegate.CreateDelegate(subscribe.GetParameters()[0].ParameterType, this, capture) });
+        _identifiedExecutionIds.Clear();
+        Assert.That(Call(_plans, "BeginCorrelatedPlanningRequest", transport, "102:4"), Is.EqualTo(true));
+        Message("OnPlanningStatus", "{\"request_id\":\"102:4\",\"overall_success\":true,\"plan_id\":\"reviewed-plan\"}");
+        Private(_plans, "OnPlannedTrajectory", StampedTrajectory(102));
+        PlanningControl("pick/102:4", "finished");
+        Assert.That(Get<bool>(_plans, "CanExecute"), Is.True);
+
+        using var offlineConnectionFlag = new CancellationTokenSource();
+        FieldInfo connectionError = type.GetField("m_HasConnectionError", BindingFlags.Static | BindingFlags.NonPublic);
+        bool previousError = (bool)connectionError.GetValue(null);
+        try
+        {
+            // Observe the real local publisher without connecting to ROS.
+            connectionError.SetValue(null, false);
+            Set(transport, "m_ConnectionThreadCancellation", offlineConnectionFlag);
+            Set(_contacts, "_connection", transport);
+            Call(_contacts, "ExecutePickAndPlace");
+            Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(0), "A correlated plan cannot use the legacy Bool topic.");
+            Assert.That(_identifiedExecutionIds, Is.EqualTo(new[] { "reviewed-plan" }));
+            Message("OnExecutionStatus", "{\"status\":\"rejected\",\"plan_id\":\"foreign-plan\"}");
+            Assert.That(Get<bool>(_plans, "IsExecuting"), Is.True);
+            Message("OnExecutionStatus", "{\"status\":\"rejected\",\"plan_id\":\"reviewed-plan\"}");
+            Assert.That(Get<bool>(_plans, "IsExecuting"), Is.False);
+        }
+        finally
+        {
+            Set(transport, "m_ConnectionThreadCancellation", null);
+            connectionError.SetValue(null, previousError);
+        }
+    }
+
+    private void CaptureIdentifiedExecution(object message) => _identifiedExecutionIds.Add((string)Field(message, "data").GetValue(message));
+
+    private object StampedTrajectory(int seconds)
+    {
+        object trajectory = NewTrajectory();
+        object joints = Field(trajectory, "joint_trajectory").GetValue(trajectory);
+        object header = Field(joints, "header").GetValue(joints);
+        object stamp = Field(header, "stamp").GetValue(header);
+        Set(stamp, "sec", Convert.ChangeType(seconds, Field(stamp, "sec").FieldType));
+        Set(stamp, "nanosec", 4u);
+        return trajectory;
+    }
+
+    private void PlanningControl(string key, string status)
+    {
+        object helper = Field(_plans, "_planningStop").GetValue(_plans);
+        object msg = Activator.CreateInstance(TypeOf("RosMessageTypes.Std.StringMsg"),
+            new object[] { "{\"key\":\"" + key + "\",\"status\":\"" + status + "\",\"reason\":\"offline test\"}" });
+        Private(helper, "OnStatus", msg);
+    }
+
+    [TestCase(PickItem.Tile, "tile")]
+    [TestCase(PickItem.Brick, "brick")]
+    public void RepeatPromptsForThePlacedItemAndOnlyTheCurrentYesCanPublish(PickItem item, string label)
+    {
+        RetainPickForConfirmation(item);
+        Call(_menu, "ExecuteTask");
+        Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(1), "Opening the repeat prompt cannot request motion.");
+        Transform first = RepeatDialog();
+        Assert.That(first, Is.Not.Null, "A retained pick repeat needs a placed-item confirmation.");
+        Assert.That(ReadLabel(first, "Repeat confirmation title"), Is.EqualTo("Are you sure?"));
+        Assert.That(ReadLabel(first, "Repeat confirmation message"), Is.EqualTo(
+            "The previous run should have placed a " + label + " at the place location, re-executing will thus end up in a collision"));
+        object staleYes = ButtonClick(first, "Yes, I am sure, I removed it");
+        InvokeClick(ButtonClick(first, "No, cancel"));
+        Assert.That(RepeatDialog(), Is.Null);
+        Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(1));
+
+        Call(_input, "ExecuteCurrentTask");
+        Transform current = RepeatDialog();
+        Assert.That(current, Is.Not.Null, "Serialized Execute actions use the same prompt.");
+        Assert.That(ReferenceEquals(first, current), Is.False);
+        InvokeClick(staleYes);
+        Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(1));
+        InvokeClick(ButtonClick(current, "Yes, I am sure, I removed it"));
+        Assert.That(RepeatDialog(), Is.Null);
+        Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(2));
+        Assert.That(Field(_contacts, "RepeatPublishCount").GetValue(_contacts), Is.EqualTo(1));
+        Assert.That((string)Field(_contacts, "LastRepeatPayload").GetValue(_contacts), Does.Contain("\"plan_id\":\"offline-confirmation-plan\""));
+    }
+
+    [TestCase("invalidate")]
+    [TestCase("mode")]
+    public void ChangingTheReviewContextClosesTheRepeatPromptAndRejectsItsOldYes(string change)
+    {
+        RetainPickForConfirmation(PickItem.Tile);
+        Call(_input, "ExecuteCurrentTask");
+        Transform dialog = RepeatDialog();
+        Assert.That(dialog, Is.Not.Null, "The repeat must remain pending until the user confirms.");
+        object yes = ButtonClick(dialog, "Yes, I am sure, I removed it");
+        if (change == "invalidate") Call(_plans, "InvalidatePlan");
+        else Call(_input, "UseTcpPreview");
+        Private(_menu, "RefreshTask");
+        Assert.That(RepeatDialog(), Is.Null);
+        InvokeClick(yes);
+        Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(1));
+    }
+
+    private void RetainPickForConfirmation(PickItem item)
+    {
+        InstallOfflineContactController();
+        Assert.That(Call(_contacts, "SetSelectedItem", item), Is.EqualTo(true));
+        object[] exported = { null, null };
+        Assert.That(Call(_contacts, "TryGetTaskRequest", exported), Is.EqualTo(true));
+        Set(_contacts, "_requestedTask", exported[0]);
+        Set(_contacts, "_requestedContactPoses", Field(exported[0], "contacts").GetValue(exported[0]));
+        Set(_contacts, "_hasPlanningRequestBeenSent", true);
+        Private(_menu, "BindTaskControls");
+
+        Component feedback = Add("Repeat confirmation joint feedback", "JointStateSubscriber");
+        Set(_plans, "_jointFeedback", feedback);
+        Component tools = (Component)UnityEngine.Object.FindFirstObjectByType(TypeOf("ToolSelectionController"));
+        RosRobotModel model = Get<RosRobotModel>(tools, "CurrentModel");
+        string[] names = model.links.Where(RosRobotModelMath.IsRevolute).Select(link => link.jointName).ToArray();
+        double[] positions = { .1d, -1.2d, 1.6d, -.8d, -.9d, .3d };
+        object trajectory = NewTrajectory();
+        object joints = Field(trajectory, "joint_trajectory").GetValue(trajectory);
+        Set(joints, "joint_names", names);
+        Set(((Array)Field(joints, "points").GetValue(joints)).GetValue(0), "positions", positions);
+        Assert.That(Call(_plans, "BeginPlanningRequest"), Is.EqualTo(true));
+        Message("OnPlanningStatus", "{\"overall_success\":true,\"plan_id\":\"offline-confirmation-plan\"}");
+        Private(_plans, "OnPlannedTrajectory", trajectory);
+        Call(_menu, "ExecuteTask");
+        Assert.That(RepeatDialog(), Is.Null, "The initial execution remains direct.");
+        Assert.That(Field(_contacts, "PublishCount").GetValue(_contacts), Is.EqualTo(1));
+        Message("OnExecutionStatus", "{\"status\":\"succeeded\",\"repeatable\":true,\"placed_item_confirmation_required\":true,\"plan_id\":\"offline-confirmation-plan\"}");
+        Assert.That(Call(feedback, "ObserveJointState", names, positions), Is.EqualTo(true));
+        Assert.That(Get<bool>(_plans, "CanRepeat"), Is.True);
+    }
+
+    private Transform RepeatDialog() => ((RectTransform)Field(_menu, "_panel").GetValue(_menu)).Find("Repeat execution confirmation");
+    private static string ReadLabel(Transform parent, string name) => Get<string>(parent.Find(name).GetComponent(TypeOf("TMPro.TextMeshProUGUI")), "text");
+    private static object ButtonClick(Transform parent, string name) => Get<object>(parent.Find(name).GetComponent(TypeOf("UnityEngine.UI.Button")), "onClick");
+    private static void InvokeClick(object click) => click.GetType().GetMethod("Invoke").Invoke(click, null);
 
     private void ReadyPlan()
     {

@@ -34,9 +34,14 @@ public class FixtureTilingController : MonoBehaviour
     private FixtureTilingPreview _preview;
     private ROSConnection _connection;
     private RobotCoordinateService _coordinates;
+    private MtcPlanningStop _planningStop;
+    private MtcPlanningStop PlanningStop => _planningStop ??=
+        new MtcPlanningStop("fixture", RefreshPlanningStopFeedback, OnPlanningStopFinished);
     private bool _active, _checkingCalibration, _acceptingResults, _ready, _executionRequested, _awaitingAcknowledgement;
-    private bool _savingCalibration;
+    private bool _savingCalibration, _receivedPlanningTerminal;
     private bool _hasStarted;
+    private bool _requestHasTimeout;
+    private int _requestedTimeoutSeconds = MtcPlanningSettings.DefaultTimeoutSeconds;
     private float _deadline, _saveDeadline;
     private int _generation, _saveGeneration, _calibrationRevision;
     private string _requestId, _planId, _snapshot, _saveSnapshot;
@@ -50,7 +55,10 @@ public class FixtureTilingController : MonoBehaviour
     public FixtureTilingSettings Settings => _settings;
     public FixtureCalibrationData Calibration => _calibration;
     public bool IsActive => _active;
-    public bool IsPlanning => _checkingCalibration || _acceptingResults;
+    public bool IsPlanning => _checkingCalibration || _acceptingResults || _planningStop?.IsActive == true;
+    public bool CanStopPlanning => !_executionRequested && (_checkingCalibration || _planningStop?.CanRequestStop == true ||
+        (_receivedPlanningTerminal && _acceptingResults));
+    public bool IsStoppingPlanning => _planningStop?.StopRequested == true;
     public bool IsExecuting => _executionRequested;
     public bool HasExecutionFeedback { get; private set; }
     public bool IsCapturing => _capture.HasValue;
@@ -64,7 +72,7 @@ public class FixtureTilingController : MonoBehaviour
     public bool CanPlan => !IsPlanning && !_executionRequested && ContextValid() &&
         FixtureTilingGeometry.TryBuildRequest(_settings, "validation", out _, out _) &&
         FixtureTilingGeometry.TryBuildCalibration(_calibration, out _, out _);
-    public bool CanExecute => _ready && !_executionRequested && ContextValid() && SnapshotMatches() &&
+    public bool CanExecute => _ready && !IsPlanning && !_executionRequested && ContextValid() && SnapshotMatches() &&
         _visualizer != null && _visualizer.IsShowingTrajectory(_trajectory) && _preview != null && _preview.HasReview;
 
     private void Start()
@@ -84,6 +92,7 @@ public class FixtureTilingController : MonoBehaviour
     {
         if (_connection != null) return;
         _connection = ROSService.Instance.GetROSConnection();
+        PlanningStop.Bind(_connection);
         _connection.RegisterPublisher<FixtureTilingTaskMsg>(PlanTopic);
         _connection.RegisterPublisher<StringMsg>(ExecuteTopic);
         _connection.RegisterRosService<SaveFixtureCalibrationRequest, SaveFixtureCalibrationResponse>(CalibrationService);
@@ -257,6 +266,7 @@ public class FixtureTilingController : MonoBehaviour
         { SetStatus(reason); return; }
         InvalidateReview(null);
         _requestId = requestId; _request = request;
+        _requestedTimeoutSeconds = MtcPlanningSettings.TimeoutSeconds;
         _snapshot = CurrentSnapshot(); _calibrationRevision = RobotCoordinateService.Instance.CalibrationRevision;
         _requestModel = ToolSelectionController.Instance?.CurrentModel;
         try
@@ -266,8 +276,9 @@ public class FixtureTilingController : MonoBehaviour
             _checkingCalibration = true; _deadline = Time.realtimeSinceStartup + 15;
             int generation = _generation;
             SetStatus("Checking the running ROS fixture calibration...");
-            _connection.SendServiceMessage<GetParametersResponse>(ParameterService,
-                new GetParametersRequest(CalibrationParameters), response => OnCalibrationParameters(response, generation));
+            MtcPlanningStop.RequestCapabilities(_connection, ParameterService, CalibrationParameters,
+                () => this != null && generation == _generation && _checkingCalibration,
+                response => OnCalibrationParameters(response, generation));
         }
         catch (Exception error) { InvalidateReview("Fixture planning request failed: " + error.Message); }
     }
@@ -277,18 +288,71 @@ public class FixtureTilingController : MonoBehaviour
         if (this == null || generation != _generation || !_checkingCalibration) return;
         if (!ContextValid() || !SnapshotMatches()) { InvalidateReview("Job, tool or alignment changed. Plan again."); return; }
         if (!RunningCalibrationMatches(response, out string reason)) { InvalidateReview(reason); return; }
+        _requestHasTimeout = MtcPlanningStop.IsSupported(response.values, 9);
+        if (!_requestHasTimeout && _requestedTimeoutSeconds != MtcPlanningSettings.DefaultTimeoutSeconds)
+        { InvalidateReview(MtcPlanningStop.TimeoutUnsupported); return; }
         _checkingCalibration = false; _acceptingResults = true;
-        double timeout = response.values[7].double_value;
-        _deadline = Time.realtimeSinceStartup + (float)(Math.Max(60, timeout) * _settings.ItemCount + 30);
-        if (!TryPublishPlan(_request, out reason)) { InvalidateReview(reason); return; }
+        double backendBudget = _requestHasTimeout ? _requestedTimeoutSeconds :
+            Math.Max(MtcPlanningSettings.DefaultTimeoutSeconds, response.values[7].double_value) * _settings.ItemCount;
+        _deadline = Time.realtimeSinceStartup + (float)backendBudget + MtcPlanningStop.ResultGraceSeconds;
+        try
+        {
+            bool stopSupported = MtcPlanningStop.IsSupported(response.values, 8);
+            if (_requestHasTimeout || stopSupported) PlanningStop.Begin(_connection, _requestId, stopSupported, _deadline);
+            if (!TryPublishPlan(_request, out reason))
+            {
+                _planningStop?.ForgetUnsent();
+                InvalidateReview(reason);
+                return;
+            }
+        }
+        catch (Exception error)
+        {
+            _planningStop?.ForgetUnsent();
+            InvalidateReview("Fixture planning request failed: " + error.Message);
+            return;
+        }
         SetStatus("Planning every tile cycle. No execution requested.");
+    }
+
+    public void StopPlanning()
+    {
+        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null || !CanStopPlanning) return;
+        if (_checkingCalibration)
+        {
+            InvalidateReview("Fixture planning stopped. Plan again.");
+            return;
+        }
+        if (_receivedPlanningTerminal)
+        {
+            InvalidateReview("Fixture preview discarded. Plan again.");
+            return;
+        }
+        _planningStop.RequestStop();
+    }
+
+    private void RefreshPlanningStopFeedback()
+    {
+        string feedback = _planningStop?.Feedback;
+        if (IsStoppingPlanning && (_checkingCalibration || _acceptingResults || _ready)) InvalidateReview(feedback);
+        else if (feedback != null) SetStatus(feedback);
+        else Changed?.Invoke();
+    }
+
+    private void OnPlanningStopFinished(string status, string reason, bool stopRequested)
+    {
+        if (status == "cancelled") InvalidateReview("Fixture planning stopped. Plan again.");
+        else if (status == "timed_out" || status == "unconfirmed") InvalidateReview(reason + " Plan again.");
+        else if (status == "rejected") InvalidateReview("ROS rejected fixture planning: " + reason);
+        else if (stopRequested) InvalidateReview("Fixture preview discarded. Plan again.");
+        else _receivedPlanningTerminal = true;
     }
 
     private bool RunningCalibrationMatches(GetParametersResponse response, out string reason)
     {
         reason = "Running ROS fixture calibration differs or is disabled. Save the measured calibration, restart/reload MTC and plan again.";
         ParameterValueMsg[] v = response?.values;
-        if (v == null || v.Length != 8 || v[0].type != 1 || !v[0].bool_value || v[1].type != 4 ||
+        if (v == null || v.Length < 8 || v[0].type != 1 || !v[0].bool_value || v[1].type != 4 ||
             v[1].string_value != "ur_base_link" || v[2].type != 8 || v[3].type != 3 ||
             v[4].type != 8 || v[5].type != 8 || v[6].type != 3 || v[7].type != 3 ||
             !double.IsFinite(v[3].double_value) || !double.IsFinite(v[6].double_value) ||
@@ -311,7 +375,16 @@ public class FixtureTilingController : MonoBehaviour
     }
 
     protected virtual bool TryPublishPlan(FixtureTilingTaskMsg request, out string reason)
-    { _connection.Publish(PlanTopic, request); reason = null; return true; }
+    {
+        if (_requestHasTimeout)
+            MtcPlanningStop.PublishTimedPlan(_connection, new MtcPlanRequestMsg
+            {
+                mode = MtcPlanRequestMsg.FIXTURE, timeout_seconds = (uint)_requestedTimeoutSeconds, fixture = request
+            });
+        else _connection.Publish(PlanTopic, request);
+        reason = null;
+        return true;
+    }
     protected virtual bool TryPublishExecution(string planId, out string reason)
     { _connection.Publish(ExecuteTopic, new StringMsg(planId)); reason = null; return true; }
 
@@ -420,6 +493,7 @@ public class FixtureTilingController : MonoBehaviour
     }
     private void Update()
     {
+        _planningStop?.Tick();
         if (_savingCalibration && Time.realtimeSinceStartup > _saveDeadline)
         { _savingCalibration = false; ++_saveGeneration; CalibrationStatus = "Calibration save timed out; inspect ROS before saving again."; Changed?.Invoke(); }
         if (_executionRequested)
@@ -428,10 +502,16 @@ public class FixtureTilingController : MonoBehaviour
             { _awaitingAcknowledgement = false; SetStatus("Fixture execution acknowledgement timed out. Outcome unknown; inspect ROS. Other commands remain blocked."); }
             return;
         }
-        if (IsPlanning || _ready)
+        if (IsStoppingPlanning)
+        {
+            if (StatusText != _planningStop.Feedback) RefreshPlanningStopFeedback();
+            return;
+        }
+        if (_checkingCalibration || _acceptingResults || _ready)
         {
             if (!ContextValid() || !SnapshotMatches()) { InvalidateReview("Job, tool, connection or alignment changed. Plan again."); return; }
-            if (IsPlanning && Time.realtimeSinceStartup > _deadline) { InvalidateReview("Fixture planning/preview timed out. Inspect ROS, then plan again."); return; }
+            if ((_checkingCalibration || _acceptingResults) && Time.realtimeSinceStartup > _deadline)
+            { InvalidateReview("Fixture planning/preview timed out. Inspect ROS, then plan again."); return; }
             if (_ready && (_visualizer == null || !_visualizer.IsShowingTrajectory(_trajectory)))
             { InvalidateReview("The reviewed batch path is no longer displayed. Plan again."); return; }
             if (_acceptingResults && _planId != null) ShowPreviewIfComplete();
@@ -454,12 +534,16 @@ public class FixtureTilingController : MonoBehaviour
     {
         unchecked { ++_generation; }
         _checkingCalibration = _acceptingResults = _ready = false;
+        _receivedPlanningTerminal = false;
         _scenes.Clear(); _solutions.Clear();
+        _request = null;
         if (!_executionRequested) { _requestId = _planId = null; HasExecutionFeedback = false; }
-        if (_trajectory != null && _visualizer != null && _visualizer.IsShowingTrajectory(_trajectory)) _visualizer.SetTrajectory(null);
+        _visualizer?.ClearTrajectoryIfMatches(_trajectory);
         _trajectory = null;
         if (_preview != null) _preview.ClearReview();
-        if (!_executionRequested && reason != null) SetStatus(reason); else Changed?.Invoke();
+        if (!_executionRequested && IsStoppingPlanning) SetStatus(_planningStop.Feedback);
+        else if (!_executionRequested && reason != null) SetStatus(reason);
+        else Changed?.Invoke();
     }
     private void RefreshSetupPreview()
     {
@@ -494,6 +578,7 @@ public class FixtureTilingController : MonoBehaviour
     private void OnDisable() { CancelCapture(); InvalidateReview(null); }
     private void OnDestroy()
     {
+        _planningStop?.Dispose();
         if (_coordinates != null) _coordinates.CalibrationChanged -= OnRobotCalibrationChanged;
         if (_connection != null) { _connection.Unsubscribe("/mtc/fixture/status"); _connection.Unsubscribe("/mtc/fixture/preview_scene"); _connection.Unsubscribe("/mtc/fixture/solution"); }
         RobotExecutionState.SetBusy(this, false);

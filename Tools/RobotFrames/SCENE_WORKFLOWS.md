@@ -41,6 +41,22 @@ Simple MTC pick/place has **Pick settings** for 5/10/20 mm/s descent and Center
 or three-corner Item surface pickup. See [surface picking](PICK_SURFACE.md) for
 the item presets, floating guide, measured frame and additive ROS contract.
 
+After a successful tile or brick pick, **Execute again** asks you to confirm
+that the placed item has been removed. **No, cancel** leaves the reviewed plan
+available. On confirmation, ROS verifies the last placement, restores the
+reviewed source geometry, and checks the scene and start joints before replay.
+
+While ROS is planning a simple pick/place, TCP A/B, or fixture batch, select
+**Stop Planning** in the task menu. You can plan again once ROS releases the
+planner. **Stopping…** may stay visible until the current solver or scene
+operation returns. A stopped request cannot produce an executable preview.
+
+The **Planning time** control applies to the next Plan in any task mode. It
+defaults to 60 seconds and saves a whole-second value from 1 to 600 on the
+headset. ROS applies the selected limit to the full planning request, including
+all tile cycles in a fixture batch. A step already running can take additional
+time to return, and an expired request cannot produce an executable preview.
+
 Both task menus include force and torque magnitude gauges using the shared ROS
 connection. Execution peak markers remain until a new Plan or Execute starts;
 waiting/disconnected and stale states hide the live readings and retain peaks. See

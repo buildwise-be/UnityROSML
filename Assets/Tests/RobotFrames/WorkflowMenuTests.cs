@@ -102,6 +102,97 @@ public sealed class WorkflowMenuTests
         finally { execution.GetMethod("SetBusy").Invoke(null, new object[] { _input, false }); }
     }
 
+    [Test]
+    public void FixtureReviewShowsStopInTheExecuteSlotAndCancelsThePendingCheck()
+    {
+        Create("RepetitivePickAndPlace");
+        Component controller = Property<Component>(_input, "FixtureController");
+        Assert.That(controller.GetType().GetMethod("StopPlanning"), Is.Not.Null, "The fixture Review page needs a planning stop action.");
+        Set(controller, "_checkingCalibration", true);
+        _menu.GetType().GetMethod("OpenFixtureReview").Invoke(_menu, null);
+        Invoke(_menu, "RefreshTask");
+        RectTransform page = Read<RectTransform>(_menu, "_fixturePageContent");
+        Component plan = page.Find("Plan fixture batch").GetComponent(TypeOf("UnityEngine.UI.Button"));
+        Component stop = page.Find("Stop fixture planning").GetComponent(TypeOf("UnityEngine.UI.Button"));
+        Component execute = page.Find("Execute fixture batch").GetComponent(TypeOf("UnityEngine.UI.Button"));
+        Assert.That(stop.gameObject.activeSelf && Property<bool>(stop, "interactable"), Is.True);
+        Assert.That(Property<bool>(plan, "interactable"), Is.False);
+        Assert.That(execute.gameObject.activeSelf, Is.False);
+        object clicked = Property<object>(stop, "onClick"); clicked.GetType().GetMethod("Invoke").Invoke(clicked, null);
+        Assert.That(stop.gameObject.activeSelf, Is.False);
+        Assert.That(execute.gameObject.activeSelf, Is.True);
+        Assert.That(Property<bool>(execute, "interactable"), Is.False);
+        Assert.That(Property<bool>(plan, "interactable"), Is.True);
+    }
+
+    [TestCase("SimplePickAndPlace")]
+    [TestCase("RepetitivePickAndPlace")]
+    public void PlanningTimeIsSharedAcrossTaskMenusAndClampedToSupportedSeconds(string workflow)
+    {
+        const string preference = "UnityROSML.MtcPlanningTimeoutSeconds";
+        bool hadPreference = PlayerPrefs.HasKey(preference);
+        int saved = PlayerPrefs.GetInt(preference);
+        try
+        {
+            PlayerPrefs.DeleteKey(preference);
+            Create(workflow);
+            RectTransform task = Read<RectTransform>(_menu, "_taskView");
+            Transform control = task.Find("Planning time control");
+            Assert.That(control, Is.Not.Null, "The task menu needs a shared planning time control.");
+            Assert.That(PlanningTimeLabel(control), Is.EqualTo("60 s"));
+            ClickPlanningTimeButton(control, "Increase planning time by 30 seconds");
+            Assert.That(PlayerPrefs.GetInt(preference), Is.EqualTo(90));
+            Assert.That(PlanningTimeLabel(control), Is.EqualTo("90 s"));
+
+            if (workflow == "SimplePickAndPlace")
+            {
+                _input.GetType().GetMethod("UseTcpPreview").Invoke(_input, null);
+                Invoke(_menu, "RefreshTask");
+                Assert.That(PlanningTimeLabel(control), Is.EqualTo("90 s"));
+            }
+            else
+            {
+                _menu.GetType().GetMethod("OpenFixtureReview").Invoke(_menu, null);
+                Transform reviewControl = Read<RectTransform>(_menu, "_fixturePageContent").Find("Planning time control");
+                Assert.That(reviewControl, Is.Not.Null);
+                Assert.That(PlanningTimeLabel(reviewControl), Is.EqualTo("90 s"));
+                ClickPlanningTimeButton(reviewControl, "Decrease planning time by 1 second");
+                Invoke(_menu, "RefreshTask");
+                Assert.That(PlanningTimeLabel(control), Is.EqualTo("89 s"));
+                _menu.GetType().GetMethod("CloseFixtureSetup").Invoke(_menu, null);
+            }
+
+            PropertyInfo timeout = TypeOf("MtcPlanningSettings").GetProperty("TimeoutSeconds");
+            timeout.SetValue(null, 599);
+            Invoke(_menu, "RefreshTask");
+            ClickPlanningTimeButton(control, "Increase planning time by 30 seconds");
+            Assert.That(PlanningTimeLabel(control), Is.EqualTo("600 s"));
+            Assert.That(PlayerPrefs.GetInt(preference), Is.EqualTo(600));
+            timeout.SetValue(null, 2);
+            Invoke(_menu, "RefreshTask");
+            ClickPlanningTimeButton(control, "Decrease planning time by 30 seconds");
+            Assert.That(PlanningTimeLabel(control), Is.EqualTo("1 s"));
+            Assert.That(PlayerPrefs.GetInt(preference), Is.EqualTo(1));
+        }
+        finally
+        {
+            if (hadPreference) PlayerPrefs.SetInt(preference, saved);
+            else PlayerPrefs.DeleteKey(preference);
+            PlayerPrefs.Save();
+        }
+    }
+
+    private static string PlanningTimeLabel(Transform control) => Property<string>(
+        control.Find("Planning time value").GetComponent(TypeOf("TMPro.TextMeshProUGUI")), "text");
+
+    private static void ClickPlanningTimeButton(Transform control, string name)
+    {
+        Component button = control.Find(name).GetComponent(TypeOf("UnityEngine.UI.Button"));
+        Assert.That(Property<bool>(button, "interactable"), Is.True);
+        object click = Property<object>(button, "onClick");
+        click.GetType().GetMethod("Invoke").Invoke(click, null);
+    }
+
     private static void Set(object target, string name, object value) => target.GetType().GetField(name, Fields).SetValue(target, value);
     private static T Read<T>(object target, string name) => (T)target.GetType().GetField(name, Fields).GetValue(target);
     private static T Property<T>(object target, string name) => (T)target.GetType().GetProperty(name).GetValue(target);

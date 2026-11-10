@@ -131,6 +131,7 @@ public class URInputManager : MonoBehaviour
             if (_tcpPlanningController != null) _tcpPlanningController.InvalidatePlan("Task mode changed. Plan again in the selected mode.");
             foreach (MTCPlansManager plans in FindObjectsByType<MTCPlansManager>(FindObjectsSortMode.None))
                 plans.InvalidatePlan();
+            FindFirstObjectByType<UR16eTrajectoryVisualizer>()?.SetTrajectory(null);
         }
         if (_tcpTargetPreview != null) _tcpTargetPreview.SetTargetsVisible(IsTcpMode);
         if (_pickPlaceController != null)

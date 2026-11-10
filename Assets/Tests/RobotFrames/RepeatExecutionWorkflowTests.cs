@@ -49,6 +49,7 @@ public sealed class RepeatExecutionWorkflowTests
         RepeatPayload request = LastRepeatRequest();
         Assert.That(request.plan_id, Is.EqualTo(PlanId));
         Assert.That(Guid.TryParseExact(request.attempt_id, "N", out _), Is.True);
+        Assert.That(request.placed_item_removed, Is.EqualTo(!tcp));
         if (tcp) Assert.That(Value<string>(_publisher, "LastTopic"), Is.EqualTo("/repeat_reviewed_plan"));
         else Assert.That(Value<int>(_publisher, "RepeatPublishCount"), Is.EqualTo(1), "Repeat must not resend execute_task.");
         Execute();
@@ -67,6 +68,49 @@ public sealed class RepeatExecutionWorkflowTests
         Status("succeeded", true, request.attempt_id, PlanId);
         Assert.That(Get<bool>(_planner, "IsExecuting"), Is.True);
         Assert.That(PublishCount, Is.EqualTo(3));
+    }
+
+    [Test]
+    public void PickRepeatRequiresAConfirmationForTheExactCompletedAttempt()
+    {
+        ExecuteAndRetain(false);
+
+        Call(_publisher, "ExecutePickAndPlace");
+        Assert.That(PublishCount, Is.EqualTo(1), "Opening confirmation must send no ROS execution request.");
+        Assert.That(Call(_plans, "ConsumePlanForExecution"), Is.EqualTo(false));
+        string firstKey = Get<string>(_publisher, "RepeatConfirmationKey");
+        Assert.That(firstKey, Is.Not.Null.And.Not.Empty);
+        Call(_publisher, "ConfirmRepeatExecution", "stale-key");
+        Assert.That(PublishCount, Is.EqualTo(1));
+
+        Call(_publisher, "ConfirmRepeatExecution", firstKey);
+        Assert.That(PublishCount, Is.EqualTo(2));
+        RepeatPayload first = LastRepeatRequest();
+        Assert.That(first.placed_item_removed, Is.True);
+        Status("succeeded", true, first.attempt_id, PlanId);
+        Feed();
+
+        string secondKey = Get<string>(_publisher, "RepeatConfirmationKey");
+        Assert.That(secondKey, Is.Not.Null.And.Not.Empty.And.Not.EqualTo(firstKey));
+        Call(_publisher, "ConfirmRepeatExecution", firstKey);
+        Assert.That(PublishCount, Is.EqualTo(2), "A prior confirmation must not run the same plan again.");
+        Call(_publisher, "ConfirmRepeatExecution", secondKey);
+        Assert.That(PublishCount, Is.EqualTo(3));
+        Assert.That(LastRepeatRequest().attempt_id, Is.Not.EqualTo(first.attempt_id));
+    }
+
+    [Test]
+    public void OlderRosCannotOfferARepeatThatWouldSkipPlacedItemCleanup()
+    {
+        Ready(false);
+        Execute();
+        Status("succeeded", true, "", PlanId, false);
+        Feed();
+
+        Assert.That(Get<bool>(_planner, "CanRepeat"), Is.False);
+        Assert.That(Get<bool>(_planner, "CanExecute"), Is.False);
+        Assert.That(Get<string>(_planner, "StatusText"), Does.Contain("Update ROS"));
+        Assert.That(PublishCount, Is.EqualTo(1));
     }
 
     [TestCase(false, "away")]
@@ -254,13 +298,20 @@ public sealed class RepeatExecutionWorkflowTests
         Feed();
         Assert.That(Get<bool>(_planner, "CanRepeat"), Is.True, Get<string>(_planner, "StatusText"));
     }
-    private void Execute() => Call(_publisher, _tcp ? "Execute" : "ExecutePickAndPlace");
+    private void Execute()
+    {
+        if (_tcp) Call(_publisher, "Execute");
+        else if (Get<bool>(_planner, "CanRepeat"))
+            Call(_publisher, "ConfirmRepeatExecution", Get<string>(_publisher, "RepeatConfirmationKey"));
+        else Call(_publisher, "ExecutePickAndPlace");
+    }
     private void Feed(double[] positions = null) => Assert.That(Call(_feedback, "ObserveJointState", _names, positions ?? _start), Is.EqualTo(true));
     private int PublishCount => Value<int>(_publisher, "PublishCount");
     private RepeatPayload LastRepeatRequest() => JsonUtility.FromJson<RepeatPayload>(Value<string>(_publisher, _tcp ? "LastPayload" : "LastRepeatPayload"));
-    private void Status(string status, bool repeatable, string attemptId, string planId) => Message(_planner, "OnExecutionStatus",
+    private void Status(string status, bool repeatable, string attemptId, string planId, bool supportsConfirmation = true) => Message(_planner, "OnExecutionStatus",
         JsonUtility.ToJson(new ExecutionStatus { request_id = _tcp ? TcpRequest : null, status = status,
-            reason = "Offline execution outcome", repeatable = repeatable, plan_id = planId, attempt_id = attemptId }));
+            reason = "Offline execution outcome", repeatable = repeatable, plan_id = planId, attempt_id = attemptId,
+            placed_item_confirmation_required = !_tcp && supportsConfirmation }));
     private static void Message(object component, string callback, string json)
     {
         MethodInfo method = PrivateMethod(component, callback);
@@ -293,6 +344,10 @@ public sealed class RepeatExecutionWorkflowTests
         }
         throw new InvalidOperationException("Missing private callback " + name);
     }
-    [Serializable] private sealed class RepeatPayload { public string plan_id; public string attempt_id; }
-    [Serializable] private sealed class ExecutionStatus { public string request_id; public string status; public string reason; public string plan_id; public string attempt_id; public bool repeatable; }
+    [Serializable] private sealed class RepeatPayload { public string plan_id; public string attempt_id; public bool placed_item_removed; }
+    [Serializable] private sealed class ExecutionStatus
+    {
+        public string request_id, status, reason, plan_id, attempt_id;
+        public bool repeatable, placed_item_confirmation_required;
+    }
 }

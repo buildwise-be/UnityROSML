@@ -4,6 +4,7 @@ using RosMessageTypes.Geometry;
 using RosMessageTypes.Moveit;
 using RosMessageTypes.RclInterfaces;
 using RosMessageTypes.Std;
+using RosMessageTypes.Ur16eInterfaces;
 using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
 
@@ -27,7 +28,9 @@ public class TcpPlanningController : MonoBehaviour
     private bool _checkingCapability;
     private float _deadline;
     private int _generation;
-    private static long _lastRequestTicks;
+    private bool _stopSupported;
+    private MtcPlanningStop _planningStop;
+    private MtcPlanningStop StopRequest => _planningStop ??= new MtcPlanningStop("tcp", OnStopChanged, OnStopFinished);
     private readonly RobotPlanRepeatReview _repeat = new RobotPlanRepeatReview();
     [SerializeField] private JointStateSubscriber _jointFeedback;
     private bool _isExecuting;
@@ -53,8 +56,11 @@ public class TcpPlanningController : MonoBehaviour
         }
     }
     public string StatusText { get; private set; } = "Capture TCP A (hold bumper) and B (double bumper), then Plan.";
-    public bool IsPlanning => _checkingCapability || (_review.IsPending && !_review.CanExecute);
-    public bool CanExecute => CanRepeat || (!RobotExecutionState.IsBusy && _review.CanExecute && _visualizer != null && _visualizer.IsShowingTrajectory(_pendingPreview) &&
+    public bool IsPlanning => _checkingCapability || (_planningStop?.IsActive ?? false) || (_review.IsPending && !_review.CanExecute);
+    public bool IsStoppingPlanning => _planningStop?.StopRequested ?? false;
+    public bool CanStopPlanning => !_isExecuting && (_checkingCapability || (_planningStop?.CanRequestStop ?? false) ||
+        (_stopSupported && !(_planningStop?.IsActive ?? false) && _review.IsPending && !_review.CanExecute));
+    public bool CanExecute => CanRepeat || (!RobotExecutionState.IsBusy && !(_planningStop?.IsActive ?? false) && _review.CanExecute && _visualizer != null && _visualizer.IsShowingTrajectory(_pendingPreview) &&
         TryValidate(out _) && TargetsMatchRequest());
     public event Action StateChanged;
 
@@ -73,10 +79,12 @@ public class TcpPlanningController : MonoBehaviour
         _connection.Subscribe<StringMsg>("/mtc/tcp_planning_status", OnStatus);
         _connection.Subscribe<RobotTrajectoryMsg>("/mtc/tcp_planned_trajectory", OnTrajectory);
         _connection.Subscribe<StringMsg>("/mtc/tcp_execution_status", OnExecutionStatus);
+        StopRequest.Bind(_connection);
     }
 
     private void Update()
     {
+        _planningStop?.Tick();
         if (_isExecuting)
         {
             if (_awaitingExecutionAcknowledgement && Time.realtimeSinceStartup > _executionDeadline)
@@ -84,6 +92,11 @@ public class TcpPlanningController : MonoBehaviour
                 _awaitingExecutionAcknowledgement = false;
                 SetStatus("TCP execution acknowledgement timed out. Outcome unknown; inspect ROS and the robot. No automatic retry.");
             }
+            return;
+        }
+        if (_planningStop?.Feedback is string stopFeedback)
+        {
+            if (StatusText != stopFeedback) SetStatus(stopFeedback);
             return;
         }
         if (_repeat.HasRetainedPlan)
@@ -111,7 +124,7 @@ public class TcpPlanningController : MonoBehaviour
         if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null)
         { SetStatus("An MTC execution request is unresolved. Wait for its ROS outcome before planning another task."); return; }
         MTCPlansManager.DismissCompletedExecutionFeedback();
-        if (IsPlanning) { SetStatus("A TCP plan is already pending. Change a target to cancel it, or wait for the result."); return; }
+        if (IsPlanning) return;
         RobotExecutionState.NotifyPlanningStarted();
         InvalidatePlan(null);
         if (!TryValidate(out string reason)) { SetStatus(reason); return; }
@@ -120,32 +133,78 @@ public class TcpPlanningController : MonoBehaviour
         { SetStatus("Capture both TCP A (hold bumper) and B (double bumper) first."); return; }
 
         int generation = _generation;
+        int timeoutSeconds = MtcPlanningSettings.TimeoutSeconds;
         _checkingCapability = true;
         _deadline = Time.realtimeSinceStartup + _capabilityTimeout;
         SetStatus("Checking ROS plan-only TCP support...");
-        _connection.SendServiceMessage<GetParametersResponse>(CapabilityService,
-            new GetParametersRequest(new[] { "tcp_pose_planning_enabled" }), response =>
+        MtcPlanningStop.RequestCapabilities(_connection, CapabilityService, new[] { "tcp_pose_planning_enabled" },
+            () => this != null && generation == _generation && _checkingCapability, response =>
             {
-                if (this == null || generation != _generation || !_checkingCapability) return;
                 _checkingCapability = false;
                 if (!TryValidate(out string blocked)) { InvalidatePlan(blocked); return; }
                 if (!TargetsMatchRequest()) { InvalidatePlan("Targets or calibration changed. Plan again."); return; }
-                if (response?.values == null || response.values.Length != 1 ||
-                    response.values[0].type != 1 || !response.values[0].bool_value)
+                if (!MtcPlanningStop.IsSupported(response?.values, 0))
                 { InvalidatePlan("ROS needs the plan-only TCP update. Existing direct-TCP topics execute immediately."); return; }
-                TimeMsg stamp = NewRequestStamp();
-                _review.Begin(RequestId(stamp));
-                _deadline = Time.realtimeSinceStartup + _planningTimeout;
-                _connection.Publish(PlanTopic, new PoseArrayMsg(
-                    new HeaderMsg { frame_id = _requestedA.header.frame_id, stamp = stamp },
-                    new[] { _requestedA.pose, _requestedB.pose }));
-                SetStatus("Planning exact TCP A → B. No motion requested.");
+                bool timed = MtcPlanningStop.IsSupported(response.values, 2);
+                if (!timed && timeoutSeconds != MtcPlanningSettings.DefaultTimeoutSeconds)
+                { InvalidatePlan(MtcPlanningStop.TimeoutUnsupported); return; }
+                PublishPlan(timed, timeoutSeconds, MtcPlanningStop.IsSupported(response.values, 1));
             });
+    }
+
+    private void PublishPlan(bool timed, int timeoutSeconds, bool stopSupported)
+    {
+        try
+        {
+            TimeMsg stamp = MtcPlanningStop.NewRequestStamp();
+            string requestId = MtcPlanningStop.RequestId(stamp);
+            _review.Begin(requestId);
+            _stopSupported = stopSupported;
+            _deadline = Time.realtimeSinceStartup + (timed ? timeoutSeconds + MtcPlanningStop.ResultGraceSeconds : _planningTimeout);
+            if (timed || stopSupported) StopRequest.Begin(_connection, requestId, stopSupported, _deadline);
+            var poses = new PoseArrayMsg(new HeaderMsg { frame_id = _requestedA.header.frame_id, stamp = stamp },
+                new[] { _requestedA.pose, _requestedB.pose });
+            if (timed)
+                MtcPlanningStop.PublishTimedPlan(_connection, new MtcPlanRequestMsg
+                {
+                    mode = MtcPlanRequestMsg.TCP, timeout_seconds = (uint)timeoutSeconds, tcp = poses
+                });
+            else _connection.Publish(PlanTopic, poses);
+            SetStatus("Planning exact TCP A → B. No motion requested.");
+        }
+        catch (Exception)
+        {
+            _planningStop?.ForgetUnsent();
+            InvalidatePlan("TCP planning request could not be sent. Check ROS and plan again.");
+        }
+    }
+
+    public void StopPlanning()
+    {
+        if (!CanStopPlanning) return;
+        if (!(_planningStop?.IsActive ?? false))
+        { InvalidatePlan("TCP planning stopped. Plan again."); return; }
+        InvalidatePlan(null);
+        _planningStop.RequestStop();
+    }
+
+    private void OnStopChanged()
+    {
+        if (_planningStop?.Feedback is string feedback) SetStatus(feedback);
+        else StateChanged?.Invoke();
+    }
+
+    private void OnStopFinished(string status, string reason, bool requested)
+    {
+        if (status == "cancelled") InvalidatePlan("TCP planning stopped. Plan again.");
+        else if (status == "timed_out" || status == "unconfirmed") InvalidatePlan(reason + " Plan again.");
+        else if (status == "rejected") InvalidatePlan("TCP planning rejected. " + reason);
+        else if (requested) InvalidatePlan("TCP preview discarded. Plan again.");
     }
 
     public void Execute()
     {
-        if (RobotExecutionState.IsBusy) return;
+        if (RobotExecutionState.IsBusy || (_planningStop?.IsActive ?? false)) return;
         if (!TryValidate(out string reason)) { InvalidatePlan(reason); return; }
         if (!TargetsMatchRequest()) { InvalidatePlan("Targets or calibration changed. Plan again."); return; }
         if ((_review.CanExecute || _repeat.HasRetainedPlan) && (_visualizer == null || !_visualizer.IsShowingTrajectory(_pendingPreview)))
@@ -220,11 +279,13 @@ public class TcpPlanningController : MonoBehaviour
         _reviewedPlanId = null;
         _generation++;
         _checkingCapability = false;
+        _stopSupported = false;
         _review.Invalidate();
+        RobotTrajectoryMsg previousPreview = _pendingPreview;
         _pendingPreview = null;
         if (!_isExecuting) { _executionRequestId = null; HasExecutionFeedback = false; }
         _requestedA = _requestedB = null;
-        if (_visualizer != null) _visualizer.SetTrajectory(null);
+        if (_visualizer != null) _visualizer.ClearTrajectoryIfMatches(previousPreview);
         if (reason != null && !_isExecuting) SetStatus(reason);
     }
 
@@ -249,7 +310,7 @@ public class TcpPlanningController : MonoBehaviour
     {
         if (trajectory?.joint_trajectory?.header?.stamp == null || trajectory.joint_trajectory.points == null ||
             trajectory.joint_trajectory.points.Length == 0 ||
-            !_review.AcceptPreview(RequestId(trajectory.joint_trajectory.header.stamp))) return;
+            !_review.AcceptPreview(MtcPlanningStop.RequestId(trajectory.joint_trajectory.header.stamp))) return;
         _pendingPreview = trajectory;
         ShowPreviewIfComplete();
     }
@@ -335,20 +396,6 @@ public class TcpPlanningController : MonoBehaviour
         StateChanged?.Invoke();
     }
 
-    private static TimeMsg NewRequestStamp()
-    {
-        long ticks = DateTime.UtcNow.Ticks - 621355968000000000L;
-        ticks = Math.Max(ticks, _lastRequestTicks + 1);
-        _lastRequestTicks = ticks;
-#if ROS2
-        int seconds = (int)(ticks / 10000000L);
-#else
-        uint seconds = (uint)(ticks / 10000000L);
-#endif
-        return new TimeMsg(seconds, (uint)((ticks % 10000000L) * 100L));
-    }
-
-    private static string RequestId(TimeMsg stamp) => stamp.sec + ":" + stamp.nanosec;
     [Serializable] private sealed class TcpStatus
     { public string request_id; public bool overall_success; public string message; public string phase; public string plan_id; }
     [Serializable] private sealed class ExecutionStatus
@@ -362,6 +409,7 @@ public class TcpPlanningController : MonoBehaviour
         _generation++;
         if (_targets != null) _targets.TargetsChanged -= OnTargetsChanged;
         if (_coordinates != null) _coordinates.CalibrationChanged -= OnCalibrationChanged;
+        _planningStop?.Dispose();
         if (_connection != null)
         {
             _connection.Unsubscribe("/mtc/tcp_planning_status");
