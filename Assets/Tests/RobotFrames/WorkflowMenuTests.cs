@@ -102,6 +102,29 @@ public sealed class WorkflowMenuTests
         finally { execution.GetMethod("SetBusy").Invoke(null, new object[] { _input, false }); }
     }
 
+    [Test]
+    public void FixtureReviewShowsStopInTheExecuteSlotAndCancelsThePendingCheck()
+    {
+        Create("RepetitivePickAndPlace");
+        Component controller = Property<Component>(_input, "FixtureController");
+        Assert.That(controller.GetType().GetMethod("StopPlanning"), Is.Not.Null, "The fixture Review page needs a planning stop action.");
+        Set(controller, "_checkingCalibration", true);
+        _menu.GetType().GetMethod("OpenFixtureReview").Invoke(_menu, null);
+        Invoke(_menu, "RefreshTask");
+        RectTransform page = Read<RectTransform>(_menu, "_fixturePageContent");
+        Component plan = page.Find("Plan fixture batch").GetComponent(TypeOf("UnityEngine.UI.Button"));
+        Component stop = page.Find("Stop fixture planning").GetComponent(TypeOf("UnityEngine.UI.Button"));
+        Component execute = page.Find("Execute fixture batch").GetComponent(TypeOf("UnityEngine.UI.Button"));
+        Assert.That(stop.gameObject.activeSelf && Property<bool>(stop, "interactable"), Is.True);
+        Assert.That(Property<bool>(plan, "interactable"), Is.False);
+        Assert.That(execute.gameObject.activeSelf, Is.False);
+        object clicked = Property<object>(stop, "onClick"); clicked.GetType().GetMethod("Invoke").Invoke(clicked, null);
+        Assert.That(stop.gameObject.activeSelf, Is.False);
+        Assert.That(execute.gameObject.activeSelf, Is.True);
+        Assert.That(Property<bool>(execute, "interactable"), Is.False);
+        Assert.That(Property<bool>(plan, "interactable"), Is.True);
+    }
+
     private static void Set(object target, string name, object value) => target.GetType().GetField(name, Fields).SetValue(target, value);
     private static T Read<T>(object target, string name) => (T)target.GetType().GetField(name, Fields).GetValue(target);
     private static T Property<T>(object target, string name) => (T)target.GetType().GetProperty(name).GetValue(target);

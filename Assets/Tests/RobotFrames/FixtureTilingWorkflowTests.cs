@@ -140,6 +140,55 @@ public sealed class FixtureTilingWorkflowTests
     }
 
     [Test]
+    public void StopDuringFixtureCalibrationCheckDiscardsThePendingRequestAndAllowsRetry()
+    {
+        Assert.That(_controller.GetType().GetMethod("StopPlanning"), Is.Not.Null, "Fixture planning needs a Stop Planning action.");
+        Set(_controller, "_acceptingResults", false);
+        Set(_controller, "_checkingCalibration", true);
+        int generation = (int)Read(_controller, "_generation");
+        Call(_controller, "StopPlanning");
+        Assert.That(Get<bool>(_controller, "IsPlanning"), Is.False);
+        Assert.That(Read(_controller, "_requestId"), Is.Null);
+        string stopped = Get<string>(_controller, "StatusText");
+        Assert.That(stopped, Does.Contain("stopped").IgnoreCase);
+        Private(_controller, "OnCalibrationParameters", null, generation);
+        Assert.That(Get<string>(_controller, "StatusText"), Is.EqualTo(stopped));
+        Assert.That(Read(_controller, "PlanPublishCount"), Is.EqualTo(0));
+        Assert.That(Read(_controller, "PublishCount"), Is.EqualTo(0));
+    }
+
+    [Test]
+    public void PublishedFixtureStopClearsItsReviewAndWaitsForItsOwnTerminal()
+    {
+        object response = CalibrationResponse("matching", true);
+        Component transport = Add("Offline fixture stop messages", "Unity.Robotics.ROSTCPConnector.ROSConnection");
+        Set(_controller, "_connection", transport);
+        object request = Msg("Ur16eInterfaces.FixtureTilingTaskMsg");
+        Set(request, "request_id", Request);
+        Arm();
+        Set(_controller, "_request", request);
+        Set(_controller, "_acceptingResults", false);
+        Set(_controller, "_checkingCalibration", true);
+        Private(_controller, "OnCalibrationParameters", response, Read(_controller, "_generation"));
+        Assert.That(Read(_controller, "PlanPublishCount"), Is.EqualTo(1));
+        Assert.That(Get<bool>(_controller, "CanStopPlanning"), Is.True);
+        Deliver('R'); Deliver('S'); Deliver('L');
+        Assert.That(Get<int>(_controller, "ReviewStepCount"), Is.GreaterThan(0));
+        Assert.That(Get<bool>(_controller, "CanExecute"), Is.False, "ROS still owns the planning slot.");
+
+        Call(_controller, "StopPlanning");
+        Assert.That(Get<bool>(_controller, "IsStoppingPlanning"), Is.True);
+        Deliver('R'); Deliver('S'); Deliver('L');
+        Assert.That(Get<int>(_controller, "ReviewStepCount"), Is.Zero);
+        Assert.That(Get<bool>(_visualizer, "HasPlayback"), Is.False);
+        PlanningControl("fixture/foreign-request", "cancelled");
+        Assert.That(Get<bool>(_controller, "IsPlanning"), Is.True);
+        PlanningControl("fixture/" + Request, "cancelled");
+        Assert.That(Get<bool>(_controller, "IsPlanning") || Get<bool>(_controller, "CanExecute"), Is.False);
+        Assert.That(Read(_controller, "PublishCount"), Is.EqualTo(0));
+    }
+
+    [Test]
     public void StartingOutsideFixtureModeDoesNotRequestOrRegisterRosTransport()
     {
         Set(_controller, "_active", false);
@@ -159,15 +208,20 @@ public sealed class FixtureTilingWorkflowTests
     [TestCase("nonfinite thickness", false)]
     public void PlanningRequiresTheLoadedRosCalibrationToMatchTheMeasuredFixture(string variant, bool expected)
     {
+        Assert.That(Private(_controller, "RunningCalibrationMatches", CalibrationResponse(variant), null), Is.EqualTo(expected));
+    }
+
+    private object CalibrationResponse(string variant, bool supportsStop = false)
+    {
         object calibration = Get<object>(_controller, "Calibration");
         object a = Msg("Geometry.PointMsg"), b = Msg("Geometry.PointMsg"), c = Msg("Geometry.PointMsg"), d = Msg("Geometry.PointMsg");
         Set(b, "x", 1.0); Set(c, "x", 1.0); Set(c, "y", 1.0); Set(d, "y", 1.0);
         ArrayField(calibration, "BoardTopCorners", a, b, c, d);
         object support = Msg("Geometry.PoseStampedMsg"); Set(Read(Read(support, "pose"), "orientation"), "w", 1.0);
         Set(calibration, "SupportCorner", support);
-        object[] values = Enumerable.Range(0, 8).Select(_ => Msg("RclInterfaces.ParameterValueMsg")).ToArray();
+        object[] values = Enumerable.Range(0, supportsStop ? 9 : 8).Select(_ => Msg("RclInterfaces.ParameterValueMsg")).ToArray();
         byte[] kinds = { 1, 4, 8, 3, 8, 8, 3, 3 };
-        for (int i = 0; i < values.Length; i++) Set(values[i], "type", kinds[i]);
+        for (int i = 0; i < kinds.Length; i++) Set(values[i], "type", kinds[i]);
         Set(values[0], "bool_value", variant != "disabled");
         Set(values[1], "string_value", variant == "foreign frame" ? "world" : "ur_base_link");
         Set(values[2], "double_array_value", new[] { 0.0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0 });
@@ -177,8 +231,20 @@ public sealed class FixtureTilingWorkflowTests
         Set(values[5], "double_array_value", new[] { 0.0, 0, 0, variant == "opposite quaternion" ? -1.0 : 1.0 });
         Set(values[6], "double_value", Convert.ToDouble(Read(calibration, "Margin")));
         Set(values[7], "double_value", 60.0);
+        if (supportsStop)
+        {
+            Set(values[8], "type", (byte)1);
+            Set(values[8], "bool_value", true);
+        }
         object response = Msg("RclInterfaces.GetParametersResponse"); ArrayField(response, "values", values);
-        Assert.That(Private(_controller, "RunningCalibrationMatches", response, null), Is.EqualTo(expected));
+        return response;
+    }
+
+    private void PlanningControl(string key, string status)
+    {
+        object message = Activator.CreateInstance(TypeOf("RosMessageTypes.Std.StringMsg"),
+            new object[] { "{\"key\":\"" + key + "\",\"status\":\"" + status + "\",\"reason\":\"offline test\"}" });
+        Private(Read(_controller, "_planningStop"), "OnStatus", message);
     }
 
     private void Arm()

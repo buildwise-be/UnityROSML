@@ -16,6 +16,10 @@ public class MTCPlansManager : MonoBehaviour
     private bool _tilePlanningEnabled = true;
     private bool _hasPlanningRequest;
     private bool _acceptingResults;
+    private string _planningRequestId;
+    private MtcPlanningStop _planningStop;
+    private MtcPlanningStop PlanningStop => _planningStop ??=
+        new MtcPlanningStop("pick", RefreshPlanningStopFeedback, OnPlanningStopFinished);
     private bool _receivedInitialExecutionReset;
     private bool _receivedExecutionReady;
     private int _requestCalibrationRevision;
@@ -31,12 +35,16 @@ public class MTCPlansManager : MonoBehaviour
     private string _reviewedPlanId;
     private bool? _repeatStartReady;
     public string RepeatExecutionPayload { get; private set; }
+    public string IdentifiedExecutionPlanId { get; private set; }
     public bool HasRepeatablePlan => _repeat.HasRetainedPlan;
     public bool CanRepeat => !RobotExecutionState.IsBusy && IsReviewContextValid && _repeat.HasRetainedPlan &&
         _UR16eTrajectoryVisualizer != null && _UR16eTrajectoryVisualizer.IsShowingTrajectory(_pendingTrajectory) &&
         RepeatStartMatches(out _);
     public bool HasPlanResult { get; private set; }
-    public bool IsPlanning => IsCurrentRequest && _acceptingResults;
+    public bool IsPlanning => _planningStop?.IsActive == true || (IsCurrentRequest && _acceptingResults);
+    public bool CanStopPlanning => !_executionRequested && (_planningStop?.CanRequestStop == true ||
+        (_planningStop?.IsActive != true && !string.IsNullOrEmpty(_planningRequestId) && IsCurrentRequest && _acceptingResults));
+    public bool IsStoppingPlanning => _planningStop?.StopRequested == true;
     public bool IsExecuting => _executionRequested;
     public bool HasExecutionFeedback { get; private set; }
     public static MTCPlansManager ActiveExecution
@@ -58,7 +66,8 @@ public class MTCPlansManager : MonoBehaviour
             plans.OnSuccessfulPlan?.Invoke(false);
         }
     }
-    public bool CanExecute => !RobotExecutionState.IsBusy && (CanRepeat || (ActiveExecution == null && IsCurrentRequest && HasPlanResult && _isLastPlanSuccessful &&
+    public bool CanExecute => !IsPlanning && !RobotExecutionState.IsBusy && (CanRepeat || (ActiveExecution == null && IsCurrentRequest && HasPlanResult && _isLastPlanSuccessful &&
+        (string.IsNullOrEmpty(_planningRequestId) || !string.IsNullOrEmpty(_reviewedPlanId)) &&
         _UR16eTrajectoryVisualizer != null && _UR16eTrajectoryVisualizer.IsShowingTrajectory(_pendingTrajectory)));
     public string StatusText { get; private set; } = "Capture pick and place tool contacts, then Plan.";
     public UnityEvent<bool> OnSuccessfulPlan;
@@ -81,6 +90,7 @@ public class MTCPlansManager : MonoBehaviour
         _reviewedPlanId = null;
         _hasPlanningRequest = false;
         _acceptingResults = false;
+        _planningRequestId = null;
         // Editing a target, changing mode or disabling the component revokes
         // review permission, but cannot cancel a command already sent to ROS.
         if (!_executionRequested)
@@ -91,11 +101,16 @@ public class MTCPlansManager : MonoBehaviour
         }
         HasPlanResult = false;
         _isLastPlanSuccessful = false;
+        _UR16eTrajectoryVisualizer?.ClearTrajectoryIfMatches(_pendingTrajectory);
         _pendingTrajectory = null;
-        if (_UR16eTrajectoryVisualizer != null) _UR16eTrajectoryVisualizer.SetTrajectory(null);
     }
 
-    private void SetReviewStatus(string status) => SetStatus(_executionRequested ? StatusText : status);
+    private void SetReviewStatus(string status)
+    {
+        if (_executionRequested) SetStatus(StatusText);
+        else if (IsStoppingPlanning) RefreshPlanningStopFeedback();
+        else SetStatus(status);
+    }
 
     public void SetTilePlanningEnabled(bool enabled)
     {
@@ -106,7 +121,12 @@ public class MTCPlansManager : MonoBehaviour
     }
 
     /// <summary>Arm callbacks only for a deliberate local tile-plan request. Does not publish anything.</summary>
-    public bool BeginPlanningRequest()
+    public bool BeginPlanningRequest() => BeginPlanningRequestCore(null, null);
+
+    public bool BeginCorrelatedPlanningRequest(ROSConnection connection, string requestId) =>
+        BeginPlanningRequestCore(connection, requestId);
+
+    private bool BeginPlanningRequestCore(ROSConnection connection, string requestId)
     {
         if (RobotExecutionState.IsBusy || ActiveExecution != null) return false;
         if (IsPlanning) return false;
@@ -118,10 +138,37 @@ public class MTCPlansManager : MonoBehaviour
         }
         _hasPlanningRequest = true;
         _acceptingResults = true;
+        _planningRequestId = requestId;
         _requestCalibrationRevision = RobotCoordinateService.Instance.CalibrationRevision;
         _planningDeadline = Time.realtimeSinceStartup + _planningTimeout;
+        if (!string.IsNullOrEmpty(requestId)) PlanningStop.Begin(connection, requestId);
         SetStatus("Planning MTC pick / place from tool contact poses...");
         return true;
+    }
+
+    public bool RequestPlanningStop()
+    {
+        if (!CanStopPlanning) return false;
+        ClearPlan();
+        if (_planningStop?.IsActive == true) return _planningStop.RequestStop();
+        SetStatus("MTC preview discarded. Plan again.");
+        return true;
+    }
+
+    public void ForgetUnsentPlanningRequest() => _planningStop?.ForgetUnsent();
+
+    private void RefreshPlanningStopFeedback()
+    {
+        if (IsStoppingPlanning && _hasPlanningRequest) ClearPlan();
+        SetStatus(_planningStop?.Feedback ?? StatusText);
+    }
+
+    private void OnPlanningStopFinished(string status, string reason, bool stopRequested)
+    {
+        if (status == "cancelled") RejectPlanningRequest("MTC planning stopped. Plan again.");
+        else if (status == "rejected") RejectPlanningRequest("ROS rejected MTC planning: " + reason);
+        else if (stopRequested) RejectPlanningRequest("MTC preview discarded. Plan again.");
+        else SetStatus(StatusText);
     }
 
     public void RejectPlanningRequest(string reason)
@@ -134,6 +181,7 @@ public class MTCPlansManager : MonoBehaviour
     {
         if (!CanExecute) return false;
         RepeatExecutionPayload = null;
+        IdentifiedExecutionPlanId = null;
         _executionPlanId = _reviewedPlanId;
         _executionAttemptId = "";
         if (_repeat.HasRetainedPlan)
@@ -141,6 +189,7 @@ public class MTCPlansManager : MonoBehaviour
             if (!RepeatStartMatches(out _) || !_repeat.TryBeginAttempt(out _executionPlanId, out _executionAttemptId)) return false;
             RepeatExecutionPayload = JsonUtility.ToJson(new RepeatRequest { plan_id = _executionPlanId, attempt_id = _executionAttemptId });
         }
+        else if (!string.IsNullOrEmpty(_planningRequestId)) IdentifiedExecutionPlanId = _executionPlanId;
         // Consuming permission must not stop listening for the outcome of the
         // command. ROS can reject its start-state/scene preflight without motion.
         _executionRequested = true;
@@ -168,6 +217,7 @@ public class MTCPlansManager : MonoBehaviour
         if (!IsReviewContextValid || _pendingTrajectory == null) _repeat.Invalidate();
         _hasPlanningRequest = false;
         _executionRequested = false;
+        IdentifiedExecutionPlanId = null;
         _awaitingExecutionAcknowledgement = false;
         _executionDeadline = 0f;
         _acceptingResults = false;
@@ -215,6 +265,7 @@ public class MTCPlansManager : MonoBehaviour
         _coordinates = RobotCoordinateService.Instance;
         _coordinates.CalibrationChanged += InvalidatePlan;
         _connection = ROSService.Instance.GetROSConnection();
+        PlanningStop.Bind(_connection);
         _connection.Subscribe<StringMsg>("/mtc/planning_status", OnPlanningStatus);
         _connection.Subscribe<RobotTrajectoryMsg>("/mtc/planned_trajectory", OnPlannedTrajectory);
         _connection.Subscribe<StringMsg>("/mtc/execution_status", OnExecutionStatus);
@@ -222,6 +273,12 @@ public class MTCPlansManager : MonoBehaviour
 
     private void Update()
     {
+        _planningStop?.Tick();
+        if (IsStoppingPlanning)
+        {
+            if (StatusText != _planningStop.Feedback) RefreshPlanningStopFeedback();
+            return;
+        }
         if (_executionRequested)
         {
             if (_pendingTrajectory != null && !IsReviewContextValid) InvalidatePlan();
@@ -259,13 +316,13 @@ public class MTCPlansManager : MonoBehaviour
 
     private void OnPlanningStatus(StringMsg message)
     {
-        // Legacy MTC messages have no request ID. Ignore them until a tile request
-        // is explicitly sent, and revoke that window whenever mode/targets change.
+        // Keep legacy zero-stamped requests compatible. Correlated requests only
+        // accept their own status, even after an earlier plan has been stopped.
         if (!IsCurrentRequest || !_acceptingResults) return;
         PlanningStatus status;
         try { status = JsonUtility.FromJson<PlanningStatus>(message.data); }
         catch (System.Exception) { return; }
-        if (status == null) return;
+        if (status == null || (status.request_id ?? "") != (_planningRequestId ?? "")) return;
         // A freshly constructed MTC task may report its empty root container,
         // rather than an empty stages array. Neither is a terminal failure. ROS
         // publishes an error message / failed stage counts or execution_status
@@ -277,6 +334,11 @@ public class MTCPlansManager : MonoBehaviour
         }
         HasPlanResult = true;
         _isLastPlanSuccessful = status.overall_success;
+        if (_isLastPlanSuccessful && !string.IsNullOrEmpty(_planningRequestId) && string.IsNullOrEmpty(status.plan_id))
+        {
+            RejectPlanningRequest("ROS did not identify the MTC plan. Plan again.");
+            return;
+        }
         if (_isLastPlanSuccessful && !string.IsNullOrEmpty(status.plan_id))
         {
             if (!string.IsNullOrEmpty(_reviewedPlanId) && _reviewedPlanId != status.plan_id)
@@ -315,6 +377,7 @@ public class MTCPlansManager : MonoBehaviour
         try { status = JsonUtility.FromJson<MtcExecutionStatus>(message.data); }
         catch (System.Exception) { return; }
         if (status == null) return;
+        if (!_executionRequested && !string.IsNullOrEmpty(_planningRequestId) && status.request_id != _planningRequestId) return;
         if (_executionRequested && ((_executionAttemptId ?? "") != (status.attempt_id ?? "") ||
             (!string.IsNullOrEmpty(_executionPlanId) && _executionPlanId != status.plan_id))) return;
         if (status.status == "ready")
@@ -356,6 +419,8 @@ public class MTCPlansManager : MonoBehaviour
     private void OnPlannedTrajectory(RobotTrajectoryMsg trajectory)
     {
         if (!IsCurrentRequest || !_acceptingResults || trajectory?.joint_trajectory?.points == null || trajectory.joint_trajectory.points.Length == 0) return;
+        var stamp = trajectory.joint_trajectory.header?.stamp;
+        if (!string.IsNullOrEmpty(_planningRequestId) && (stamp == null || MtcPlanningStop.RequestId(stamp) != _planningRequestId)) return;
         _pendingTrajectory = trajectory;
         ShowPreviewIfComplete();
     }
@@ -383,6 +448,7 @@ public class MTCPlansManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        _planningStop?.Dispose();
         RobotExecutionState.SetBusy(this, false);
         if (_coordinates != null) _coordinates.CalibrationChanged -= InvalidatePlan;
         if (_connection != null)
@@ -398,6 +464,7 @@ public class MTCPlansManager : MonoBehaviour
     {
         public string status;
         public string reason;
+        public string request_id;
         public string plan_id;
         public string attempt_id;
         public bool repeatable;
@@ -420,5 +487,6 @@ public class PlanningStatus
     public bool overall_success;
     public StageStatus[] stages;
     public string message;
+    public string request_id;
     public string plan_id;
 }

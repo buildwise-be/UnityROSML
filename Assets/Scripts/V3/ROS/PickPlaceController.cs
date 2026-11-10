@@ -12,6 +12,7 @@ public class PickPlaceController : MonoBehaviour
 {
     public const string ContactPlanTopic = "/pick_place_tcp_target";
     public const string TaskPlanTopic = "/pick_place_task_target";
+    public const string IdentifiedExecuteTopic = "/execute_pick_place_plan";
     private const string CapabilityService = "/mtc_test_task_node/get_parameters";
     private const string CapabilityParameter = "pick_place_task_planning_enabled";
     // Retain old scene fields during migration; tool poses never use the old surface API or planes.
@@ -40,6 +41,8 @@ public class PickPlaceController : MonoBehaviour
     private ROSConnection _connection;
     public bool IsTilePlanningEnabled => _tilePlanningEnabled;
     public bool IsPlanning => _checkingCapability || (PlansManager != null && PlansManager.IsPlanning);
+    public bool CanStopPlanning => _checkingCapability || (PlansManager != null && PlansManager.CanStopPlanning);
+    public bool IsStoppingPlanning => PlansManager != null && PlansManager.IsStoppingPlanning;
     public int DescentSpeedMmPerSecond => _descentSpeedMmPerSecond;
     public bool PickBySurface => _pickBySurface;
     public PickItem SelectedItem => _selectedItem;
@@ -61,6 +64,7 @@ public class PickPlaceController : MonoBehaviour
         _pickPlaceTopicName = TaskPlanTopic;
         _connection.RegisterPublisher<PickPlaceTaskMsg>(_pickPlaceTopicName);
         _connection.RegisterPublisher<BoolMsg>("execute_task");
+        _connection.RegisterPublisher<StringMsg>(IdentifiedExecuteTopic);
         _connection.RegisterPublisher<StringMsg>("/repeat_reviewed_plan");
         _connection.RegisterRosService<GetParametersRequest, GetParametersResponse>(CapabilityService);
         if (_pickPointPrefab != null || _placePointPrefab != null)
@@ -355,8 +359,9 @@ public class PickPlaceController : MonoBehaviour
             int generation = _generation;
             // Show progress without arming callbacks for a planning request that has not been sent.
             PlansManager.RejectPlanningRequest("Checking ROS item/speed pick support...");
-            _connection.SendServiceMessage<GetParametersResponse>(CapabilityService,
-                new GetParametersRequest(new[] { CapabilityParameter }), response => OnCapabilityResponse(response, generation));
+            MtcPlanningStop.RequestCapabilities(_connection, CapabilityService, new[] { CapabilityParameter },
+                () => this != null && generation == _generation && _checkingCapability,
+                response => OnCapabilityResponse(response, generation));
         }
         catch (Exception)
         { RejectPlanningRequest("MTC planning request could not be sent. Check the ROS connection, then Plan again."); }
@@ -367,18 +372,42 @@ public class PickPlaceController : MonoBehaviour
         if (this == null || generation != _generation || !_checkingCapability) return;
         if (!CanKeepCapabilityRequest())
         { RejectPlanningRequest("Tool targets, mode, model or alignment changed. Plan pick/place again."); return; }
-        if (response?.values == null || response.values.Length != 1 || response.values[0].type != 1 || !response.values[0].bool_value)
+        if (response?.values == null || response.values.Length == 0 || response.values[0].type != 1 || !response.values[0].bool_value)
         { RejectPlanningRequest("ROS needs the item/speed pick update before using these settings. Update the MTC backend."); return; }
         PickPlaceTaskMsg message = _requestedTask;
         _checkingCapability = false;
+        MTCPlansManager plans = PlansManager;
+        if (plans == null) return;
         try
         {
-            if (PlansManager == null || !PlansManager.BeginPlanningRequest()) return;
+            if (MtcPlanningStop.IsSupported(response.values, 1))
+            {
+                var stamp = MtcPlanningStop.NewRequestStamp();
+                message.contacts.pick_pose.header.stamp = stamp;
+                if (!plans.BeginCorrelatedPlanningRequest(_connection, MtcPlanningStop.RequestId(stamp))) return;
+            }
+            else if (!plans.BeginPlanningRequest()) return;
             _connection.Publish(TaskPlanTopic, message);
             _hasPlanningRequestBeenSent = true;
         }
         catch (Exception)
-        { RejectPlanningRequest("MTC planning request could not be sent. Check the ROS connection, then Plan again."); }
+        {
+            plans.ForgetUnsentPlanningRequest();
+            RejectPlanningRequest("MTC planning request could not be sent. Check the ROS connection, then Plan again.");
+        }
+    }
+
+    public void StopPlanning()
+    {
+        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
+        if (_checkingCapability)
+        {
+            RejectPlanningRequest("MTC planning stopped. Plan again.");
+            return;
+        }
+        if (PlansManager == null || !PlansManager.RequestPlanningStop()) return;
+        CancelCapabilityRequest();
+        _hasPlanningRequestBeenSent = false;
     }
 
     private bool CanKeepCapabilityRequest() => _tilePlanningEnabled && _connection != null &&
@@ -474,8 +503,12 @@ public class PickPlaceController : MonoBehaviour
             if (!PlansManager.ConsumePlanForExecution()) return;
             _hasPlanningRequestBeenSent = false;
             string repeat = PlansManager.RepeatExecutionPayload;
+            string planId = PlansManager.IdentifiedExecutionPlanId;
             string reason;
-            bool published = repeat == null ? TryPublishExecutionRequest(out reason) : TryPublishRepeatExecutionRequest(repeat, out reason);
+            bool published;
+            if (repeat != null) published = TryPublishRepeatExecutionRequest(repeat, out reason);
+            else if (planId != null) published = TryPublishIdentifiedExecutionRequest(planId, out reason);
+            else published = TryPublishExecutionRequest(out reason);
             if (!published) PlansManager.RejectExecutionRequest(reason);
         }
         catch (Exception exception)
@@ -506,6 +539,16 @@ public class PickPlaceController : MonoBehaviour
         if (_connection == null || !_connection.HasConnectionThread || _connection.HasConnectionError)
         { reason = "ROS is disconnected. Plan again after reconnecting."; return false; }
         _connection.Publish("/repeat_reviewed_plan", new StringMsg(payload));
+        reason = null;
+        return true;
+    }
+
+    private bool TryPublishIdentifiedExecutionRequest(string planId, out string reason)
+    {
+        if (_connection == null) _connection = ROSService.Instance.GetROSConnection();
+        if (_connection == null || !_connection.HasConnectionThread || _connection.HasConnectionError)
+        { reason = "ROS is disconnected. Reconnect and plan MTC pick/place again."; return false; }
+        _connection.Publish(IdentifiedExecuteTopic, new StringMsg(planId));
         reason = null;
         return true;
     }

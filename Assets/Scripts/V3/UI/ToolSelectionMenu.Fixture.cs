@@ -255,14 +255,16 @@ public sealed partial class ToolSelectionMenu
                 FixtureButton("Next task step", _fixturePageContent, 210, 75, 198, 38,
                     () => { if (_fixtureTiling != null) _fixtureTiling.StepReview(1); });
                 FixtureDynamicText("Task step detail", 128, () => _fixtureTiling == null ? "Plan a batch to review its steps." : _fixtureTiling.ReviewStepText, 188);
-                FixtureButton("Plan fixture batch", _fixturePageContent, 0, 334, 198, 42, PlanTask, "Plan preview");
-                FixtureButton("Execute fixture batch", _fixturePageContent, 210, 334, 198, 42, ExecuteTask, "Execute plan");
+                Button plan = FixtureButton("Plan fixture batch", _fixturePageContent, 0, 334, 198, 42, PlanTask, "Plan preview");
+                Button execute = FixtureButton("Execute fixture batch", _fixturePageContent, 210, 334, 198, 42, ExecuteTask, "Execute plan");
+                Button stop = FixtureButton("Stop fixture planning", _fixturePageContent, 210, 334, 198, 42, StopPlanningTask, "Stop Planning");
                 _fixtureRefreshValues.Add(() =>
                 {
-                    Button plan = _fixturePageContent.Find("Plan fixture batch")?.GetComponent<Button>();
-                    Button execute = _fixturePageContent.Find("Execute fixture batch")?.GetComponent<Button>();
-                    if (plan != null) plan.interactable = _fixtureTiling != null && !_fixtureTiling.IsPlanning && !RobotExecutionState.IsBusy && !IsPlacementBusy;
-                    if (execute != null) execute.interactable = _fixtureTiling != null && _fixtureTiling.CanExecute && !RobotExecutionState.IsBusy && !IsPlacementBusy;
+                    bool motionFree = !RobotExecutionState.IsBusy && MTCPlansManager.ActiveExecution == null;
+                    plan.interactable = _fixtureTiling != null && !_fixtureTiling.IsPlanning && motionFree && !IsPlacementBusy;
+                    execute.interactable = _fixtureTiling != null && _fixtureTiling.CanExecute && motionFree && !IsPlacementBusy;
+                    RefreshStopPlanningButton(stop, execute, motionFree && _fixtureTiling?.CanStopPlanning == true,
+                        _fixtureTiling?.IsStoppingPlanning == true);
                 });
                 FixtureHint(386, "Single-use execution. Check inventory and scene after an attempt before creating a new job.", 42);
                 break;

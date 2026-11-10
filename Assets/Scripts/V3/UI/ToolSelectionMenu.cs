@@ -87,6 +87,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     private TextMeshProUGUI _qrStatus;
     private Button _planButton;
     private Button _executeButton;
+    private Button _stopPlanningButton;
     private Button _rescanButton;
     private Button _recenterButton;
     private Button _alignButton;
@@ -455,6 +456,17 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         RefreshTask();
     }
 
+    public void StopPlanningTask()
+    {
+        BindTaskControls();
+        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
+        _localNotice = null;
+        if (_input != null && _input.IsFixtureMode) _fixtureTiling?.StopPlanning();
+        else if (_input == null || _input.IsTcpMode) _tcpPlanning?.StopPlanning();
+        else _pickSettingsController?.StopPlanning();
+        RefreshTask();
+    }
+
     public void SelectTcpTask() => SelectTaskMode(true);
     public void SelectPickPlaceTask() => SelectTaskMode(false);
     public void SelectFixtureTask()
@@ -747,11 +759,18 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
                 : (_legacyPlans != null ? _legacyPlans.StatusText : "Capture pick and place tool contacts, then Plan preview."));
         // Keep Plan available for incomplete measurements so the controller can
         // explain exactly which input or calibration needs attention.
+        bool planning = fixture ? _fixtureTiling?.IsPlanning == true : tcp ? _tcpPlanning?.IsPlanning == true :
+            _pickSettingsController?.IsPlanning == true || _legacyPlans?.IsPlanning == true;
+        bool canStop = fixture ? _fixtureTiling?.CanStopPlanning == true : tcp ? _tcpPlanning?.CanStopPlanning == true :
+            _pickSettingsController?.CanStopPlanning == true;
+        bool stopping = fixture ? _fixtureTiling?.IsStoppingPlanning == true : tcp ? _tcpPlanning?.IsStoppingPlanning == true :
+            _pickSettingsController?.IsStoppingPlanning == true;
         if (_planButton != null) _planButton.interactable = !IsPlacementBusy && !executionBusy && execution == null &&
-            (!fixture || (_fixtureTiling != null && !_fixtureTiling.IsPlanning));
+            !planning && (!fixture || _fixtureTiling != null);
         if (_executeButton != null) _executeButton.interactable = !IsPlacementBusy && !executionBusy && execution == null && (fixture ? _fixtureTiling != null && _fixtureTiling.CanExecute : tcp
             ? _tcpPlanning != null && _tcpPlanning.CanExecute
             : _legacyPlans != null && _legacyPlans.CanExecute && ToolSelectionController.CanPlanPickPlace);
+        RefreshStopPlanningButton(_stopPlanningButton, _executeButton, canStop && !executionBusy && execution == null, stopping);
         if (_executeButton != null)
         {
             TextMeshProUGUI label = _executeButton.GetComponentInChildren<TextMeshProUGUI>();
@@ -785,6 +804,17 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         RefreshFixtureMenu();
         RefreshSceneNavigation();
         RefreshPickSettingsMenu();
+    }
+
+    private static void RefreshStopPlanningButton(Button stop, Button execute, bool canStop, bool stopping)
+    {
+        if (stop == null) return;
+        bool showStop = canStop || stopping;
+        stop.gameObject.SetActive(showStop);
+        if (execute != null) execute.gameObject.SetActive(!showStop);
+        stop.interactable = canStop;
+        TextMeshProUGUI label = stop.GetComponentInChildren<TextMeshProUGUI>(true);
+        if (label != null) label.text = stopping ? (canStop ? "Retry Stop" : "Stopping...") : "Stop Planning";
     }
 
     private static void RefreshTaskChoice(Button button, bool selected, bool enabled)
@@ -986,6 +1016,9 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         _planButton.onClick.AddListener(PlanTask);
         _executeButton = CreateButton("Execute plan", _taskView, new Vector2(226f, -394f), new Vector2(198f, 42f), out _);
         _executeButton.onClick.AddListener(ExecuteTask);
+        _stopPlanningButton = CreateButton("Stop Planning", _taskView, new Vector2(226f, -394f), new Vector2(198f, 42f), out _);
+        _stopPlanningButton.onClick.AddListener(StopPlanningTask);
+        _stopPlanningButton.gameObject.SetActive(false);
         BuildPlaybackControls();
         BuildPathThicknessSlider();
         _pointPlacementButton = CreateButton("Place with 5 points", _taskView, new Vector2(16f, -625f), new Vector2(130f, 28f), out TextMeshProUGUI pointPlacementLabel);
@@ -1612,6 +1645,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         if (_recenterButton != null) _recenterButton.onClick.RemoveListener(RecenterMenu);
         if (_planButton != null) _planButton.onClick.RemoveListener(PlanTask);
         if (_executeButton != null) _executeButton.onClick.RemoveListener(ExecuteTask);
+        if (_stopPlanningButton != null) _stopPlanningButton.onClick.RemoveListener(StopPlanningTask);
         if (_robotContoursToggle != null) _robotContoursToggle.onValueChanged.RemoveListener(SetRobotContours);
         if (_rescanButton != null) _rescanButton.onClick.RemoveListener(RescanQr);
         if (_alignButton != null) _alignButton.onClick.RemoveListener(BeginAlignment);

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "completedUtc": "2026-11-06T09:59:28.0375618Z",
+  "completedUtc": "2026-11-10T15:58:17.2487183Z",
   "unityVersion": "6000.0.84f1",
   "command": "powershell -NoProfile -File Tools/RobotFrames/compile_runtime.ps1",
   "compiler": "C:\\Program Files\\Unity 6000.0.84f1\\Editor\\Data\\DotNetSdkRoslyn\\csc.dll",
@@ -8,7 +8,7 @@
   "settingsResponseFile": "Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.rsp",
   "responseSha256": "9c2e3b9483a0b732212ed8c3291306800e2fdae77069e602ad1c1d19ce9b6cb3",
   "helperSourceCount": 10,
-  "mainSourceCount": 119,
+  "mainSourceCount": 120,
   "exitCode": 0,
   "errorCount": 0,
   "warnings": [
@@ -379,7 +379,7 @@
       "path": "Assets/Scripts/V3/ROS/FixtureSolutionPreview.cs"
     },
     {
-      "sha256": "61536cda91bfb2a493d674d3ee6f4646e972831a07e1233cb40542004899ead0",
+      "sha256": "300a8332b822c2f766c482ef259e5ebdf8fcca82a78fa111fa1c1a20fd7974d5",
       "path": "Assets/Scripts/V3/ROS/FixtureTilingController.cs"
     },
     {
@@ -403,11 +403,15 @@
       "path": "Assets/Scripts/V3/ROS/JointStateSubscriber.cs"
     },
     {
-      "sha256": "30b8f6ad73a857c850249812365fe0268a1dd81456b8e72ed23eda6ebd96cf96",
+      "sha256": "50b413dc2d21efdfdffb15fa03a3b787181f118bc5016dde48cb6fe62d001be4",
+      "path": "Assets/Scripts/V3/ROS/MtcPlanningStop.cs"
+    },
+    {
+      "sha256": "51db20fcf83c859a902298c7eab13c18d6050d6c56840cdfc3c63fb1519192a7",
       "path": "Assets/Scripts/V3/ROS/MTCPlansManager.cs"
     },
     {
-      "sha256": "057eca62b65ed32fd1fbfe723e0304bb1d469e621ca9f3e5ea535b0be481b55c",
+      "sha256": "795c3675c728b579e196cb3c0ffb000eb53c53b41ef9a753d12bc65be25413ed",
       "path": "Assets/Scripts/V3/ROS/PickPlaceController.cs"
     },
     {
@@ -439,7 +443,7 @@
       "path": "Assets/Scripts/V3/ROS/ROSService.cs"
     },
     {
-      "sha256": "9b275fb99371d343a6a9f81a77d9d203407084c0fba933e40b7ff7ade50f8b5e",
+      "sha256": "39747a0f1250c331de30ebc941f7009c1eaadb5ba35c1c5b3b4140feabe3cb99",
       "path": "Assets/Scripts/V3/ROS/TcpPlanningController.cs"
     },
     {
@@ -447,7 +451,7 @@
       "path": "Assets/Scripts/V3/ROS/ToolSelectionController.cs"
     },
     {
-      "sha256": "cc17b0c135884184a711a38fee90ce29af0d4047604176a4cb1449f3481c1749",
+      "sha256": "dee17cdd6000215347940bbb605c5e30630d148a3f4bb2c8b87c9302fe6101b4",
       "path": "Assets/Scripts/V3/ROS/UR16eTrajectoryVisualizer.cs"
     },
     {
@@ -495,11 +499,11 @@
       "path": "Assets/Scripts/V3/UI/RobotWelcomeMenu.cs"
     },
     {
-      "sha256": "d81013c10a3e93408ee7b14d4c2d7805b88656bd02c49a051b4a294ce9d41745",
+      "sha256": "275d0b6ed68c6011ec3908c066e4f77668396fc8ebe18af65d0e748e095d8fed",
       "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.cs"
     },
     {
-      "sha256": "263e7315254cc2d7281ac5a309916f1c6b87e4173dd2694be96e7bb81df03ba3",
+      "sha256": "a94ffbcb2840f17ba780ed95f18335216cbc364be12b389a6ca344cc9cf94f34",
       "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.Fixture.cs"
     },
     {
@@ -519,7 +523,7 @@
       "path": "Assets/Scripts/V3/UI/ToolSelectionMenu.PointRegistration.cs"
     },
     {
-      "sha256": "aa202f03a8b227da5b5b9411c80974cdad436a96b09fcaf2c050c37ad3ae10b1",
+      "sha256": "58fceca25c252edda244c518aec8415458e04bfa72d08169cd2b647e17d7983e",
       "path": "Assets/Scripts/V3/URInputManager.cs"
     },
     {

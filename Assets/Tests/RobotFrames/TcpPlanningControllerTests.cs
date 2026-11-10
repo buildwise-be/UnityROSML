@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -10,6 +12,7 @@ public class TcpPlanningControllerTests
     private GameObject _owner;
     private Component _controller;
     private TcpPlanReview _review;
+    private readonly List<string> _sentStopKeys = new List<string>();
 
     [SetUp]
     public void SetUp()
@@ -65,6 +68,84 @@ public class TcpPlanningControllerTests
         Assert.That(_review.IsPending, Is.True);
         Assert.That(_review.HasSuccessfulResult, Is.False);
     }
+
+    [Test]
+    public void StopDuringCapabilityCheckRevokesThePendingLocalRequest()
+    {
+        Field(_controller, "_checkingCapability").SetValue(_controller, true);
+        int generation = (int)Field(_controller, "_generation").GetValue(_controller);
+
+        StopPlanning();
+
+        Assert.That((int)Field(_controller, "_generation").GetValue(_controller), Is.GreaterThan(generation));
+        Assert.That(GetMember(_controller, "IsPlanning"), Is.False);
+        Status("123:456", true, "ready", "Late result");
+        Assert.That(_review.HasSuccessfulResult, Is.False);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void StopRevokesPreviewAndWaitsForTheMatchingPlannerRelease(bool disconnectBeforeStop)
+    {
+        var transport = new GameObject("Offline TCP stop transport");
+        transport.SetActive(false);
+        using var offlineConnectionFlag = new CancellationTokenSource();
+        Component connection = null;
+        FieldInfo connectionError = null;
+        bool previousError = false;
+        object stop = null;
+        try
+        {
+            connection = transport.AddComponent(RuntimeType("Unity.Robotics.ROSTCPConnector.ROSConnection"));
+            var request = _controller.GetType().GetProperty("StopRequest", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(request, Is.Not.Null, "TCP needs separate ROS stop state that survives clearing its review.");
+            stop = request.GetValue(_controller);
+            stop.GetType().GetMethod("Begin").Invoke(stop, new object[] { connection, "123:456" });
+            // Observe the real connector's local publish callback without starting a connection thread.
+            object topic = connection.GetType().GetMethod("GetTopic").Invoke(connection, new object[] { "/mtc/cancel_planning" });
+            MethodInfo subscribe = topic.GetType().GetMethod("AddSubscriber");
+            MethodInfo capture = GetType().GetMethod(nameof(CaptureStopKey), BindingFlags.Instance | BindingFlags.NonPublic);
+            subscribe.Invoke(topic, new object[] { Delegate.CreateDelegate(subscribe.GetParameters()[0].ParameterType, this, capture) });
+            connectionError = connection.GetType().GetField("m_HasConnectionError", BindingFlags.Static | BindingFlags.NonPublic);
+            previousError = (bool)connectionError.GetValue(null);
+            connectionError.SetValue(null, disconnectBeforeStop);
+            Field(connection, "m_ConnectionThreadCancellation").SetValue(connection, offlineConnectionFlag);
+            _sentStopKeys.Clear();
+
+            StopPlanning();
+            Status("123:456", true, "ready", "Late result");
+            Assert.That(_review.HasSuccessfulResult, Is.False);
+            Assert.That(GetMember(_controller, "IsPlanning"), Is.True);
+            if (disconnectBeforeStop)
+            {
+                Assert.That(_sentStopKeys, Is.Empty);
+                Assert.That(GetMember(_controller, "CanStopPlanning"), Is.False);
+                connectionError.SetValue(null, false);
+                stop.GetType().GetField("_retryAt", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(stop, 0f);
+                StopPlanning();
+            }
+            Assert.That(_sentStopKeys, Is.EqualTo(new[] { "tcp/123:456" }), "Stop can arrive before admission.");
+            ControlStatus(stop, "tcp/other", "started");
+            ControlStatus(stop, "tcp/123:456", "started");
+            Assert.That(_sentStopKeys, Is.EqualTo(new[] { "tcp/123:456" }));
+            ControlStatus(stop, "tcp/other", "cancelled");
+            Assert.That(GetMember(_controller, "IsPlanning"), Is.True);
+
+            ControlStatus(stop, "tcp/123:456", "cancelled");
+            Assert.That(GetMember(_controller, "IsPlanning"), Is.False);
+            Assert.That(GetMember(_controller, "CanExecute"), Is.False);
+            Assert.That((string)GetMember(_controller, "StatusText"), Does.Contain("stopped"));
+        }
+        finally
+        {
+            if (connection != null) Field(connection, "m_ConnectionThreadCancellation").SetValue(connection, null);
+            connectionError?.SetValue(null, previousError);
+            (stop as IDisposable)?.Dispose();
+            UnityEngine.Object.DestroyImmediate(transport);
+        }
+    }
+
+    private void CaptureStopKey(object message) => _sentStopKeys.Add((string)GetMember(message, "data"));
 
     [TestCase(null)]
     [TestCase("")]
@@ -137,6 +218,22 @@ public class TcpPlanningControllerTests
             ",\"phase\":\"" + phase + "\",\"message\":\"" + message + "\"}";
         object value = Activator.CreateInstance(messageType, new object[] { json });
         callback.Invoke(_controller, new[] { value });
+    }
+
+    private void StopPlanning()
+    {
+        MethodInfo stop = _controller.GetType().GetMethod("StopPlanning");
+        Assert.That(stop, Is.Not.Null, "TCP needs a planning stop action.");
+        stop.Invoke(_controller, null);
+    }
+
+    private static void ControlStatus(object stop, string key, string status)
+    {
+        MethodInfo callback = stop.GetType().GetMethod("OnStatus", BindingFlags.Instance | BindingFlags.NonPublic);
+        Type messageType = callback.GetParameters()[0].ParameterType;
+        object message = Activator.CreateInstance(messageType,
+            new object[] { "{\"key\":\"" + key + "\",\"status\":\"" + status + "\",\"reason\":\"Stopped\"}" });
+        callback.Invoke(stop, new[] { message });
     }
 
     private static Type RuntimeType(string name) => AppDomain.CurrentDomain.GetAssemblies()

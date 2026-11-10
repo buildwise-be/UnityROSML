@@ -41,6 +41,10 @@ public class UR16eTrajectoryVisualizer : MonoBehaviour
     public bool LoopPlayback => _loopPlayback;
     public bool HasVisiblePreview => _trajectory != null && _plannedTcp.Count > 0 && (_clones.Count > 0 || HasPlayback);
     public bool IsShowingTrajectory(RobotTrajectoryMsg trajectory) => HasVisiblePreview && ReferenceEquals(_trajectory, trajectory);
+    public void ClearTrajectoryIfMatches(RobotTrajectoryMsg trajectory)
+    {
+        if (trajectory != null && ReferenceEquals(_trajectory, trajectory)) SetTrajectory(null);
+    }
 
     private void Start()
     {
