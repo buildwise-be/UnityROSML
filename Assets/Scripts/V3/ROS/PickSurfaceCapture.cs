@@ -174,10 +174,15 @@ public sealed class PickSurfaceCapture : MonoBehaviour
     }
 
     /// <summary>Accepted raw measured contacts, in the original consecutive P0/P1/P2 order.</summary>
-    public Vector3[] GetWorldCorners()
+    public Vector3[] GetWorldCorners() => TryGetWorldCorners(out Vector3[] corners) ? corners : Array.Empty<Vector3>();
+
+    /// <summary>Gets a fresh copy of the three accepted contacts in the current world frame.</summary>
+    public bool TryGetWorldCorners(out Vector3[] corners)
     {
-        if (!IsSurfaceCurrent) return Array.Empty<Vector3>();
-        return Array.ConvertAll(_surfaceCorners, p => _surfaceSpace.TransformPoint(p));
+        corners = Array.Empty<Vector3>();
+        if (!IsSurfaceCurrent || _surfaceCorners.Length != 3) return false;
+        corners = Array.ConvertAll(_surfaceCorners, p => _surfaceSpace.TransformPoint(p));
+        return true;
     }
 
     public void Undo()

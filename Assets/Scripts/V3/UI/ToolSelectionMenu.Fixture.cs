@@ -59,15 +59,15 @@ public sealed partial class ToolSelectionMenu
         if (_workflowMode == URInputManager.WorkflowMode.SimplePickAndPlace) return;
         if (_workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace)
         {
-            _fixtureSetupButton = CreateButton("Configure repetitive task", _taskView, new Vector2(16f, -204f),
-                new Vector2(198f, 32f), out TextMeshProUGUI configure);
-            configure.text = "Configure task";
-            configure.fontSize = 16f;
+            _fixtureSetupButton = CreateButton("Configure repetitive task", _taskView, new Vector2(155f, -204f),
+                new Vector2(130f, 32f), out TextMeshProUGUI configure);
+            configure.text = "Fixture setup";
+            configure.fontSize = 14f;
             _fixtureSetupButton.onClick.AddListener(OpenFixtureSetup);
-            _fixtureReviewButton = CreateButton("Review repetitive task", _taskView, new Vector2(226f, -204f),
-                new Vector2(198f, 32f), out TextMeshProUGUI review);
-            review.text = "Review task steps";
-            review.fontSize = 16f;
+            _fixtureReviewButton = CreateButton("Review repetitive task", _taskView, new Vector2(294f, -204f),
+                new Vector2(130f, 32f), out TextMeshProUGUI review);
+            review.text = "Review fixture";
+            review.fontSize = 14f;
             _fixtureReviewButton.onClick.AddListener(OpenFixtureReview);
             return;
         }
@@ -87,7 +87,11 @@ public sealed partial class ToolSelectionMenu
         if (_workflowMode == URInputManager.WorkflowMode.SimplePickAndPlace) return;
         BindTaskControls();
         if (IsPlacementBusy || _input == null) return;
-        if (!_input.IsFixtureMode && !RobotExecutionState.IsBusy) _input.UseFixtureTiling();
+        if (!_input.IsFixtureMode)
+        {
+            if (_floorTiling?.IsPlanning == true || RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
+            _input.UseFixtureTiling();
+        }
         if (!_input.IsFixtureMode) return;
         _showFixtureSetup = true;
         BuildFixturePage();
@@ -98,21 +102,6 @@ public sealed partial class ToolSelectionMenu
     {
         _fixturePage = 7;
         OpenFixtureSetup();
-    }
-
-    private System.Collections.IEnumerator OpenRepetitiveSetupAfterStart()
-    {
-        // A controller created during Start loads its saved profile before the
-        // next frame; build form callbacks against that loaded settings object.
-        yield return null;
-        if (_workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace)
-        {
-            // Initial robot placement can still own the canvas. Keep setup
-            // selected so it appears as soon as that placement is finished.
-            _showFixtureSetup = true;
-            BuildFixturePage();
-            RefreshTask();
-        }
     }
 
     public void CloseFixtureSetup()

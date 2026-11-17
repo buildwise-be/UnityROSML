@@ -51,6 +51,21 @@ public sealed class OfflineFixtureTilingController : FixtureTilingController {
         PublishCount++; LastPlanId = planId; reason = null; return true;
     }
 }
+
+public sealed class OfflineFloorTilingController : FloorTilingController {
+    public int PlanPublishCount;
+    public int ExecutePublishCount;
+    public RosMessageTypes.Ur16eInterfaces.TileFloorTaskMsg LastRequest;
+    public string ExecutedPlanId;
+    protected override bool Connected => true;
+    protected override void BindTransport() { }
+    protected override void PublishPlan(RosMessageTypes.Ur16eInterfaces.TileFloorTaskMsg request) {
+        PlanPublishCount++; LastRequest = request;
+    }
+    protected override void PublishExecution(string planId) {
+        ExecutePublishCount++; ExecutedPlanId = planId;
+    }
+}
 ''')
     for stale in (destination / "Assets/RosMessages").rglob("*"):
         if stale.is_file() and not (PROJECT / stale.relative_to(destination)).exists():

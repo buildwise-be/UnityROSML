@@ -22,6 +22,7 @@ public sealed class FixtureTilingPreview : MonoBehaviour
     private readonly List<SceneState> _states = new List<SceneState>();
     private bool _show;
     private bool _reviewValidated;
+    private bool _floorReview;
     public bool HasReview => _reviewValidated && _initial != null && _solution != null && _root != null && _root.activeSelf;
     public int StepCount => _solution?.sub_trajectory != null ? _solution.sub_trajectory.Length + 1 : 0;
     public int StepIndex { get; private set; }
@@ -34,19 +35,39 @@ public sealed class FixtureTilingPreview : MonoBehaviour
     public void ShowSetup(FixtureTilingSettings settings, FixtureCalibrationData calibration, bool visible)
     {
         _settings = settings; _calibration = calibration; _show = visible;
-        if (_solution == null) DrawSetupSafely();
+        if (_solution == null)
+        {
+            _floorReview = false;
+            DrawSetupSafely();
+        }
         if (_root != null) _root.SetActive(visible && RobotCoordinateService.Instance.IsInitialized);
     }
     public void ClearReview()
     {
         _reviewValidated = false; _initial = null; _solution = null; _model = null; StepIndex = 0; StepMotionTime = 0; _states.Clear();
-        DrawSetupSafely();
+        if (_floorReview)
+        {
+            _show = false;
+            ClearObjects();
+            StepText = "No floor batch scene preview.";
+        }
+        else DrawSetupSafely();
     }
     public void SetReview(PlanningSceneMsg initial, SolutionMsg solution, FixtureTilingSettings settings, RosRobotModel model)
     {
+        SetReview(initial, solution, settings, model, false);
+    }
+    public void SetReview(PlanningSceneMsg initial, SolutionMsg solution, RosRobotModel model)
+    {
+        SetReview(initial, solution, null, model, true);
+    }
+    private void SetReview(PlanningSceneMsg initial, SolutionMsg solution, FixtureTilingSettings settings, RosRobotModel model, bool floorReview)
+    {
         _reviewValidated = false;
+        _floorReview = floorReview;
         if (initial == null || initial.is_diff || initial.world == null || initial.robot_state == null ||
-            solution?.sub_trajectory == null || solution.sub_trajectory.Length == 0 || initial.name != solution.task_id)
+            solution?.sub_trajectory == null || solution.sub_trajectory.Length == 0 ||
+            !FixtureTilingGeometry.ValidToken(solution.task_id) || initial.name != solution.task_id)
             throw new ArgumentException("A matching full initial scene and ordered solution are required.");
         _initial = initial; _solution = solution; _settings = settings; _model = model; _show = true;
         StepIndex = 0;
@@ -58,7 +79,7 @@ public sealed class FixtureTilingPreview : MonoBehaviour
     }
     public void Step(int delta)
     {
-        if (_solution == null) return;
+        if (!_reviewValidated) return;
         StepIndex = Mathf.Clamp(StepIndex + delta, 0, StepCount - 1);
         DrawReview();
     }
@@ -194,7 +215,7 @@ public sealed class FixtureTilingPreview : MonoBehaviour
     {
         if(scene==null) return;
         if(scene.world?.octomap?.octomap?.data!=null && scene.world.octomap.octomap.data.Length>0)
-            throw new ArgumentException("This batch scene contains an octomap that Unity cannot display. A complete fixture review is required.");
+            throw new ArgumentException("This batch scene contains an octomap that Unity cannot display. A complete scene review is required.");
         if(!scene.is_diff) { state.World.Clear(); state.Attached.Clear(); state.Joints.Clear(); state.Frames.Clear(); }
         state.Frames["ur_base_link"]=Pose.identity;
         if(scene.fixed_frame_transforms!=null)
@@ -212,7 +233,7 @@ public sealed class FixtureTilingPreview : MonoBehaviour
             {
                 if(obj.operation==CollisionObjectMsg.REMOVE) state.World.Remove(obj.id);
                 else if(obj.operation==CollisionObjectMsg.ADD) state.World[obj.id]=obj;
-                else throw new ArgumentException("Unsupported world scene operation in fixture review.");
+                else throw new ArgumentException("Unsupported world scene operation in batch review.");
             }
         var robot=scene.robot_state;
         if(robot==null) return;
@@ -226,25 +247,27 @@ public sealed class FixtureTilingPreview : MonoBehaviour
                 if(attached.@object.operation==CollisionObjectMsg.REMOVE) state.Attached.Remove(attached.@object.id);
                 else if(attached.@object.operation==CollisionObjectMsg.ADD)
                 { state.Attached[attached.@object.id]=attached; state.World.Remove(attached.@object.id); }
-                else throw new ArgumentException("Unsupported attached scene operation in fixture review.");
+                else throw new ArgumentException("Unsupported attached scene operation in batch review.");
             }
     }
     private void DrawReview()
     {
         SceneState state=_states[StepIndex];
         StepMotionTime=state.MotionTime;
-        ResetRoot("Fixture batch — identified scene review");
+        ResetRoot(_floorReview ? "Floor batch — identified scene review" : "Fixture batch — identified scene review");
         foreach(var pair in state.World) DrawObject(pair.Value,null,state.Frames);
         foreach(var pair in state.Attached) DrawObject(pair.Value.@object,pair.Value.link_name,state.Frames);
-        string comment=StepIndex==0 ? "Initial stack and plank" : StepDescription(_solution.sub_trajectory[StepIndex-1].info?.comment);
+        string comment=StepIndex==0 ? (_floorReview ? "Initial stack and floor" : "Initial stack and plank") :
+            StepDescription(_solution.sub_trajectory[StepIndex-1].info?.comment);
         StepText=(StepIndex+1)+" / "+StepCount+": "+(string.IsNullOrEmpty(comment)?"Motion / scene update":comment)+
-            " · "+state.Attached.Count+" attached. Settling is assumed after the timed wait.";
+            " · "+state.Attached.Count+" attached."+(_floorReview ? "" : " Settling is assumed after the timed wait.");
     }
-    private static string StepDescription(string comment)
+    private string StepDescription(string comment)
     {
         if(string.IsNullOrEmpty(comment)) return "Motion / scene update";
         if(comment.StartsWith("WAIT_MARKER ",StringComparison.Ordinal))
-            return "Wait for settling ("+MarkerNumber(comment,"seconds").ToString("0.###",CultureInfo.InvariantCulture)+" s)";
+            return (_floorReview ? "Wait (" : "Wait for settling (")+
+                MarkerNumber(comment,"seconds").ToString("0.###",CultureInfo.InvariantCulture)+" s)";
         if(comment.StartsWith("IO_MARKER ",StringComparison.Ordinal))
         {
             // Both supported Kenos definitions use 1=on, 0=off.
@@ -259,7 +282,7 @@ public sealed class FixtureTilingPreview : MonoBehaviour
         foreach(string token in comment.Split(' '))
             if(token.StartsWith(key+"=",StringComparison.Ordinal) &&
                 double.TryParse(token.Substring(key.Length+1),NumberStyles.Float,CultureInfo.InvariantCulture,out double value) && double.IsFinite(value)) return value;
-        throw new ArgumentException("The batch contains an unreadable vacuum or settling step.");
+        throw new ArgumentException("The batch contains an unreadable vacuum or wait step.");
     }
     private static void ValidateObject(CollisionObjectMsg obj,string attachedLink,Dictionary<string,Pose> frames)
     {
@@ -395,6 +418,7 @@ public sealed class FixtureTilingPreview : MonoBehaviour
     private void ClearObjects()
     {
         if(_root!=null) {_root.SetActive(false);Dispose(_root);}
+        _root = null;
         foreach(var material in _materials) Dispose(material);_materials.Clear();
         foreach(var mesh in _meshes) Dispose(mesh);_meshes.Clear();
     }

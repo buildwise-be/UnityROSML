@@ -58,11 +58,29 @@ public sealed class WorkflowMenuTests
     }
 
     [Test]
-    public void RepetitiveWorkflowHasSetupAndReviewWithoutOldModeControls()
+    public void RepetitiveWorkflowDefaultsToFloorAndCanSwitchToFixtureReview()
     {
         Create("RepetitivePickAndPlace");
         Assert.That(Read<Component>(_menu, "_tcpTaskButton"), Is.Null);
         Assert.That(Read<Component>(_menu, "_pickPlaceTaskButton"), Is.Null);
+        RectTransform task = Read<RectTransform>(_menu, "_taskView");
+        Transform floorEntry = task.Find("Floor tiling");
+        Assert.That(floorEntry, Is.Not.Null, "The Repetitive menu must open floor configuration.");
+        Assert.That(Property<bool>(_input, "IsFloorMode"), Is.True);
+        Assert.That(Property<bool>(_input, "IsFixtureMode"), Is.False);
+        Assert.That(task.Find("Previous floor scene step")?.gameObject.activeSelf, Is.False);
+        Assert.That(task.Find("Next floor scene step")?.gameObject.activeSelf, Is.False);
+        Assert.That(Read<Component>(_menu, "_stopPlanningButton").gameObject.activeSelf, Is.False);
+        Click(floorEntry.GetComponent(TypeOf("UnityEngine.UI.Button")));
+        RectTransform floor = Read<RectTransform>(_menu, "_floorView");
+        Assert.That(floor.gameObject.activeSelf, Is.True);
+        AssertDiscreteSlider(floor.Find("Row offset slider"), 0, 2);
+        AssertDiscreteSlider(floor.Find("Mortar thickness slider"), 5, 15);
+        Assert.That(Property<bool>(floor.Find("Execute floor plan").GetComponent(TypeOf("UnityEngine.UI.Button")), "interactable"), Is.False);
+
+        Click(floor.Find("Open fixture setup").GetComponent(TypeOf("UnityEngine.UI.Button")));
+        Assert.That(floor.gameObject.activeSelf, Is.False);
+        Assert.That(Property<bool>(_input, "IsFloorMode"), Is.False);
         Assert.That(Read<Component>(_menu, "_fixtureTaskButton"), Is.Null);
         Assert.That(Read<Component>(_menu, "_fixtureSetupButton"), Is.Not.Null);
         Assert.That(Read<Component>(_menu, "_fixtureReviewButton"), Is.Not.Null);
@@ -108,8 +126,8 @@ public sealed class WorkflowMenuTests
         Create("RepetitivePickAndPlace");
         Component controller = Property<Component>(_input, "FixtureController");
         Assert.That(controller.GetType().GetMethod("StopPlanning"), Is.Not.Null, "The fixture Review page needs a planning stop action.");
-        Set(controller, "_checkingCalibration", true);
         _menu.GetType().GetMethod("OpenFixtureReview").Invoke(_menu, null);
+        Set(controller, "_checkingCalibration", true);
         Invoke(_menu, "RefreshTask");
         RectTransform page = Read<RectTransform>(_menu, "_fixturePageContent");
         Component plan = page.Find("Plan fixture batch").GetComponent(TypeOf("UnityEngine.UI.Button"));
@@ -123,6 +141,22 @@ public sealed class WorkflowMenuTests
         Assert.That(execute.gameObject.activeSelf, Is.True);
         Assert.That(Property<bool>(execute, "interactable"), Is.False);
         Assert.That(Property<bool>(plan, "interactable"), Is.True);
+    }
+
+    private static void AssertDiscreteSlider(Transform root, float min, float max)
+    {
+        Assert.That(root, Is.Not.Null);
+        Component slider = root.GetComponent(TypeOf("UnityEngine.UI.Slider"));
+        Assert.That(Property<bool>(slider, "wholeNumbers"), Is.True);
+        Assert.That(Property<float>(slider, "minValue"), Is.EqualTo(min));
+        Assert.That(Property<float>(slider, "maxValue"), Is.EqualTo(max));
+    }
+
+    private static void Click(Component button)
+    {
+        Assert.That(Property<bool>(button, "interactable"), Is.True);
+        object clicked = Property<object>(button, "onClick");
+        clicked.GetType().GetMethod("Invoke").Invoke(clicked, null);
     }
 
     [TestCase("SimplePickAndPlace")]

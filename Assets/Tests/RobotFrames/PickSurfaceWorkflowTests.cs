@@ -438,6 +438,70 @@ public sealed class PickSurfaceWorkflowTests
     [Serializable] private sealed class CdrPoint { public double x, y, z; }
 
     [Test]
+    public void FloorTaskUsesRawStackCornersAndKeepsTheVisibleFloorAxes()
+    {
+        object[] baseArguments = { null };
+        Assert.That(Call(_coordinates, "TryGetRobotBaseWorldPose", baseArguments), Is.True);
+        Pose baseWorld = (Pose)baseArguments[0];
+        Pose sourceWorld = RobotFrameMath.Compose(baseWorld, new Pose(new Vector3(.4f, .5f, .8f), Quaternion.Euler(0f, 20f, 0f)));
+        Vector3[] worldCorners = PickSurfaceGeometry.GetCanonicalCorners(PickItem.Tile)
+            .Select(point => sourceWorld.position + sourceWorld.rotation * point).ToArray();
+        BeginSurface(PickItem.Tile);
+        Component capture = Capture();
+        foreach (Vector3 corner in worldCorners)
+            Assert.That(Call(capture, "CapturePointerPose", new Pose(corner, Quaternion.identity), _tracking), Is.True);
+        object[] cornerArguments = { null };
+        Assert.That(Call(capture, "TryGetWorldCorners", cornerArguments), Is.True);
+        ((Vector3[])cornerArguments[0])[0] = Vector3.zero;
+
+        Type type = TypeOf("FloorTilePattern");
+        object pattern = Activator.CreateInstance(type, 7, .2f, .007f, 1, 12);
+        Pose floorWorld = RobotFrameMath.Compose(baseWorld, new Pose(new Vector3(.7f, -.1f, .3f), Quaternion.Euler(0f, 35f, 0f)));
+        Pose tiltedFloor = new Pose(floorWorld.position, floorWorld.rotation * Quaternion.Euler(5f, 0f, 0f));
+        object[] tiltedArguments = { "floor:tilted", 125, capture, tiltedFloor, pattern, null };
+        Assert.That(TypeOf("FloorTilingRequest").GetMethod("TryBuild").Invoke(null, tiltedArguments), Is.False);
+        object[] arguments = { "floor:axes-test", 125, capture, floorWorld, pattern, null };
+        Assert.That(TypeOf("FloorTilingRequest").GetMethod("TryBuild").Invoke(null, arguments), Is.True);
+        object request = arguments[5];
+        Assert.That(Read(request, "request_id"), Is.EqualTo("floor:axes-test"));
+        Assert.That(Read(request, "timeout_seconds"), Is.EqualTo(125u));
+        Assert.That(Read(request, "tile_count"), Is.EqualTo(7u));
+        Assert.That(Read(request, "row_offset"), Is.EqualTo((byte)1));
+        Assert.That(Read(request, "mortar_mm"), Is.EqualTo((byte)12));
+
+        Array source = (Array)Read(request, "source_top_corners");
+        Assert.That(source.Length, Is.EqualTo(worldCorners.Length));
+        for (int i = 0; i < worldCorners.Length; i++)
+        {
+            var expected = (Pose)Call(_coordinates, "ConvertWorldPoseToLocalPose", new Pose(worldCorners[i], Quaternion.identity));
+            Assert.That(Vector3.Distance(RosUnityPoint(source.GetValue(i)), expected.position), Is.LessThan(1e-5f));
+        }
+
+        object stamped = Read(request, "floor_corner");
+        object header = Read(stamped, "header");
+        Assert.That(Read(header, "frame_id"), Is.EqualTo("ur_base_link"));
+        object stamp = Read(header, "stamp");
+        Assert.That(Read(stamp, "sec"), Is.EqualTo(0));
+        Assert.That(Read(stamp, "nanosec"), Is.EqualTo(0u));
+        var expectedFloor = (Pose)Call(_coordinates, "ConvertWorldPoseToLocalPose", floorWorld);
+        object floor = Read(stamped, "pose");
+        Assert.That(Vector3.Distance(RosUnityPoint(Read(floor, "position")), expectedFloor.position), Is.LessThan(1e-5f));
+        object orientation = Read(floor, "orientation");
+        var rosRotation = new Quaternion(
+            (float)(double)Read(orientation, "x"), (float)(double)Read(orientation, "y"),
+            (float)(double)Read(orientation, "z"), (float)(double)Read(orientation, "w"));
+        AssertAxis(rosRotation * Vector3.right, expectedFloor.rotation * Vector3.right);
+        AssertAxis(rosRotation * Vector3.up, expectedFloor.rotation * Vector3.forward);
+        AssertAxis(rosRotation * Vector3.forward, expectedFloor.rotation * Vector3.up);
+    }
+
+    private static void AssertAxis(Vector3 rosAxis, Vector3 expectedUnityAxis)
+    {
+        Vector3 actualUnityAxis = PickSurfaceGeometry.FromRosPoint(rosAxis.x, rosAxis.y, rosAxis.z);
+        Assert.That(Vector3.Distance(actualUnityAxis, expectedUnityAxis), Is.LessThan(1e-5f));
+    }
+
+    [Test]
     public void TaskMessageInteroperatesWithRosCdrAndCarriesExactlyThreeUnprefixedCorners()
     {
         TextAsset resource = Resources.Load<TextAsset>("PickPlaceTaskCdr"); Assert.That(resource, Is.Not.Null);

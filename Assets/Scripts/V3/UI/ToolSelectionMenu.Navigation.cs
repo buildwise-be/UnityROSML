@@ -36,12 +36,12 @@ public sealed partial class ToolSelectionMenu
 
     private void RefreshSceneNavigation()
     {
-        if (_welcomeButton != null) _welcomeButton.interactable = RobotAppNavigation.CanChangeScene;
+        if (_welcomeButton != null) _welcomeButton.interactable = RobotAppNavigation.CanChangeScene && _floorTiling?.IsPlanning != true;
     }
 
     public void ReturnToWelcome()
     {
-        if (!RobotAppNavigation.CanChangeScene) return;
+        if (!RobotAppNavigation.CanChangeScene || _floorTiling?.IsPlanning == true) return;
         RobotAppNavigation.ReturnToWelcome();
     }
 }

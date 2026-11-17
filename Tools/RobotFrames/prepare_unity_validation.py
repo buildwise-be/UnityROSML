@@ -111,7 +111,8 @@ def main():
     # Shared menus now have workflow-specific partials. Keep their runtime
     # dependencies together even when an older focused preparer is used.
     for folder, pattern in (("Assets/Scripts/V3/UI", "ToolSelectionMenu*.cs"),
-                            ("Assets/Scripts/V3/ROS", "Fixture*.cs")):
+                            ("Assets/Scripts/V3/ROS", "Fixture*.cs"),
+                            ("Assets/Scripts/V3/ROS", "Floor*.cs")):
         for source in (PROJECT / folder).glob(pattern):
             copy_file(source)
     plugin_folder = DESTINATION / "Assets/Plugins"
@@ -124,7 +125,7 @@ def main():
     wanted = ("com.unity.ext.nunit", "com.unity.test-framework", "com.unity.robotics.urdf-importer",
               "com.unity.editorcoroutines", "com.unity.inputsystem", "com.unity.ugui",
               "com.unity.xr.interaction.toolkit", "com.unity.xr.core-utils", "com.unity.mathematics",
-              "com.unity.render-pipelines.universal")
+              "com.unity.render-pipelines.universal", "com.magicleap.unitysdk")
     dependencies = {}
     pending_packages = list(wanted)
     while pending_packages:
@@ -141,7 +142,7 @@ def main():
         manifest = json.loads((matches[0] / "package.json").read_text(encoding="utf-8-sig"))
         pending_packages.extend(manifest.get("dependencies", {}))
     for module in ("physics", "jsonserialize", "imgui", "uielements", "ui", "animation", "imageconversion",
-                   "audio", "unitywebrequest", "xr"):
+                   "audio", "unitywebrequest", "video", "xr"):
         dependencies["com.unity.modules." + module] = "1.0.0"
     package_folder = DESTINATION / "Packages"
     package_folder.mkdir(parents=True, exist_ok=True)

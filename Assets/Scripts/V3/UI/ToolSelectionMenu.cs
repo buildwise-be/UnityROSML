@@ -148,13 +148,20 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         BindTaskControls();
         RefreshMenu();
         if (!_hasPositioned) RecenterMenu();
-        if (_workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace && Application.isPlaying && isActiveAndEnabled)
-            StartCoroutine(OpenRepetitiveSetupAfterStart());
+        if (_input != null && _input.IsFloorMode)
+        {
+            _showFloorSetup = true;
+            RefreshTask();
+        }
     }
 
     private void LateUpdate()
     {
-        if (!IsVisible || _canvas == null) return;
+        if (!IsVisible || _canvas == null)
+        {
+            HideFloorMenuPreview();
+            return;
+        }
         Camera viewer = Camera.main;
         if (viewer != null && RobotFrameMath.IsValidPose(new Pose(viewer.transform.position, viewer.transform.rotation)))
         {
@@ -163,6 +170,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
             FaceCamera(viewer.transform);
             PositionPointGuide(viewer);
         }
+        PositionFloorMenuPreview();
         if (!_draggingMenu || _grabInteractor == null) return;
         if (!InteractorIsTracked(_grabInteractor) || !TryInteractorPose(_grabInteractor, out Pose pointer))
         {
@@ -171,6 +179,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         }
         MoveMenuDrag(pointer);
         if (viewer != null) PositionPointGuide(viewer);
+        PositionFloorMenuPreview();
     }
 
     private Vector3 InitialPosition(Transform camera)
@@ -288,6 +297,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         RefreshForceReadout();
         BindPickSettingsControls();
         RefreshPickSettingsMenu();
+        RefreshFloorAvailability();
         if (_pointGuide != null && _pointGuidePose != null && IsPointCollecting)
             _pointGuidePose.text = _pointGuide.PoseStatus;
     }
@@ -461,7 +471,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     public void StopPlanningTask()
     {
         BindTaskControls();
-        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
+        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null || _input?.IsFloorMode == true) return;
         _localNotice = null;
         if (_input != null && _input.IsFixtureMode) _fixtureTiling?.StopPlanning();
         else if (_input == null || _input.IsTcpMode) _tcpPlanning?.StopPlanning();
@@ -475,7 +485,8 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     {
         if (_workflowMode == URInputManager.WorkflowMode.SimplePickAndPlace) return;
         BindTaskControls();
-        if (IsPlacementBusy || TargetRotationHandles.IsInteracting || RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
+        if (IsPlacementBusy || TargetRotationHandles.IsInteracting || RobotExecutionState.IsBusy ||
+            MTCPlansManager.ActiveExecution != null || _floorTiling?.IsPlanning == true) return;
         if (_input != null) _input.UseFixtureTiling();
         _localNotice = null;
         RefreshTask();
@@ -683,6 +694,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         if (_input != null && _workflowMode != URInputManager.WorkflowMode.Unrestricted &&
             _input.SelectedWorkflow != _workflowMode) _input.ConfigureWorkflow(_workflowMode);
         BindFixtureControls();
+        BindFloorControls();
         BindPickSettingsControls();
         if (_tcpPlanning == null) _tcpPlanning = _input != null ? _input.GetComponent<TcpPlanningController>() : FindFirstObjectByType<TcpPlanningController>();
         if (_qrDetector == null) _qrDetector = FindFirstObjectByType<QRDetector>();
@@ -734,6 +746,9 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         CloseStaleRepeatConfirmation();
         bool tcp = _input == null || _input.IsTcpMode;
         bool fixture = _input != null && _input.IsFixtureMode;
+        bool floor = _input != null && _input.IsFloorMode;
+        bool floorPlanning = floor && _floorTiling?.IsPlanning == true;
+        bool floorReview = floor && _floorTiling != null && _floorTiling.ReviewStepCount > 0;
         MTCPlansManager execution = MTCPlansManager.ActiveExecution;
         TcpPlanningController tcpExecution = TcpPlanningController.ActiveExecution;
         bool executionBusy = RobotExecutionState.IsBusy;
@@ -741,43 +756,53 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         _lastFixtureMode = fixture;
         _lastQrValidated = _qrDetector != null && _qrDetector.HasValidatedPose;
         _lastTargetRotation = TargetRotationHandles.IsInteracting;
-        bool canSelectMode = _input != null && !IsPlacementBusy && !TargetRotationHandles.IsInteracting && !executionBusy && execution == null;
+        bool canSelectMode = _input != null && !IsPlacementBusy && !TargetRotationHandles.IsInteracting &&
+            !executionBusy && execution == null && !floorPlanning;
         RefreshTaskChoice(_tcpTaskButton, tcp, canSelectMode);
         RefreshTaskChoice(_pickPlaceTaskButton, !tcp && !fixture, canSelectMode);
         RefreshTaskChoice(_fixtureTaskButton, fixture, canSelectMode);
-        if (_fixtureSetupButton != null) _fixtureSetupButton.gameObject.SetActive(fixture);
+        if (_fixtureSetupButton != null)
+        {
+            _fixtureSetupButton.gameObject.SetActive(fixture || floor);
+            _fixtureSetupButton.interactable = fixture || canSelectMode;
+        }
+        if (_fixtureReviewButton != null) _fixtureReviewButton.gameObject.SetActive(fixture);
+        if (_floorSetupButton != null) _floorSetupButton.interactable = canSelectMode && _fixtureTiling?.IsPlanning != true;
+        RefreshFloorReview(floorReview, canSelectMode);
         if (_taskHelp != null) _taskHelp.rectTransform.sizeDelta = new Vector2(
             fixture && _workflowMode == URInputManager.WorkflowMode.Unrestricted ? 268f : 408f, 45f);
         if (_taskHelp != null) _taskHelp.text = fixture
             ? "Set tile, stack, pattern and fixture.\nChoose a point, then trigger to capture."
-            : tcp
+            : floor ? (floorReview ? _floorTiling.ReviewStepText : "Capture the first tile and place the pattern on a scanned floor.") : tcp
             ? "Hold bumper: TCP A. Double press: TCP B.\nPlace the tool preview; drag it to set exact orientation."
             : _pickSettingsController != null && _pickSettingsController.PickBySurface
             ? "Pick settings: capture the item top face.\nDouble bumper: place contact."
             : "Hold/double bumper: pick/place contact balls.\nTrigger-click a ball: depth / Force towards ground.";
         if (_taskStatus != null)
-            _taskStatus.text = _fixtureTiling != null && _fixtureTiling.IsExecuting ? _fixtureTiling.StatusText : execution != null ? execution.StatusText : tcpExecution != null ? tcpExecution.StatusText : _localNotice ?? (tcp
+            _taskStatus.text = floor && _floorTiling?.HasExecutionFeedback == true ? _floorTiling.StatusText
+                : _fixtureTiling != null && _fixtureTiling.IsExecuting ? _fixtureTiling.StatusText : execution != null ? execution.StatusText : tcpExecution != null ? tcpExecution.StatusText : _localNotice ?? (tcp
                 ? (_tcpPlanning != null ? _tcpPlanning.StatusText : "Capture TCP A and B to prepare a preview.")
+                : floor ? (_floorTiling?.StatusText ?? "Open floor tiling to prepare a tile batch.")
                 : fixture ? (_fixtureTiling != null ? _fixtureTiling.StatusText : "Open fixture setup to prepare a tile batch.")
                 : (_legacyPlans != null ? _legacyPlans.StatusText : "Capture pick and place tool contacts, then Plan preview."));
         // Keep Plan available for incomplete measurements so the controller can
         // explain exactly which input or calibration needs attention.
-        bool planning = fixture ? _fixtureTiling?.IsPlanning == true : tcp ? _tcpPlanning?.IsPlanning == true :
+        bool planning = floor ? floorPlanning : fixture ? _fixtureTiling?.IsPlanning == true : tcp ? _tcpPlanning?.IsPlanning == true :
             _pickSettingsController?.IsPlanning == true || _legacyPlans?.IsPlanning == true;
-        bool canStop = fixture ? _fixtureTiling?.CanStopPlanning == true : tcp ? _tcpPlanning?.CanStopPlanning == true :
-            _pickSettingsController?.CanStopPlanning == true;
-        bool stopping = fixture ? _fixtureTiling?.IsStoppingPlanning == true : tcp ? _tcpPlanning?.IsStoppingPlanning == true :
-            _pickSettingsController?.IsStoppingPlanning == true;
+        bool canStop = !floor && (fixture ? _fixtureTiling?.CanStopPlanning == true : tcp ? _tcpPlanning?.CanStopPlanning == true :
+            _pickSettingsController?.CanStopPlanning == true);
+        bool stopping = !floor && (fixture ? _fixtureTiling?.IsStoppingPlanning == true : tcp ? _tcpPlanning?.IsStoppingPlanning == true :
+            _pickSettingsController?.IsStoppingPlanning == true);
         if (_planButton != null) _planButton.interactable = !IsPlacementBusy && !executionBusy && execution == null &&
-            !planning && (!fixture || _fixtureTiling != null);
-        if (_executeButton != null) _executeButton.interactable = !IsPlacementBusy && !executionBusy && execution == null && (fixture ? _fixtureTiling != null && _fixtureTiling.CanExecute : tcp
+            !planning && (!fixture || _fixtureTiling != null) && (!floor || _floorTiling?.CanPlan == true);
+        if (_executeButton != null) _executeButton.interactable = !IsPlacementBusy && !executionBusy && execution == null && (floor ? _floorTiling?.CanExecute == true : fixture ? _fixtureTiling != null && _fixtureTiling.CanExecute : tcp
             ? _tcpPlanning != null && _tcpPlanning.CanExecute
             : _legacyPlans != null && _legacyPlans.CanExecute && ToolSelectionController.CanPlanPickPlace);
         RefreshStopPlanningButton(_stopPlanningButton, _executeButton, canStop && !executionBusy && execution == null, stopping);
         if (_executeButton != null)
         {
             TextMeshProUGUI label = _executeButton.GetComponentInChildren<TextMeshProUGUI>();
-            if (label != null) label.text = (!fixture && (tcp ? _tcpPlanning != null && _tcpPlanning.HasRepeatablePlan :
+            if (label != null) label.text = (!floor && !fixture && (tcp ? _tcpPlanning != null && _tcpPlanning.HasRepeatablePlan :
                 _legacyPlans != null && _legacyPlans.HasRepeatablePlan)) ? "Execute again" : "Execute plan";
         }
         if (_rescanButton != null) _rescanButton.interactable = _qrDetector != null && !IsPlacementBusy;
@@ -806,6 +831,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         RefreshPointRegistrationPanels();
         _refreshPlanningTime?.Invoke();
         RefreshFixtureMenu();
+        RefreshFloorMenu();
         RefreshSceneNavigation();
         RefreshPickSettingsMenu();
     }
@@ -832,7 +858,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     {
         bool editing = IsCalibrating;
         if (_taskView != null) _taskView.gameObject.SetActive(!editing && !IsPointCollecting && !IsPositionAdjusting &&
-            !(_showFixtureSetup && _input != null && _input.IsFixtureMode) && !IsShowingPickSettings && _repeatConfirmationView == null);
+            !(_showFixtureSetup && _input != null && _input.IsFixtureMode) && !IsShowingPickSettings && !IsShowingFloorSetup && _repeatConfirmationView == null);
         if (_alignmentView != null) _alignmentView.gameObject.SetActive(editing && !IsPointCollecting && !IsPositionAdjusting);
         if (_alignmentStatus != null)
             _alignmentStatus.text = _instantiator != null
@@ -1009,6 +1035,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
             _pickPlaceTaskButton.onClick.AddListener(SelectPickPlaceTask);
         }
         BuildFixtureEntry();
+        BuildFloorEntry();
         _taskHelp = Text("Target instructions", _taskView, new Vector2(16f, -239f), new Vector2(408f, 45f), string.Empty, 14f);
         _taskHelp.color = new Color(0.73f, 0.81f, 0.87f);
         _taskStatus = Text("Task request status", _taskView, new Vector2(16f, -292f), new Vector2(408f, 94f), string.Empty, 17f);
@@ -1052,6 +1079,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         BuildPointPlacementView();
         BuildPointRegistrationPanels();
         BuildFixtureView();
+        BuildFloorView();
         BuildGrabHandle(canvasRect);
         RefreshAlignmentControls();
         RefreshPointPlacementControls();
@@ -1296,7 +1324,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private bool CanEditPlanningTime => !IsPlacementBusy && !RobotExecutionState.IsBusy && MTCPlansManager.ActiveExecution == null &&
         _pickSettingsController?.IsPlanning != true && _legacyPlans?.IsPlanning != true &&
-        _tcpPlanning?.IsPlanning != true && _fixtureTiling?.IsPlanning != true;
+        _tcpPlanning?.IsPlanning != true && _fixtureTiling?.IsPlanning != true && _floorTiling?.IsPlanning != true;
 
     private System.Action BuildPlanningTimeControl(Transform parent, Vector2 position)
     {
@@ -1618,6 +1646,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     private void UnsubscribeTaskControls()
     {
         UnbindFixtureControls();
+        UnbindFloorControls();
         UnbindPickSettingsControls();
         if (_subscribedPointRegistration != null) _subscribedPointRegistration.StateChanged -= OnPointRegistrationChanged;
         _subscribedPointRegistration = null;
@@ -1669,6 +1698,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     {
         ClearRepeatConfirmation();
         CancelPickSurface();
+        EndFloorSetupInteractions();
         ActiveMenus.Remove(this);
         UnbindContourControls();
         Unsubscribe();

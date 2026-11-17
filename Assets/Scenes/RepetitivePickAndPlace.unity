@@ -2231,7 +2231,7 @@ MonoBehaviour:
   _tcpTargetPreview: {fileID: 0}
   _tcpPlanningController: {fileID: 0}
   _trackingSpace: {fileID: 0}
-  _poseCaptureMode: 2
+  _poseCaptureMode: 3
 --- !u!4 &1029355969
 Transform:
   m_ObjectHideFlags: 0
