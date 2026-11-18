@@ -42,7 +42,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private static readonly HashSet<ToolSelectionMenu> HoveredMenus = new HashSet<ToolSelectionMenu>();
     private static readonly HashSet<ToolSelectionMenu> ActiveMenus = new HashSet<ToolSelectionMenu>();
-    public static bool IsHovered => HoveredMenus.Count != 0;
+    public static bool IsHovered => HoveredMenus.Count != 0 || PointGuideConsumesTrigger;
 
     /// <summary>Release menu grabs when the controller loses tracking or the app is suspended.</summary>
     public static void CancelAllInteractions()
@@ -73,9 +73,14 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     private TextMeshProUGUI _pointProgress;
     private TextMeshProUGUI _pointStatus;
     private RobotRegistrationGuide _pointGuide;
+    private Canvas _pointGuideCanvas;
+    private Button _pointGuideUndo;
+    private bool _pointGuidePositioned;
+    private Vector3 _pointGuideWorldCenter;
     private Transform _pointGuideAnchor;
     private TextMeshProUGUI _pointGuideTitle;
     private TextMeshProUGUI _pointGuidePose;
+    private TextMeshProUGUI _pointGuideInstruction;
     private readonly List<TextMeshProUGUI> _pointLabels = new List<TextMeshProUGUI>();
     private TextMeshProUGUI _status;
     private Toggle _robotContoursToggle;
@@ -138,6 +143,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     private string _localNotice;
 
     public bool IsVisible => isActiveAndEnabled && _panel != null && _panel.gameObject.activeInHierarchy;
+    public bool HasActivePresentation => IsVisible || (isActiveAndEnabled && (IsSurfaceCapturing || IsPointGuideActive));
     public URInputManager.WorkflowMode SelectedWorkflow => _workflowMode;
 
     private void Start()
@@ -157,18 +163,18 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void LateUpdate()
     {
+        Camera viewer = Camera.main;
+        PositionPointGuide(viewer);
         if (!IsVisible || _canvas == null)
         {
             HideFloorMenuPreview();
             return;
         }
-        Camera viewer = Camera.main;
         if (viewer != null && RobotFrameMath.IsValidPose(new Pose(viewer.transform.position, viewer.transform.rotation)))
         {
             _canvas.worldCamera = viewer;
             if (!_hasPositioned) RecenterMenu();
             FaceCamera(viewer.transform);
-            PositionPointGuide(viewer);
         }
         PositionFloorMenuPreview();
         if (!_draggingMenu || _grabInteractor == null) return;
@@ -178,7 +184,6 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
             return;
         }
         MoveMenuDrag(pointer);
-        if (viewer != null) PositionPointGuide(viewer);
         PositionFloorMenuPreview();
     }
 
@@ -297,6 +302,9 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         RefreshForceReadout();
         BindPickSettingsControls();
         RefreshPickSettingsMenu();
+        if (IsPointCollecting && _pointGuideCanvas != null && _pointGuideCanvas.gameObject.activeSelf != IsPointGuideActive)
+            RefreshPointPlacementControls();
+        RefreshCapturePresentation();
         RefreshFloorAvailability();
         if (_pointGuide != null && _pointGuidePose != null && IsPointCollecting)
             _pointGuidePose.text = _pointGuide.PoseStatus;
@@ -536,6 +544,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     {
         BindTaskControls();
         if (IsCalibrating || MTCPlansManager.ActiveExecution != null) return;
+        ConsumePointGuideTrigger();
         CancelPickSurface();
         _showPickSettings = false;
         _localNotice = null;
@@ -834,6 +843,21 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         RefreshFloorMenu();
         RefreshSceneNavigation();
         RefreshPickSettingsMenu();
+        RefreshCapturePresentation();
+    }
+
+    private void RefreshCapturePresentation()
+    {
+        if (_canvas == null || !isActiveAndEnabled) return;
+        bool showMenu = !IsSurfaceCapturing && !IsPointGuideActive;
+        RefreshGuideOverlays(!showMenu);
+        if (_canvas.gameObject.activeSelf == showMenu) return;
+        if (!showMenu)
+        {
+            ClearPointerState();
+            HideFloorMenuPreview();
+        }
+        _canvas.gameObject.SetActive(showMenu);
     }
 
     private static void RefreshStopPlanningButton(Button stop, Button execute, bool canStop, bool stopping)
@@ -876,23 +900,36 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
     {
         bool collecting = IsPointCollecting;
         bool failed = collecting && _pointRegistration != null && _pointRegistration.HasFitFailure;
-        if (_pointView != null) _pointView.gameObject.SetActive(collecting && !failed);
         int count = _pointRegistration != null ? _pointRegistration.CapturedPointCount : 0;
         int required = _pointRegistration != null ? _pointRegistration.RequiredPointCount : 5;
         if (_pointGuide != null)
         {
             if (collecting && !failed)
-                _pointGuide.Refresh(_pointRegistration, _instantiator != null ? _instantiator.RobotPrefab : null, 180f);
+                _pointGuide.Refresh(_pointRegistration, _instantiator != null ? _instantiator.RobotPrefab : null, 230f);
             else _pointGuide.Hide();
         }
+        if (_pointView != null) _pointView.gameObject.SetActive(collecting && !failed && !IsPointGuideActive);
+        if (_pointGuideCanvas != null)
+        {
+            if (IsPointGuideActive && !_pointGuideCanvas.gameObject.activeSelf) _pointGuidePositioned = false;
+            _pointGuideCanvas.gameObject.SetActive(IsPointGuideActive);
+        }
+        if (_pointGuideUndo != null) _pointGuideUndo.interactable = collecting && count > 0;
         if (_pointGuideTitle != null)
             _pointGuideTitle.text = collecting ? (Mathf.Min(count + 1, required)) + " / " + required + " · " + _pointRegistration.CurrentPointName : "Contact guide";
         if (_pointGuidePose != null) _pointGuidePose.text = _pointGuide != null ? _pointGuide.PoseStatus : string.Empty;
+        if (_pointGuideInstruction != null) _pointGuideInstruction.text = _pointRegistration != null
+            ? _pointRegistration.StatusText : string.Empty;
         PositionPointGuide(Camera.main);
         if (_pointProgress != null)
             _pointProgress.text = count + " / " + required + " points captured\n" +
                 (collecting ? "Next: " + _pointRegistration.CurrentPointName : "Choose Place with 5 points to begin.");
-        if (_pointStatus != null) _pointStatus.text = _pointRegistration != null ? _pointRegistration.StatusText : string.Empty;
+        if (_pointStatus != null)
+        {
+            _pointStatus.text = _pointRegistration != null ? _pointRegistration.StatusText : string.Empty;
+            if (collecting && !failed && !IsPointGuideActive && _pointGuide != null)
+                _pointStatus.text += "\n" + _pointGuide.PoseStatus;
+        }
         for (int index = 0; index < _pointLabels.Count; index++)
         {
             TextMeshProUGUI label = _pointLabels[index];
@@ -1166,48 +1203,63 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void BuildPointGuide()
     {
-        RectTransform sidebar = Rect("Five-point miniature guide", _pointView, new Vector2(457f, -170f), new Vector2(220f, 350f));
-        Image background = sidebar.gameObject.AddComponent<Image>();
-        background.color = new Color(0.035f, 0.06f, 0.09f, 0.97f);
-        Outline border = sidebar.gameObject.AddComponent<Outline>();
-        border.effectColor = new Color(0.2f, 0.44f, 0.53f, 0.8f);
-        border.effectDistance = new Vector2(1f, -1f);
-        // Looking/pressing at the illustrative robot is menu interaction too.
-        AddHoverTracking(sidebar.gameObject);
-        AddPressTracking(sidebar.gameObject);
-        _pointGuideTitle = Text("Miniature current cover", sidebar, new Vector2(12f, -12f), new Vector2(196f, 28f), "Cover guide", 18f);
+        GameObject guide = new GameObject("Five-point capture guide", typeof(RectTransform), typeof(Canvas));
+        guide.transform.SetParent(transform, false);
+        _pointGuideCanvas = guide.GetComponent<Canvas>();
+        _pointGuideCanvas.renderMode = RenderMode.WorldSpace;
+        RectTransform canvas = (RectTransform)guide.transform;
+        canvas.sizeDelta = new Vector2(400f, 440f);
+        canvas.localScale = Vector3.one * .001f;
+        CanvasScaler scaler = guide.AddComponent<CanvasScaler>();
+        scaler.dynamicPixelsPerUnit = 10f;
+        guide.AddComponent<TrackedDeviceGraphicRaycaster>();
+        RectTransform content = Rect("Five-point guide content", canvas, Vector2.zero, canvas.sizeDelta);
+        _pointGuideTitle = Text("Miniature current cover", content, new Vector2(0f, 0f), new Vector2(400f, 32f), "Cover guide", 23f);
+        _pointGuideTitle.alignment = TextAlignmentOptions.Center;
         _pointGuideTitle.color = new Color(0.55f, 0.91f, 1f);
-        _pointGuidePose = Text("Miniature pose status", sidebar, new Vector2(12f, -44f), new Vector2(196f, 42f), string.Empty, 12f);
+        _pointGuidePose = Text("Miniature pose status", content, new Vector2(0f, -37f), new Vector2(400f, 34f), string.Empty, 14f);
+        _pointGuidePose.alignment = TextAlignmentOptions.Center;
         _pointGuidePose.color = new Color(0.73f, 0.81f, 0.87f);
         _pointGuideAnchor = new GameObject("Miniature view anchor").transform;
-        _pointGuideAnchor.SetParent(sidebar, false);
-        _pointGuideAnchor.localPosition = new Vector3(110f, -194f, 0f);
+        _pointGuideAnchor.SetParent(content, false);
+        _pointGuideAnchor.localPosition = new Vector3(200f, -220f, -20f);
         GameObject mount = new GameObject("UR16e registration miniature");
         mount.transform.SetParent(_pointGuideAnchor, false);
-        mount.transform.localPosition = new Vector3(0f, 0f, -125f);
         _pointGuide = mount.AddComponent<RobotRegistrationGuide>();
-        Text("Miniature touch hint", sidebar, new Vector2(12f, -305f), new Vector2(196f, 37f),
-            "Orange x-ray dot = contact.\nOne turn every 10 seconds.", 13f);
+        _pointGuideInstruction = Text("Miniature capture instructions", content, new Vector2(0f, -335f), new Vector2(400f, 56f),
+            string.Empty, 15f);
+        _pointGuideInstruction.alignment = TextAlignmentOptions.Center;
+        _pointGuideInstruction.enableAutoSizing = true;
+        _pointGuideInstruction.fontSizeMin = 12f;
+        _pointGuideInstruction.fontSizeMax = 15f;
+        _pointGuideUndo = RegistrationButton("Undo guide point", content, new Vector2(10f, -397f),
+            new Vector2(180f, 36f), () => RunPointGuideAction(UndoPointPlacement), "Undo");
+        Button cancel = RegistrationButton("Cancel guided registration", content, new Vector2(210f, -397f),
+            new Vector2(180f, 36f), () => RunPointGuideAction(CancelPointPlacement), "Cancel");
+        TrackPointGuideHover(_pointGuideUndo);
+        TrackPointGuideHover(cancel);
+        guide.SetActive(false);
     }
 
     private void PositionPointGuide(Camera viewer)
     {
-        if (_pointGuide == null || _pointGuideAnchor == null || !_pointGuide.HasVisual || viewer == null) return;
-        if (viewer.orthographic)
+        if (_pointGuideCanvas == null || _pointGuideAnchor == null || !IsPointGuideActive || viewer == null ||
+            !RobotFrameMath.IsValidPose(new Pose(viewer.transform.position, viewer.transform.rotation))) return;
+        _pointGuideCanvas.worldCamera = viewer;
+        Transform guide = _pointGuideCanvas.transform;
+        if (!_pointGuidePositioned)
         {
-            _pointGuide.transform.localPosition = new Vector3(0f, 0f, -125f);
-            _pointGuide.transform.localScale = Vector3.one;
-            return;
+            _pointGuideWorldCenter = viewer.transform.position + viewer.transform.forward * .85f;
+            _pointGuidePositioned = true;
         }
-        Vector3 towardViewer = viewer.transform.position - _pointGuideAnchor.position;
-        float distance = towardViewer.magnitude;
-        if (distance < 0.05f || !RobotFrameMath.IsValidPose(new Pose(viewer.transform.position, viewer.transform.rotation))) return;
-        float offset = Mathf.Min(0.125f, distance * 0.2f);
-        float fraction = offset / distance;
-        // Move toward the viewer along the card's viewing ray and compensate
-        // perspective magnification so the floating robot stays inside its card.
-        _pointGuide.transform.position = _pointGuideAnchor.position + towardViewer * fraction;
-        _pointGuide.transform.localScale = Vector3.one * (1f - fraction);
+        Vector3 away = _pointGuideWorldCenter - viewer.transform.position;
+        if (away.sqrMagnitude > .0001f)
+        {
+            Vector3 up = Mathf.Abs(Vector3.Dot(away.normalized, Vector3.up)) < .99f ? Vector3.up : viewer.transform.up;
+            guide.rotation = Quaternion.LookRotation(away, up);
+        }
+        // Center the actual model, including the canvas pivot and the mount's depth.
+        guide.position += _pointGuideWorldCenter - _pointGuideAnchor.position;
     }
 
     private void BuildPlaybackLoopToggle()
@@ -1696,6 +1748,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void OnDisable()
     {
+        RefreshGuideOverlays(false);
         ClearRepeatConfirmation();
         CancelPickSurface();
         EndFloorSetupInteractions();
@@ -1706,7 +1759,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
         if (IsCalibrating) _instantiator.CancelCalibration();
         if (IsPointCollecting) _pointRegistration.CancelRegistration();
         if (_fixtureTiling != null) _fixtureTiling.CancelCapture();
-        if (_pointGuide != null) _pointGuide.Hide();
+        HidePointGuide();
         ClearPointerState();
         if (_panel != null) _panel.gameObject.SetActive(false);
         if (_grabHandle != null) _grabHandle.gameObject.SetActive(false);
@@ -1714,6 +1767,7 @@ public sealed partial class ToolSelectionMenu : MonoBehaviour
 
     private void OnDestroy()
     {
+        RefreshGuideOverlays(false);
         ClearRepeatConfirmation();
         ActiveMenus.Remove(this);
         UnbindContourControls();

@@ -10,13 +10,25 @@ capture Pick and double press it to capture Place. The picked point can be away
 from the actual object's centre; this method does not measure the surrounding
 object surface. New requests use the selected catalog item's nominal box.
 
-For **Item surface**, select **Tile** or **Brick**. A floating item illustration
-appears in front of the viewer, separate from the menu. Its orange sphere and
-number identify the next top corner. Touch that physical corner with the
-controller's calibrated contact tip and press Trigger. Capture three
-consecutive corners: P0, P1 along the item's length, then P2 along its width.
-Undo, Recapture and Cancel are available. The guide never collides with the
-controller or becomes a planning-scene object.
+For **Item surface**, select **Tile** or **Brick**. The main menu hides and an
+item illustration at twice physical size appears in front of the viewer. It
+stays at that position as the viewer moves. A ten-second explanation repeats,
+showing the body, three corners counterclockwise with a soft chime, a circular
+arrow above the top face, and the inward pick normal. Touch the physical
+corners with the calibrated controller tip and press Trigger, following P0,
+P1 along the item's length, then P2 along its width. The guide displays capture
+progress and any rejected-contact or fit message.
+
+The third accepted corner closes the guide and returns to settings. **OK**
+cancels the current capture and returns to settings, where **Recapture** starts
+again. The animation continues across accepted contacts. The guide geometry
+has no colliders.
+
+Fixture setup uses this same three-corner guide with the square side and
+thickness entered on **Tile dimensions**. Its **Source stack** page also offers
+**Capture stack top centre** for a single contact, followed by yaw adjustment.
+Both methods show the pick-centre cross on the green stack. The fixture board
+is the separate sloped surface used for release and regrasp before final placement.
 
 The three contacts fit a proper rigid transform without changing item size.
 The fitted top-face centre becomes Pick, with tool +Z directed into the face.

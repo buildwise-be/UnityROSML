@@ -168,6 +168,7 @@ public sealed class FixtureTilingGeometryTests
     private static object Settings()
     {
         object settings=Activator.CreateInstance(Runtime("FixtureTilingSettings"));
+        Set(settings,"ItemThickness",.01f);
         Set(settings,"SourceTopPose",Static("SourceTopFrame",Point(0.4,0.1,0.8),0.0));
         Set(settings,"PlacementCorner",Static("SourceTopFrame",Point(1,2,0.5),0.0));
         return settings;

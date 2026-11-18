@@ -30,8 +30,11 @@ public sealed class PickSurfaceCapture : MonoBehaviour
     private MeshRenderer _itemRenderer;
     private Material _itemMaterial;
     private bool _itemPresentationEnabled = true;
+    private PickItemPreset _capturePreset, _surfacePreset;
+    private bool _showingExample;
 
     public bool IsCapturing { get; private set; }
+    public bool IsGuideOpen => IsCapturing || _showingExample;
     public int CapturedCount => _points.Count;
     public PickItem Item { get; private set; }
     public PickItem SurfaceItem { get; private set; }
@@ -64,18 +67,27 @@ public sealed class PickSurfaceCapture : MonoBehaviour
 
     public bool BeginCapture(PickItem item)
     {
+        PickItemPreset preset;
+        try { preset = PickSurfaceGeometry.GetPreset(item); }
+        catch (ArgumentOutOfRangeException) { SetStatus("Choose the tile or brick preset."); return false; }
+        return BeginCaptureWithPreset(item, preset);
+    }
+
+    private bool BeginCaptureWithPreset(PickItem item, PickItemPreset preset)
+    {
         if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null || RobotCoordinateService.IsCalibrationEditActive ||
             !RobotCoordinateService.Instance.IsInitialized || !ToolSelectionController.CanPlanPickPlace)
         { SetStatus("Finish robot alignment, match the suction-tool model and resolve any execution before capturing item corners."); return false; }
-        try { PickSurfaceGeometry.GetPreset(item); }
-        catch (ArgumentOutOfRangeException) { SetStatus("Choose the tile or brick preset."); return false; }
+        if (!preset.HasValidDimensions)
+        { SetStatus("Set positive, finite tile dimensions before capturing corners."); return false; }
         if (!_explicitTipOffset)
         {
             RobotPointRegistration registration = FindFirstObjectByType<RobotPointRegistration>();
             if (registration != null) _tipOffsetInPointer = registration.TipOffsetInPointer;
         }
         ClearPointVisuals(); _points.Clear(); _captureSpace = null;
-        Item = item; _captureRevision = RobotCoordinateService.Instance.CalibrationRevision;
+        _showingExample = false;
+        Item = item; _capturePreset = preset; _captureRevision = RobotCoordinateService.Instance.CalibrationRevision;
         ToolSelectionController tool = ToolSelectionController.Instance;
         _captureModel = tool?.CurrentModel; _captureTool = tool?.SelectedTool;
         IsCapturing = true;
@@ -83,15 +95,31 @@ public sealed class PickSurfaceCapture : MonoBehaviour
         SubscribeTracking();
         RefreshGuide();
         _guide?.Recenter();
-        SetStatus("Touch 1/3: " + CornerName(0) + "; press trigger. Use the verified controller contact tip.");
+        SetStatus("Touch corner 1 with the controller tip and press trigger.");
         return true;
+    }
+
+    // The operator can see the example before alignment. Contacts still require BeginCapture to succeed.
+    public bool OpenGuide(PickItem item, PickItemPreset preset)
+    {
+        if (BeginCaptureWithPreset(item, preset)) return true;
+        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null ||
+            RobotCoordinateService.IsCalibrationEditActive || !preset.HasValidDimensions) return false;
+        Item = item;
+        _capturePreset = preset;
+        _points.Clear();
+        _showingExample = true;
+        RefreshGuide();
+        _guide.Recenter();
+        SetStatus("Example only. Align the robot and match the suction tool to record corners.");
+        return false;
     }
 
     public bool CapturePointerPose(Pose pointerWorld, Transform trackingSpace)
     {
         if (!IsCapturing) return false;
         if (!CaptureContextValid(out string reason)) { CancelWithReason(reason); return false; }
-        if (CapturedCount >= 3) { SetStatus("Undo the last corner or restart to retry the rejected surface fit."); return false; }
+        if (CapturedCount >= 3) { SetStatus("Press OK, then start again to retry the corner fit."); return false; }
         if (!TryTip(pointerWorld, trackingSpace, out Vector3 tipWorld))
         { SetStatus("A tracked controller and a valid metre-scale tracking frame are required."); return false; }
         if (_captureSpace != null && _captureSpace != trackingSpace)
@@ -105,15 +133,15 @@ public sealed class PickSurfaceCapture : MonoBehaviour
         if (CapturedCount < 3)
         {
             RefreshGuide();
-            SetStatus("Touch " + (CapturedCount + 1) + "/3: " + CurrentPointName + "; press trigger.");
+            SetStatus("Touch " + CurrentPointName + " and press trigger.");
             return true;
         }
-        if (!PickSurfaceGeometry.TryFit(Item, _points, out Pose surface, out _, out float rms, out float worst,
+        if (!PickSurfaceGeometry.TryFit(_capturePreset, _points, out Pose surface, out _, out float rms, out float worst,
             out reason, _maximumRmsErrorMeters, _maximumPointErrorMeters))
-        { RefreshGuide(); SetStatus(reason + " Undo the last corner or restart; the previous pick remains unchanged."); return false; }
+        { RefreshGuide(); SetStatus(reason + " Press OK to return and start again."); return false; }
         _surfaceInTracking = surface; _surfaceCorners = _points.ToArray(); _surfaceSpace = _captureSpace;
         _surfaceRevision = _captureRevision; _surfaceModel = _captureModel; _surfaceTool = _captureTool;
-        SurfaceItem = Item; RmsErrorMeters = rms; MaxErrorMeters = worst;
+        SurfaceItem = Item; _surfacePreset = _capturePreset; RmsErrorMeters = rms; MaxErrorMeters = worst;
         _hasSurface = true; _surfaceTrackingInvalidated = false; _lastSurfaceCurrent = true;
         IsCapturing = false; SetTrackingLost(); _guide?.Hide();
         ClearPointVisuals();
@@ -151,7 +179,7 @@ public sealed class PickSurfaceCapture : MonoBehaviour
             _itemRenderer.shadowCastingMode = ShadowCastingMode.Off; _itemRenderer.receiveShadows = false;
             RobotContourDisplay.RegisterItem(_itemRenderer);
         }
-        PickItemPreset preset = PickSurfaceGeometry.GetPreset(SurfaceItem);
+        PickItemPreset preset = _surfacePreset;
         _itemVisual.transform.SetParent(_surfaceSpace, false);
         _itemVisual.transform.localPosition = _surfaceInTracking.position +
             _surfaceInTracking.rotation * Vector3.down * (float)(preset.Thickness / 2d);
@@ -162,7 +190,7 @@ public sealed class PickSurfaceCapture : MonoBehaviour
 
     private void RefreshItemVisibility()
     {
-        if (_itemVisual != null) _itemVisual.SetActive(isActiveAndEnabled && _itemPresentationEnabled && IsSurfaceCurrent);
+        if (_itemVisual != null) _itemVisual.SetActive(isActiveAndEnabled && _itemPresentationEnabled && !IsGuideOpen && IsSurfaceCurrent);
     }
 
     public bool TryGetWorldPickTcpPose(out Pose pose)
@@ -191,11 +219,12 @@ public sealed class PickSurfaceCapture : MonoBehaviour
         _points.RemoveAt(_points.Count - 1); RemovePointVisual(); RefreshGuide();
         SetStatus("Touch " + (CapturedCount + 1) + "/3: " + CurrentPointName + "; press trigger.");
     }
-    public void Restart() { if (IsCapturing) BeginCapture(Item); }
+    public void Restart() { if (IsCapturing) BeginCaptureWithPreset(Item, _capturePreset); }
     public void Cancel() => CancelWithReason("Corner capture canceled. The previous pick and place remain unchanged.");
     private void CancelWithReason(string reason)
     {
-        if (!IsCapturing) return;
+        if (!IsGuideOpen) return;
+        _showingExample = false;
         IsCapturing = false; _points.Clear(); _captureSpace = null; ClearPointVisuals();
         SetTrackingLost(); _guide?.Hide(); SetStatus(reason);
     }
@@ -236,16 +265,17 @@ public sealed class PickSurfaceCapture : MonoBehaviour
         ToolSelectionController current = ToolSelectionController.Instance;
         return current == null ? model == null && tool == null : ReferenceEquals(current.CurrentModel, model) && current.SelectedTool == tool;
     }
-    private static string CornerName(int index) => index == 0 ? "first top corner (P0)" : index == 1
-        ? "next corner along the length edge (P1)" : "next corner along the width edge (P2)";
+    private static string CornerName(int index) => index == 0 ? "corner 1" : index == 1
+        ? "corner 2 along the length edge" : "corner 3 along the width edge";
     private void RefreshGuide()
     {
         if (_guide == null)
         {
             GameObject guide = new GameObject("Object surface capture miniature");
             _guide = guide.AddComponent<PickSurfaceGuide>();
+            _guide.DismissRequested += Cancel;
         }
-        _guide.Refresh(Item, Mathf.Min(CapturedCount, 2));
+        _guide.Refresh(Item, CapturedCount, _capturePreset);
     }
     private void AddPointVisual(Vector3 local, int index)
     {
@@ -271,7 +301,13 @@ public sealed class PickSurfaceCapture : MonoBehaviour
         _pointVisuals.RemoveAt(index); _pointMaterials.RemoveAt(index);
     }
     private void ClearPointVisuals() { while (_pointVisuals.Count > 0) RemovePointVisual(); }
-    private void SetStatus(string status) { StatusText = status; RefreshItemVisibility(); Changed?.Invoke(); }
+    private void SetStatus(string status)
+    {
+        StatusText = status;
+        if (IsGuideOpen) _guide?.SetCaptureStatus(status);
+        RefreshItemVisibility();
+        Changed?.Invoke();
+    }
     private void Update()
     {
         if (IsCapturing && !CaptureContextValid(out string reason)) CancelWithReason(reason);
@@ -294,7 +330,7 @@ public sealed class PickSurfaceCapture : MonoBehaviour
         SetStatus(reason);
     }
     private void OnApplicationPause(bool paused) { if (paused) InvalidateTracking("App paused. Capture the surface again."); }
-    private void OnApplicationFocus(bool focus) { if (!focus && IsCapturing) CancelWithReason("App lost focus. Capture all three corners again."); }
+    private void OnApplicationFocus(bool focus) { if (!focus && IsGuideOpen) CancelWithReason("App lost focus. Capture all three corners again."); }
     private void OnDisable()
     {
         Cancel(); SetTrackingLost(); _guide?.Hide();

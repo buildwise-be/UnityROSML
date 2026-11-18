@@ -5,7 +5,9 @@ using RosMessageTypes.Geometry;
 [Serializable]
 public sealed class FixtureTilingSettings
 {
-    public float ItemSize = 0.2f, ItemThickness = 0.01f, StackPitch;
+    public float ItemSize = (float)PickSurfaceGeometry.GetPreset(PickItem.Tile).Length;
+    public float ItemThickness = (float)PickSurfaceGeometry.GetPreset(PickItem.Tile).Thickness;
+    public float StackPitch;
     public float Gap = 0.005f, RowOffsetFraction = 0.5f;
     public float ReleaseCenterX = 0.25f, ReleaseCenterY = 0.25f;
     public float ReleaseWidth = 0.04f, ReleaseDepth = 0.04f, ReleaseClearance = 0.01f;
@@ -14,6 +16,15 @@ public sealed class FixtureTilingSettings
     public bool ReturnHomeEachTile = true;
     public PoseStampedMsg SourceTopPose;
     public PoseStampedMsg PlacementCorner;
+
+    public void SetSourceCount(int count)
+    {
+        bool entireStack = ItemCount == SourceCount;
+        SourceCount = Math.Clamp(count, 1, 64);
+        ItemCount = entireStack ? SourceCount : Math.Clamp(ItemCount, 1, SourceCount);
+    }
+
+    public void SetItemCount(int count) => ItemCount = Math.Clamp(count, 1, SourceCount);
 }
 
 /// <summary>Board-top measurements and corner frame saved by ROS for its next startup.</summary>

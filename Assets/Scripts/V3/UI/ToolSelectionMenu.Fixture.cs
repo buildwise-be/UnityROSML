@@ -19,10 +19,11 @@ public sealed partial class ToolSelectionMenu
     private float _fixtureLengthStep = 0.001f;
     private readonly List<Action> _fixtureRefreshValues = new List<Action>();
     private readonly List<Button> _fixtureEditButtons = new List<Button>();
+    private Button _fixturePreviousPage, _fixtureNextPage;
     private readonly string[] _fixturePageTitles =
     {
-        "Tile dimensions", "Source stack", "Destination pattern", "Release region",
-        "Retreat and settling", "Plank top corners", "Alignment corner", "Review task steps"
+        "Tile size and count", "Source stack", "Final placement", "Release onto fixture",
+        "Withdrawal and wait", "Fixture board", "Fixture stop corner", "Review task steps"
     };
 
     private void BindFixtureControls()
@@ -113,6 +114,7 @@ public sealed partial class ToolSelectionMenu
 
     public void ChangeFixturePage(int delta)
     {
+        if (_fixtureTiling?.IsCapturing == true) _fixtureTiling.CancelCapture();
         _fixturePage = Mathf.Clamp(_fixturePage + delta, 0, _fixturePageTitles.Length - 1);
         BuildFixturePage();
         RefreshFixtureMenu();
@@ -122,13 +124,12 @@ public sealed partial class ToolSelectionMenu
     {
         if (_workflowMode == URInputManager.WorkflowMode.SimplePickAndPlace) return;
         _fixtureView = Rect("Fixture tiling setup view", _panel, Vector2.zero, new Vector2(440f, 756f));
-        BuildHeader(_fixtureView, "Fixture setup title", _workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace
-            ? "Repetitive Pick and Place" : "Fixture tile batch");
+        BuildHeader(_fixtureView, "Fixture setup title", "Fixture regrasp and place");
         _fixturePageTitle = Text("Fixture page title", _fixtureView, new Vector2(64f, -57f),
             new Vector2(312f, 32f), string.Empty, 19f);
         _fixturePageTitle.alignment = TextAlignmentOptions.Center;
-        FixtureButton("Previous page", _fixtureView, 16f, 54f, 42f, 36f, () => ChangeFixturePage(-1), "‹");
-        FixtureButton("Next page", _fixtureView, 382f, 54f, 42f, 36f, () => ChangeFixturePage(1), "›");
+        _fixturePreviousPage = FixtureButton("Previous page", _fixtureView, 16f, 54f, 42f, 36f, () => ChangeFixturePage(-1), "‹");
+        _fixtureNextPage = FixtureButton("Next page", _fixtureView, 382f, 54f, 42f, 36f, () => ChangeFixturePage(1), "›");
         _fixtureStatus = Text("Fixture setup status", _fixtureView, new Vector2(16f, -543f),
             new Vector2(408f, 67f), string.Empty, 14f);
         _fixtureStatus.richText = false;
@@ -160,80 +161,89 @@ public sealed partial class ToolSelectionMenu
         switch (_fixturePage)
         {
             case 0:
-                FixtureHint(0, "Square tiles · centred suction on the top face.\nSet measured dimensions before planning.");
+                FixtureHint(0, "Set the measured square tile size and stack count.\nThe full stack is placed by default; counts change by 1.");
                 FixtureLength("Tile side", 64, () => s.ItemSize, v => s.ItemSize = v, 0.001f, 2f);
                 FixtureLength("Tile thickness", 111, () => s.ItemThickness, v => s.ItemThickness = v, 0.001f, 2f);
-                FixtureCount("Tiles in source", 158, () => s.SourceCount, v => s.SourceCount = v);
-                FixtureCount("Tiles to place", 205, () => s.ItemCount, v => s.ItemCount = v);
-                FixtureLength("Stack pitch (0 = thickness)", 252, () => s.StackPitch, v => s.StackPitch = v, 0, 2f);
-                FixtureHint(303, "Top face is the square face; other pickup faces and rectangular bricks are not supported in this version.");
-                FixtureSteps(373);
+                FixtureCount("Tiles in source", 158, () => s.SourceCount, s.SetSourceCount);
+                FixtureCount("Tiles to place", 205, () => s.ItemCount, s.SetItemCount, maximum: () => s.SourceCount);
+                FixtureLength("Stack pitch", 252, () => s.StackPitch, v => s.StackPitch = v, 0, 2f);
+                FixtureEdit("Place entire stack", 0, 301, 198, () => { s.SetItemCount(s.SourceCount); _fixtureTiling.NotifyEdited(); });
+                TextMeshProUGUI batch = Text("Batch selection", _fixturePageContent, new Vector2(210, -301), new Vector2(198, 38), string.Empty, 14f);
+                _fixtureRefreshValues.Add(() => batch.text = s.ItemCount == s.SourceCount
+                    ? "Whole stack selected" : s.ItemCount + " placed · " + (s.SourceCount - s.ItemCount) + " left in source");
+                FixtureHint(344, "Stack pitch is the top-to-top tile spacing. Zero uses tile thickness.", 38);
+                FixtureSteps(387);
                 break;
             case 1:
-                FixtureHint(0, "Capture the centre of the top tile's upper face.\nThe stack is horizontal; yaw follows tile edges.");
-                FixtureCapture("Capture stack top centre", FixtureCaptureTarget.SourceTop, 66);
-                FixtureDynamicText("Stack capture status", 115, () => s.SourceTopPose == null
-                    ? "Top centre: not captured" : "Top centre: captured in robot coordinates");
-                FixtureHint(166, "Rotate the ghost pile until its edges match the real stack. This yaw is sent to ROS for collisions.");
-                FixtureEdit("Yaw −45°", 0, 227, 96, () => _fixtureTiling.RotateSourceYaw(-45));
-                FixtureEdit("Yaw −5°", 104, 227, 96, () => _fixtureTiling.RotateSourceYaw(-5));
-                FixtureEdit("Yaw +5°", 208, 227, 96, () => _fixtureTiling.RotateSourceYaw(5));
-                FixtureEdit("Yaw +45°", 312, 227, 96, () => _fixtureTiling.RotateSourceYaw(45));
-                FixtureHint(292, "Lower contacts descend by the stack pitch. The initial scene keeps every source tile, including tiles left unused.");
+                FixtureHint(0, "Choose the top-face centre or three consecutive corners.\nThree corners also determine the stack edge direction.");
+                FixtureEdit("Capture top tile · 3 corners", 0, 66, 408, () => _input.BeginFixtureSurfaceCapture());
+                FixtureCapture("Capture stack top centre", FixtureCaptureTarget.SourceTop, 111);
+                FixtureDynamicText("Stack capture status", 160, () => s.SourceTopPose == null
+                    ? "Source tile not captured" : "Captured · green stack shows " + s.SourceCount + " tiles");
+                FixtureHint(209, "Inspect the pick-centre cross on the green stack. Adjust yaw until the ghost edges match the real tiles.");
+                FixtureEdit("Yaw −45°", 0, 272, 96, () => _fixtureTiling.RotateSourceYaw(-45));
+                FixtureEdit("Yaw −5°", 104, 272, 96, () => _fixtureTiling.RotateSourceYaw(-5));
+                FixtureEdit("Yaw +5°", 208, 272, 96, () => _fixtureTiling.RotateSourceYaw(5));
+                FixtureEdit("Yaw +45°", 312, 272, 96, () => _fixtureTiling.RotateSourceYaw(45));
+                FixtureHint(337, "Keep the stack horizontal. Lower contacts follow the stack pitch from page 1. Orange tiles show final placement.");
                 break;
             case 2:
                 FixtureCount("Columns", 0, () => s.Columns, v => s.Columns = v);
                 FixtureLength("Mortar gap", 47, () => s.Gap, v => s.Gap = v, 0, 2);
-                FixtureStepper("Odd-row shift", 94, () => (s.RowOffsetFraction * 100).ToString("0") + "% pitch",
+                FixtureStepper("Odd-row shift (±5%)", 94, () => (s.RowOffsetFraction * 100).ToString("0") + "% pitch",
                     delta => s.RowOffsetFraction = Mathf.Clamp01(s.RowOffsetFraction + delta * 0.05f));
-                FixtureCapture("Capture first tile corner", FixtureCaptureTarget.PlacementCorner, 147);
+                FixtureCapture("Touch corner at final destination", FixtureCaptureTarget.PlacementCorner, 147);
                 FixtureCapture("Capture point along +X edge", FixtureCaptureTarget.PlacementX, 192);
                 FixtureCapture("Capture point along +Y edge", FixtureCaptureTarget.PlacementY, 237);
-                FixtureDynamicText("Pattern status", 284, () => s.PlacementCorner == null ? "Pattern frame: not captured" : "Pattern frame: captured");
-                FixtureHint(326, "Corner is on the FINAL TOP FACE. X/Y follow pattern edges. Half-pitch shift includes the mortar gap; the last row may be partial.", 55);
+                FixtureDynamicText("Pattern status", 284, () => _fixtureTiling?.PlacementCaptureSummary ?? "Capture corner, +X, then +Y", 30);
+                FixtureHint(310, _workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace
+                    ? "Touch points here with the controller. For ML2 floor detection, open Floor tiling."
+                    : "Touch the destination corner and both edges with the controller.", 36);
+                if (_workflowMode == URInputManager.WorkflowMode.RepetitivePickAndPlace)
+                    FixtureEdit("Open Floor tiling · ML2 plane scan", 0, 346, 408, OpenFloorSetup);
                 FixtureSteps(387);
                 break;
             case 3:
-                FixtureCapture("Capture release centre on plank", FixtureCaptureTarget.ReleaseCenter, 0);
+                FixtureCapture("Capture release centre on fixture board", FixtureCaptureTarget.ReleaseCenter, 0);
                 FixtureLength("Centre X from stop", 47, () => s.ReleaseCenterX, v => s.ReleaseCenterX = v, -10, 10);
                 FixtureLength("Centre Y from stop", 94, () => s.ReleaseCenterY, v => s.ReleaseCenterY = v, -10, 10);
                 FixtureLength("Region width", 141, () => s.ReleaseWidth, v => s.ReleaseWidth = v, 0, 10);
                 FixtureLength("Region depth", 188, () => s.ReleaseDepth, v => s.ReleaseDepth = v, 0, 10);
                 FixtureLength("Tile-bottom clearance", 235, () => s.ReleaseClearance, v => s.ReleaseClearance = v, 0, 1);
-                FixtureCount("Yaw alternatives", 282, () => s.ReleaseYawSamples, v => s.ReleaseYawSamples = v, 1, 12);
-                FixtureHint(329, "Region bounds tile CENTRES in fixture X/Y. Clearance follows the plank normal. ROS checks full footprints and the slide envelope.", 55);
+                FixtureCount("Release yaw choices", 282, () => s.ReleaseYawSamples, v => s.ReleaseYawSamples = v, 1, 12);
+                FixtureHint(329, "Release is on the fixture board before regrasp. X/Y measure from the stop corner; clearance is tile-bottom height above the fixture board.", 55);
                 FixtureSteps(387);
                 break;
             case 4:
                 FixtureLength("Retreat distance", 0, () => s.RetreatDistance, v => s.RetreatDistance = v, 0.001f, 1);
-                FixtureStepper("Settling wait", 47, () => s.SettlingDelay.ToString("0.0") + " s",
+                FixtureStepper("Settling wait (±0.5 s)", 47, () => s.SettlingDelay.ToString("0.0") + " s",
                     delta => s.SettlingDelay = Mathf.Clamp(s.SettlingDelay + delta * 0.5f, 0, 60));
                 FixtureEdit("Toggle cycle home", 0, 102, 408, () => { s.ReturnHomeEachTile = !s.ReturnHomeEachTile; _fixtureTiling.NotifyEdited(); });
                 FixtureDynamicText("Cycle home setting", 150, () => s.ReturnHomeEachTile ? "Return to configured home after every tile: ON" : "Return home after every tile: OFF");
-                FixtureHint(212, "Release vacuum → withdraw along plank normal → wait → exact regrasp → place. The extra wait starts AFTER withdrawal.");
+                FixtureHint(212, "Release vacuum → withdraw along fixture board normal → wait → exact regrasp → place. The extra wait starts AFTER withdrawal.");
                 FixtureHint(291, "Automatic continuation assumes the tile has seated in the corner. There is no alignment sensing. Home returns use the updated scene.");
                 FixtureSteps(373);
                 break;
             case 5:
-                FixtureHint(0, "After robot alignment, capture four TOP corners around the plank: P00 → P10 → P11 → P01.");
+                FixtureHint(0, "The fixture board is the physical sloped board used for regrasp. Capture its top corners P00 → P10 → P11 → P01.");
                 FixtureCapture("1 · P00", FixtureCaptureTarget.Board00, 68, 0, 198);
                 FixtureCapture("2 · P10", FixtureCaptureTarget.Board10, 68, 210, 198);
                 FixtureCapture("3 · P11", FixtureCaptureTarget.Board11, 113, 0, 198);
                 FixtureCapture("4 · P01", FixtureCaptureTarget.Board01, 113, 210, 198);
-                FixtureDynamicText("Board capture status", 164, () => "Top corners captured: " + CapturedBoardCorners(c) + " / 4");
-                FixtureLength("Plank thickness", 214, () => c.BoardThickness, v => c.BoardThickness = v, 0.001f, 1);
+                FixtureDynamicText("Board capture status", 164, () => BoardCornerSummary(c));
+                FixtureLength("Fixture board thickness", 214, () => c.BoardThickness, v => c.BoardThickness = v, 0.001f, 1);
                 FixtureLength("Board-edge margin", 261, () => c.Margin, v => c.Margin = v, 0, 1);
-                FixtureEdit("Fit plank rectangle", 0, 310, 408, () => _fixtureTiling.FitCalibration());
+                FixtureEdit("Fit fixture board rectangle", 0, 310, 408, () => _fixtureTiling.FitCalibration());
                 FixtureHint(355, "Pointer tip marks the top. Fit and inspect its error before capturing the alignment corner.", 32);
                 FixtureSteps(387);
                 break;
             case 6:
-                FixtureHint(0, "Capture the stop's INNER corner on the plank support surface, then a point along each arm into the tray.");
+                FixtureHint(0, "Capture the fixture stop's INNER corner on the fixture board, then +X and +Y along its arms into the tray.");
                 FixtureCapture("Capture alignment corner", FixtureCaptureTarget.SupportCorner, 68);
                 FixtureCapture("Capture point along +X arm", FixtureCaptureTarget.SupportX, 113);
                 FixtureCapture("Capture point along +Y arm", FixtureCaptureTarget.SupportY, 158);
-                FixtureDynamicText("Support capture status", 206, () => c.SupportCorner == null ? "Alignment frame: not captured" : "Alignment frame: captured");
-                FixtureHint(256, "Gravity must pull toward BOTH stop arms. The metal stop is an alignment reference; the plank is the modeled fixture obstacle.");
+                FixtureDynamicText("Support capture status", 206, () => _fixtureTiling?.SupportCaptureSummary ?? "Capture corner, +X, then +Y");
+                FixtureHint(256, "Gravity must pull toward BOTH stop arms. The metal stop is an alignment reference; the fixture board is the modeled fixture obstacle.");
                 FixtureEdit("Save fixture to ROS", 0, 330, 408, () => _fixtureTiling.SaveCalibration());
                 FixtureHint(376, "Save persists ROS calibration for the next MTC startup. An operator must restart/reload the backend before it takes effect.", 52);
                 break;
@@ -262,11 +272,12 @@ public sealed partial class ToolSelectionMenu
         RefreshFixtureMenu();
     }
 
-    private static int CapturedBoardCorners(FixtureCalibrationData data)
+    private static string BoardCornerSummary(FixtureCalibrationData data)
     {
-        int count = 0;
-        if (data.BoardTopCorners != null) foreach (var point in data.BoardTopCorners) if (point != null) count++;
-        return count;
+        string[] names = { "P00", "P10", "P11", "P01" };
+        for (int index = 0; index < names.Length; index++)
+            names[index] += data.BoardTopCorners != null && data.BoardTopCorners.Length > index && data.BoardTopCorners[index] != null ? " ✓" : " –";
+        return string.Join("   ", names);
     }
 
     private void FixtureHint(float y, string message, float height = 61)
@@ -308,8 +319,19 @@ public sealed partial class ToolSelectionMenu
         => FixtureStepper(name, y, () => (value() * 1000).ToString("0.#") + " mm",
             delta => set(Mathf.Clamp(value() + delta * _fixtureLengthStep, min, max)));
 
-    private void FixtureCount(string name, float y, Func<int> value, Action<int> set, int min = 1, int max = 64)
-        => FixtureStepper(name, y, () => value().ToString(), delta => set(Mathf.Clamp(value() + delta, min, max)));
+    private void FixtureCount(string name, float y, Func<int> value, Action<int> set,
+        int min = 1, int max = 64, Func<int> maximum = null)
+    {
+        maximum ??= () => max;
+        FixtureStepper(name, y, () => value().ToString(), delta => set(Mathf.Clamp(value() + delta, min, maximum())));
+        Button decrease = _fixtureEditButtons[_fixtureEditButtons.Count - 2];
+        Button increase = _fixtureEditButtons[_fixtureEditButtons.Count - 1];
+        _fixtureRefreshValues.Add(() =>
+        {
+            decrease.interactable = CanEditFixture() && value() > min;
+            increase.interactable = CanEditFixture() && value() < maximum();
+        });
+    }
 
     private void FixtureStepper(string name, float y, Func<string> value, Action<int> change)
     {
@@ -332,7 +354,7 @@ public sealed partial class ToolSelectionMenu
 
     private void FixtureSteps(float y)
     {
-        Text("Length increment", _fixturePageContent, new Vector2(0, -y), new Vector2(126, 32), "Length step", 14f);
+        Text("Length increment", _fixturePageContent, new Vector2(0, -y), new Vector2(126, 32), "Length ± per press", 14f);
         float[] steps = { 0.0001f, 0.001f, 0.01f, 0.1f };
         for (int i = 0; i < steps.Length; i++)
         {
@@ -345,20 +367,37 @@ public sealed partial class ToolSelectionMenu
     }
 
     private bool CanEditFixture() => _fixtureTiling != null && _input != null && _input.IsFixtureMode &&
-        !IsPlacementBusy && !RobotExecutionState.IsBusy && MTCPlansManager.ActiveExecution == null;
+        !_fixtureTiling.IsPlanning && !IsPlacementBusy && !RobotExecutionState.IsBusy && MTCPlansManager.ActiveExecution == null;
 
     private void RefreshFixtureMenu()
     {
         bool visible = _showFixtureSetup && _input != null && _input.IsFixtureMode && !IsPlacementBusy;
         if (_fixtureView != null) _fixtureView.gameObject.SetActive(visible);
         if (_showFixtureSetup && (_input == null || !_input.IsFixtureMode)) _showFixtureSetup = false;
-        foreach (Action refresh in _fixtureRefreshValues) refresh();
+        if (_fixturePreviousPage != null) _fixturePreviousPage.interactable = _fixturePage > 0;
+        if (_fixtureNextPage != null) _fixtureNextPage.interactable = _fixturePage < _fixturePageTitles.Length - 1;
         foreach (Button button in _fixtureEditButtons) if (button != null) button.interactable = CanEditFixture();
+        foreach (Action refresh in _fixtureRefreshValues) refresh();
         if (_fixtureStatus != null) _fixtureStatus.text = _fixtureTiling != null
             ? (_fixturePage == 5 || _fixturePage == 6 ? _fixtureTiling.CalibrationStatus : _fixtureTiling.StatusText)
             : "Select Fixture tiling in the robot task menu.";
         if (_fixtureCaptureHelp != null) _fixtureCaptureHelp.text = _fixtureTiling != null && _fixtureTiling.IsCapturing
             ? _fixtureTiling.CaptureInstruction + "\nMove the pointer tip to the real point; press trigger."
-            : "Choose a capture button, point at the real location, then press trigger. Robot alignment must be valid.";
+            : FixturePageHelp();
+    }
+
+    private string FixturePageHelp()
+    {
+        switch (_fixturePage)
+        {
+            case 0: return "Length buttons use the selected mm increment. Tile counts change by 1. A smaller job can leave tiles in the source stack.";
+            case 1: return "Three corners fit centre and edges. For one point, select Capture stack top centre, touch the top-face centre and press trigger; then adjust yaw.";
+            case 2: return "Mark where the top corner of the first placed tile will be. Touch a point along each edge to orient the orange pattern.";
+            case 3: return "Fit the fixture board and its stop corner on pages 6–7 before capturing the release centre.";
+            case 4: return "The settling wait starts after withdrawal. Review the planned release and regrasp before executing.";
+            case 5: return "Choose each fixture board corner, touch it with the controller tip and press trigger. Fit after all four captures.";
+            case 6: return "Capture corner, +X arm and +Y arm. Save the fixture, then reload the ROS backend to activate it.";
+            default: return "Use the robot playback and scene steps to review the complete job. Execute becomes available after a matching plan.";
+        }
     }
 }

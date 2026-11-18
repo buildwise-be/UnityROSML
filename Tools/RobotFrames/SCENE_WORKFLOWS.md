@@ -9,9 +9,10 @@ The application build has exactly three scenes:
    existing TCP A/B and single-item MTC workflows, tool selection, robot
    alignment and playback. Fixture controls are unavailable here.
 3. [RepetitivePickAndPlace](../../Assets/Scenes/RepetitivePickAndPlace.unity):
-   fixture calibration, square-tile stack/pattern setup and complete-batch
-   review/execution. Its serialized controller is on the input object; the
-   simple planners and targets are absent.
+   opens Floor tiling, where the operator captures the top tile and scans the
+   destination floor. **Fixture setup** opens the eight-page workflow for a
+   job that releases tiles onto a sloped board and regrips them before final
+   placement. Both workflows support complete-batch review and execution.
 
 The two task scenes derive from the validated V3 interaction setup and retain
 its XR action references and robot prefabs. Legacy development/sample scene

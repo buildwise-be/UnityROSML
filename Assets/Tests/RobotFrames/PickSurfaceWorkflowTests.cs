@@ -246,8 +246,9 @@ public sealed class PickSurfaceWorkflowTests
         AssertPose(PointPose(true), pick); AssertPose(PointPose(false), place);
         Assert.That(Get<bool>(capture, "IsCapturing"), Is.True);
         Assert.That(Get<bool>(_controller, "HasValidSurface"), Is.False);
-        Assert.That(DrawMatrix(ItemDraws()[0]), Is.EqualTo(acceptedBody), "A rejected replacement must retain the last accepted full body.");
+        Assert.That(ItemDraws(), Is.Empty, "The prior pick body is hidden while the guide is open.");
         Call(capture, "Cancel"); Assert.That(Get<bool>(_controller, "HasValidSurface"), Is.True);
+        Assert.That(DrawMatrix(ItemDraws()[0]), Is.EqualTo(acceptedBody), "Returning to the menu restores the previous accepted body.");
         AssertPose(PointPose(true), pick);
     }
 
@@ -262,8 +263,7 @@ public sealed class PickSurfaceWorkflowTests
         {
             Assert.That(Get<int>(guide, "SelectedPointIndex"), Is.EqualTo(i));
             GameObject geometry = (GameObject)Read(guide, "_geometry");
-            Renderer[] marks = Enumerable.Range(1, 3).Select(index => geometry.transform.Find("Capture corner " + index).GetComponent<Renderer>()).ToArray();
-            Assert.That(marks[i].sharedMaterial, Is.Not.SameAs(marks[(i+1)%3].sharedMaterial));
+            Assert.That(geometry.transform.Find("Capture corner " + (i + 1)), Is.Not.Null);
             Assert.That(guide.GetComponentsInChildren<Collider>(true), Is.Empty);
             Assert.That(guide.GetComponentsInChildren<ArticulationBody>(true), Is.Empty);
             Assert.That(Call(capture, "CapturePointerPose", new Pose(corners[i], Quaternion.identity), _tracking), Is.EqualTo(true));
@@ -405,7 +405,7 @@ public sealed class PickSurfaceWorkflowTests
     }
 
     [Test]
-    public void SettingsMenuBuildsWithoutTransportAndItemSelectionStartsTheActualGuide()
+    public void SelectingSurfaceShowsTheTileImmediatelyAndRestoresTheItemMenuOnOkOrCompletion()
     {
         Component menu = BuildSettingsMenu();
         RectTransform view = (RectTransform)Read(menu, "_pickSettingsView");
@@ -414,16 +414,39 @@ public sealed class PickSurfaceWorkflowTests
             Assert.That(view.Find(name), Is.Not.Null, name);
         Assert.That(Get<Component>(_controller, "SurfaceCapture"), Is.Null);
         Call(menu, "OpenPickSettings"); Call(menu, "SelectPickMethod", true);
-        Click((Component)Read(menu, "_pickBrickButton"));
         Component capture = Capture();
         Assert.That(Get<bool>(capture, "IsCapturing"), Is.True);
-        Assert.That(Get<PickItem>(capture, "Item"), Is.EqualTo(PickItem.Brick));
-        Assert.That(Get<bool>((Component)Read(capture, "_guide"), "HasVisual"), Is.True);
+        Assert.That(Get<PickItem>(capture, "Item"), Is.EqualTo(PickItem.Tile));
+        Component guide = (Component)Read(capture, "_guide");
+        Assert.That(Get<bool>(guide, "HasVisual"), Is.True);
+        Assert.That(view.gameObject.activeInHierarchy, Is.False);
+        Call(guide, "Confirm");
+        Assert.That(view.gameObject.activeInHierarchy, Is.True);
         Click((Component)Read(menu, "_pickMediumButton"));
         Assert.That(Get<int>(_controller, "DescentSpeedMmPerSecond"), Is.EqualTo(10));
-        Call(menu, "CancelPickSurface");
-        Click((Component)Read(menu, "_pickTileButton"));
-        Assert.That(Get<PickItem>(capture, "Item"), Is.EqualTo(PickItem.Tile));
+        Click((Component)Read(menu, "_pickBrickButton"));
+        Assert.That(Get<PickItem>(capture, "Item"), Is.EqualTo(PickItem.Brick));
+        foreach (Vector3 point in WorldCorners(PickItem.Brick))
+            Assert.That(Call(capture, "CapturePointerPose", new Pose(point, Quaternion.identity), _tracking), Is.True);
+        Assert.That(Get<bool>(guide, "HasVisual"), Is.False);
+        Assert.That(view.gameObject.activeInHierarchy, Is.True);
+    }
+
+    [Test]
+    public void UnalignedOperatorCanViewTheDefaultTileAndReturnWithoutRecordingContacts()
+    {
+        Component menu = BuildSettingsMenu();
+        Call(_coordinates, "ResetForSceneChange");
+        Call(menu, "OpenPickSettings");
+        Call(menu, "SelectPickMethod", true);
+        Component capture = Capture();
+        Assert.That(Get<bool>(capture, "IsGuideOpen"), Is.True);
+        Assert.That(Get<bool>(capture, "IsCapturing"), Is.False);
+        Assert.That(Get<string>(capture, "StatusText"), Does.Contain("Example only"));
+        Assert.That(Call(capture, "CapturePointerPose", Pose.identity, _tracking), Is.False);
+        Assert.That(Get<int>(capture, "CapturedCount"), Is.Zero);
+        Call((Component)Read(capture, "_guide"), "Confirm");
+        Assert.That(((RectTransform)Read(menu, "_pickSettingsView")).gameObject.activeInHierarchy, Is.True);
     }
 
     [Serializable] private sealed class CdrDocument { public CdrFixture[] fixtures; }
@@ -556,7 +579,7 @@ public sealed class PickSurfaceWorkflowTests
             foreach (Camera prior in UnityEngine.Object.FindObjectsByType<Camera>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 if (prior.CompareTag("MainCamera")) { fixture._previousMainCameras.Add(prior.gameObject); prior.gameObject.tag = "Untagged"; }
             Camera camera = fixture.New("Pick surface preview camera").AddComponent<Camera>(); camera.tag = "MainCamera";
-            camera.transform.SetPositionAndRotation(new Vector3(.158f, 0f, -1f), Quaternion.identity);
+            camera.transform.SetPositionAndRotation(new Vector3(0f, -.015f, -1f), Quaternion.identity);
             camera.orthographic = true; camera.orthographicSize = .415f; camera.aspect = 1f;
             camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = new Color(.08f, .11f, .15f);
             target = new RenderTexture(1152, 1152, 24, RenderTextureFormat.ARGB32);
@@ -571,12 +594,19 @@ public sealed class PickSurfaceWorkflowTests
             {
                 Call(menu, "SelectPickMethod", true); Call(menu, "SelectPickItem", item);
                 Component capture = fixture.Capture(), guide = (Component)Read(capture, "_guide");
-                guide.transform.SetPositionAndRotation(new Vector3(.36f, -.02f, 0f), Quaternion.identity);
+                ((RectTransform)Read(menu, "_panel")).gameObject.SetActive(false);
+                guide.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
                 Set(guide, "_positioned", true);
-                for (int index = 0; index < 3; index++)
+                Bounds framing = Get<Bounds>(guide, "LayoutBounds");
+                camera.transform.position = guide.transform.TransformPoint(framing.center) - Vector3.forward;
+                camera.orthographicSize = 1.08f * Mathf.Max(framing.extents.y, framing.extents.x / camera.aspect);
+                float[] times = { 0f, 2.1f, 3.6f, 5.1f, 7.3f, 9.1f };
+                string[] stages = { "body", "corner-1", "corner-2", "corner-3", "counterclockwise", "normal" };
+                for (int index = 0; index < times.Length; index++)
                 {
-                    if (index > 0) Call(capture, "CapturePointerPose", new Pose(fixture.WorldCorners(item)[index-1], Quaternion.identity), fixture._tracking);
-                    Call(menu, "RefreshTask"); Call(guide, "LateUpdate");
+                    Set(guide, "_elapsedSeconds", times[index]);
+                    Call(guide, "SetCaptureStatus", string.Empty);
+                    Call(guide, "PresentSequence", false);
                     Component[] labels = canvas.GetComponentsInChildren(textType, true).Concat(guide.GetComponentsInChildren(textType, true)).ToArray();
                     foreach (Component label in labels) if (font != null) textType.GetProperty("font").SetValue(label, font);
                     Canvas.ForceUpdateCanvases();
@@ -588,7 +618,7 @@ public sealed class PickSurfaceWorkflowTests
                     }
                     camera.Render(); RenderTexture.active = target;
                     pixels.ReadPixels(new Rect(0f, 0f, 1152f, 1152f), 0, 0); pixels.Apply();
-                    File.WriteAllBytes(Path.Combine(directory, item.ToString().ToLowerInvariant()+"-corner-"+(index+1)+".png"), pixels.EncodeToPNG());
+                    File.WriteAllBytes(Path.Combine(directory, item.ToString().ToLowerInvariant()+"-"+stages[index]+".png"), pixels.EncodeToPNG());
                 }
                 Call(menu, "CancelPickSurface");
             }
@@ -600,6 +630,85 @@ public sealed class PickSurfaceWorkflowTests
             if (pixels != null) UnityEngine.Object.DestroyImmediate(pixels);
             if (target != null) { target.Release(); UnityEngine.Object.DestroyImmediate(target); }
             fixture.Cleanup();
+        }
+    }
+
+    [Test]
+    public void RepetitiveFixtureCaptureUsesCustomTileSizeAndRestoresTheWizardAfterOkOrSuccess()
+    {
+        Component capture = null;
+        try
+        {
+            Component input = Add("Fixture capture input", "URInputManager");
+            Set(input, "_pickPlaceController", _controller);
+            Set(input, "_trackingSpace", _tracking);
+            Type workflow = TypeOf("URInputManager").GetNestedType("WorkflowMode");
+            Call(input, "ConfigureWorkflow", Enum.Parse(workflow, "RepetitivePickAndPlace"));
+            Call(input, "UseFixtureTiling");
+            Component fixture = Get<Component>(input, "FixtureController");
+            object settings = Get<object>(fixture, "Settings");
+            Set(settings, "ItemSize", .32f);
+            Set(settings, "ItemThickness", .012f);
+            Component preview = input.gameObject.AddComponent(TypeOf("FixtureTilingPreview"));
+            Set(fixture, "_preview", preview);
+            Pose oldTop = (Pose)Call(_coordinates, "ConvertRootLocalPoseToWorldPose", new Pose(Vector3.up, Quaternion.identity));
+            Assert.That(Call(fixture, "AcceptSourceSurface", oldTop), Is.EqualTo(true));
+            object previousSource = Read(settings, "SourceTopPose");
+
+            Component menu = Add("Fixture capture menu", "ToolSelectionMenu");
+            Set(menu, "_input", input); Set(menu, "_controller", _tools); Set(menu, "_legacyPlans", _plans);
+            Call(menu, "ConfigureWorkflow", Enum.Parse(workflow, "RepetitivePickAndPlace"));
+            Call(menu, "BuildMenu");
+            Canvas canvas = (Canvas)Read(menu, "_canvas");
+            _owned.Add(canvas.gameObject);
+            Call(menu, "BindTaskControls");
+            Call(menu, "OpenFixtureSetup");
+
+            Call(input, "BeginFixtureSurfaceCapture");
+            capture = (Component)Read(input, "_fixtureSurfaceCapture");
+            Call(capture, "SetTipOffset", Vector3.zero);
+            Call(menu, "RefreshTask");
+            Assert.That(Get<bool>(input, "IsFixtureMode"), Is.True);
+            Assert.That(Get<bool>(capture, "IsCapturing"), Is.True);
+            Assert.That(canvas.gameObject.activeSelf, Is.False);
+            Assert.That(((GameObject)Read(preview, "_root")).activeSelf, Is.False);
+
+            Component guide = (Component)Read(capture, "_guide");
+            Call(guide, "Confirm");
+            Call(menu, "RefreshTask");
+            Assert.That(Get<bool>(capture, "IsCapturing"), Is.False);
+            Assert.That(Get<bool>(guide, "HasVisual"), Is.False);
+            Assert.That(Read(settings, "SourceTopPose"), Is.SameAs(previousSource));
+            Assert.That(canvas.gameObject.activeSelf, Is.True);
+            Assert.That(((GameObject)Read(preview, "_root")).activeSelf, Is.True);
+
+            Call(input, "BeginFixtureSurfaceCapture");
+            Pose localTop = new Pose(new Vector3(.25f, .5f, .8f), Quaternion.Euler(0f, 35f, 0f));
+            Pose worldTop = (Pose)Call(_coordinates, "ConvertRootLocalPoseToWorldPose", localTop);
+            Vector3[] corners = { new Vector3(.16f, 0f, -.16f), new Vector3(.16f, 0f, .16f), new Vector3(-.16f, 0f, .16f) };
+            foreach (Vector3 corner in corners)
+                Assert.That(Call(capture, "CapturePointerPose", new Pose(worldTop.position + worldTop.rotation * corner, Quaternion.identity), _tracking),
+                    Is.EqualTo(true), Get<string>(capture, "StatusText"));
+            Call(menu, "RefreshTask");
+            Assert.That(Get<bool>(capture, "IsCapturing"), Is.False);
+            Assert.That(Get<bool>(capture, "IsSurfaceCurrent"), Is.True);
+            Assert.That(canvas.gameObject.activeSelf, Is.True);
+            Assert.That(((GameObject)Read(preview, "_root")).activeSelf, Is.True);
+            object source = Read(Read(settings, "SourceTopPose"), "pose");
+            Vector3 fittedCenter = RosUnityPoint(Read(source, "position"));
+            Assert.That(Vector3.Distance(fittedCenter, localTop.position), Is.LessThan(1e-5f));
+            Assert.That((double)Read(Read(source, "orientation"), "z"), Is.EqualTo(-Math.Sin(35d * Math.PI / 360d)).Within(1e-5));
+            Assert.That(Get<string>(fixture, "StatusText"), Does.Contain("Top tile captured"));
+            Assert.That(((RectTransform)Read(menu, "_fixtureView")).gameObject.activeSelf, Is.True);
+        }
+        finally
+        {
+            // EditMode creates these objects without the runtime lifecycle callbacks.
+            if (capture != null)
+            {
+                Call(capture, "OnDisable");
+                Call(capture, "OnDestroy");
+            }
         }
     }
 

@@ -7,17 +7,19 @@ robot still in a bent pose, with `/joint_states` streaming. Touch the centre of
 each indicated blue rear cover with the controller contact tip and press trigger:
 **Base cover → Shoulder → Elbow → Wrist 2 → Wrist 3**. Start at the lowest blue
 cover on the rotating base joint, then work towards the tool. The XR robot appears
-after the fifth accepted touch. Undo, Restart,
-Cancel, and Use QR instead are available in the placement menu.
+after the fifth accepted touch. Undo and Cancel are available in the floating
+capture guide. A rejected fit returns to the placement panel with Undo,
+Restart, Cancel and Use QR instead.
 
-A floating UR16e miniature beside the picker highlights the current link and
-marks the exact cover center in orange. It turns slowly around world vertical,
-completing one revolution every 10 seconds;
-the shoulder and elbow share a link but have separate touch markers. The guide
+A floating UR16e guide replaces the main menu during contact capture. It is
+placed in front of the operator and highlights the current link and exact
+cover centre in orange. The robot illustration completes one revolution around
+world vertical every ten seconds. Each accepted contact plays a soft chime.
+The shoulder and elbow share a link and have separate touch markers. The guide
 uses live joint feedback before the first touch and the locked first-touch pose
 afterwards. Without fresh joints it shows an explicitly labeled bent example.
-Undo/restart updates the highlight, and leaving placement hides the guide. This
-is mesh-only guidance: it cannot become a live robot, ghost, or physics target.
+Undo/restart updates the highlight, and completing or canceling placement
+returns to the menu. The illustration uses meshes without physics components.
 
 Each captured contact leaves a coloured 12 mm sphere at the sampled physical
 tip position. The five colours follow the point order. Spheres stay attached to

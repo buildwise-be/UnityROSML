@@ -34,6 +34,7 @@ public sealed class PointPlacementMenuTests
     [TearDown]
     public void Cleanup()
     {
+        _menu.GetType().GetField("_pointGuideActionFrame", BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, -1);
         if (_guideRegistration != null) SetCollecting(_guideRegistration, false);
         Canvas canvas = Field<Canvas>("_canvas");
         if (canvas != null) UnityEngine.Object.DestroyImmediate(canvas.gameObject);
@@ -56,12 +57,17 @@ public sealed class PointPlacementMenuTests
         Assert.That((string)guide.GetType().GetProperty("CurrentPointName").GetValue(guide), Is.EqualTo(cover));
         Assert.That(Field<object>("_pointGuideTitle").GetType().GetProperty("text")
             .GetValue(Field<object>("_pointGuideTitle")), Is.EqualTo((step + 1) + " / 5 · " + cover));
-        Assert.That(guide.GetComponentInParent<Canvas>(), Is.SameAs(Field<Canvas>("_canvas")));
-        Assert.That(guide.transform.IsChildOf(Field<RectTransform>("_pointView")), Is.True);
+        Canvas standalone = Field<Canvas>("_pointGuideCanvas");
+        Assert.That(guide.GetComponentInParent<Canvas>(true), Is.SameAs(standalone));
+        Assert.That(standalone, Is.Not.SameAs(Field<Canvas>("_canvas")));
+        Assert.That(standalone.gameObject.activeSelf, Is.True);
+        Assert.That(guide.transform.IsChildOf(Field<RectTransform>("_pointView")), Is.False);
+        Assert.That(Field<RectTransform>("_pointView").gameObject.activeSelf, Is.False);
 
         SetCollecting(_guideRegistration, false);
         Call("RefreshPointPlacementControls");
         Assert.That(Field<RectTransform>("_pointView").gameObject.activeSelf, Is.False);
+        Assert.That(standalone.gameObject.activeSelf, Is.False);
         Assert.That((bool)guide.GetType().GetProperty("HasVisual").GetValue(guide), Is.False);
         Assert.That(Resources.FindObjectsOfTypeAll(RuntimeType("Unity.Robotics.ROSTCPConnector.ROSConnection")), Is.Empty);
     }
@@ -90,36 +96,38 @@ public sealed class PointPlacementMenuTests
         Call("RefreshPointPlacementControls");
     }
 
-    [Test]
-    public void FloatingMiniatureStaysCenteredOnItsCardForPerspectiveViewers()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void StandaloneGuideStaysInPlaceAsTheViewerMovesAndFacesTheOperator(bool orthographic)
     {
         GameObject cameraOwner = new GameObject("Miniature perspective viewer", typeof(Camera));
         try
         {
             Camera camera = cameraOwner.GetComponent<Camera>();
             camera.enabled = false;
-            camera.orthographic = false;
+            camera.orthographic = orthographic;
             camera.fieldOfView = 46f;
-            Vector3[] viewpoints = { new Vector3(0f, 0f, -1f), new Vector3(-0.15f, 0.1f, -1f), new Vector3(0.2f, -0.08f, -0.8f) };
-            for (int step = 0; step < 5; step++)
+            camera.transform.SetPositionAndRotation(new Vector3(2f, 1.5f, -3f), Quaternion.Euler(-12f, 35f, 7f));
+            ShowGuideForStep(0);
+            SetMenuField("_pointGuidePositioned", false);
+            MethodInfo position = _menu.GetType().GetMethod("PositionPointGuide", BindingFlags.NonPublic | BindingFlags.Instance);
+            position.Invoke(_menu, new object[] { camera });
+            Canvas standalone = Field<Canvas>("_pointGuideCanvas");
+            Transform modelCenter = Field<Transform>("_pointGuideAnchor");
+            Vector3 expected = camera.transform.position + camera.transform.forward * .85f;
+            Assert.That(Vector3.Distance(modelCenter.position, expected), Is.LessThan(.00001f));
+            Vector3 initialView = camera.WorldToViewportPoint(modelCenter.position);
+            Assert.That(Vector2.Distance(initialView, new Vector2(.5f, .5f)), Is.LessThan(.00001f));
+            Assert.That(Vector3.Distance(standalone.transform.lossyScale, Vector3.one * .001f), Is.LessThan(.0000001f));
+            Vector3[] moves = { Vector3.zero, new Vector3(-.15f, .1f, 0f), new Vector3(.2f, -.08f, .2f) };
+            foreach (Vector3 move in moves)
             {
-                ShowGuideForStep(step);
-                Component guide = Field<Component>("_pointGuide");
-                Transform anchor = Field<Transform>("_pointGuideAnchor");
-                foreach (Vector3 viewpoint in viewpoints)
-                {
-                    camera.transform.position = viewpoint;
-                    camera.transform.LookAt(Vector3.zero);
-                    _menu.GetType().GetMethod("PositionPointGuide", BindingFlags.NonPublic | BindingFlags.Instance)
-                        .Invoke(_menu, new object[] { camera });
-                    Vector3 onCard = camera.WorldToViewportPoint(anchor.position);
-                    Vector3 floating = camera.WorldToViewportPoint(guide.transform.position);
-                    Assert.That(Vector2.Distance(onCard, floating), Is.LessThan(0.00001f),
-                        "Forward depth must not push the guide sideways away from its sidebar.");
-                    Assert.That(guide.transform.localScale.x, Is.LessThan(1f),
-                        "Compensate perspective magnification of the floating model.");
-                    Assert.That(floating.z, Is.LessThan(onCard.z));
-                }
+                camera.transform.position += move;
+                position.Invoke(_menu, new object[] { camera });
+                Assert.That(Vector3.Distance(modelCenter.position, expected), Is.LessThan(.00001f));
+                Vector3 facing = (modelCenter.position - camera.transform.position).normalized;
+                Assert.That(Vector3.Dot(standalone.transform.forward, facing), Is.GreaterThan(.99999f));
+                Assert.That(standalone.worldCamera, Is.SameAs(camera));
             }
         }
         finally { UnityEngine.Object.DestroyImmediate(cameraOwner); }
@@ -130,6 +138,82 @@ public sealed class PointPlacementMenuTests
 
     private void SetMenuField(string name, object value) => _menu.GetType()
         .GetField(name, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(_menu, value);
+
+    [Test]
+    public void StandaloneUndoAndCancelConsumeTheirClickAndPreserveRecovery()
+    {
+        ShowGuideForStep(2);
+        Canvas guide = Field<Canvas>("_pointGuideCanvas");
+        SetRegistration("<StatusText>k__BackingField", "Waiting for fresh ROS joint feedback.");
+        Call("RefreshPointPlacementControls");
+        object instruction = Field<object>("_pointGuideInstruction");
+        Assert.That((string)instruction.GetType().GetProperty("text").GetValue(instruction),
+            Is.EqualTo("Waiting for fresh ROS joint feedback."));
+        Type buttonType = RuntimeType("UnityEngine.UI.Button");
+        Component undo = guide.GetComponentsInChildren(buttonType, true).Single(button => button.name == "Undo guide point");
+        buttonType.GetProperty("onClick").GetValue(undo).GetType().GetMethod("Invoke").Invoke(
+            buttonType.GetProperty("onClick").GetValue(undo), null);
+        Assert.That((int)_guideRegistration.GetType().GetProperty("CapturedPointCount").GetValue(_guideRegistration), Is.EqualTo(1));
+        Assert.That(guide.gameObject.activeSelf, Is.True);
+        Assert.That((bool)_menu.GetType().GetProperty("IsHovered", BindingFlags.Static | BindingFlags.Public).GetValue(null), Is.True,
+            "The Undo trigger must remain consumed while the next point becomes active.");
+        Component cancel = guide.GetComponentsInChildren(buttonType, true).Single(button => button.name == "Cancel guided registration");
+        buttonType.GetProperty("onClick").GetValue(cancel).GetType().GetMethod("Invoke").Invoke(
+            buttonType.GetProperty("onClick").GetValue(cancel), null);
+        Assert.That((bool)_guideRegistration.GetType().GetProperty("IsCollecting").GetValue(_guideRegistration), Is.False);
+        Assert.That(guide.gameObject.activeSelf, Is.False);
+        Assert.That(Field<RectTransform>("_panel").gameObject.activeSelf, Is.True);
+        Assert.That((bool)_menu.GetType().GetProperty("IsHovered", BindingFlags.Static | BindingFlags.Public).GetValue(null), Is.True,
+            "The Cancel trigger must remain consumed after the menu returns.");
+    }
+
+    [Test]
+    public void MissingGuideGeometryLeavesTheRecoveryMenuAvailable()
+    {
+        ShowGuideForStep(1);
+        Component instantiator = Field<Component>("_instantiator");
+        instantiator.GetType().GetField("_URPrefab", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(instantiator, null);
+        Call("RefreshPointPlacementControls");
+        Assert.That(Field<Canvas>("_pointGuideCanvas").gameObject.activeSelf, Is.False);
+        Assert.That(Field<RectTransform>("_pointView").gameObject.activeSelf, Is.True);
+        object status = Field<object>("_pointStatus");
+        Assert.That((string)status.GetType().GetProperty("text").GetValue(status), Does.Contain("reference missing"));
+    }
+
+    [Test]
+    public void CaptureHidesNewAndExistingRosHudsThenRestoresTheirPriorState()
+    {
+        GameObject firstOwner = new GameObject("Enabled ROS HUD fixture");
+        GameObject secondOwner = new GameObject("Disabled ROS HUD fixture");
+        GameObject lateOwner = null;
+        MethodInfo refresh = _menu.GetType().GetMethod("RefreshGuideOverlays", BindingFlags.Instance | BindingFlags.NonPublic);
+        try
+        {
+            Type hudType = RuntimeType("Unity.Robotics.ROSTCPConnector.HudPanel");
+            Behaviour first = (Behaviour)firstOwner.AddComponent(hudType);
+            Behaviour second = (Behaviour)secondOwner.AddComponent(hudType);
+            second.enabled = false;
+            refresh.Invoke(_menu, new object[] { true });
+            Assert.That(first.enabled, Is.False);
+            Assert.That(second.enabled, Is.False);
+            lateOwner = new GameObject("Late-created ROS HUD fixture");
+            Behaviour late = (Behaviour)lateOwner.AddComponent(hudType);
+            SetMenuField("_nextGuideHudSearchAt", Time.realtimeSinceStartup - 1f);
+            refresh.Invoke(_menu, new object[] { true });
+            Assert.That(late.enabled, Is.False);
+            refresh.Invoke(_menu, new object[] { false });
+            Assert.That(first.enabled, Is.True);
+            Assert.That(second.enabled, Is.False);
+            Assert.That(late.enabled, Is.True);
+        }
+        finally
+        {
+            refresh.Invoke(_menu, new object[] { false });
+            if (lateOwner != null) UnityEngine.Object.DestroyImmediate(lateOwner);
+            UnityEngine.Object.DestroyImmediate(secondOwner);
+            UnityEngine.Object.DestroyImmediate(firstOwner);
+        }
+    }
 
     [Test]
     public void PointViewGivesOrderedPhysicalCaptureInstructionsAndAllActionsFit()
@@ -176,7 +260,8 @@ public sealed class PointPlacementMenuTests
         Call("UndoPointPlacement");
         Assert.That((bool)_guideRegistration.GetType().GetProperty("HasFitFailure").GetValue(_guideRegistration),Is.False);
         Assert.That(Field<RectTransform>("_fitFailureView").gameObject.activeSelf,Is.False);
-        Assert.That(Field<RectTransform>("_pointView").gameObject.activeSelf,Is.True);
+        Assert.That(Field<RectTransform>("_pointView").gameObject.activeSelf,Is.False);
+        Assert.That(Field<Canvas>("_pointGuideCanvas").gameObject.activeSelf,Is.True);
         Assert.That((int)_guideRegistration.GetType().GetProperty("CapturedPointCount").GetValue(_guideRegistration),Is.EqualTo(4));
     }
 
@@ -244,6 +329,7 @@ public sealed class PointPlacementMenuTests
         if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
             throw new InvalidOperationException("Point-placement preview requires a graphics-enabled Unity process.");
         var preview = new PointPlacementMenuTests();
+        Canvas guideCanvas = null;
         GameObject cameraOwner = null;
         RenderTexture target = null;
         Texture2D pixels = null;
@@ -265,9 +351,14 @@ public sealed class PointPlacementMenuTests
             preview.Field<RectTransform>("_alignmentView").gameObject.SetActive(false);
             preview.Field<RectTransform>("_pointView").gameObject.SetActive(true);
             preview.ShowGuideForStep(1);
+            preview.SetMenuField("_pointGuidePositioned", false);
             preview._menu.GetType().GetMethod("PositionPointGuide", BindingFlags.NonPublic | BindingFlags.Instance)
                 .Invoke(preview._menu, new object[] { camera });
-            preview.Field<Component>("_grabHandle").gameObject.SetActive(true);
+            guideCanvas = preview.Field<Canvas>("_pointGuideCanvas");
+            guideCanvas.transform.SetParent(null, true);
+            camera.transform.SetPositionAndRotation(preview.Field<Transform>("_pointGuideAnchor").position - guideCanvas.transform.forward,
+                guideCanvas.transform.rotation);
+            canvas.gameObject.SetActive(false);
             preview.SetText("_pointProgress", "1 / 5 points captured\nNext: Shoulder");
             preview.SetText("_pointStatus", "Keep the robot still. Touch 2/5: the shoulder cover centre, then press trigger.");
             Type textType = RuntimeType("TMPro.TMP_Text");
@@ -280,6 +371,7 @@ public sealed class PointPlacementMenuTests
             }
             if (font == null) throw new FileNotFoundException("No font available for the menu preview.");
             foreach (Component text in canvas.GetComponentsInChildren(textType, true)) textType.GetProperty("font").SetValue(text, font);
+            foreach (Component text in guideCanvas.GetComponentsInChildren(textType, true)) textType.GetProperty("font").SetValue(text, font);
             foreach (Component button in preview.Field<RectTransform>("_pointView").GetComponentsInChildren(RuntimeType("UnityEngine.UI.Button"), true))
                 button.GetType().GetProperty("interactable").SetValue(button, true);
             System.Collections.IList labels = preview.Field<System.Collections.IList>("_pointLabels");
@@ -295,6 +387,8 @@ public sealed class PointPlacementMenuTests
             Canvas.ForceUpdateCanvases();
             foreach (Component text in canvas.GetComponentsInChildren(textType, true))
                 text.GetType().GetMethod("ForceMeshUpdate").Invoke(text, new object[] { true, true });
+            foreach (Component text in guideCanvas.GetComponentsInChildren(textType, true))
+                text.GetType().GetMethod("ForceMeshUpdate").Invoke(text, new object[] { true, true });
             Canvas.ForceUpdateCanvases();
             camera.Render();
             RenderTexture.active = target;
@@ -306,7 +400,8 @@ public sealed class PointPlacementMenuTests
             foreach (string panel in new[] { "failure", "adjustment" })
             {
                 if (panel == "failure") preview.ShowRejectedFit(); else preview.ShowAdjustment();
-                camera.transform.position = new Vector3(0,0,-1);
+                canvas.gameObject.SetActive(true);
+                camera.transform.SetPositionAndRotation(new Vector3(0,0,-1), Quaternion.identity);
                 foreach (Component text in canvas.GetComponentsInChildren(textType,true)) textType.GetProperty("font").SetValue(text,font);
                 Canvas.ForceUpdateCanvases();
                 foreach (Component text in canvas.GetComponentsInChildren(textType,true))
@@ -330,6 +425,7 @@ public sealed class PointPlacementMenuTests
             RenderTexture.active = null;
             if (pixels != null) UnityEngine.Object.DestroyImmediate(pixels);
             if (target != null) { target.Release(); UnityEngine.Object.DestroyImmediate(target); }
+            if (guideCanvas != null && preview._owner != null) guideCanvas.transform.SetParent(preview._owner.transform, true);
             preview.Cleanup();
             if (cameraOwner != null) UnityEngine.Object.DestroyImmediate(cameraOwner);
         }
@@ -361,6 +457,8 @@ public sealed class PointPlacementMenuTests
         object entry = Field<object>("_pointPlacementButton");
         Assert.That(entry, Is.Not.Null);
         Call("BeginPointPlacement");
+        Assert.That((bool)_menu.GetType().GetProperty("IsHovered", BindingFlags.Static | BindingFlags.Public).GetValue(null), Is.True,
+            "The entry trigger must remain consumed when its full menu disappears.");
         Assert.That(Field<string>("_localNotice"), Does.Contain("Five-point placement is unavailable"));
         Assert.That(Field<RectTransform>("_taskView").gameObject.activeSelf, Is.True);
         Assert.That(Field<RectTransform>("_pointView").gameObject.activeSelf, Is.False);

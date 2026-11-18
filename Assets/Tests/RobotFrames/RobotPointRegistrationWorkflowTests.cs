@@ -161,6 +161,22 @@ public sealed class RobotPointRegistrationWorkflowTests
     }
 
     [Test]
+    public void OnlyAcceptedContactsCreateTheSharedPointChimeAndTheSourceIsReused()
+    {
+        Type chimeType = RuntimeType("GuideChime");
+        Call(_registration, "BeginRegistration");
+        Assert.That(Capture(0), Is.False);
+        Assert.That(_registration.GetComponent(chimeType), Is.Null);
+        Assert.That(Call(_feedback, "ObserveJointState", _jointNames, _angles), Is.EqualTo(true));
+        Assert.That(Capture(0), Is.True, Status);
+        Component chime = _registration.GetComponent(chimeType);
+        Assert.That(chime, Is.Not.Null);
+        Assert.That(Capture(0), Is.False, "A duplicate physical point must be rejected before feedback plays.");
+        Assert.That(Capture(1), Is.True, Status);
+        Assert.That(_registration.GetComponents(chimeType), Is.EqualTo(new[] { chime }));
+    }
+
+    [Test]
     public void StaleFeedbackCannotCaptureAPoint()
     {
         BeginWithFeedback();

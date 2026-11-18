@@ -40,6 +40,7 @@ public sealed class RobotPointRegistration : MonoBehaviour
     private Transform _previousTrackingSpace;
     private GameObject _tipVisual;
     private Material _tipMaterial;
+    private GuideChime _captureChime;
     private RosRobotRig _hiddenRig;
     private readonly List<XRInputSubsystem> _inputSubsystems = new List<XRInputSubsystem>();
     private Pose _fittedBaseInTracking;
@@ -177,6 +178,8 @@ public sealed class RobotPointRegistration : MonoBehaviour
             { SetStatus("This point is too close to an earlier pick. Touch " + CurrentPointName + "."); return false; }
         _measuredInTracking.Add(measured);
         AddCapturedPointVisual(trackingSpace, measured, CapturedPointCount - 1);
+        if (_captureChime == null) _captureChime = gameObject.AddComponent<GuideChime>();
+        _captureChime.PlayCue();
         ClearFitFailure();
         if (CapturedPointCount < RequiredPointCount)
         { SetStatus("Touch " + (CapturedPointCount + 1) + "/5: " + CurrentPointName + "; press trigger."); return true; }

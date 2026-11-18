@@ -16,8 +16,7 @@ public sealed partial class ToolSelectionMenu
     private bool _showPickSettings;
     private bool IsMtcPickMode => _workflowMode != URInputManager.WorkflowMode.RepetitivePickAndPlace &&
         _input != null && !_input.IsTcpMode && !_input.IsFixtureMode;
-    private bool IsSurfaceCapturing => _pickSettingsController != null &&
-        _pickSettingsController.SurfaceCapture != null && _pickSettingsController.SurfaceCapture.IsCapturing;
+    private bool IsSurfaceCapturing => _input != null && _input.IsPickGuideOpen;
     private bool IsShowingPickSettings => _showPickSettings && IsMtcPickMode &&
         !IsCalibrating && !IsPointCollecting && !IsPositionAdjusting;
 
@@ -161,6 +160,8 @@ public sealed partial class ToolSelectionMenu
     {
         if (!CanEditPickSettings || _pickSettingsController == null) return;
         _pickSettingsController.SetPickBySurface(surface);
+        if (surface && _pickSettingsController.PickBySurface)
+            ShowSelectedItemGuide();
         BindPickSettingsControls();
         RefreshTask();
     }
@@ -170,7 +171,7 @@ public sealed partial class ToolSelectionMenu
         if (!CanEditPickSettings || _pickSettingsController == null) return;
         if (!_pickSettingsController.SetSelectedItem(item)) return;
         if (_pickSettingsController.PickBySurface)
-            _pickSettingsController.GetOrCreateSurfaceCapture().BeginCapture(item);
+            ShowSelectedItemGuide();
         BindPickSettingsControls();
         RefreshTask();
     }
@@ -194,15 +195,20 @@ public sealed partial class ToolSelectionMenu
     public void RestartPickSurface()
     {
         if (!CanEditPickSettings || _pickSettingsController == null || !_pickSettingsController.PickBySurface) return;
-        _pickSettingsController.GetOrCreateSurfaceCapture().BeginCapture(_pickSettingsController.SelectedItem);
+        ShowSelectedItemGuide();
         BindPickSettingsControls();
         RefreshTask();
     }
 
+    private void ShowSelectedItemGuide()
+    {
+        PickItem item = _pickSettingsController.SelectedItem;
+        _pickSettingsController.GetOrCreateSurfaceCapture().OpenGuide(item, PickSurfaceGeometry.GetPreset(item));
+    }
+
     public void CancelPickSurface()
     {
-        if (_pickSettingsController != null && _pickSettingsController.SurfaceCapture != null &&
-            _pickSettingsController.SurfaceCapture.IsCapturing) _pickSettingsController.SurfaceCapture.Cancel();
+        _input?.CancelPickSurfaceCapture();
     }
 
     private void RefreshPickSettingsMenu()
@@ -233,7 +239,7 @@ public sealed partial class ToolSelectionMenu
         _pickCaptureProgress.text = !surface ? "Center pickup" : capturing
             ? "Top face · " + capture.CapturedCount + " / 3 corners captured" : ready ? "Top face ready" : "Select an item to capture its top face";
         _pickCaptureHelp.text = !surface ? "Hold bumper to capture the pick contact center.\nDouble press bumper to capture the place contact."
-            : "Touch three consecutive top corners with the controller tip; press trigger at each.\nFirst corner → along length → along width.";
+            : "Follow the guide counterclockwise. Touch each real corner and press trigger. OK returns here to change the item.";
         _pickSettingsStatus.text = surface && capture != null ? capture.StatusText
             : surface ? "Select Tile or Brick to show the floating corner guide."
             : "Center pickup is the default. Descent speed applies to the pick approach.";

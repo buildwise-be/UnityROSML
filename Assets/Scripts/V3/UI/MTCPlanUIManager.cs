@@ -34,7 +34,7 @@ public class MTCPlanUIManager : MonoBehaviour
     {
         if (_input == null || _tcpPlanning == null || _MTCPlansManager == null) Bind();
         if (_sharedMenu == null) _sharedMenu = FindFirstObjectByType<ToolSelectionMenu>();
-        bool sharedVisible = _sharedMenu != null && _sharedMenu.IsVisible;
+        bool sharedVisible = _sharedMenu != null && _sharedMenu.HasActivePresentation;
         bool tcp = _input == null || _input.IsTcpMode;
         if (_previousTcpMode != tcp || _previousFixtureMode != (_input != null && _input.IsFixtureMode) ||
             _wasSharedMenuVisible != sharedVisible) RefreshPanel();
@@ -91,7 +91,7 @@ public class MTCPlanUIManager : MonoBehaviour
                 ? (_tcpPlanning != null ? _tcpPlanning.StatusText : "Capture TCP A and B, then plan a preview.")
                 : (_MTCPlansManager != null ? _MTCPlansManager.StatusText : "Capture pick and place surfaces, then Plan.");
         if (_sharedMenu == null) _sharedMenu = FindFirstObjectByType<ToolSelectionMenu>();
-        _wasSharedMenuVisible = _sharedMenu != null && _sharedMenu.IsVisible;
+        _wasSharedMenuVisible = _sharedMenu != null && _sharedMenu.HasActivePresentation;
         if (_visibility != null)
         {
             _visibility.alpha = _wasSharedMenuVisible ? 0f : 1f;

@@ -10,7 +10,7 @@ public sealed partial class ToolSelectionMenu
     private readonly Button[] _floorCountButtons = new Button[FloorCountSteps.Length];
     private FloorTilingController _floorTiling;
     private RectTransform _floorView;
-    private Button _floorSetupButton, _floorCaptureButton, _floorUndo, _floorRestart, _floorCancel;
+    private Button _floorSetupButton, _floorCaptureButton;
     private Button _floorScanButton, _floorPlan, _floorExecute, _floorFixture;
     private Button _floorRotateLeft, _floorRotateRight, _floorPreviousStep, _floorNextStep;
     private TextMeshProUGUI _floorCaptureHelp, _floorCountValue, _floorOffsetValue, _floorMortarValue;
@@ -46,14 +46,11 @@ public sealed partial class ToolSelectionMenu
         _floorView = Rect("Floor tiling setup view", _panel, Vector2.zero, new Vector2(440f, 756f));
         BuildHeader(_floorView, "Floor tiling title", "Floor tiling");
 
-        _floorCaptureButton = FloorButton("Capture first tile", 16f, 56f, 408f, 42f, () => _floorTiling?.BeginCapture());
+        _floorCaptureButton = FloorButton("Capture first tile", 16f, 56f, 408f, 42f, () => _floorTiling?.BeginCapture(),
+            "Capture stack top · 3 corners");
         _floorCaptureHelp = FloorText("First tile instructions", 16f, 103f, 408f, 45f, 14f);
-        _floorUndo = FloorButton("Undo tile corner", 16f, 153f, 130f, 34f,
-            () => _floorTiling?.SurfaceCapture?.Undo(), "Undo corner");
-        _floorRestart = FloorButton("Restart tile capture", 155f, 153f, 130f, 34f,
-            () => _floorTiling?.SurfaceCapture?.Restart(), "Restart capture");
-        _floorCancel = FloorButton("Cancel tile capture", 294f, 153f, 130f, 34f,
-            () => _floorTiling?.SurfaceCapture?.Cancel(), "Cancel capture");
+        FloorText("Batch count instructions", 16f, 155f, 408f, 42f, 14f).text =
+            "Set how many tiles to take from this stack. The preview shows their floor layout.";
 
         _floorCountValue = FloorText("Tile count and grid size", 16f, 206f, 198f, 42f, 16f);
         for (int index = 0; index < FloorCountSteps.Length; index++)
@@ -82,7 +79,7 @@ public sealed partial class ToolSelectionMenu
             new Vector2(408f, 42f), out _floorScanLabel);
         _floorScanButton.onClick.AddListener(ToggleFloorScan);
         FloorText("Floor anchor instructions", 16f, 491f, 408f, 39f, 14f).text =
-            "Aim at a recognized floor and press trigger to set or move the anchor.";
+            "Look across the floor until a green outline appears. Aim inside it and press trigger to place the pattern.";
         _floorStatus = FloorText("Floor setup status", 16f, 532f, 408f, 63f, 15f);
         _floorPlan = FloorButton("Plan floor preview", 16f, 605f, 198f, 42f, PlanFloorTask, "Plan preview");
         _floorExecute = FloorButton("Execute floor plan", 226f, 605f, 198f, 42f, ExecuteTask, "Execute plan");
@@ -224,8 +221,6 @@ public sealed partial class ToolSelectionMenu
         bool canEdit = _floorTiling.CanEdit;
         bool canEditPattern = canEdit && !capturing;
         _floorCaptureButton.interactable = canEditPattern;
-        _floorUndo.interactable = canEdit && capturing && capture.CapturedCount > 0;
-        _floorRestart.interactable = _floorCancel.interactable = canEdit && capturing;
         for (int index = 0; index < FloorCountSteps.Length; index++)
         {
             int step = FloorCountSteps[index];
@@ -241,7 +236,8 @@ public sealed partial class ToolSelectionMenu
         _floorExecute.interactable = _floorTiling.CanExecute;
         _floorFixture.interactable = canEdit && !_floorTiling.IsPlanning;
         _floorCaptureHelp.text = capturing ? capture.StatusText : capture?.IsSurfaceCurrent == true
-            ? "First tile captured." : "Touch three consecutive top corners with the controller tip.";
+            ? "Stack top captured. Set the pattern, then select Scan floor."
+            : "Touch three consecutive top corners of the source tile, pressing trigger at each. This sets the pick centre.";
         _floorStatus.text = capturing ? string.Empty : _floorTiling.StatusText;
     }
 

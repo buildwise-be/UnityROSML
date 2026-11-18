@@ -30,6 +30,8 @@ public class URInputManager : MonoBehaviour
     private bool _robotPlacementRequested;
     private float _contextBumperConsumedUntil;
     private FloorTilingController _floorController;
+    private PickSurfaceCapture _fixtureSurfaceCapture;
+    private bool _fixtureGuideWasOpen;
     private XRRayInteractor _floorRay;
     private RobotPointRegistration PointRegistration => _URInstantiator != null
         ? _URInstantiator.GetComponent<RobotPointRegistration>() : null;
@@ -39,8 +41,10 @@ public class URInputManager : MonoBehaviour
     public bool IsFloorMode => _workflowMode == WorkflowMode.RepetitivePickAndPlace && !IsFixtureMode;
     public WorkflowMode SelectedWorkflow => _workflowMode;
     public PickPlaceController PickPlaceController => _pickPlaceController;
-    private PickSurfaceCapture SurfaceCapture => IsFloorMode ? _floorController?.SurfaceCapture : _pickPlaceController?.SurfaceCapture;
+    private PickSurfaceCapture SurfaceCapture => IsFixtureMode ? _fixtureSurfaceCapture :
+        IsFloorMode ? _floorController?.SurfaceCapture : _pickPlaceController?.SurfaceCapture;
     public bool IsCapturingPickSurface => SurfaceCapture != null && SurfaceCapture.IsCapturing;
+    public bool IsPickGuideOpen => SurfaceCapture != null && SurfaceCapture.IsGuideOpen;
     public FixtureTilingController FixtureController
     {
         get
@@ -105,12 +109,12 @@ public class URInputManager : MonoBehaviour
             if (_pickPlaceController != null) _pickPlaceController.SetTrackingLost();
             return;
         }
-        if (IsCapturingPickSurface)
+        if (IsPickGuideOpen)
         {
             _floorController?.ClearAim();
             if (_tcpTargetPreview != null) _tcpTargetPreview.SetTrackingLost();
             if (_pickPlaceController != null) _pickPlaceController.SetTrackingLost();
-            if (!IsTcpMode && !IsFixtureMode && !ToolSelectionMenu.IsHovered &&
+            if (!IsTcpMode && !ToolSelectionMenu.IsHovered && !PickSurfaceGuide.IsPointerOverControls &&
                 !TargetPoseContextMenu.IsOpen && !TargetPoseContextMenu.IsHovered &&
                 !TargetRotationHandles.IsHovered && !TargetRotationHandles.IsInteracting &&
                 TryGetPointerWorldPose(out Pose surfacePointer))
@@ -153,6 +157,7 @@ public class URInputManager : MonoBehaviour
         _appliedMode = _poseCaptureMode;
         if (modeChanged)
         {
+            if (_fixtureSurfaceCapture != null && _fixtureSurfaceCapture.IsGuideOpen) _fixtureSurfaceCapture.Cancel();
             CancelPickSurfaceCapture();
             _robotPlacementRequested = false;
             TargetPoseContextMenu.CloseAll();
@@ -191,6 +196,46 @@ public class URInputManager : MonoBehaviour
     public void UseTilePickPlace() => SelectMode(PoseCaptureMode.TileSurface);
     public void UseFixtureTiling() => SelectMode(PoseCaptureMode.FixtureTiling);
     public void UseFloorTiling() => SelectMode(PoseCaptureMode.FloorTiling);
+
+    public void BeginFixtureSurfaceCapture()
+    {
+        if (!IsFixtureMode || FixtureController.IsPlanning || RobotExecutionState.IsBusy ||
+            MTCPlansManager.ActiveExecution != null) return;
+        FixtureController.CancelCapture();
+        if (_fixtureSurfaceCapture == null)
+        {
+            GameObject owner = new GameObject("Fixture top tile capture");
+            owner.transform.SetParent(transform, false);
+            _fixtureSurfaceCapture = owner.AddComponent<PickSurfaceCapture>();
+            _fixtureSurfaceCapture.SetItemPresentationEnabled(false);
+            _fixtureSurfaceCapture.SurfaceCaptured += AcceptFixtureSurface;
+            _fixtureSurfaceCapture.Changed += RefreshFixtureGuide;
+        }
+        FixtureTilingSettings settings = FixtureController.Settings;
+        PickItemPreset tile = PickSurfaceGeometry.GetPreset(PickItem.Tile);
+        var dimensions = new PickItemPreset(tile.Name, settings.ItemSize, settings.ItemSize,
+            settings.ItemThickness, tile.Density, tile.VoidFraction);
+        _fixtureSurfaceCapture.OpenGuide(PickItem.Tile, dimensions);
+        FixtureController.SetStatus(_fixtureSurfaceCapture.StatusText);
+    }
+
+    private void AcceptFixtureSurface()
+    {
+        _fixtureGuideWasOpen = false;
+        _fixtureTilingController.SetSetupPreviewVisible(true);
+        if (IsFixtureMode && _fixtureSurfaceCapture.TryGetWorldTopSurfacePose(out Pose top))
+            FixtureController.AcceptSourceSurface(top);
+    }
+
+    private void RefreshFixtureGuide()
+    {
+        if (_fixtureTilingController == null) return;
+        bool open = _fixtureSurfaceCapture.IsGuideOpen;
+        if (open == _fixtureGuideWasOpen) return;
+        _fixtureGuideWasOpen = open;
+        _fixtureTilingController.SetSetupPreviewVisible(!open);
+        _fixtureTilingController.SetStatus(_fixtureSurfaceCapture.StatusText);
+    }
     private void SelectMode(PoseCaptureMode mode)
     {
         if (mode == PoseCaptureMode.FloorTiling && _workflowMode != WorkflowMode.RepetitivePickAndPlace) return;
@@ -205,7 +250,7 @@ public class URInputManager : MonoBehaviour
 
     public void PlanCurrentTask()
     {
-        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
+        if (IsPickGuideOpen || RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
         MTCPlansManager.DismissCompletedExecutionFeedback();
         ApplyCaptureMode();
         if (IsFloorMode) FloorController.Plan();
@@ -220,7 +265,7 @@ public class URInputManager : MonoBehaviour
 
     public void ExecuteCurrentTask()
     {
-        if (RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
+        if (IsPickGuideOpen || RobotExecutionState.IsBusy || MTCPlansManager.ActiveExecution != null) return;
         ApplyCaptureMode();
         if (IsFloorMode) FloorController.Execute();
         else if (IsFixtureMode) FixtureController.Execute();
@@ -274,6 +319,7 @@ public class URInputManager : MonoBehaviour
     {
         if (!_robotPlacementRequested) return;
         _robotPlacementRequested = false;
+        if (PickSurfaceGuide.IsPointerOverControls || ToolSelectionMenu.IsHovered) return;
         RobotPointRegistration registration = PointRegistration;
         if (registration != null && registration.IsCollecting)
         {
@@ -283,9 +329,9 @@ public class URInputManager : MonoBehaviour
                 registration.CapturePointerPose(pointerWorld, _trackingSpace);
             return;
         }
-        if (IsCapturingPickSurface)
+        if (IsPickGuideOpen)
         {
-            if (!IsTcpMode && !IsFixtureMode && !RobotCoordinateService.IsCalibrationEditActive &&
+            if (!IsTcpMode && !RobotCoordinateService.IsCalibrationEditActive &&
                 !ToolSelectionMenu.IsHovered && !TargetPoseContextMenu.IsOpen && !TargetPoseContextMenu.IsHovered &&
                 !TargetRotationHandles.IsHovered && !TargetRotationHandles.IsInteracting &&
                 TryGetPointerWorldPose(out Pose surfacePointer))
@@ -322,7 +368,7 @@ public class URInputManager : MonoBehaviour
 
     private void HandleOnBumper(InputAction.CallbackContext context)
     {
-        if (IsFixtureMode || IsFloorMode || IsCapturingPickSurface) return;
+        if (IsFixtureMode || IsFloorMode || IsPickGuideOpen) return;
         if (PointRegistration != null && PointRegistration.IsCollecting) return;
         if (TargetPoseContextMenu.TryOpenHovered() || TargetPoseContextMenu.IsOpen || TargetPoseContextMenu.IsHovered)
             _contextBumperConsumedUntil = float.PositiveInfinity;
@@ -337,7 +383,7 @@ public class URInputManager : MonoBehaviour
 
     private void Capture(bool isPick)
     {
-        if (IsFixtureMode || IsFloorMode || IsCapturingPickSurface ||
+        if (IsFixtureMode || IsFloorMode || IsPickGuideOpen ||
             (PointRegistration != null && PointRegistration.IsCollecting)) return;
         if (Time.realtimeSinceStartup < _contextBumperConsumedUntil ||
             TargetPoseContextMenu.IsOpen || TargetPoseContextMenu.IsHovered ||
@@ -409,7 +455,7 @@ public class URInputManager : MonoBehaviour
 
     public void CancelPickSurfaceCapture()
     {
-        if (SurfaceCapture != null && SurfaceCapture.IsCapturing) SurfaceCapture.Cancel();
+        if (SurfaceCapture != null && SurfaceCapture.IsGuideOpen) SurfaceCapture.Cancel();
     }
 
     private void OnDestroy()

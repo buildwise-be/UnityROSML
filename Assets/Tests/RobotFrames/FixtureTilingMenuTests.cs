@@ -69,6 +69,12 @@ public sealed class FixtureTilingMenuTests
         {
             float x = control.anchoredPosition.x;
             float y = -control.anchoredPosition.y;
+            if (control.name == "Planning time control")
+            {
+                Assert.That(x, Is.GreaterThan(content.sizeDelta.x), "The planning side panel must clear the page controls.");
+                Assert.That(y, Is.GreaterThanOrEqualTo(0));
+                continue;
+            }
             Assert.That(x, Is.GreaterThanOrEqualTo(0), control.name);
             Assert.That(y, Is.GreaterThanOrEqualTo(0), control.name);
             Assert.That(x + control.sizeDelta.x, Is.LessThanOrEqualTo(content.sizeDelta.x + 0.1f), control.name);
@@ -76,8 +82,10 @@ public sealed class FixtureTilingMenuTests
         }
         Assert.That(-content.anchoredPosition.y + content.sizeDelta.y,
             Is.LessThan(-Field<Component>("_fixtureStatus").GetComponent<RectTransform>().anchoredPosition.y));
+        Transform planningSidePanel = content.Find("Planning time control");
         foreach (Component text in content.GetComponentsInChildren(RuntimeType("TMPro.TextMeshProUGUI"), true))
-            Assert.That((float)text.GetType().GetProperty("fontSize").GetValue(text), Is.GreaterThanOrEqualTo(14));
+            if (planningSidePanel == null || !text.transform.IsChildOf(planningSidePanel))
+                Assert.That((float)text.GetType().GetProperty("fontSize").GetValue(text), Is.GreaterThanOrEqualTo(14));
     }
 
     [Test]
@@ -88,6 +96,60 @@ public sealed class FixtureTilingMenuTests
         _menu.GetType().GetMethod("ChangeFixturePage").Invoke(_menu, new object[] { -100 });
         Assert.That(Field<int>("_fixturePage"), Is.EqualTo(0));
         Assert.That(Resources.FindObjectsOfTypeAll(RuntimeType("Unity.Robotics.ROSTCPConnector.ROSConnection")), Is.Empty);
+    }
+
+    [Test]
+    public void StackCountKeepsTheWholeBatchLinkedUntilASmallerBatchIsChosen()
+    {
+        object settings = Activator.CreateInstance(RuntimeType("FixtureTilingSettings"));
+        settings.GetType().GetMethod("SetSourceCount").Invoke(settings, new object[] { 12 });
+        Assert.That(settings.GetType().GetField("SourceCount").GetValue(settings), Is.EqualTo(12));
+        Assert.That(settings.GetType().GetField("ItemCount").GetValue(settings), Is.EqualTo(12));
+        settings.GetType().GetMethod("SetItemCount").Invoke(settings, new object[] { 5 });
+        settings.GetType().GetMethod("SetSourceCount").Invoke(settings, new object[] { 20 });
+        Assert.That(settings.GetType().GetField("ItemCount").GetValue(settings), Is.EqualTo(5));
+        settings.GetType().GetMethod("SetSourceCount").Invoke(settings, new object[] { 3 });
+        Assert.That(settings.GetType().GetField("ItemCount").GetValue(settings), Is.EqualTo(3));
+        settings.GetType().GetMethod("SetItemCount").Invoke(settings, new object[] { 100 });
+        Assert.That(settings.GetType().GetField("ItemCount").GetValue(settings), Is.EqualTo(3));
+    }
+
+    [Test]
+    public void LengthIncrementChangesDimensionsWhileCountsStillChangeByOne()
+    {
+        Component input = _owner.AddComponent(RuntimeType("URInputManager"));
+        _menu.GetType().GetField("_input", Private).SetValue(_menu, input);
+        input.GetType().GetMethod("UseFixtureTiling").Invoke(input, null);
+        Invoke("BindTaskControls");
+        _menu.GetType().GetField("_fixturePage", Private).SetValue(_menu, 0);
+        Invoke("BuildFixturePage");
+        RectTransform content = Field<RectTransform>("_fixturePageContent");
+        Click(content, "10 mm step");
+        Click(content, "Tile thickness +");
+        Click(content, "Tiles in source +");
+        object controller = input.GetType().GetProperty("FixtureController").GetValue(input);
+        object settings = controller.GetType().GetProperty("Settings").GetValue(controller);
+        Assert.That(settings.GetType().GetField("ItemThickness").GetValue(settings), Is.EqualTo(.017f).Within(1e-6));
+        Assert.That(settings.GetType().GetField("SourceCount").GetValue(settings), Is.EqualTo(5));
+        Assert.That(settings.GetType().GetField("ItemCount").GetValue(settings), Is.EqualTo(5));
+    }
+
+    [Test]
+    public void SourcePageOffersOnePointCentreAndThreeCornerCapture()
+    {
+        _menu.GetType().GetField("_fixturePage", Private).SetValue(_menu, 1);
+        Invoke("BuildFixturePage");
+        Transform content = Field<RectTransform>("_fixturePageContent");
+        Assert.That(content.Find("Capture stack top centre"), Is.Not.Null);
+        Assert.That(content.Find("Capture top tile · 3 corners"), Is.Not.Null);
+    }
+
+    private static void Click(Transform parent, string name)
+    {
+        Component button = parent.Find(name).GetComponent(RuntimeType("UnityEngine.UI.Button"));
+        Assert.That(button.GetType().GetProperty("interactable").GetValue(button), Is.EqualTo(true), name);
+        object click = button.GetType().GetProperty("onClick").GetValue(button);
+        click.GetType().GetMethod("Invoke").Invoke(click, null);
     }
 
     [TestCase(false)]

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>Recovery from a rejected contact fit and bounded, translation-only overlay correction.</summary>
@@ -13,6 +14,51 @@ public sealed partial class ToolSelectionMenu
     private readonly float[] _positionStepsMeters = { .0001f, .001f, .005f };
     private int _positionStepIndex = 1;
     private Button _positionResetButton, _positionDoneButton;
+    private static int _pointGuideActionFrame = -1;
+    private static ToolSelectionMenu _pointGuideActionOwner;
+    private static bool PointGuideConsumesTrigger => _pointGuideActionOwner != null && _pointGuideActionFrame == Time.frameCount;
+    private bool IsPointGuideActive => IsPointCollecting && _pointRegistration != null &&
+        !_pointRegistration.HasFitFailure && _pointGuide != null && _pointGuide.HasVisual;
+
+    private void HidePointGuide()
+    {
+        if (_pointGuide != null) _pointGuide.Hide();
+        if (_pointGuideCanvas != null) _pointGuideCanvas.gameObject.SetActive(false);
+        _pointGuidePositioned = false;
+    }
+
+    private void RunPointGuideAction(UnityEngine.Events.UnityAction action)
+    {
+        ConsumePointGuideTrigger();
+        action();
+        if (!IsPointGuideActive) ClearPointerState();
+    }
+
+    private void ConsumePointGuideTrigger()
+    {
+        _pointGuideActionOwner = this;
+        _pointGuideActionFrame = Time.frameCount;
+    }
+
+    private void TrackPointGuideHover(Button button)
+    {
+        EventTrigger trigger = button.GetComponent<EventTrigger>();
+        EventTrigger.Entry enter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+        enter.callback.AddListener(data =>
+        {
+            if (!isActiveAndEnabled || !(data is PointerEventData pointer)) return;
+            _hoveringPointers.Add(pointer.pointerId);
+            RefreshHoverState();
+        });
+        EventTrigger.Entry exit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
+        exit.callback.AddListener(data =>
+        {
+            if (data is PointerEventData pointer) _hoveringPointers.Remove(pointer.pointerId);
+            RefreshHoverState();
+        });
+        trigger.triggers.Add(enter);
+        trigger.triggers.Add(exit);
+    }
 
     public void BeginPositionAdjustment()
     {

@@ -30,6 +30,35 @@ public sealed class FixtureTilingSceneReviewTests
     }
 
     [Test]
+    public void CapturedPlacementIsVisibleBeforeSourceAndReleaseAreConfigured()
+    {
+        object settings = System.Activator.CreateInstance(TypeOf("FixtureTilingSettings"));
+        object placement = Message("PoseStampedMsg", "Geometry");
+        Set(Read(placement, "header"), "frame_id", "ur_base_link");
+        Set(Read(Read(placement, "pose"), "orientation"), "w", 1.0);
+        Set(settings, "PlacementCorner", placement);
+        Call(_preview, "ShowSetup", settings, null, true);
+        Assert.That(Object("Destination tile 1"), Is.Not.Null);
+        Assert.That(Object("Destination tile 4"), Is.Not.Null);
+        Assert.That(Get<bool>(_preview, "HasReview"), Is.False);
+    }
+
+    [Test]
+    public void InvalidUnrelatedReleaseSettingsDoNotHideACapturedSourceStack()
+    {
+        object settings = System.Activator.CreateInstance(TypeOf("FixtureTilingSettings"));
+        object source = Message("PoseStampedMsg", "Geometry");
+        Set(Read(source, "header"), "frame_id", "ur_base_link");
+        Set(Read(Read(source, "pose"), "orientation"), "w", 1.0);
+        Set(settings, "SourceTopPose", source);
+        Set(settings, "ReleaseWidth", float.NaN);
+        Call(_preview, "ShowSetup", settings, null, true);
+        Assert.That(Object("Source tile 1"), Is.Not.Null);
+        Assert.That(Object("Source tile 4"), Is.Not.Null);
+        Assert.That(Get<bool>(_preview, "HasReview"), Is.False);
+    }
+
+    [Test]
     public void AttachmentMotionAndDetachmentKeepTheTileInTheCorrectFrameAndStep()
     {
         const string id="fixture_test_tile";

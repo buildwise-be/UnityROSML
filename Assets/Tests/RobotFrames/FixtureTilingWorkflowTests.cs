@@ -113,6 +113,110 @@ public sealed class FixtureTilingWorkflowTests
     }
 
     [Test]
+    public void FittedSourceSurfaceSetsTheStackCenterAndYawAndRevokesPreviousReview()
+    {
+        Ready();
+        Pose local = new Pose(new Vector3(.2f, .3f, .4f), Quaternion.Euler(0f, 30f, 0f));
+        Pose world = (Pose)Call(_coordinates, "ConvertRootLocalPoseToWorldPose", local);
+        Assert.That(Call(_controller, "AcceptSourceSurface", world), Is.EqualTo(true));
+        object source = Read(Get<object>(_controller, "Settings"), "SourceTopPose");
+        object position = Read(Read(source, "pose"), "position");
+        Assert.That(Read(position, "x"), Is.EqualTo(.4).Within(1e-6));
+        Assert.That(Read(position, "y"), Is.EqualTo(-.2).Within(1e-6));
+        Assert.That(Read(position, "z"), Is.EqualTo(.3).Within(1e-6));
+        object rotation = Read(Read(source, "pose"), "orientation");
+        Assert.That(Read(rotation, "z"), Is.EqualTo(-Math.Sin(Math.PI / 12)).Within(1e-6));
+        Assert.That(Get<bool>(_controller, "CanExecute"), Is.False);
+        Assert.That(Get<string>(_controller, "StatusText"), Does.Contain("green stack"));
+        Assert.That(Read(_controller, "PublishCount"), Is.EqualTo(0));
+    }
+
+    [Test]
+    public void SteepSourceSurfaceCannotReplaceAnAcceptedStackPose()
+    {
+        Ready();
+        Pose horizontal = (Pose)Call(_coordinates, "ConvertRootLocalPoseToWorldPose", new Pose(Vector3.up, Quaternion.identity));
+        Assert.That(Call(_controller, "AcceptSourceSurface", horizontal), Is.EqualTo(true));
+        object source = Read(Get<object>(_controller, "Settings"), "SourceTopPose");
+        Pose tilted = (Pose)Call(_coordinates, "ConvertRootLocalPoseToWorldPose", new Pose(Vector3.zero, Quaternion.Euler(30f, 0f, 0f)));
+        Assert.That(Call(_controller, "AcceptSourceSurface", tilted), Is.EqualTo(false));
+        Assert.That(Read(Get<object>(_controller, "Settings"), "SourceTopPose"), Is.SameAs(source));
+        Assert.That(Get<string>(_controller, "StatusText"), Does.Contain("horizontal"));
+    }
+
+    [Test]
+    public void OnePointCentreCaptureSetsTheStackPositionAndShowsThePickCentre()
+    {
+        Ready();
+        object target = Enum.Parse(TypeOf("FixtureCaptureTarget"), "SourceTop");
+        Call(_controller, "BeginCapture", target);
+        Assert.That(Get<string>(_controller, "CaptureInstruction"), Does.Contain("source tile top centre"));
+        Pose world = (Pose)Call(_coordinates, "ConvertRootLocalPoseToWorldPose", new Pose(new Vector3(.2f, .3f, .4f), Quaternion.identity));
+        Transform tracking = New("Centre contact tracking").transform;
+        Assert.That(Call(_controller, "CapturePointerPose", world, tracking), Is.EqualTo(true));
+        object source = Read(Get<object>(_controller, "Settings"), "SourceTopPose");
+        object position = Read(Read(source, "pose"), "position");
+        Assert.That(Read(position, "x"), Is.EqualTo(.4).Within(1e-6));
+        Assert.That(Read(position, "y"), Is.EqualTo(-.2).Within(1e-6));
+        Assert.That(Read(position, "z"), Is.EqualTo(.3).Within(1e-6));
+        Component preview = (Component)Read(_controller, "_preview");
+        GameObject root = (GameObject)Read(preview, "_root");
+        Assert.That(Vector3.Distance(root.transform.Find("Source top centre").localPosition, new Vector3(.2f, .3f, .4f)), Is.LessThan(1e-6));
+        Assert.That(root.transform.Find("Source pick centre cross X"), Is.Not.Null);
+        Assert.That(root.transform.Find("Source pick centre cross Z"), Is.Not.Null);
+        Assert.That(Get<bool>(_controller, "CanExecute"), Is.False);
+    }
+
+    [Test]
+    public void PlacementCapturesReportAndDisplayEachPointBeforeThePatternIsComplete()
+    {
+        Ready();
+        var points = new[] { new Vector3(.2f, .3f, .4f), new Vector3(.4f, .3f, .4f), new Vector3(.2f, .3f, .6f) };
+        string[] targets = { "PlacementCorner", "PlacementX", "PlacementY" };
+        string[] summaries = { "Corner ✓ · +X – · +Y –", "Corner ✓ · +X ✓ · +Y –", "Corner ✓ · +X ✓ · +Y ✓" };
+        Transform tracking = New("Placement contact tracking").transform;
+        for (int index = 0; index < points.Length; index++)
+        {
+            Call(_controller, "BeginCapture", Enum.Parse(TypeOf("FixtureCaptureTarget"), targets[index]));
+            Pose world = (Pose)Call(_coordinates, "ConvertRootLocalPoseToWorldPose", new Pose(points[index], Quaternion.identity));
+            Assert.That(Call(_controller, "CapturePointerPose", world, tracking), Is.EqualTo(true));
+            Assert.That(Get<string>(_controller, "PlacementCaptureSummary"), Is.EqualTo(summaries[index]));
+            Assert.That(Get<string>(_controller, "StatusText"), Does.StartWith("Captured"));
+            Component preview = (Component)Read(_controller, "_preview");
+            GameObject root = (GameObject)Read(preview, "_root");
+            if (index == 0) Assert.That(root.transform.Find("Final placement corner"), Is.Not.Null);
+            if (index == 1) Assert.That(root.transform.Find("Captured placement +X"), Is.Not.Null);
+            if (index == 2) Assert.That(root.transform.Find("Destination tile 1"), Is.Not.Null);
+        }
+    }
+
+    [TestCase("SourceTop")]
+    [TestCase("PlacementCorner")]
+    [TestCase("Board00")]
+    public void NamedFixturePointUsesTheRegisteredTipBeforeConvertingToRobotCoordinates(string targetName)
+    {
+        Ready();
+        Component registration = Add("Fixture contact tip", "RobotPointRegistration");
+        Vector3 offset = new Vector3(.012f, -.023f, .041f);
+        Call(registration, "SetTipOffset", offset);
+        Transform tracking = New("Rotated fixture tracking").transform;
+        tracking.SetPositionAndRotation(new Vector3(.4f, -.2f, .7f), Quaternion.Euler(11f, 47f, -6f));
+        Pose desiredContact = (Pose)Call(_coordinates, "ConvertRootLocalPoseToWorldPose",
+            new Pose(new Vector3(.2f, .3f, .4f), Quaternion.identity));
+        Quaternion pointerRotation = Quaternion.Euler(24f, -38f, 61f);
+        Pose pointer = new Pose(desiredContact.position - pointerRotation * offset, pointerRotation);
+        Call(_controller, "BeginCapture", Enum.Parse(TypeOf("FixtureCaptureTarget"), targetName));
+        Assert.That(Call(_controller, "CapturePointerPose", pointer, tracking), Is.EqualTo(true));
+        object point;
+        if (targetName == "SourceTop") point = Read(Read(Read(Get<object>(_controller, "Settings"), "SourceTopPose"), "pose"), "position");
+        else if (targetName == "PlacementCorner") point = Read(_controller, "_placementOrigin");
+        else point = ((Array)Read(Get<object>(_controller, "Calibration"), "BoardTopCorners")).GetValue(0);
+        Assert.That(Read(point, "x"), Is.EqualTo(.4).Within(1e-6));
+        Assert.That(Read(point, "y"), Is.EqualTo(-.2).Within(1e-6));
+        Assert.That(Read(point, "z"), Is.EqualTo(.3).Within(1e-6));
+    }
+
+    [Test]
     public void ExecuteConsumesOnceAndUnknownAcknowledgementRemainsLockedUntilMatchingTerminal()
     {
         Ready(); Call(_controller, "Execute"); Call(_controller, "Execute");

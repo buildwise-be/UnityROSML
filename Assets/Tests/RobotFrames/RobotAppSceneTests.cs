@@ -86,7 +86,7 @@ public sealed class RobotAppSceneTests
     }
 
     [TestCase("SimplePickAndPlace", 1, 1)]
-    [TestCase("RepetitivePickAndPlace", 2, 2)]
+    [TestCase("RepetitivePickAndPlace", 2, 3)] // Floor tiling opens first. Fixture setup is available from its menu.
     public void DedicatedSceneSerializesItsWorkflowAndActualControllerReferences(string name, int workflow, int capture)
     {
         RequireSnapshots();

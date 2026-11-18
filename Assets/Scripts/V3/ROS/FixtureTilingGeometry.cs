@@ -58,27 +58,27 @@ public static class FixtureTilingGeometry
         try
         {
             Require(data != null && data.BoardTopCorners != null && data.BoardTopCorners.Length == 4,
-                "Capture four plank top corners in perimeter order P00, P10, P11, P01.");
-            Require(Bounded(data.BoardThickness, 0, 1, false), "Plank thickness must be in (0,1] m.");
-            Require(Finite(data.Margin) && data.Margin >= 0, "Plank edge margin must be nonnegative.");
+                "Capture four fixture board top corners in perimeter order P00, P10, P11, P01.");
+            Require(Bounded(data.BoardThickness, 0, 1, false), "Fixture board thickness must be in (0,1] m.");
+            Require(Finite(data.Margin) && data.Margin >= 0, "Fixture board edge margin must be nonnegative.");
             D3[] p = Array.ConvertAll(data.BoardTopCorners, ReadPoint);
             D3 edgeX = p[1] - p[0], edgeY = p[3] - p[0];
-            Require(Bounded(edgeX.Length, 0.001, 10) && Bounded(edgeY.Length, 0.001, 10), "Plank edges must be between 1 mm and 10 m.");
+            Require(Bounded(edgeX.Length, 0.001, 10) && Bounded(edgeY.Length, 0.001, 10), "Fixture board edges must be between 1 mm and 10 m.");
             D3 x = edgeX.Unit, normal = D3.Cross(x, edgeY).Unit;
             Require(Math.Abs(D3.Dot(x, edgeY.Unit)) <= 1e-3 && (p[2] - p[0] - edgeX - edgeY).Length <= 1e-4,
-                "Plank corners must form an ordered rectangle (closure within 0.1 mm).");
-            Require(normal.Z > 1e-6, "Order plank corners so the top normal points upward.");
+                "Fixture board corners must form an ordered rectangle (closure within 0.1 mm).");
+            Require(normal.Z > 1e-6, "Order fixture board corners so the top normal points upward.");
             Rotation support = ReadPose(data.SupportCorner);
             D3 corner = ReadPoint(data.SupportCorner.pose.position);
             Require((support.Z - normal).Length <= 1e-6 && Math.Abs(D3.Dot(normal, corner - p[0])) <= 1e-4,
-                "The alignment corner must lie on the plank top and share its outward normal.");
+                "The alignment corner must lie on the fixture board top and share its outward normal.");
             Require(support.X.Z > 1e-6 && support.Y.Z > 1e-6 && support.Z.Z > 1e-6,
-                "The plank must slope downhill toward both negative-X and negative-Y alignment stops.");
+                "The fixture board must slope downhill toward both negative-X and negative-Y alignment stops.");
             for (int index = 0; index < 4; index++)
             {
                 D3 edge = p[(index + 1) % 4] - p[index];
                 Require(D3.Dot(D3.Cross(normal, edge), corner - p[index]) >= -1e-9,
-                    "The alignment corner must be on the plank rectangle.");
+                    "The alignment corner must be on the fixture board rectangle.");
             }
             request = new SaveFixtureCalibrationRequest {
                 board_top_corners = Array.ConvertAll(p, v => v.Point), board_thickness = data.BoardThickness,
@@ -103,7 +103,7 @@ public static class FixtureTilingGeometry
         return MakePose(origin, Rotation.FromAxes(x, y, normal));
     }
 
-    /// <summary>Explicitly fit an ordered measured plank to one rectangle; retain and display the residual.</summary>
+    /// <summary>Explicitly fit an ordered measured fixture board to one rectangle; retain and display the residual.</summary>
     public static bool TryFitBoard(PointMsg[] measured, float maxResidual, out PointMsg[] fitted,
         out float residual, out string reason)
     {
@@ -111,20 +111,20 @@ public static class FixtureTilingGeometry
         residual = 0;
         try
         {
-            Require(measured != null && measured.Length == 4, "Capture four plank corners before fitting.");
+            Require(measured != null && measured.Length == 4, "Capture four fixture board corners before fitting.");
             Require(Bounded(maxResidual, 0, 0.1, false), "The permitted fit residual must be positive and at most 0.1 m.");
             D3[] p = Array.ConvertAll(measured, ReadPoint);
             D3 edgeX = ((p[1]-p[0]) + (p[2]-p[3])) * 0.5;
             D3 edgeY = ((p[3]-p[0]) + (p[2]-p[1])) * 0.5;
-            Require(Bounded(edgeX.Length,0.001,10) && Bounded(edgeY.Length,0.001,10), "Plank edges must be between 1 mm and 10 m.");
-            Require(Math.Abs(D3.Dot(edgeX.Unit,edgeY.Unit)) < 0.3, "Measured plank edges must describe a near-right angle.");
+            Require(Bounded(edgeX.Length,0.001,10) && Bounded(edgeY.Length,0.001,10), "Fixture board edges must be between 1 mm and 10 m.");
+            Require(Math.Abs(D3.Dot(edgeX.Unit,edgeY.Unit)) < 0.3, "Measured fixture board edges must describe a near-right angle.");
             D3 normal = D3.Cross(edgeX,edgeY).Unit;
-            Require(normal.Z > 1e-6, "Capture the plank corners in perimeter order with its top normal pointing upward.");
+            Require(normal.Z > 1e-6, "Capture the fixture board corners in perimeter order with its top normal pointing upward.");
             for(int index=0;index<4;index++)
             {
                 D3 edge = p[(index+1)%4]-p[index], next=p[(index+2)%4]-p[(index+1)%4];
                 Require(edge.Length >= 0.001 && D3.Dot(D3.Cross(edge,next),normal) > 1e-8,
-                    "Plank corners must describe a convex ordered perimeter, without repeated or crossed points.");
+                    "Fixture board corners must describe a convex ordered perimeter, without repeated or crossed points.");
             }
             // Find the in-plane orientation minimizing squared residuals to the
             // averaged opposite edges, rather than privileging either one.
@@ -134,14 +134,14 @@ public static class FixtureTilingGeometry
             D3 x=u*Math.Cos(angle)+v*Math.Sin(angle);
             D3 y=D3.Cross(normal,x);
             double width=D3.Dot(edgeX,x), depth=D3.Dot(edgeY,y);
-            Require(Bounded(width,0.001,10) && Bounded(depth,0.001,10), "The fitted plank dimensions are outside 1 mm–10 m.");
+            Require(Bounded(width,0.001,10) && Bounded(depth,0.001,10), "The fitted fixture board dimensions are outside 1 mm–10 m.");
             D3 centre=(p[0]+p[1]+p[2]+p[3])*0.25;
             D3[] rectangle={centre-x*(width/2)-y*(depth/2),centre+x*(width/2)-y*(depth/2),
                 centre+x*(width/2)+y*(depth/2),centre-x*(width/2)+y*(depth/2)};
             double maximum=0;
             for(int index=0;index<4;index++)maximum=Math.Max(maximum,(rectangle[index]-p[index]).Length);
             residual=(float)maximum;
-            Require(maximum <= maxResidual, "Plank fit exceeds the permitted residual; recapture the corners.");
+            Require(maximum <= maxResidual, "Fixture board fit exceeds the permitted residual; recapture the corners.");
             fitted=Array.ConvertAll(rectangle,point=>point.Point);
             reason=null;
             return true;
@@ -149,25 +149,25 @@ public static class FixtureTilingGeometry
         catch(ArgumentException exception){reason=exception.Message;return false;}
     }
 
-    /// <summary>Project measured stop axes onto the fitted plank, retaining exactly its outward normal.</summary>
+    /// <summary>Project measured stop axes onto the fitted fixture board, retaining exactly its outward normal.</summary>
     public static PoseStampedMsg ProjectFrameToBoard(FixtureCalibrationData data, PointMsg origin,
         PointMsg xPoint, PointMsg yPoint)
     {
-        Require(data?.BoardTopCorners != null && data.BoardTopCorners.Length == 4, "Fit the plank rectangle before defining its alignment axes.");
+        Require(data?.BoardTopCorners != null && data.BoardTopCorners.Length == 4, "Fit the fixture board rectangle before defining its alignment axes.");
         D3[] p=Array.ConvertAll(data.BoardTopCorners,ReadPoint);
         D3 boardX=p[1]-p[0], boardY=p[3]-p[0];
         Require(boardX.Length>=0.001 && boardY.Length>=0.001 &&
             Math.Abs(D3.Dot(boardX.Unit,boardY.Unit))<=1e-3 && (p[2]-p[0]-boardX-boardY).Length<=1e-4,
-            "Fit the plank rectangle before defining its alignment axes.");
+            "Fit the fixture board rectangle before defining its alignment axes.");
         D3 normal=D3.Cross(boardX,boardY).Unit;
-        Require(normal.Z>1e-6,"The fitted plank top normal must point upward.");
+        Require(normal.Z>1e-6,"The fitted fixture board top normal must point upward.");
         D3 raw=ReadPoint(origin), x=ReadPoint(xPoint)-raw, y=ReadPoint(yPoint)-raw;
         D3 corner=raw-normal*D3.Dot(raw-p[0],normal);
         x=x-normal*D3.Dot(x,normal); y=y-normal*D3.Dot(y,normal);
-        Require(x.Length>=0.001 && y.Length>=0.001,"Alignment axis points must be distinct on the plank plane.");
+        Require(x.Length>=0.001 && y.Length>=0.001,"Alignment axis points must be distinct on the fixture board plane.");
         x=x.Unit;y=y.Unit;
         Require(Math.Abs(D3.Dot(x,y))<0.15,"Alignment +X and +Y must follow perpendicular stop arms.");
-        Require(D3.Dot(D3.Cross(x,y),normal)>0,"Alignment +X and +Y must run into the receiving area with the plank normal pointing out.");
+        Require(D3.Dot(D3.Cross(x,y),normal)>0,"Alignment +X and +Y must run into the receiving area with the fixture board normal pointing out.");
         return MakePose(corner,Rotation.FromAxes(x,D3.Cross(normal,x),normal));
     }
 

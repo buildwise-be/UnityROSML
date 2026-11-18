@@ -13,6 +13,8 @@ public readonly struct PickItemPreset
     public double Thickness { get; }
     public double Density { get; }
     public double VoidFraction { get; }
+    public bool HasValidDimensions => double.IsFinite(Length) && double.IsFinite(Width) &&
+        double.IsFinite(Thickness) && Length > 0d && Width > 0d && Thickness > 0d;
     public double MassKg => Length * Width * Thickness * Density * (1d - VoidFraction);
     public PickItemPreset(string name, double length, double width, double thickness, double density, double voidFraction)
     {
@@ -39,8 +41,10 @@ public static class PickSurfaceGeometry
 
     /// <summary>P0, P1, P2 are consecutive top corners: along length, then along width.</summary>
     public static Vector3[] GetCanonicalCorners(PickItem item)
+        => GetCanonicalCorners(GetPreset(item));
+
+    public static Vector3[] GetCanonicalCorners(PickItemPreset p)
     {
-        PickItemPreset p = GetPreset(item);
         return new[] {
             FromRosPoint(-p.Length / 2d, -p.Width / 2d, 0d),
             FromRosPoint( p.Length / 2d, -p.Width / 2d, 0d),
@@ -63,9 +67,21 @@ public static class PickSurfaceGeometry
         float maximumRms = DefaultMaximumRms, float maximumPointError = DefaultMaximumPointError)
     {
         topSurface = pickTcp = Pose.identity; rms = worst = 0f; error = null;
-        Vector3[] model;
-        try { model = GetCanonicalCorners(item); }
+        PickItemPreset preset;
+        try { preset = GetPreset(item); }
         catch (ArgumentOutOfRangeException) { error = "Choose the tile or brick preset."; return false; }
+        return TryFit(preset, measuredPoints, out topSurface, out pickTcp, out rms, out worst,
+            out error, maximumRms, maximumPointError);
+    }
+
+    public static bool TryFit(PickItemPreset preset, IReadOnlyList<Vector3> measuredPoints,
+        out Pose topSurface, out Pose pickTcp, out float rms, out float worst, out string error,
+        float maximumRms = DefaultMaximumRms, float maximumPointError = DefaultMaximumPointError)
+    {
+        topSurface = pickTcp = Pose.identity; rms = worst = 0f; error = null;
+        if (!preset.HasValidDimensions)
+        { error = "Set a positive, finite tile size before capturing corners."; return false; }
+        Vector3[] model = GetCanonicalCorners(preset);
         if (measuredPoints == null || measuredPoints.Count != 3)
         { error = "Capture exactly three consecutive top corners: first corner, along length, then along width."; return false; }
         if (!(maximumRms > 0f) || !(maximumPointError > 0f) || float.IsInfinity(maximumRms) || float.IsInfinity(maximumPointError))
@@ -81,7 +97,6 @@ public static class PickSurfaceGeometry
         Vector3 lengthEdge = measuredPoints[1] - measuredPoints[0], widthEdge = measuredPoints[2] - measuredPoints[1];
         if (Vector3.Cross(lengthEdge, widthEdge).magnitude <= lengthEdge.magnitude * widthEdge.magnitude * .01f)
         { error = "The three corners are nearly collinear. Follow the length edge, then the width edge."; return false; }
-        PickItemPreset preset = GetPreset(item);
         double diagonal = Math.Sqrt(preset.Length * preset.Length + preset.Width * preset.Width);
         if (Math.Abs(lengthEdge.magnitude - preset.Length) > .015d || Math.Abs(widthEdge.magnitude - preset.Width) > .015d ||
             Math.Abs(Vector3.Distance(measuredPoints[0], measuredPoints[2]) - diagonal) > .015d ||

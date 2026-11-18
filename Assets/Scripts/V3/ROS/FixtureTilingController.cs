@@ -40,6 +40,7 @@ public class FixtureTilingController : MonoBehaviour
     private bool _active, _checkingCalibration, _acceptingResults, _ready, _executionRequested, _awaitingAcknowledgement;
     private bool _savingCalibration, _receivedPlanningTerminal;
     private bool _hasStarted;
+    private bool _setupPreviewVisible = true;
     private bool _requestHasTimeout;
     private int _requestedTimeoutSeconds = MtcPlanningSettings.DefaultTimeoutSeconds;
     private float _deadline, _saveDeadline;
@@ -51,6 +52,7 @@ public class FixtureTilingController : MonoBehaviour
     private readonly Dictionary<string, PlanningSceneMsg> _scenes = new Dictionary<string, PlanningSceneMsg>();
     private readonly Dictionary<string, SolutionMsg> _solutions = new Dictionary<string, SolutionMsg>();
     private FixtureCaptureTarget? _capture;
+    private Vector3 _captureTipOffsetInPointer;
     private PointMsg _supportOrigin, _supportX, _supportY, _placementOrigin, _placementX, _placementY;
     public FixtureTilingSettings Settings => _settings;
     public FixtureCalibrationData Calibration => _calibration;
@@ -62,13 +64,22 @@ public class FixtureTilingController : MonoBehaviour
     public bool IsExecuting => _executionRequested;
     public bool HasExecutionFeedback { get; private set; }
     public bool IsCapturing => _capture.HasValue;
-    public string CaptureInstruction => _capture.HasValue ? "Aim at " + CaptureName(_capture.Value) + "; press trigger to capture." : "Select a point to capture, then aim and press trigger.";
+    public string CaptureInstruction => _capture.HasValue ? "Touch " + CaptureName(_capture.Value) + "; press trigger." : "Choose a point, touch it with the controller tip and press trigger.";
     public string StatusText { get; private set; } = "Set up a square-tile stack, fixture and placement pattern.";
-    public string CalibrationStatus { get; private set; } = "Capture four plank corners and the alignment corner/axes, then Save to ROS.";
+    public string CalibrationStatus { get; private set; } = "Capture four fixture board corners and the alignment corner/axes, then Save to ROS.";
     public int ReviewStepCount => _preview != null ? _preview.StepCount : 0;
     public int ReviewStepIndex => _preview != null ? _preview.StepIndex : 0;
     public string ReviewStepText => _preview != null ? _preview.StepText : "No batch scene preview.";
     public event Action Changed;
+
+    public string PlacementCaptureSummary => "Corner " + Captured(_placementOrigin != null || _settings.PlacementCorner != null) +
+        " · +X " + Captured(_placementX != null || _settings.PlacementCorner != null) +
+        " · +Y " + Captured(_placementY != null || _settings.PlacementCorner != null);
+    public string SupportCaptureSummary => "Corner " + Captured(_supportOrigin != null || _calibration.SupportCorner != null) +
+        " · +X " + Captured(_supportX != null || _calibration.SupportCorner != null) +
+        " · +Y " + Captured(_supportY != null || _calibration.SupportCorner != null);
+
+    private static string Captured(bool captured) => captured ? "✓" : "–";
     public bool CanPlan => !IsPlanning && !_executionRequested && ContextValid() &&
         FixtureTilingGeometry.TryBuildRequest(_settings, "validation", out _, out _) &&
         FixtureTilingGeometry.TryBuildCalibration(_calibration, out _, out _);
@@ -121,6 +132,12 @@ public class FixtureTilingController : MonoBehaviour
         RefreshSetupPreview();
     }
 
+    public void SetSetupPreviewVisible(bool visible)
+    {
+        _setupPreviewVisible = visible;
+        RefreshSetupPreview();
+    }
+
     public void RotateSourceYaw(float degrees)
     {
         if (_executionRequested || _settings.SourceTopPose == null || !float.IsFinite(degrees)) return;
@@ -128,6 +145,25 @@ public class FixtureTilingController : MonoBehaviour
         double yaw = 2 * Math.Atan2(q.z, q.w) + degrees * Math.PI / 180;
         _settings.SourceTopPose.pose.orientation = new QuaternionMsg(0, 0, Math.Sin(yaw / 2), Math.Cos(yaw / 2));
         NotifyEdited();
+    }
+
+    /// <summary>The three-corner fit supplies the stack centre and edge direction.</summary>
+    public bool AcceptSourceSurface(Pose worldTop)
+    {
+        if (!CaptureAllowed() || IsPlanning || !ToolSelectionController.CanPlanPickPlace ||
+            !RobotCoordinateService.Instance.TryConvertWorldPoseToLocalPose(worldTop, out Pose local)) return false;
+        if (Vector3.Dot(local.rotation * Vector3.up, Vector3.up) < Mathf.Cos(10f * Mathf.Deg2Rad))
+        {
+            SetStatus("The fixture source stack must be horizontal. Check the three top corners and capture again.");
+            return false;
+        }
+        Vector3 alongLength = Vector3.ProjectOnPlane(local.rotation * Vector3.forward, Vector3.up);
+        double yaw = Math.Atan2(-alongLength.x, alongLength.z);
+        _settings.SourceTopPose = FixtureTilingGeometry.SourceTopFrame(local.position.To<FLU>(), yaw);
+        _capture = null;
+        NotifyEdited();
+        SetStatus("Top tile captured. The green stack shows " + _settings.SourceCount + " tiles with the captured centre and edge direction.");
+        return true;
     }
 
     /// <summary>Fit noisy XR measurements to the backend's exact rectangle, with an explicit residual check.</summary>
@@ -147,8 +183,8 @@ public class FixtureTilingController : MonoBehaviour
                     _calibration.SupportCorner.pose.position,
                     FixtureTilingGeometry.PointInFrame(_calibration.SupportCorner, .1, 0, 0),
                     FixtureTilingGeometry.PointInFrame(_calibration.SupportCorner, 0, .1, 0));
-            CalibrationStatus = "Plank fitted; maximum corner adjustment " + (residual*1000).ToString("F1") +
-                " mm. Inspect the ghost plank before saving. Alignment axes are projected onto its surface.";
+            CalibrationStatus = "Fixture board fitted; maximum corner adjustment " + (residual*1000).ToString("F1") +
+                " mm. Inspect the ghost fixture board before saving. Alignment axes are projected onto its surface.";
             NotifyEdited();
         }
         catch (ArgumentException error) { _calibration.SupportCorner = null; CalibrationStatus = error.Message; NotifyEdited(); }
@@ -157,6 +193,8 @@ public class FixtureTilingController : MonoBehaviour
     public void BeginCapture(FixtureCaptureTarget target)
     {
         if (!CaptureAllowed()) { SetStatus("Finish robot alignment and any active execution before capturing fixture points."); return; }
+        RobotPointRegistration registration = FindFirstObjectByType<RobotPointRegistration>();
+        _captureTipOffsetInPointer = registration != null ? registration.TipOffsetInPointer : Vector3.zero;
         InvalidateReview(null);
         TargetPoseContextMenu.CloseAll();
         TargetRotationHandles.CancelAllInteractions();
@@ -169,7 +207,9 @@ public class FixtureTilingController : MonoBehaviour
     public bool CapturePointerPose(Pose worldPointer, Transform trackingSpace)
     {
         if (!_capture.HasValue || !CaptureAllowed() || !RobotFrameMath.IsRigidFrame(trackingSpace) ||
-            !RobotCoordinateService.Instance.TryConvertWorldPoseToLocalPose(worldPointer, out Pose local)) return false;
+            !RobotFrameMath.IsValidPose(worldPointer)) return false;
+        Pose contact = new Pose(worldPointer.position + worldPointer.rotation * _captureTipOffsetInPointer, worldPointer.rotation);
+        if (!RobotCoordinateService.Instance.TryConvertWorldPoseToLocalPose(contact, out Pose local)) return false;
         PointMsg point = local.position.To<FLU>();
         FixtureCaptureTarget target = _capture.Value;
         try
@@ -246,7 +286,7 @@ public class FixtureTilingController : MonoBehaviour
                 if (this == null || generation != _saveGeneration || !_savingCalibration) return;
                 _savingCalibration = false;
                 CalibrationStatus = response != null && response.success
-                    ? "Saved to ROS. Restart/reload MTC to activate it; an existing plank may require planning-scene reset."
+                    ? "Saved to ROS. Restart/reload MTC to activate it; an existing fixture board may require planning-scene reset."
                     : "ROS did not save calibration: " + (response?.message ?? "empty response");
                 if (_saveSnapshot != JsonUtility.ToJson(_calibration)) CalibrationStatus += " Measurements changed since this save; save again.";
                 Changed?.Invoke();
@@ -548,14 +588,50 @@ public class FixtureTilingController : MonoBehaviour
     private void RefreshSetupPreview()
     {
         if (_preview == null) _preview = GetComponent<FixtureTilingPreview>();
-        if (_preview != null) _preview.ShowSetup(_settings, _calibration, _active);
+        if (_preview != null)
+        {
+            _preview.SetPlacementCapturePoints(_placementOrigin, _placementX, _placementY);
+            _preview.ShowSetup(_settings, _calibration, _active && _setupPreviewVisible);
+        }
     }
-    private void SetStatus(string text) { StatusText = text; Changed?.Invoke(); }
+    internal void SetStatus(string text) { StatusText = text; Changed?.Invoke(); }
     private static PoseStampedMsg Stamped(PointMsg position, QuaternionMsg rotation) => new PoseStampedMsg(
         new HeaderMsg { frame_id = "ur_base_link" }, new PoseMsg(position, rotation));
-    private static string CaptureName(FixtureCaptureTarget target) => target.ToString().Replace("Board", "plank P").Replace("Support", "alignment ").Replace("Placement", "placement ");
-    private static string NextCaptureHint(FixtureCaptureTarget target) =>
-        target == FixtureCaptureTarget.PlacementCorner || target == FixtureCaptureTarget.SupportCorner ? "Capture +X and +Y along the edges into the receiving area." : "";
+    private static string CaptureName(FixtureCaptureTarget target)
+    {
+        switch (target)
+        {
+            case FixtureCaptureTarget.SourceTop: return "source tile top centre";
+            case FixtureCaptureTarget.PlacementCorner: return "final tile top-face corner";
+            case FixtureCaptureTarget.PlacementX: return "final pattern +X edge";
+            case FixtureCaptureTarget.PlacementY: return "final pattern +Y edge";
+            case FixtureCaptureTarget.SupportCorner: return "fixture's inner stop corner";
+            case FixtureCaptureTarget.SupportX: return "fixture +X stop arm";
+            case FixtureCaptureTarget.SupportY: return "fixture +Y stop arm";
+            case FixtureCaptureTarget.ReleaseCenter: return "release centre on the fixture board";
+            case FixtureCaptureTarget.Board00: return "fixture board P00";
+            case FixtureCaptureTarget.Board10: return "fixture board P10";
+            case FixtureCaptureTarget.Board11: return "fixture board P11";
+            default: return "fixture board P01";
+        }
+    }
+    private static string NextCaptureHint(FixtureCaptureTarget target)
+    {
+        switch (target)
+        {
+            case FixtureCaptureTarget.PlacementCorner: return "Capture +X and +Y into the final placement area.";
+            case FixtureCaptureTarget.PlacementX: return "Capture +Y into the final placement area.";
+            case FixtureCaptureTarget.PlacementY: return "Inspect the orange final placement pattern.";
+            case FixtureCaptureTarget.SupportCorner: return "Capture +X and +Y along the fixture's stop arms.";
+            case FixtureCaptureTarget.SupportX: return "Capture +Y along the other stop arm.";
+            case FixtureCaptureTarget.SupportY: return "Inspect the fixture axes, then save the fixture to ROS.";
+            case FixtureCaptureTarget.Board00: return "Capture P10 next along the fixture board edge.";
+            case FixtureCaptureTarget.Board10: return "Capture P11 next around the fixture board perimeter.";
+            case FixtureCaptureTarget.Board11: return "Capture P01 to finish the perimeter.";
+            case FixtureCaptureTarget.Board01: return "Fit the fixture board rectangle and inspect the blue preview.";
+            default: return string.Empty;
+        }
+    }
     [Serializable] private sealed class Profile { public FixtureTilingSettings settings; public FixtureCalibrationData calibration; }
     private string ProfilePath => Path.Combine(Application.persistentDataPath, "fixture-tiling.json");
     private void SaveProfile()

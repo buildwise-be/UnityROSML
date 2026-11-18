@@ -16,6 +16,7 @@ public sealed class FixtureTilingPreview : MonoBehaviour
     private readonly List<Mesh> _meshes = new List<Mesh>();
     private FixtureTilingSettings _settings;
     private FixtureCalibrationData _calibration;
+    private PointMsg _placementCaptureOrigin, _placementCaptureX, _placementCaptureY;
     private PlanningSceneMsg _initial;
     private SolutionMsg _solution;
     private RosRobotModel _model;
@@ -41,6 +42,13 @@ public sealed class FixtureTilingPreview : MonoBehaviour
             DrawSetupSafely();
         }
         if (_root != null) _root.SetActive(visible && RobotCoordinateService.Instance.IsInitialized);
+    }
+
+    public void SetPlacementCapturePoints(PointMsg origin, PointMsg xPoint, PointMsg yPoint)
+    {
+        _placementCaptureOrigin = origin;
+        _placementCaptureX = xPoint;
+        _placementCaptureY = yPoint;
     }
     public void ClearReview()
     {
@@ -101,26 +109,70 @@ public sealed class FixtureTilingPreview : MonoBehaviour
     private void DrawSetup()
     {
         ResetRoot("Fixture tiling — measured setup ghosts");
-        StepText = "Setup ghosts: green source; orange destination. Square top face, centred suction.";
+        StepText = "Green source stack · orange final placement · blue fixture board.";
         if (_settings == null) return;
-        if (FixtureTilingGeometry.TryBuildRequest(_settings, "ghost", out _, out _))
+        DrawSetupPart(DrawSourceSetup);
+        DrawSetupPart(DrawPlacementSetup);
+        DrawSetupPart(DrawFixtureSetup);
+    }
+
+    private void DrawSetupPart(Action draw)
+    {
+        try { draw(); }
+        catch (ArgumentException error) { StepText = "Check the setup preview. " + error.Message; }
+    }
+
+    private bool ValidTileDimensions => FinitePositive(_settings.ItemSize) && FinitePositive(_settings.ItemThickness) &&
+        _settings.ItemThickness <= _settings.ItemSize;
+
+    private void DrawSourceSetup()
+    {
+        if (_settings.SourceTopPose == null || !ValidTileDimensions) return;
+        if (!float.IsFinite(_settings.StackPitch) || _settings.StackPitch < 0f ||
+            (_settings.StackPitch > 0f && _settings.StackPitch < _settings.ItemThickness)) return;
+        Pose top = Local(_settings.SourceTopPose.pose);
+        for (int i = 0; i < Mathf.Clamp(_settings.SourceCount, 0, 64); i++)
+            Box("Source tile " + (i + 1), Local(FixtureTilingGeometry.SourceObjectPose(_settings, i).pose),
+                new Vector3(_settings.ItemSize, _settings.ItemThickness, _settings.ItemSize), SourceColor);
+        // Two thin strokes meet exactly at the top-face suction contact.
+        float radius = Mathf.Min(.025f, _settings.ItemSize * .2f);
+        Vector3 alongX = top.rotation * Vector3.right * radius;
+        Vector3 alongZ = top.rotation * Vector3.forward * radius;
+        Line("Source pick centre cross X", new[] { top.position - alongX, top.position + alongX }, Color.cyan, false);
+        Line("Source pick centre cross Z", new[] { top.position - alongZ, top.position + alongZ }, Color.cyan, false);
+        GameObject centre = Primitive("Source top centre", PrimitiveType.Sphere,
+            new Pose(top.position, Quaternion.identity), Vector3.one * .004f, Color.cyan);
+        TargetNameLabel.Attach(centre.transform, "Pick centre", Color.cyan);
+    }
+
+    private void DrawPlacementSetup()
+    {
+        if (_placementCaptureOrigin != null)
         {
-            for (int i = 0; i < _settings.SourceCount; i++)
-                Box("Source tile " + (i+1), Local(FixtureTilingGeometry.SourceObjectPose(_settings,i).pose),
-                    new Vector3(_settings.ItemSize,_settings.ItemThickness,_settings.ItemSize), SourceColor);
-            for (int i = 0; i < _settings.ItemCount; i++)
-                Box("Destination tile " + (i+1), Local(FixtureTilingGeometry.PlacementObjectPose(_settings,i).pose),
-                    new Vector3(_settings.ItemSize,_settings.ItemThickness,_settings.ItemSize), DestinationColor);
+            Vector3 origin = _placementCaptureOrigin.From<FLU>();
+            if (_settings.PlacementCorner == null) Label("Final placement corner", origin, DestinationColor);
+            DrawCapturedPlacementAxis("Captured placement +X", origin, _placementCaptureX, Color.red);
+            DrawCapturedPlacementAxis("Captured placement +Y", origin, _placementCaptureY, Color.green);
         }
-        else if (_settings.SourceTopPose != null && FinitePositive(_settings.ItemSize) && FinitePositive(_settings.ItemThickness))
-        {
-            // The source can be inspected before the placement frame is captured.
-            for (int i = 0; i < Mathf.Clamp(_settings.SourceCount,0,64); i++)
-                Box("Source tile " + (i+1), Local(FixtureTilingGeometry.SourceObjectPose(_settings,i).pose),
-                    new Vector3(_settings.ItemSize,_settings.ItemThickness,_settings.ItemSize), SourceColor);
-        }
-        if (_settings.SourceTopPose != null) Label("Source top centre", Local(_settings.SourceTopPose.pose).position, Color.green);
-        if (_settings.PlacementCorner != null) Frame("Pattern top-face corner", _settings.PlacementCorner);
+        if (_settings.PlacementCorner == null || !ValidTileDimensions || _settings.Columns < 1 ||
+            !float.IsFinite(_settings.Gap) || _settings.Gap < 0f ||
+            !float.IsFinite(_settings.RowOffsetFraction) || _settings.RowOffsetFraction < 0f || _settings.RowOffsetFraction > 1f) return;
+        Frame("Final placement top-face corner", _settings.PlacementCorner);
+        for (int i = 0; i < Mathf.Clamp(_settings.ItemCount, 0, 64); i++)
+            Box("Destination tile " + (i + 1), Local(FixtureTilingGeometry.PlacementObjectPose(_settings, i).pose),
+                new Vector3(_settings.ItemSize, _settings.ItemThickness, _settings.ItemSize), DestinationColor);
+    }
+
+    private void DrawCapturedPlacementAxis(string name, Vector3 origin, PointMsg point, Color color)
+    {
+        if (point == null) return;
+        Vector3 position = point.From<FLU>();
+        Label(name, position, color);
+        if (_settings.PlacementCorner == null) Line(name + " direction", new[] { origin, position }, color, false);
+    }
+
+    private void DrawFixtureSetup()
+    {
         if (_calibration == null) return;
         if (_calibration.BoardTopCorners?.Length == 4)
         {
@@ -138,16 +190,16 @@ public sealed class FixtureTilingPreview : MonoBehaviour
                 Vector3 normal = -Vector3.Cross(p[1]-p[0],p[3]-p[0]).normalized;
                 Vector3[] vertices = new Vector3[8];
                 for (int i=0;i<4;i++) { vertices[i]=p[i]; vertices[i+4]=p[i]-normal*_calibration.BoardThickness; }
-                Mesh board = new Mesh { name="Measured fixture plank" };
+                Mesh board = new Mesh { name="Measured fixture board" };
                 board.vertices=vertices;
                 board.triangles=new[] {0,2,1,0,3,2,4,5,6,4,6,7,0,1,5,0,5,4,1,2,6,1,6,5,2,3,7,2,7,6,3,0,4,3,4,7};
                 board.RecalculateNormals(); _meshes.Add(board);
-                MeshObject("Measured plank",Pose.identity,board,BoardColor);
+                MeshObject("Measured fixture board",Pose.identity,board,BoardColor);
             }
         }
         if (_calibration.SupportCorner != null)
         {
-            Frame("Alignment support corner",_calibration.SupportCorner);
+            Frame("Fixture alignment stop corner",_calibration.SupportCorner);
             double x=_settings.ReleaseCenterX,y=_settings.ReleaseCenterY,w=_settings.ReleaseWidth/2,d=_settings.ReleaseDepth/2;
             PointMsg[] points={FixtureTilingGeometry.PointInFrame(_calibration.SupportCorner,x-w,y-d,0),
                 FixtureTilingGeometry.PointInFrame(_calibration.SupportCorner,x+w,y-d,0),
@@ -257,7 +309,7 @@ public sealed class FixtureTilingPreview : MonoBehaviour
         ResetRoot(_floorReview ? "Floor batch — identified scene review" : "Fixture batch — identified scene review");
         foreach(var pair in state.World) DrawObject(pair.Value,null,state.Frames);
         foreach(var pair in state.Attached) DrawObject(pair.Value.@object,pair.Value.link_name,state.Frames);
-        string comment=StepIndex==0 ? (_floorReview ? "Initial stack and floor" : "Initial stack and plank") :
+        string comment=StepIndex==0 ? (_floorReview ? "Initial stack and floor" : "Initial stack and fixture board") :
             StepDescription(_solution.sub_trajectory[StepIndex-1].info?.comment);
         StepText=(StepIndex+1)+" / "+StepCount+": "+(string.IsNullOrEmpty(comment)?"Motion / scene update":comment)+
             " · "+state.Attached.Count+" attached."+(_floorReview ? "" : " Settling is assumed after the timed wait.");

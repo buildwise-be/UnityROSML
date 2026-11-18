@@ -156,19 +156,45 @@ public sealed class ToolCalibrationMenuTests
 
         foreach (RectTransform view in new[] { task, alignment })
         {
-            var rectangles = new List<Rect>();
+            var rectangles = new List<(string Name, Rect Bounds)>();
             foreach (Component button in view.GetComponentsInChildren(buttonType, true))
             {
+                if (!IsActiveWithinView(button.transform, view)) continue;
                 RectTransform rect = (RectTransform)button.transform;
-                Rect bounds = new Rect(rect.anchoredPosition.x, -rect.anchoredPosition.y, rect.sizeDelta.x, rect.sizeDelta.y);
-                Assert.That(bounds.xMin, Is.GreaterThanOrEqualTo(0f), button.name);
-                Assert.That(bounds.yMin, Is.GreaterThanOrEqualTo(0f), button.name);
-                Assert.That(bounds.xMax, Is.LessThanOrEqualTo(view.sizeDelta.x), button.name);
-                Assert.That(bounds.yMax, Is.LessThanOrEqualTo(view.sizeDelta.y), button.name);
-                foreach (Rect other in rectangles) Assert.That(bounds.Overlaps(other), Is.False, "Calibration buttons must not overlap.");
-                rectangles.Add(bounds);
+                RectTransform container = (RectTransform)rect.parent;
+                Rect local = BoundsIn(rect, container);
+                Assert.That(local.xMin, Is.GreaterThanOrEqualTo(container.rect.xMin - .1f), button.name);
+                Assert.That(local.yMin, Is.GreaterThanOrEqualTo(container.rect.yMin - .1f), button.name);
+                Assert.That(local.xMax, Is.LessThanOrEqualTo(container.rect.xMax + .1f), button.name);
+                Assert.That(local.yMax, Is.LessThanOrEqualTo(container.rect.yMax + .1f), button.name);
+                Rect bounds = BoundsIn(rect, view);
+                foreach (var other in rectangles)
+                    Assert.That(bounds.Overlaps(other.Bounds), Is.False, button.name + " overlaps " + other.Name);
+                rectangles.Add((button.name, bounds));
             }
         }
+    }
+
+    private static bool IsActiveWithinView(Transform child, Transform view)
+    {
+        for (Transform current = child; current != null && current != view; current = current.parent)
+            if (!current.gameObject.activeSelf) return false;
+        return true;
+    }
+
+    private static Rect BoundsIn(RectTransform rect, Transform space)
+    {
+        var corners = new Vector3[4];
+        rect.GetWorldCorners(corners);
+        Vector2 min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+        Vector2 max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+        foreach (Vector3 corner in corners)
+        {
+            Vector2 local = space.InverseTransformPoint(corner);
+            min = Vector2.Min(min, local);
+            max = Vector2.Max(max, local);
+        }
+        return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
     }
 
     [Test]

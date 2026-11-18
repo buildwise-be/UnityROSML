@@ -30,7 +30,7 @@ public partial class FloorTilingController : MonoBehaviour
     public PickSurfaceCapture SurfaceCapture => _surfaceCapture;
     public bool CanEdit => _taskActive && !IsPlanning && !RobotCoordinateService.IsCalibrationEditActive &&
         !RobotExecutionState.IsBusy && MTCPlansManager.ActiveExecution == null;
-    public bool CanScan => CanEdit && !_requiresRecapture && _surfaceCapture != null && !_surfaceCapture.IsCapturing &&
+    public bool CanScan => CanEdit && !_requiresRecapture && _surfaceCapture != null && !_surfaceCapture.IsGuideOpen &&
         _surfaceCapture.IsSurfaceCurrent;
     public bool HasAnchor => _anchorSpace != null && TryGetAnchorWorldPose(out _);
     public event Action Changed;
@@ -95,7 +95,7 @@ public partial class FloorTilingController : MonoBehaviour
 
     public void BeginCapture()
     {
-        if (!CanEdit || !_surfaceCapture.BeginCapture(PickItem.Tile)) return;
+        if (!CanEdit || !_surfaceCapture.OpenGuide(PickItem.Tile, PickSurfaceGeometry.GetPreset(PickItem.Tile))) return;
         InvalidatePlan();
         StopScan();
         Changed?.Invoke();
@@ -263,7 +263,7 @@ public partial class FloorTilingController : MonoBehaviour
 
     private void RefreshAnchorPreview()
     {
-        if (!_taskActive || _review?.HasReview == true || !TryGetAnchorWorldPose(out Pose world))
+        if (!_taskActive || _surfaceCapture?.IsGuideOpen == true || _review?.HasReview == true || !TryGetAnchorWorldPose(out Pose world))
         {
             _anchorPreview?.Hide();
             return;
