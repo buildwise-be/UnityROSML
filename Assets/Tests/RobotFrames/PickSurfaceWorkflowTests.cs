@@ -481,16 +481,18 @@ public sealed class PickSurfaceWorkflowTests
         object pattern = Activator.CreateInstance(type, 7, .2f, .007f, 1, 12);
         Pose floorWorld = RobotFrameMath.Compose(baseWorld, new Pose(new Vector3(.7f, -.1f, .3f), Quaternion.Euler(0f, 35f, 0f)));
         Pose tiltedFloor = new Pose(floorWorld.position, floorWorld.rotation * Quaternion.Euler(5f, 0f, 0f));
-        object[] tiltedArguments = { "floor:tilted", 125, capture, tiltedFloor, pattern, null };
+        Pose fittedSource = Get<Pose>(capture, "WorldTopSurfacePose");
+        object[] tiltedArguments = { "floor:tilted", 125, fittedSource, worldCorners, tiltedFloor, pattern, null };
         Assert.That(TypeOf("FloorTilingRequest").GetMethod("TryBuild").Invoke(null, tiltedArguments), Is.False);
-        object[] arguments = { "floor:axes-test", 125, capture, floorWorld, pattern, null };
+        object[] arguments = { "floor:axes-test", 125, fittedSource, worldCorners, floorWorld, pattern, null };
         Assert.That(TypeOf("FloorTilingRequest").GetMethod("TryBuild").Invoke(null, arguments), Is.True);
-        object request = arguments[5];
+        object request = arguments[6];
         Assert.That(Read(request, "request_id"), Is.EqualTo("floor:axes-test"));
         Assert.That(Read(request, "timeout_seconds"), Is.EqualTo(125u));
         Assert.That(Read(request, "tile_count"), Is.EqualTo(7u));
         Assert.That(Read(request, "row_offset"), Is.EqualTo((byte)1));
         Assert.That(Read(request, "mortar_mm"), Is.EqualTo((byte)12));
+        Assert.That(Read(request, "source_from_surface"), Is.EqualTo(true));
 
         Array source = (Array)Read(request, "source_top_corners");
         Assert.That(source.Length, Is.EqualTo(worldCorners.Length));
@@ -634,76 +636,57 @@ public sealed class PickSurfaceWorkflowTests
     }
 
     [Test]
-    public void RepetitiveFixtureCaptureUsesCustomTileSizeAndRestoresTheWizardAfterOkOrSuccess()
+    public void RepetitiveDirectCaptureRestoresFloorSetupAfterOkOrSuccessfulCorners()
     {
         Component capture = null;
         try
         {
-            Component input = Add("Fixture capture input", "URInputManager");
-            Set(input, "_pickPlaceController", _controller);
+            Component input = Add("Direct floor capture input", "URInputManager");
             Set(input, "_trackingSpace", _tracking);
             Type workflow = TypeOf("URInputManager").GetNestedType("WorkflowMode");
             Call(input, "ConfigureWorkflow", Enum.Parse(workflow, "RepetitivePickAndPlace"));
-            Call(input, "UseFixtureTiling");
-            Component fixture = Get<Component>(input, "FixtureController");
-            object settings = Get<object>(fixture, "Settings");
-            Set(settings, "ItemSize", .32f);
-            Set(settings, "ItemThickness", .012f);
-            Component preview = input.gameObject.AddComponent(TypeOf("FixtureTilingPreview"));
-            Set(fixture, "_preview", preview);
-            Pose oldTop = (Pose)Call(_coordinates, "ConvertRootLocalPoseToWorldPose", new Pose(Vector3.up, Quaternion.identity));
-            Assert.That(Call(fixture, "AcceptSourceSurface", oldTop), Is.EqualTo(true));
-            object previousSource = Read(settings, "SourceTopPose");
-
-            Component menu = Add("Fixture capture menu", "ToolSelectionMenu");
+            Component floor = Get<Component>(input, "FloorController");
+            capture = Get<Component>(floor, "SurfaceCapture");
+            Call(capture, "SetTipOffset", Vector3.zero);
+            Component menu = Add("Direct floor capture menu", "ToolSelectionMenu");
             Set(menu, "_input", input); Set(menu, "_controller", _tools); Set(menu, "_legacyPlans", _plans);
             Call(menu, "ConfigureWorkflow", Enum.Parse(workflow, "RepetitivePickAndPlace"));
             Call(menu, "BuildMenu");
             Canvas canvas = (Canvas)Read(menu, "_canvas");
             _owned.Add(canvas.gameObject);
             Call(menu, "BindTaskControls");
-            Call(menu, "OpenFixtureSetup");
+            Call(menu, "OpenFloorSetup");
 
-            Call(input, "BeginFixtureSurfaceCapture");
-            capture = (Component)Read(input, "_fixtureSurfaceCapture");
-            Call(capture, "SetTipOffset", Vector3.zero);
+            Call(floor, "BeginCapture");
             Call(menu, "RefreshTask");
-            Assert.That(Get<bool>(input, "IsFixtureMode"), Is.True);
+            Assert.That(Get<bool>(input, "IsFloorMode"), Is.True);
             Assert.That(Get<bool>(capture, "IsCapturing"), Is.True);
             Assert.That(canvas.gameObject.activeSelf, Is.False);
-            Assert.That(((GameObject)Read(preview, "_root")).activeSelf, Is.False);
-
             Component guide = (Component)Read(capture, "_guide");
             Call(guide, "Confirm");
             Call(menu, "RefreshTask");
-            Assert.That(Get<bool>(capture, "IsCapturing"), Is.False);
-            Assert.That(Get<bool>(guide, "HasVisual"), Is.False);
-            Assert.That(Read(settings, "SourceTopPose"), Is.SameAs(previousSource));
+            Assert.That(Get<bool>(capture, "IsGuideOpen"), Is.False);
+            Assert.That(Get<bool>(capture, "IsSurfaceCurrent"), Is.False);
             Assert.That(canvas.gameObject.activeSelf, Is.True);
-            Assert.That(((GameObject)Read(preview, "_root")).activeSelf, Is.True);
+            Assert.That(((RectTransform)Read(menu, "_floorView")).gameObject.activeSelf, Is.True);
 
-            Call(input, "BeginFixtureSurfaceCapture");
+            Call(floor, "BeginCapture");
             Pose localTop = new Pose(new Vector3(.25f, .5f, .8f), Quaternion.Euler(0f, 35f, 0f));
             Pose worldTop = (Pose)Call(_coordinates, "ConvertRootLocalPoseToWorldPose", localTop);
-            Vector3[] corners = { new Vector3(.16f, 0f, -.16f), new Vector3(.16f, 0f, .16f), new Vector3(-.16f, 0f, .16f) };
-            foreach (Vector3 corner in corners)
-                Assert.That(Call(capture, "CapturePointerPose", new Pose(worldTop.position + worldTop.rotation * corner, Quaternion.identity), _tracking),
-                    Is.EqualTo(true), Get<string>(capture, "StatusText"));
+            foreach (Vector3 corner in PickSurfaceGeometry.GetCanonicalCorners(PickItem.Tile))
+                Assert.That(Call(capture, "CapturePointerPose", new Pose(worldTop.position + worldTop.rotation * corner,
+                    Quaternion.identity), _tracking), Is.EqualTo(true), Get<string>(capture, "StatusText"));
             Call(menu, "RefreshTask");
             Assert.That(Get<bool>(capture, "IsCapturing"), Is.False);
             Assert.That(Get<bool>(capture, "IsSurfaceCurrent"), Is.True);
             Assert.That(canvas.gameObject.activeSelf, Is.True);
-            Assert.That(((GameObject)Read(preview, "_root")).activeSelf, Is.True);
-            object source = Read(Read(settings, "SourceTopPose"), "pose");
-            Vector3 fittedCenter = RosUnityPoint(Read(source, "position"));
-            Assert.That(Vector3.Distance(fittedCenter, localTop.position), Is.LessThan(1e-5f));
-            Assert.That((double)Read(Read(source, "orientation"), "z"), Is.EqualTo(-Math.Sin(35d * Math.PI / 360d)).Within(1e-5));
-            Assert.That(Get<string>(fixture, "StatusText"), Does.Contain("Top tile captured"));
-            Assert.That(((RectTransform)Read(menu, "_fixtureView")).gameObject.activeSelf, Is.True);
+            AssertPose(Get<Pose>(capture, "WorldTopSurfacePose"), worldTop);
+            Assert.That(((RectTransform)Read(menu, "_floorView")).gameObject.activeSelf, Is.True);
+            Assert.That(input.GetComponents(TypeOf("FixtureTilingController")), Is.Empty);
+            Assert.That(input.GetComponents(TypeOf("FixtureTilingPreview")), Is.Empty);
         }
         finally
         {
-            // EditMode creates these objects without the runtime lifecycle callbacks.
             if (capture != null)
             {
                 Call(capture, "OnDisable");

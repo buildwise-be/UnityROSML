@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using RosMessageTypes.Moveit;
 using RosMessageTypes.MoveitTaskConstructor;
+using RosMessageTypes.RclInterfaces;
 using RosMessageTypes.Std;
 using RosMessageTypes.Ur16eInterfaces;
 using Unity.Robotics.ROSTCPConnector;
@@ -14,6 +15,8 @@ public partial class FloorTilingController
     private const string StatusTopic = "/mtc/tile_floor/status";
     private const string SceneTopic = "/mtc/tile_floor/preview_scene";
     private const string SolutionTopic = "/mtc/tile_floor/solution";
+    private const string ParameterService = "/mtc_test_task_node/get_parameters";
+    private const int RequiredTaskVersion = 2;
     private const float ExecutionAcknowledgementSeconds = 15f;
 
     private ROSConnection _connection;
@@ -23,15 +26,15 @@ public partial class FloorTilingController
     private RosRobotModel _planModel;
     private long _commandRevision;
     private string _requestId, _planId, _planStatus;
-    private bool _waitingForPreview, _ready, _executing, _awaitingAcknowledgement;
+    private bool _checkingContract, _waitingForPreview, _ready, _executing, _awaitingAcknowledgement;
     private float _deadline;
     private readonly Dictionary<string, PlanningSceneMsg> _scenes = new Dictionary<string, PlanningSceneMsg>();
     private readonly Dictionary<string, SolutionMsg> _solutions = new Dictionary<string, SolutionMsg>();
 
-    public bool CanPlan => CanScan && HasAnchor && ToolSelectionController.CanPlanPickPlace;
+    public bool CanPlan => CanEdit && IsSourceCurrent && !IsCapturingPoint && HasAnchor && ToolSelectionController.CanPlanPickPlace;
     public bool CanExecute => _ready && CanPlan && PlanContextIsCurrent() && _review?.HasReview == true &&
         _visualizer != null && _visualizer.IsShowingTrajectory(_trajectory);
-    public bool IsPlanning => _waitingForPreview;
+    public bool IsPlanning => _checkingContract || _waitingForPreview;
     public bool HasExecutionFeedback { get; private set; }
     public int ReviewStepCount => _review != null ? _review.StepCount : 0;
     public int ReviewStepIndex => _review != null ? _review.StepIndex : 0;
@@ -39,15 +42,15 @@ public partial class FloorTilingController
 
     public void Plan()
     {
-        if (!CanPlan || !TryGetAnchorWorldPose(out Pose floor)) return;
+        if (!CanPlan || !TryGetSource(out Pose source, out Vector3[] corners) || !TryGetAnchorWorldPose(out Pose floor)) return;
         MTCPlansManager.DismissCompletedExecutionFeedback();
         RobotExecutionState.NotifyPlanningStarted();
         int budget = MtcPlanningSettings.TimeoutSeconds;
         string requestId = Guid.NewGuid().ToString("N");
         InvalidatePlan();
-        if (!FloorTilingRequest.TryBuild(requestId, budget, _surfaceCapture, floor, Pattern, out TileFloorTaskMsg request))
+        if (!FloorTilingRequest.TryBuild(requestId, budget, source, corners, floor, Pattern, out TileFloorTaskMsg request))
         {
-            SetPlanStatus("Check that the captured tile top and floor are level with the robot base, then plan again.");
+            SetPlanStatus("Check that the source tile and destination are level with the robot base, then plan again.");
             return;
         }
 
@@ -64,16 +67,36 @@ public partial class FloorTilingController
             _requestId = requestId;
             _planModel = ToolSelectionController.Instance?.CurrentModel;
             _commandRevision = RobotExecutionState.CommandRevision;
-            _waitingForPreview = true;
-            _deadline = Time.realtimeSinceStartup + budget + MtcPlanningStop.ResultGraceSeconds;
-            PublishPlan(request);
-            SetPlanStatus("Planning the full floor batch. Review the motion and scene before executing.");
+            _checkingContract = true;
+            _deadline = Time.realtimeSinceStartup + ExecutionAcknowledgementSeconds;
+            SetPlanStatus("Checking that ROS supports direct repetitive placement.");
+            RequestTaskVersion(version => OnTaskVersion(request, version));
         }
         catch (Exception error)
         {
             InvalidatePlan();
             SetPlanStatus("Floor planning request failed: " + error.Message);
         }
+    }
+
+    private void OnTaskVersion(TileFloorTaskMsg request, long version)
+    {
+        if (this == null || !_checkingContract || _requestId != request.request_id) return;
+        if (!PlanContextIsCurrent()) { RejectPlan("The job, tool, alignment or ROS connection changed. Plan again."); return; }
+        if (version != RequiredTaskVersion)
+        {
+            RejectPlan("Update ROS to the direct repetitive placement backend, then plan again.");
+            return;
+        }
+        _checkingContract = false;
+        _waitingForPreview = true;
+        _deadline = Time.realtimeSinceStartup + request.timeout_seconds + MtcPlanningStop.ResultGraceSeconds;
+        try
+        {
+            PublishPlan(request);
+            SetPlanStatus("Planning direct pickup and placement for the full batch.");
+        }
+        catch (Exception error) { RejectPlan("Batch planning request failed: " + error.Message); }
     }
 
     public void Execute()
@@ -111,7 +134,7 @@ public partial class FloorTilingController
     {
         if (_connection != null) return;
         _connection = ROSService.Instance.GetROSConnection();
-        _connection.RegisterPublisher<TileFloorTaskMsg>(PlanTopic);
+        _connection.RegisterRosService<GetParametersRequest, GetParametersResponse>(ParameterService);
         _connection.RegisterPublisher<StringMsg>(ExecuteTopic);
         _connection.Subscribe<StringMsg>(StatusTopic, OnStatus);
         _connection.Subscribe<PlanningSceneMsg>(SceneTopic, OnScene);
@@ -119,7 +142,20 @@ public partial class FloorTilingController
         // The standalone trajectory has no plan ID. The preview uses the identified aggregate solution.
     }
 
-    protected virtual void PublishPlan(TileFloorTaskMsg request) => _connection.Publish(PlanTopic, request);
+    protected virtual void RequestTaskVersion(Action<long> completed) =>
+        _connection.SendServiceMessage<GetParametersResponse>(ParameterService,
+            new GetParametersRequest(new[] { "tile_floor_task_version" }), response =>
+            {
+                var value = response?.values != null && response.values.Length == 1 ? response.values[0] : null;
+                completed(value != null && value.type == 2 ? value.integer_value : 0);
+            });
+
+    protected virtual void PublishPlan(TileFloorTaskMsg request)
+    {
+        if (_connection.GetTopic(PlanTopic)?.IsPublisher != true)
+            _connection.RegisterPublisher<TileFloorTaskMsg>(PlanTopic);
+        _connection.Publish(PlanTopic, request);
+    }
     protected virtual void PublishExecution(string planId) => _connection.Publish(ExecuteTopic, new StringMsg(planId));
 
     private void UnbindTransport()
@@ -142,15 +178,16 @@ public partial class FloorTilingController
             }
             return;
         }
-        if (!_waitingForPreview && !_ready) return;
+        if (!IsPlanning && !_ready) return;
         if (!PlanContextIsCurrent())
         {
             RejectPlan("Floor plan expired because the job, tool, alignment or ROS connection changed.");
             return;
         }
-        if (_waitingForPreview && Time.realtimeSinceStartup > _deadline)
+        if (IsPlanning && Time.realtimeSinceStartup > _deadline)
         {
-            RejectPlan("Floor planning or preview timed out. Check ROS and plan again.");
+            RejectPlan(_checkingContract ? "ROS did not confirm support for direct repetitive placement."
+                : "Batch planning or preview timed out. Check ROS and plan again.");
             return;
         }
         if (_ready && (_visualizer == null || !_visualizer.IsShowingTrajectory(_trajectory) || _review?.HasReview != true))
@@ -161,7 +198,7 @@ public partial class FloorTilingController
         if (_waitingForPreview && _planId != null) ShowPreviewIfComplete();
     }
 
-    private bool PlanContextIsCurrent() => _taskActive && HasAnchor && !_surfaceCapture.IsCapturing &&
+    private bool PlanContextIsCurrent() => _taskActive && HasAnchor && IsSourceCurrent && !IsCapturingPoint &&
         ToolSelectionController.CanPlanPickPlace && ReferenceEquals(_planModel, ToolSelectionController.Instance?.CurrentModel) &&
         _commandRevision == RobotExecutionState.CommandRevision && Connected;
 
@@ -290,7 +327,7 @@ public partial class FloorTilingController
 
     private void InvalidatePlan()
     {
-        _waitingForPreview = _ready = false;
+        _checkingContract = _waitingForPreview = _ready = false;
         _scenes.Clear();
         _solutions.Clear();
         _visualizer?.ClearTrajectoryIfMatches(_trajectory);

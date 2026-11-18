@@ -9,6 +9,22 @@ using NUnit.Framework;
 public sealed class FixtureTilingGeometryTests
 {
     [Test]
+    public void InventoryCountsRetainTheWholeStackUntilASmallerBatchIsChosen()
+    {
+        object settings = Activator.CreateInstance(Runtime("FixtureTilingSettings"));
+        settings.GetType().GetMethod("SetSourceCount").Invoke(settings, new object[] { 12 });
+        Assert.That(Read(settings, "SourceCount"), Is.EqualTo(12));
+        Assert.That(Read(settings, "ItemCount"), Is.EqualTo(12));
+        settings.GetType().GetMethod("SetItemCount").Invoke(settings, new object[] { 5 });
+        settings.GetType().GetMethod("SetSourceCount").Invoke(settings, new object[] { 20 });
+        Assert.That(Read(settings, "ItemCount"), Is.EqualTo(5));
+        settings.GetType().GetMethod("SetSourceCount").Invoke(settings, new object[] { 3 });
+        Assert.That(Read(settings, "ItemCount"), Is.EqualTo(3));
+        settings.GetType().GetMethod("SetItemCount").Invoke(settings, new object[] { 100 });
+        Assert.That(Read(settings, "ItemCount"), Is.EqualTo(3));
+    }
+
+    [Test]
     public void SourceYawAndPitchPreserveTheActualStackCollisionGeometry()
     {
         object settings = Settings();

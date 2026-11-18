@@ -9,10 +9,8 @@ The application build has exactly three scenes:
    existing TCP A/B and single-item MTC workflows, tool selection, robot
    alignment and playback. Fixture controls are unavailable here.
 3. [RepetitivePickAndPlace](../../Assets/Scenes/RepetitivePickAndPlace.unity):
-   opens Floor tiling, where the operator captures the top tile and scans the
-   destination floor. **Fixture setup** opens the eight-page workflow for a
-   job that releases tiles onto a sloped board and regrips them before final
-   placement. Both workflows support complete-batch review and execution.
+   opens direct batch setup. Capture the stack by its centre or three corners,
+   then capture the first final placement point or scan the destination floor.
 
 The two task scenes derive from the validated V3 interaction setup and retain
 its XR action references and robot prefabs. Legacy development/sample scene
@@ -33,10 +31,10 @@ connector prefabs in the task scenes. Its initial address remains the former
 interaction scene's `10.200.101.144:10000`; subsequent connection-HUD changes
 are retained. Welcome does not create ROS transport on initial app launch.
 Returning to Welcome retains an already-established connection. Legacy MTC,
-TCP, fixture and joint-feedback subscriptions are removed with their owning
+TCP, repetitive placement and joint-feedback subscriptions are removed with their owning
 scene components.
 
-See [fixture setup](FIXTURE_TILING.md) for the repetitive workflow.
+See [direct placement](DIRECT_PLACEMENT.md) for the repetitive workflow.
 
 Simple MTC pick/place has **Pick settings** for 5/10/20 mm/s descent and Center
 or three-corner Item surface pickup. See [surface picking](PICK_SURFACE.md) for
@@ -47,7 +45,7 @@ that the placed item has been removed. **No, cancel** leaves the reviewed plan
 available. On confirmation, ROS verifies the last placement, restores the
 reviewed source geometry, and checks the scene and start joints before replay.
 
-While ROS is planning a simple pick/place, TCP A/B, or fixture batch, select
+While ROS is planning a simple pick/place or TCP A/B, select
 **Stop Planning** in the task menu. You can plan again once ROS releases the
 planner. **Stopping…** may stay visible until the current solver or scene
 operation returns. A stopped request cannot produce an executable preview.
@@ -55,7 +53,7 @@ operation returns. A stopped request cannot produce an executable preview.
 The **Planning time** control applies to the next Plan in any task mode. It
 defaults to 60 seconds and saves a whole-second value from 1 to 600 on the
 headset. ROS applies the selected limit to the full planning request, including
-all tile cycles in a fixture batch. A step already running can take additional
+all tile cycles in a repetitive batch. A step already running can take additional
 time to return, and an expired request cannot produce an executable preview.
 
 Both task menus include force and torque magnitude gauges using the shared ROS

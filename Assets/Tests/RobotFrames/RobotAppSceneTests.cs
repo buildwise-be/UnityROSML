@@ -85,8 +85,8 @@ public sealed class RobotAppSceneTests
             if (reference.Groups[1].Value != "0") Assert.That(declared.Contains(reference.Groups[1].Value), Is.True, "Missing local fileID " + reference.Groups[1].Value);
     }
 
-    [TestCase("SimplePickAndPlace", 1, 1)]
-    [TestCase("RepetitivePickAndPlace", 2, 3)] // Floor tiling opens first. Fixture setup is available from its menu.
+    [TestCase("SimplePickAndPlace", 1, 0)]
+    [TestCase("RepetitivePickAndPlace", 2, 3)]
     public void DedicatedSceneSerializesItsWorkflowAndActualControllerReferences(string name, int workflow, int capture)
     {
         RequireSnapshots();
@@ -104,15 +104,16 @@ public sealed class RobotAppSceneTests
             AssertReference(scene, input, "_pickPlaceController", "PickPlaceController");
             AssertReference(scene, input, "_tcpTargetPreview", "TcpTargetPreview");
             AssertReference(scene, input, "_tcpPlanningController", "TcpPlanningController");
-            Assert.That(Components(scene, "FixtureTilingController"), Is.Empty);
             Assert.That(Components(scene, "MTCPlansManager").Length, Is.EqualTo(1));
         }
         else
         {
-            AssertReference(scene, input, "_fixtureTilingController", "FixtureTilingController");
             foreach (string type in new[] { "PickPlaceController", "TcpTargetPreview", "TcpPlanningController", "MTCPlansManager" })
                 Assert.That(Components(scene, type), Is.Empty, "Repetitive scene must not retain " + type);
         }
+        Assert.That(Components(scene, "FixtureTilingController"), Is.Empty);
+        Assert.That(Components(scene, "FixtureTilingPreview"), Is.Empty);
+        Assert.That(input, Does.Not.Contain("_fixtureTilingController"));
         string service = Components(scene, "ROSService").Single();
         Assert.That(service, Does.Contain("_rosIPAddress: 10.200.101.144"));
         Assert.That(IntField(service, "_rosPort"), Is.EqualTo(10000));
@@ -249,7 +250,7 @@ public sealed class RobotAppSceneTests
             foreach (GameObject value in fixture._owned.AsEnumerable().Reverse()) if (value != null) UnityEngine.Object.DestroyImmediate(value);
             foreach (GameObject value in previousMainCameras) if (value != null) value.tag = "MainCamera";
         }
-        FixtureTilingMenuTests.RenderDedicatedWorkflowPreviews();
+        WorkflowMenuTests.RenderDedicatedWorkflowPreviews();
     }
 
     private void RequireSnapshots() { if (_manifest == null) Assert.Ignore("Run the dedicated scene-workflow preparer for exact scene snapshots."); }

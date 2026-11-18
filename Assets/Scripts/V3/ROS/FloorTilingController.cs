@@ -30,8 +30,7 @@ public partial class FloorTilingController : MonoBehaviour
     public PickSurfaceCapture SurfaceCapture => _surfaceCapture;
     public bool CanEdit => _taskActive && !IsPlanning && !RobotCoordinateService.IsCalibrationEditActive &&
         !RobotExecutionState.IsBusy && MTCPlansManager.ActiveExecution == null;
-    public bool CanScan => CanEdit && !_requiresRecapture && _surfaceCapture != null && !_surfaceCapture.IsGuideOpen &&
-        _surfaceCapture.IsSurfaceCurrent;
+    public bool CanScan => CanEdit && !IsCapturingPoint && IsSourceCurrent;
     public bool HasAnchor => _anchorSpace != null && TryGetAnchorWorldPose(out _);
     public event Action Changed;
 
@@ -40,17 +39,19 @@ public partial class FloorTilingController : MonoBehaviour
         get
         {
             if (!string.IsNullOrEmpty(_planStatus)) return _planStatus;
+            if (IsCapturingPoint) return CaptureInstruction;
             if (_surfaceCapture == null) return string.Empty;
-            if (_surfaceCapture.IsCapturing || !_surfaceCapture.IsSurfaceCurrent)
+            if (_surfaceCapture.IsGuideOpen)
                 return _surfaceCapture.StatusText;
+            if (!string.IsNullOrEmpty(_notice)) return _notice;
+            if (!IsSourceCurrent) return "Capture the stack top by its centre or three consecutive corners.";
             if (IsScanRequested && !IsScanning) return _scanner.StatusText;
             if (HasAnchor)
                 return IsScanning
-                    ? "Floor pattern anchored. Aim and press trigger to move it, or plan the batch."
-                    : "Floor pattern anchored. Plan the batch to review its motion and scene.";
-            if (!string.IsNullOrEmpty(_notice)) return _notice;
+                    ? "Final pattern anchored. Aim and press trigger to move it, or plan the batch."
+                    : "Final pattern anchored. Plan the batch to review its motion and scene.";
             return _scanner != null && !string.IsNullOrEmpty(_scanner.StatusText)
-                ? _scanner.StatusText : "Set the tile count and pattern, then scan the floor.";
+                ? _scanner.StatusText : "Capture the final support-surface corner or scan the floor.";
         }
     }
 
@@ -58,8 +59,7 @@ public partial class FloorTilingController : MonoBehaviour
     {
         get
         {
-            PickItemPreset preset = PickSurfaceGeometry.GetPreset(PickItem.Tile);
-            return new FloorTilePattern(TileCount, (float)preset.Width, (float)preset.Thickness,
+            return new FloorTilePattern(TileCount, TileSideMeters, TileThicknessMeters,
                 OffsetIndex, MortarMillimeters);
         }
     }
@@ -71,6 +71,7 @@ public partial class FloorTilingController : MonoBehaviour
         GameObject capture = new GameObject("First tile surface capture");
         capture.transform.SetParent(transform, false);
         _surfaceCapture = capture.AddComponent<PickSurfaceCapture>();
+        _surfaceCapture.SetItemPresentationEnabled(false);
         _surfaceCapture.Changed += OnCaptureChanged;
         _surfaceCapture.SurfaceCaptured += OnSurfaceCaptured;
     }
@@ -78,16 +79,19 @@ public partial class FloorTilingController : MonoBehaviour
     public void SetTaskActive(bool active)
     {
         if (_taskActive == active) return;
+        if (active) LoadTileDimensions();
         _taskActive = active;
         EnsureCapture();
-        _surfaceCapture.SetItemPresentationEnabled(active && !_requiresRecapture);
+        _surfaceCapture.SetItemPresentationEnabled(false);
         if (!active)
         {
             InvalidatePlan();
+            CancelPointCapture();
             _surfaceCapture.Cancel();
             StopScan();
             _menuPreview?.Hide();
             _anchorPreview?.Hide();
+            _sourcePreview?.Hide();
         }
         else RefreshAnchorPreview();
         Changed?.Invoke();
@@ -95,7 +99,11 @@ public partial class FloorTilingController : MonoBehaviour
 
     public void BeginCapture()
     {
-        if (!CanEdit || !_surfaceCapture.OpenGuide(PickItem.Tile, PickSurfaceGeometry.GetPreset(PickItem.Tile))) return;
+        if (!CanEdit) return;
+        CancelPointCapture();
+        PickItemPreset tile = PickSurfaceGeometry.GetPreset(PickItem.Tile);
+        var dimensions = new PickItemPreset(tile.Name, TileSideMeters, TileSideMeters, TileThicknessMeters, tile.Density, tile.VoidFraction);
+        if (!_surfaceCapture.OpenGuide(PickItem.Tile, dimensions)) return;
         InvalidatePlan();
         StopScan();
         Changed?.Invoke();
@@ -186,6 +194,11 @@ public partial class FloorTilingController : MonoBehaviour
     public bool TrySetAnchor(Ray ray, float maxDistance, Transform trackingSpace)
     {
         if (!RobotFrameMath.IsRigidFrame(trackingSpace) || !TryGetCandidate(ray, maxDistance, out Pose world)) return false;
+        return SetAnchor(world, trackingSpace);
+    }
+
+    private bool SetAnchor(Pose world, Transform trackingSpace)
+    {
         InvalidatePlan();
         _anchorSpace = trackingSpace;
         _anchorInTracking = RobotFrameMath.RelativeTo(new Pose(trackingSpace.position, trackingSpace.rotation), world);
@@ -198,6 +211,13 @@ public partial class FloorTilingController : MonoBehaviour
 
     public void CheckTrackingSpace(Transform trackingSpace)
     {
+        if (!SourceFromCorners && _sourceSpace != null && _sourceSpace != trackingSpace)
+        {
+            _requiresRecapture = true;
+            CancelPointCapture();
+            InvalidateAnchor("XR tracking space changed. Capture the source and final support surface again.");
+            return;
+        }
         if (_anchorSpace != null && _anchorSpace != trackingSpace)
             InvalidateAnchor("XR tracking space changed. Scan the floor again.");
     }
@@ -205,7 +225,7 @@ public partial class FloorTilingController : MonoBehaviour
     private bool TryGetAnchorWorldPose(out Pose pose)
     {
         pose = default;
-        return _anchorSpace != null && _surfaceCapture.IsSurfaceCurrent &&
+        return _anchorSpace != null && IsSourceCurrent &&
             RobotCoordinateService.Instance.CalibrationRevision == _anchorCalibrationRevision &&
             RobotFrameMath.TryTrackingToWorld(_anchorSpace, _anchorInTracking, out pose);
     }
@@ -222,9 +242,7 @@ public partial class FloorTilingController : MonoBehaviour
         }
         _notice = null;
         // At zero yaw, columns follow ROS base +X and rows follow ROS base +Y.
-        Vector3 rows = Vector3.ProjectOnPlane(robotBase.rotation * Vector3.left, normal);
-        if (rows.sqrMagnitude < 0.0001f) return false;
-        Quaternion rotation = Quaternion.LookRotation(rows, normal) * Quaternion.AngleAxis(YawDegrees, Vector3.up);
+        Quaternion rotation = PlacementRotation(robotBase, normal) * Quaternion.AngleAxis(YawDegrees, Vector3.up);
         pose = new Pose(point, rotation);
         return RobotFrameMath.IsValidPose(pose);
     }
@@ -232,6 +250,7 @@ public partial class FloorTilingController : MonoBehaviour
     private void LateUpdate()
     {
         if (_taskActive && _anchorSpace != null) RefreshAnchorPreview();
+        RefreshSourcePreview();
     }
 
     private void OnPatternChanged()
@@ -243,9 +262,9 @@ public partial class FloorTilingController : MonoBehaviour
 
     private void OnCaptureChanged()
     {
-        if (!_surfaceCapture.IsSurfaceCurrent && _anchorSpace != null)
+        if (!_surfaceCapture.IsGuideOpen && !IsSourceCurrent && _anchorSpace != null)
         {
-            InvalidateAnchor("Capture the top tile again, then rescan the floor.");
+            InvalidateAnchor("Capture the source again, then its final support surface.");
             return;
         }
         Changed?.Invoke();
@@ -254,11 +273,13 @@ public partial class FloorTilingController : MonoBehaviour
     private void OnSurfaceCaptured()
     {
         InvalidatePlan();
+        SourceFromCorners = true;
         _requiresRecapture = false;
-        _surfaceCapture.SetItemPresentationEnabled(_taskActive);
+        _surfaceCapture.SetItemPresentationEnabled(false);
         _notice = null;
         if (_anchorSpace != null)
-            InvalidateAnchor("Top tile recaptured. Scan the floor to place this batch.");
+            InvalidateAnchor("Source tile captured. Capture its final support-surface corner or scan the floor.");
+        RefreshSourcePreview();
     }
 
     private void RefreshAnchorPreview()
@@ -294,12 +315,17 @@ public partial class FloorTilingController : MonoBehaviour
         _trackingSubsystems.Clear();
     }
 
-    private void OnTrackingOriginUpdated(XRInputSubsystem subsystem) =>
-        InvalidateAnchor("XR tracking origin reset. Capture the tile and scan the floor again.");
+    private void OnTrackingOriginUpdated(XRInputSubsystem subsystem)
+    {
+        _requiresRecapture = true;
+        CancelPointCapture();
+        InvalidateAnchor("XR tracking origin reset. Capture the source and final support surface again.");
+    }
 
     public void SuspendInteraction()
     {
-        if (_surfaceCapture != null && _surfaceCapture.IsCapturing) _surfaceCapture.Cancel();
+        CancelPointCapture();
+        if (_surfaceCapture != null && _surfaceCapture.IsGuideOpen) _surfaceCapture.Cancel();
         StopScan();
     }
 
@@ -309,6 +335,7 @@ public partial class FloorTilingController : MonoBehaviour
         InvalidatePlan();
         _notice = reason;
         _anchorPreview?.Hide();
+        _sourcePreview?.Hide();
         StopScan();
         Changed?.Invoke();
     }
@@ -320,11 +347,17 @@ public partial class FloorTilingController : MonoBehaviour
         ClearTrackingSubscriptions();
         _menuPreview?.Hide();
         _anchorPreview?.Hide();
+        _sourcePreview?.Hide();
     }
 
     private void OnApplicationPause(bool isPaused)
     {
-        if (isPaused) InvalidateAnchor("App paused. Capture the tile and scan the floor again.");
+        if (isPaused)
+        {
+            _requiresRecapture = true;
+            CancelPointCapture();
+            InvalidateAnchor("App paused. Capture the source and final support surface again.");
+        }
     }
 
     private void OnDestroy()

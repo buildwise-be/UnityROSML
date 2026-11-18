@@ -91,6 +91,7 @@ def main():
                     "Assets/Scripts/V3/ROS/ForceTorqueSubscriber.cs",
                     "Assets/Scripts/V3/ROS/PickSurfaceCapture.cs", "Assets/Scripts/V3/UI/PickSurfaceGuide.cs",
                     "Assets/Scripts/V3/UI/GuideChime.cs",
+                    "Assets/Scripts/V3/ROS/RepetitiveSourcePreview.cs",
                     "Assets/Scripts/V3/ROS/ToolSelectionController.cs", "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
                     "Assets/Scripts/V3/UI/RobotRegistrationGuide.cs",
                     "Assets/Scripts/V3/ROS/TcpPlanningController.cs", "Assets/Scripts/V3/ROS/MtcPlanningStop.cs", "Assets/Scripts/V3/TcpTargetPreview.cs",

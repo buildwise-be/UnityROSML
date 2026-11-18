@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -10,11 +12,12 @@ public sealed partial class ToolSelectionMenu
     private readonly Button[] _floorCountButtons = new Button[FloorCountSteps.Length];
     private FloorTilingController _floorTiling;
     private RectTransform _floorView;
-    private Button _floorSetupButton, _floorCaptureButton;
-    private Button _floorScanButton, _floorPlan, _floorExecute, _floorFixture;
+    private Button _floorSetupButton, _floorCaptureButton, _floorCentreCaptureButton, _floorPlacementButton, _floorCancelPoint;
+    private Button _floorScanButton, _floorPlan, _floorExecute, _floorSourceLeft, _floorSourceRight;
+    private readonly List<Button> _floorDimensionButtons = new List<Button>();
     private Button _floorRotateLeft, _floorRotateRight, _floorPreviousStep, _floorNextStep;
     private TextMeshProUGUI _floorCaptureHelp, _floorCountValue, _floorOffsetValue, _floorMortarValue;
-    private TextMeshProUGUI _floorAngleValue, _floorScanLabel, _floorStatus;
+    private TextMeshProUGUI _floorAngleValue, _floorScanLabel, _floorStatus, _floorSideValue, _floorThicknessValue, _floorSourceYawValue;
     private Slider _floorOffsetSlider, _floorMortarSlider;
     private bool _showFloorSetup;
 
@@ -23,7 +26,7 @@ public sealed partial class ToolSelectionMenu
     private void BuildFloorEntry()
     {
         if (_workflowMode != URInputManager.WorkflowMode.RepetitivePickAndPlace) return;
-        _floorSetupButton = PickSettingButton("Floor tiling", _taskView, 16f, 204f, 130f, 32f, OpenFloorSetup);
+        _floorSetupButton = PickSettingButton("Floor tiling", _taskView, 16f, 204f, 130f, 32f, OpenFloorSetup, "Batch setup");
         _floorPreviousStep = PickSettingButton("Previous floor scene step", _taskView, 294f, 204f, 62f, 32f,
             () => _floorTiling?.StepReview(-1), "‹ Step");
         _floorNextStep = PickSettingButton("Next floor scene step", _taskView, 362f, 204f, 62f, 32f,
@@ -44,53 +47,72 @@ public sealed partial class ToolSelectionMenu
     {
         if (_workflowMode != URInputManager.WorkflowMode.RepetitivePickAndPlace) return;
         _floorView = Rect("Floor tiling setup view", _panel, Vector2.zero, new Vector2(440f, 756f));
-        BuildHeader(_floorView, "Floor tiling title", "Floor tiling");
+        BuildHeader(_floorView, "Floor tiling title", "Repetitive Pick and Place");
+        _floorSideValue = FloorDimensionRow("Tile side", 56f, () => _floorTiling.TileSideMeters, value => _floorTiling.SetTileSideMeters(value));
+        _floorThicknessValue = FloorDimensionRow("Tile thickness", 96f, () => _floorTiling.TileThicknessMeters,
+            value => _floorTiling.SetTileThicknessMeters(value));
+        _floorCentreCaptureButton = FloorButton("Capture source centre", 16f, 143f, 198f, 38f,
+            () => _floorTiling?.BeginSourceCenterCapture(), "Pick centre · 1 point");
+        _floorCaptureButton = FloorButton("Capture first tile", 226f, 143f, 198f, 38f,
+            () => _floorTiling?.BeginCapture(), "Pick · 3 corners");
+        _floorCaptureHelp = FloorText("First tile instructions", 16f, 185f, 408f, 32f, 14f);
+        _floorSourceYawValue = FloorText("Source yaw", 16f, 225f, 244f, 32f, 15f);
+        _floorSourceLeft = FloorButton("Rotate source left", 268f, 225f, 74f, 32f, () => _floorTiling?.RotateSource(-5f), "−5°");
+        _floorSourceRight = FloorButton("Rotate source right", 350f, 225f, 74f, 32f, () => _floorTiling?.RotateSource(5f), "+5°");
 
-        _floorCaptureButton = FloorButton("Capture first tile", 16f, 56f, 408f, 42f, () => _floorTiling?.BeginCapture(),
-            "Capture stack top · 3 corners");
-        _floorCaptureHelp = FloorText("First tile instructions", 16f, 103f, 408f, 45f, 14f);
-        FloorText("Batch count instructions", 16f, 155f, 408f, 42f, 14f).text =
-            "Set how many tiles to take from this stack. The preview shows their floor layout.";
-
-        _floorCountValue = FloorText("Tile count and grid size", 16f, 206f, 198f, 42f, 16f);
+        _floorCountValue = FloorText("Tile count and grid size", 16f, 272f, 198f, 42f, 16f);
         for (int index = 0; index < FloorCountSteps.Length; index++)
         {
             int step = FloorCountSteps[index];
             string label = step < 0 ? "−" + -step : "+" + step;
-            _floorCountButtons[index] = FloorButton("Change tile count " + label, 216f + index * 53f, 210f, 49f, 34f,
+            _floorCountButtons[index] = FloorButton("Change tile count " + label, 216f + index * 53f, 276f, 49f, 34f,
                 () => ChangeFloorTileCount(step), label);
         }
 
-        _floorOffsetValue = FloorText("Row offset value", 16f, 257f, 408f, 22f, 15f);
-        _floorOffsetSlider = CreateFloorSlider("Row offset slider", 283f, 0, 2,
+        _floorOffsetValue = FloorText("Row offset value", 16f, 325f, 408f, 22f, 15f);
+        _floorOffsetSlider = CreateFloorSlider("Row offset slider", 349f, 0, 2,
             value => _floorTiling?.SetOffsetIndex(Mathf.RoundToInt(value)));
-        _floorMortarValue = FloorText("Mortar thickness value", 16f, 325f, 408f, 22f, 15f);
-        _floorMortarSlider = CreateFloorSlider("Mortar thickness slider", 351f,
+        _floorMortarValue = FloorText("Mortar thickness value", 16f, 387f, 408f, 22f, 15f);
+        _floorMortarSlider = CreateFloorSlider("Mortar thickness slider", 411f,
             FloorTilePattern.MinimumMortarMillimeters, FloorTilePattern.MaximumMortarMillimeters,
             value => _floorTiling?.SetMortarMillimeters(Mathf.RoundToInt(value)));
 
-        _floorAngleValue = FloorText("Pattern angle value", 16f, 395f, 244f, 34f, 15f);
-        _floorRotateLeft = FloorButton("Rotate floor pattern left", 268f, 395f, 74f, 34f,
+        _floorPlacementButton = FloorButton("Capture final support surface", 16f, 454f, 198f, 38f,
+            () => _floorTiling?.BeginPlacementCapture(), "Place surface · 1 point");
+        _floorScanButton = CreateButton("Scan floor", _floorView, new Vector2(226f, -454f),
+            new Vector2(198f, 38f), out _floorScanLabel);
+        _floorScanButton.onClick.AddListener(ToggleFloorScan);
+        _floorAngleValue = FloorText("Pattern angle value", 16f, 504f, 244f, 34f, 15f);
+        _floorRotateLeft = FloorButton("Rotate floor pattern left", 268f, 504f, 74f, 34f,
             () => _floorTiling?.RotatePattern(-15f), "−15°");
-        _floorRotateRight = FloorButton("Rotate floor pattern right", 350f, 395f, 74f, 34f,
+        _floorRotateRight = FloorButton("Rotate floor pattern right", 350f, 504f, 74f, 34f,
             () => _floorTiling?.RotatePattern(15f), "+15°");
 
-        _floorScanButton = CreateButton("Scan floor", _floorView, new Vector2(16f, -444f),
-            new Vector2(408f, 42f), out _floorScanLabel);
-        _floorScanButton.onClick.AddListener(ToggleFloorScan);
-        FloorText("Floor anchor instructions", 16f, 491f, 408f, 39f, 14f).text =
-            "Look across the floor until a green outline appears. Aim inside it and press trigger to place the pattern.";
-        _floorStatus = FloorText("Floor setup status", 16f, 532f, 408f, 63f, 15f);
-        _floorPlan = FloorButton("Plan floor preview", 16f, 605f, 198f, 42f, PlanFloorTask, "Plan preview");
-        _floorExecute = FloorButton("Execute floor plan", 226f, 605f, 198f, 42f, ExecuteTask, "Execute plan");
+        _floorStatus = FloorText("Floor setup status", 16f, 551f, 408f, 63f, 15f);
+        _floorPlan = FloorButton("Plan floor preview", 16f, 625f, 198f, 42f, PlanFloorTask, "Plan preview");
+        _floorExecute = FloorButton("Execute floor plan", 226f, 625f, 198f, 42f, ExecuteTask, "Execute plan");
 
         FloorButton("Open robot controls", 16f, 700f, 198f, 38f, CloseFloorSetup, "Robot controls");
-        _floorFixture = FloorButton("Open fixture setup", 226f, 700f, 198f, 38f, OpenFixtureSetup, "Fixture setup");
+        _floorCancelPoint = FloorButton("Cancel point capture", 226f, 700f, 198f, 38f,
+            () => _floorTiling?.CancelPointCapture(), "Cancel capture");
         _floorView.gameObject.SetActive(false);
     }
 
     private Button FloorButton(string name, float x, float y, float width, float height, UnityAction action, string label = null)
         => PickSettingButton(name, _floorView, x, y, width, height, action, label);
+
+    private TextMeshProUGUI FloorDimensionRow(string name, float y, Func<float> get, Action<float> set)
+    {
+        TextMeshProUGUI value = FloorText(name + " value", 16f, y, 198f, 34f, 14f);
+        for (int index = 0; index < FloorCountSteps.Length; index++)
+        {
+            int millimeters = FloorCountSteps[index];
+            string caption = millimeters < 0 ? "−" + -millimeters : "+" + millimeters;
+            _floorDimensionButtons.Add(FloorButton(name + " " + caption + " mm", 216f + index * 53f, y, 49f, 34f,
+                () => set(Mathf.Max(.001f, get() + millimeters * .001f)), caption));
+        }
+        return value;
+    }
 
     private TextMeshProUGUI FloorText(string name, float x, float y, float width, float height, float size)
     {
@@ -152,7 +174,7 @@ public sealed partial class ToolSelectionMenu
     {
         BindTaskControls();
         if (_input == null || IsPlacementBusy || TargetRotationHandles.IsInteracting || RobotExecutionState.IsBusy ||
-            MTCPlansManager.ActiveExecution != null || _fixtureTiling?.IsPlanning == true || _floorTiling?.IsPlanning == true) return;
+            MTCPlansManager.ActiveExecution != null || _floorTiling?.IsPlanning == true) return;
         _input.UseFloorTiling();
         if (!_input.IsFloorMode) return;
         _showFloorSetup = true;
@@ -170,7 +192,8 @@ public sealed partial class ToolSelectionMenu
     private void EndFloorSetupInteractions()
     {
         if (_floorTiling == null) return;
-        if (_floorTiling.SurfaceCapture?.IsCapturing == true) _floorTiling.SurfaceCapture.Cancel();
+        _floorTiling.CancelPointCapture();
+        if (_floorTiling.SurfaceCapture?.IsGuideOpen == true) _floorTiling.SurfaceCapture.Cancel();
         _floorTiling.StopScan();
         HideFloorMenuPreview();
     }
@@ -204,7 +227,11 @@ public sealed partial class ToolSelectionMenu
         if (!IsShowingFloorSetup) HideFloorMenuPreview();
         if (_floorTiling == null) return;
 
-        _floorCountValue.text = $"{_floorTiling.TileCount} tiles\n{_floorTiling.Rows} rows × {_floorTiling.Columns} columns";
+        _floorCountValue.text = $"Tiles in stack · {_floorTiling.TileCount}\nLayout · {_floorTiling.Rows} × {_floorTiling.Columns}";
+        _floorSideValue.text = $"Tile side · {_floorTiling.TileSideMeters * 1000f:0.#} mm";
+        _floorThicknessValue.text = $"Thickness · {_floorTiling.TileThicknessMeters * 1000f:0.#} mm";
+        _floorSourceYawValue.text = !_floorTiling.IsSourceCurrent ? "Capture source to show orientation"
+            : _floorTiling.SourceFromCorners ? "Source edges from corners" : $"Source yaw · {_floorTiling.SourceYawDegrees:0}°";
         _floorOffsetValue.text = "Row offset · " + FloorOffsetLabels[_floorTiling.OffsetIndex];
         _floorMortarValue.text = $"Mortar thickness · {_floorTiling.MortarMillimeters} mm";
         _floorAngleValue.text = $"Pattern angle · {_floorTiling.YawDegrees:0}°";
@@ -217,10 +244,14 @@ public sealed partial class ToolSelectionMenu
     {
         if (_floorTiling == null || !IsShowingFloorSetup || _floorView == null) return;
         PickSurfaceCapture capture = _floorTiling.SurfaceCapture;
-        bool capturing = capture?.IsCapturing == true;
+        bool capturing = capture?.IsGuideOpen == true || _floorTiling.IsCapturingPoint;
         bool canEdit = _floorTiling.CanEdit;
         bool canEditPattern = canEdit && !capturing;
         _floorCaptureButton.interactable = canEditPattern;
+        _floorCentreCaptureButton.interactable = canEditPattern;
+        _floorPlacementButton.interactable = canEditPattern && _floorTiling.IsSourceCurrent;
+        foreach (Button button in _floorDimensionButtons) button.interactable = canEditPattern;
+        _floorSourceLeft.interactable = _floorSourceRight.interactable = canEditPattern && _floorTiling.IsSourceCurrent && !_floorTiling.SourceFromCorners;
         for (int index = 0; index < FloorCountSteps.Length; index++)
         {
             int step = FloorCountSteps[index];
@@ -234,18 +265,16 @@ public sealed partial class ToolSelectionMenu
         _floorScanLabel.text = _floorTiling.IsScanRequested ? "Stop scan" : "Scan floor";
         _floorPlan.interactable = _floorTiling.CanPlan;
         _floorExecute.interactable = _floorTiling.CanExecute;
-        _floorFixture.interactable = canEdit && !_floorTiling.IsPlanning;
-        _floorCaptureHelp.text = capturing ? capture.StatusText : capture?.IsSurfaceCurrent == true
-            ? "Stack top captured. Set the pattern, then select Scan floor."
-            : "Touch three consecutive top corners of the source tile, pressing trigger at each. This sets the pick centre.";
-        _floorStatus.text = capturing ? string.Empty : _floorTiling.StatusText;
+        _floorCancelPoint.interactable = _floorTiling.IsCapturingPoint;
+        _floorCaptureHelp.text = _floorTiling.IsSourceCurrent ? "Green stack and cyan cross show the source pick centre." : "Pick on the tile top. Place on the final support surface.";
+        _floorStatus.text = _floorTiling.StatusText;
     }
 
     private void PositionFloorMenuPreview()
     {
         if (_floorTiling == null || _floorView == null || !_floorView.gameObject.activeInHierarchy) return;
         RectTransform menu = (RectTransform)_canvas.transform;
-        float tileSide = (float)PickSurfaceGeometry.GetPreset(PickItem.Tile).Width;
+        float tileSide = _floorTiling.TileSideMeters;
         int rows = _floorTiling.Rows;
         float fullDepth = rows * tileSide + (rows - 1) * _floorTiling.MortarMillimeters * 0.001f;
         Vector3 top = menu.TransformPoint(new Vector3(0f, menu.rect.yMax, 0f));

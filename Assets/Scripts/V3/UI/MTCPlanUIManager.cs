@@ -9,12 +9,12 @@ public class MTCPlanUIManager : MonoBehaviour
     [SerializeField] private TcpPlanningController _tcpPlanning;
     private MTCPlansManager _subscribedPlans;
     private TcpPlanningController _subscribedTcp;
-    private FixtureTilingController _subscribedFixture;
+    private FloorTilingController _subscribedFloor;
     private TextMeshProUGUI _textBox;
     private ToolSelectionMenu _sharedMenu;
     private CanvasGroup _visibility;
     private bool? _previousTcpMode;
-    private bool? _previousFixtureMode;
+    private bool _previousFloorMode;
     private bool _wasSharedMenuVisible;
     private bool _hasStarted;
 
@@ -36,7 +36,7 @@ public class MTCPlanUIManager : MonoBehaviour
         if (_sharedMenu == null) _sharedMenu = FindFirstObjectByType<ToolSelectionMenu>();
         bool sharedVisible = _sharedMenu != null && _sharedMenu.HasActivePresentation;
         bool tcp = _input == null || _input.IsTcpMode;
-        if (_previousTcpMode != tcp || _previousFixtureMode != (_input != null && _input.IsFixtureMode) ||
+        if (_previousTcpMode != tcp || _previousFloorMode != (_input != null && _input.IsFloorMode) ||
             _wasSharedMenuVisible != sharedVisible) RefreshPanel();
     }
 
@@ -58,12 +58,12 @@ public class MTCPlanUIManager : MonoBehaviour
             _subscribedTcp = _tcpPlanning;
             if (_subscribedTcp != null) _subscribedTcp.StateChanged += RefreshPanel;
         }
-        FixtureTilingController fixture = _input != null ? _input.FixtureController : null;
-        if (_subscribedFixture != fixture)
+        FloorTilingController floor = _input != null ? _input.FloorController : null;
+        if (_subscribedFloor != floor)
         {
-            if (_subscribedFixture != null) _subscribedFixture.Changed -= RefreshPanel;
-            _subscribedFixture = fixture;
-            if (_subscribedFixture != null) _subscribedFixture.Changed += RefreshPanel;
+            if (_subscribedFloor != null) _subscribedFloor.Changed -= RefreshPanel;
+            _subscribedFloor = floor;
+            if (_subscribedFloor != null) _subscribedFloor.Changed += RefreshPanel;
         }
     }
 
@@ -83,10 +83,10 @@ public class MTCPlanUIManager : MonoBehaviour
     {
         bool tcp = _input == null || _input.IsTcpMode;
         _previousTcpMode = tcp;
-        _previousFixtureMode = _input != null && _input.IsFixtureMode;
+        _previousFloorMode = _input != null && _input.IsFloorMode;
         if (_textBox != null)
-            _textBox.text = _subscribedFixture != null && (_subscribedFixture.HasExecutionFeedback || _previousFixtureMode == true)
-                ? _subscribedFixture.StatusText : _MTCPlansManager != null && _MTCPlansManager.HasExecutionFeedback
+            _textBox.text = _previousFloorMode && _subscribedFloor != null
+                ? _subscribedFloor.StatusText : _MTCPlansManager != null && _MTCPlansManager.HasExecutionFeedback
                 ? _MTCPlansManager.StatusText : tcp
                 ? (_tcpPlanning != null ? _tcpPlanning.StatusText : "Capture TCP A and B, then plan a preview.")
                 : (_MTCPlansManager != null ? _MTCPlansManager.StatusText : "Capture pick and place surfaces, then Plan.");
@@ -104,10 +104,10 @@ public class MTCPlanUIManager : MonoBehaviour
     {
         if (_subscribedPlans != null) _subscribedPlans.OnSuccessfulPlan.RemoveListener(UpdatePlanStatusPanel);
         if (_subscribedTcp != null) _subscribedTcp.StateChanged -= RefreshPanel;
-        if (_subscribedFixture != null) _subscribedFixture.Changed -= RefreshPanel;
+        if (_subscribedFloor != null) _subscribedFloor.Changed -= RefreshPanel;
         _subscribedPlans = null;
         _subscribedTcp = null;
-        _subscribedFixture = null;
+        _subscribedFloor = null;
     }
 
     private void OnDisable() => Unsubscribe();

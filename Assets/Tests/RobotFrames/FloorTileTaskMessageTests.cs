@@ -6,7 +6,7 @@ public sealed class FloorTileTaskMessageTests
 {
     // Little-endian ROS 2 CDR packed independently from TileFloorTask.msg.
     private const string FloorWire =
-        "AAEAAA0AAABmbG9vcjp3aXJlLTcAAAAAJQAAAAAAAAAAAPA/AAAAAAAAAEAAAAAAAAAIQAAAAAAAABBAAAAAAAAAFEAAAAAAAAAYQAAAAAAAABxAAAAAAAAAIEAAAAAAAAAiQAAAAAAAAAAADQAAAHVyX2Jhc2VfbGluawAAAAAAAAAAAAAAAAAAJEAAAAAAAAAmQAAAAAAAAChAAAAAAAAAAAAAAAAAAAAAADMzMzMzM+M/mpmZmZmZ6T8NAAAAAg8=";
+        "AAEAAA0AAABmbG9vcjp3aXJlLTcAAAAAJQAAAHsUrkfhetQ/+n5qvHSTiD+4HoXrUbiOPwEAAAAAAAAAAAAAAA0AAAB1cl9iYXNlX2xpbmsAAAAAKVyPwvUovD8pXI/C9SjMPx+F61G4HtU/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAADwPwAAAAAAAABAAAAAAAAACEAAAAAAAAAQQAAAAAAAABRAAAAAAAAAGEAAAAAAAAAcQAAAAAAAACBAAAAAAAAAIkAAAAAAAAAAAA0AAAB1cl9iYXNlX2xpbmsAAAAAAAAAAAAAAAAAACRAAAAAAAAAJkAAAAAAAAAoQAAAAAAAAAAAAAAAAAAAAAAzMzMzMzPjP5qZmZmZmek/DQAAAAIP";
 
     [Test]
     public void FloorTaskCdrHasThreeUnprefixedCornersAndAByteForEachPatternSetting()
@@ -20,6 +20,12 @@ public sealed class FloorTileTaskMessageTests
             .Invoke(null, new[] { reader });
         Assert.That(Field(task, "request_id"), Is.EqualTo("floor:wire-7"));
         Assert.That(Field(task, "timeout_seconds"), Is.EqualTo(37u));
+        Assert.That(Field(task, "tile_side"), Is.EqualTo(.32d));
+        Assert.That(Field(task, "tile_thickness"), Is.EqualTo(.012d));
+        Assert.That(Field(task, "stack_pitch"), Is.EqualTo(.015d));
+        Assert.That(Field(task, "source_from_surface"), Is.EqualTo(true));
+        object sourcePosition = Field(Field(Field(task, "source_top"), "pose"), "position");
+        Assert.That(Field(sourcePosition, "z"), Is.EqualTo(.33d));
         var corners = (Array)Field(task, "source_top_corners");
         Assert.That(corners.Length, Is.EqualTo(3));
         Assert.That(Field(corners.GetValue(0), "x"), Is.EqualTo(1d));

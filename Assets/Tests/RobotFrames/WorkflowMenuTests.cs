@@ -1,7 +1,9 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 /// <summary>The dedicated scenes expose only their workflow, without starting XR or ROS.</summary>
@@ -38,61 +40,59 @@ public sealed class WorkflowMenuTests
     }
 
     [Test]
-    public void SimpleWorkflowRetainsBothSimpleModesAndNeverCreatesFixtureBindings()
+    public void SimpleWorkflowStartsWithContactPickupAndRetainsOptionalTcpPreview()
     {
         Create("SimplePickAndPlace");
         Assert.That(Read<Component>(_menu, "_tcpTaskButton"), Is.Not.Null);
         Assert.That(Read<Component>(_menu, "_pickPlaceTaskButton"), Is.Not.Null);
-        Assert.That(Read<Component>(_menu, "_fixtureTaskButton"), Is.Null);
-        Assert.That(Read<Component>(_menu, "_fixtureSetupButton"), Is.Null);
-        Assert.That(Read<RectTransform>(_menu, "_fixtureView"), Is.Null);
-        Assert.That(_input.GetType().GetProperty("FixtureController").GetValue(_input), Is.Null);
-        _input.GetType().GetMethod("UseFixtureTiling").Invoke(_input, null);
-        Assert.That(Property<bool>(_input, "IsFixtureMode"), Is.False);
+        Assert.That(Property<bool>(_input, "IsTcpMode"), Is.False);
         _input.GetType().GetMethod("UseTcpPreview").Invoke(_input, null);
         Assert.That(Property<bool>(_input, "IsTcpMode"), Is.True);
         _input.GetType().GetMethod("UseTilePickPlace").Invoke(_input, null);
         Assert.That(Property<bool>(_input, "IsTcpMode"), Is.False);
-        Invoke(_menu, "BindTaskControls");
         Assert.That(_owner.GetComponents(TypeOf("FixtureTilingController")), Is.Empty);
     }
 
     [Test]
-    public void RepetitiveWorkflowDefaultsToFloorAndCanSwitchToFixtureReview()
+    public void RepetitiveWorkflowOpensDirectFloorSetupAndHasNoFixtureRoute()
     {
         Create("RepetitivePickAndPlace");
         Assert.That(Read<Component>(_menu, "_tcpTaskButton"), Is.Null);
         Assert.That(Read<Component>(_menu, "_pickPlaceTaskButton"), Is.Null);
         RectTransform task = Read<RectTransform>(_menu, "_taskView");
-        Transform floorEntry = task.Find("Floor tiling");
-        Assert.That(floorEntry, Is.Not.Null, "The Repetitive menu must open floor configuration.");
+        Transform entry = task.Find("Floor tiling");
+        Assert.That(entry, Is.Not.Null);
         Assert.That(Property<bool>(_input, "IsFloorMode"), Is.True);
-        Assert.That(Property<bool>(_input, "IsFixtureMode"), Is.False);
         Assert.That(task.Find("Previous floor scene step")?.gameObject.activeSelf, Is.False);
         Assert.That(task.Find("Next floor scene step")?.gameObject.activeSelf, Is.False);
-        Assert.That(Read<Component>(_menu, "_stopPlanningButton").gameObject.activeSelf, Is.False);
-        Click(floorEntry.GetComponent(TypeOf("UnityEngine.UI.Button")));
+        Click(entry.GetComponent(TypeOf("UnityEngine.UI.Button")));
         RectTransform floor = Read<RectTransform>(_menu, "_floorView");
         Assert.That(floor.gameObject.activeSelf, Is.True);
         AssertDiscreteSlider(floor.Find("Row offset slider"), 0, 2);
         AssertDiscreteSlider(floor.Find("Mortar thickness slider"), 5, 15);
         Assert.That(Property<bool>(floor.Find("Execute floor plan").GetComponent(TypeOf("UnityEngine.UI.Button")), "interactable"), Is.False);
-
-        Click(floor.Find("Open fixture setup").GetComponent(TypeOf("UnityEngine.UI.Button")));
-        Assert.That(floor.gameObject.activeSelf, Is.False);
-        Assert.That(Property<bool>(_input, "IsFloorMode"), Is.False);
-        Assert.That(Read<Component>(_menu, "_fixtureTaskButton"), Is.Null);
-        Assert.That(Read<Component>(_menu, "_fixtureSetupButton"), Is.Not.Null);
-        Assert.That(Read<Component>(_menu, "_fixtureReviewButton"), Is.Not.Null);
-        Assert.That(Read<RectTransform>(_menu, "_fixtureView"), Is.Not.Null);
+        Assert.That(floor.Find("Open fixture setup"), Is.Null);
+        Assert.That(_owner.GetComponents(TypeOf("FixtureTilingController")), Is.Empty);
+        Assert.That(_input.GetType().GetMethod("UseFixtureTiling"), Is.Null);
+        Assert.That(_input.GetType().GetProperty("FixtureController"), Is.Null);
         _input.GetType().GetMethod("UseTcpPreview").Invoke(_input, null);
         _input.GetType().GetMethod("UseTilePickPlace").Invoke(_input, null);
-        Assert.That(Property<bool>(_input, "IsFixtureMode"), Is.True);
+        Assert.That(Property<bool>(_input, "IsFloorMode"), Is.True);
         Assert.That(Property<bool>(_input, "IsTcpMode"), Is.False);
-        Assert.That(_owner.GetComponents(TypeOf("FixtureTilingController")).Length, Is.EqualTo(1));
-        _menu.GetType().GetMethod("OpenFixtureReview").Invoke(_menu, null);
-        Assert.That(Read<int>(_menu, "_fixturePage"), Is.EqualTo(7));
-        Assert.That(Read<RectTransform>(_menu, "_fixtureView").gameObject.activeSelf, Is.True);
+    }
+
+    [TestCase("SimplePickAndPlace", 0)]
+    [TestCase("Unrestricted", 0)]
+    [TestCase("RepetitivePickAndPlace", 3)]
+    public void SerializedFormerFixtureModeResolvesToTheDirectWorkflow(string workflow, int expectedMode)
+    {
+        Create(workflow);
+        Type capture = _input.GetType().GetNestedType("PoseCaptureMode");
+        Set(_input, "_poseCaptureMode", Enum.ToObject(capture, 2));
+        Type mode = _input.GetType().GetNestedType("WorkflowMode");
+        _input.GetType().GetMethod("ConfigureWorkflow").Invoke(_input, new[] { Enum.Parse(mode, workflow) });
+        Assert.That(Convert.ToInt32(Read<object>(_input, "_poseCaptureMode")), Is.EqualTo(expectedMode));
+        Assert.That(_owner.GetComponents(TypeOf("FixtureTilingController")), Is.Empty);
     }
 
     [TestCase("SimplePickAndPlace")]
@@ -118,29 +118,6 @@ public sealed class WorkflowMenuTests
             Assert.That((bool)execution.GetProperty("IsBusy").GetValue(null), Is.True);
         }
         finally { execution.GetMethod("SetBusy").Invoke(null, new object[] { _input, false }); }
-    }
-
-    [Test]
-    public void FixtureReviewShowsStopInTheExecuteSlotAndCancelsThePendingCheck()
-    {
-        Create("RepetitivePickAndPlace");
-        Component controller = Property<Component>(_input, "FixtureController");
-        Assert.That(controller.GetType().GetMethod("StopPlanning"), Is.Not.Null, "The fixture Review page needs a planning stop action.");
-        _menu.GetType().GetMethod("OpenFixtureReview").Invoke(_menu, null);
-        Set(controller, "_checkingCalibration", true);
-        Invoke(_menu, "RefreshTask");
-        RectTransform page = Read<RectTransform>(_menu, "_fixturePageContent");
-        Component plan = page.Find("Plan fixture batch").GetComponent(TypeOf("UnityEngine.UI.Button"));
-        Component stop = page.Find("Stop fixture planning").GetComponent(TypeOf("UnityEngine.UI.Button"));
-        Component execute = page.Find("Execute fixture batch").GetComponent(TypeOf("UnityEngine.UI.Button"));
-        Assert.That(stop.gameObject.activeSelf && Property<bool>(stop, "interactable"), Is.True);
-        Assert.That(Property<bool>(plan, "interactable"), Is.False);
-        Assert.That(execute.gameObject.activeSelf, Is.False);
-        object clicked = Property<object>(stop, "onClick"); clicked.GetType().GetMethod("Invoke").Invoke(clicked, null);
-        Assert.That(stop.gameObject.activeSelf, Is.False);
-        Assert.That(execute.gameObject.activeSelf, Is.True);
-        Assert.That(Property<bool>(execute, "interactable"), Is.False);
-        Assert.That(Property<bool>(plan, "interactable"), Is.True);
     }
 
     private static void AssertDiscreteSlider(Transform root, float min, float max)
@@ -184,17 +161,7 @@ public sealed class WorkflowMenuTests
                 Invoke(_menu, "RefreshTask");
                 Assert.That(PlanningTimeLabel(control), Is.EqualTo("90 s"));
             }
-            else
-            {
-                _menu.GetType().GetMethod("OpenFixtureReview").Invoke(_menu, null);
-                Transform reviewControl = Read<RectTransform>(_menu, "_fixturePageContent").Find("Planning time control");
-                Assert.That(reviewControl, Is.Not.Null);
-                Assert.That(PlanningTimeLabel(reviewControl), Is.EqualTo("90 s"));
-                ClickPlanningTimeButton(reviewControl, "Decrease planning time by 1 second");
-                Invoke(_menu, "RefreshTask");
-                Assert.That(PlanningTimeLabel(control), Is.EqualTo("89 s"));
-                _menu.GetType().GetMethod("CloseFixtureSetup").Invoke(_menu, null);
-            }
+
 
             PropertyInfo timeout = TypeOf("MtcPlanningSettings").GetProperty("TimeoutSeconds");
             timeout.SetValue(null, 599);
@@ -213,6 +180,72 @@ public sealed class WorkflowMenuTests
             if (hadPreference) PlayerPrefs.SetInt(preference, saved);
             else PlayerPrefs.DeleteKey(preference);
             PlayerPrefs.Save();
+        }
+    }
+
+    /// <summary>Explicit graphics export of the direct simple and floor workflow menus.</summary>
+    public static void RenderDedicatedWorkflowPreviews()
+    {
+        if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+            throw new InvalidOperationException("Workflow menu previews require a graphics-enabled Unity process.");
+        foreach (string workflow in new[] { "SimplePickAndPlace", "RepetitivePickAndPlace" })
+        {
+            var preview = new WorkflowMenuTests();
+            GameObject viewer = null;
+            RenderTexture target = null;
+            Texture2D pixels = null;
+            RenderTexture previous = RenderTexture.active;
+            try
+            {
+                preview.Create(workflow);
+                Canvas canvas = Read<Canvas>(preview._menu, "_canvas");
+                canvas.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+                Read<RectTransform>(preview._menu, "_panel").gameObject.SetActive(true);
+                if (workflow == "RepetitivePickAndPlace") Invoke(preview._menu, "OpenFloorSetup");
+                viewer = new GameObject("Offline direct workflow viewer", typeof(Camera));
+                Camera camera = viewer.GetComponent<Camera>();
+                camera.transform.position = new Vector3(0f, .02f, -1f);
+                camera.orthographic = true;
+                camera.orthographicSize = .43f;
+                camera.clearFlags = CameraClearFlags.SolidColor;
+                camera.backgroundColor = new Color(.08f, .11f, .15f, 1f);
+                camera.allowHDR = camera.allowMSAA = false;
+                canvas.worldCamera = camera;
+                Type textType = TypeOf("TMPro.TMP_Text"), fontType = TypeOf("TMPro.TMP_FontAsset");
+                UnityEngine.Object font = Resources.Load("Fonts & Materials/LiberationSans SDF", fontType);
+                if (font == null)
+                {
+                    string guid = AssetDatabase.FindAssets("LiberationSans SDF t:TMP_FontAsset").FirstOrDefault();
+                    if (guid != null) font = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), fontType);
+                }
+                if (font == null) throw new FileNotFoundException("A font is required for workflow menu previews.");
+                foreach (Component text in canvas.GetComponentsInChildren(textType, true))
+                    textType.GetProperty("font").SetValue(text, font);
+                Canvas.ForceUpdateCanvases();
+                foreach (Component text in canvas.GetComponentsInChildren(textType, true))
+                    textType.GetMethod("ForceMeshUpdate").Invoke(text, new object[] { true, true });
+                target = new RenderTexture(600, 960, 24, RenderTextureFormat.ARGB32);
+                camera.targetTexture = target;
+                camera.Render();
+                RenderTexture.active = target;
+                pixels = new Texture2D(600, 960, TextureFormat.RGB24, false);
+                pixels.ReadPixels(new Rect(0f, 0f, 600f, 960f), 0, 0);
+                pixels.Apply();
+                string directory = Path.GetFullPath(Path.Combine("WorkflowMenuPreviews", workflow));
+                Directory.CreateDirectory(directory);
+                string output = Path.Combine(directory, "direct-workflow.png");
+                File.WriteAllBytes(output, pixels.EncodeToPNG());
+                Debug.Log("WorkflowMenuPreview: " + output);
+            }
+            finally
+            {
+                if (viewer != null) viewer.GetComponent<Camera>().targetTexture = null;
+                RenderTexture.active = previous;
+                if (pixels != null) UnityEngine.Object.DestroyImmediate(pixels);
+                if (target != null) { target.Release(); UnityEngine.Object.DestroyImmediate(target); }
+                if (viewer != null) UnityEngine.Object.DestroyImmediate(viewer);
+                preview.Cleanup();
+            }
         }
     }
 

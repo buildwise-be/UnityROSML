@@ -15,7 +15,7 @@ public sealed partial class ToolSelectionMenu
     private Button _pickCaptureUndo, _pickCaptureRestart, _pickCaptureCancel;
     private bool _showPickSettings;
     private bool IsMtcPickMode => _workflowMode != URInputManager.WorkflowMode.RepetitivePickAndPlace &&
-        _input != null && !_input.IsTcpMode && !_input.IsFixtureMode;
+        _input != null && !_input.IsTcpMode;
     private bool IsSurfaceCapturing => _input != null && _input.IsPickGuideOpen;
     private bool IsShowingPickSettings => _showPickSettings && IsMtcPickMode &&
         !IsCalibrating && !IsPointCollecting && !IsPositionAdjusting;

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Record verified fixture-tiling test, schema, compiler and menu evidence."""
+"""Record compiler, schema and test evidence for the retained fixture-review code."""
 
 from collections import Counter
 import hashlib
@@ -43,7 +43,7 @@ def main():
         for path in (PROJECT / folder).glob("Fixture*.cs")
     ) | {PROJECT / relative for relative in (
         "Assets/Scripts/V3/URInputManager.cs", "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
-        "Assets/Scripts/V3/UI/ToolSelectionMenu.Fixture.cs", "Assets/Scripts/V3/UI/MTCPlanUIManager.cs",
+        "Assets/Scripts/V3/UI/MTCPlanUIManager.cs",
     )})
     for path in sources:
         copied = VALIDATION / path.relative_to(PROJECT)
@@ -51,17 +51,9 @@ def main():
             raise ValueError("Tested isolated copy is stale: " + str(path))
     fixture_counts = Counter(case.get("classname") for case in result.iter("test-case")
                              if case.get("classname", "").startswith("Fixture"))
-    menu_log = VALIDATION / "fixture-menu-preview.log"
-    menu_text = menu_log.read_text(encoding="utf-8", errors="replace")
-    if "FixturePreviewTextOverflow" in menu_text or "return code 0" not in menu_text:
-        raise ValueError("Menu export must complete without text overflow")
-    previews = sorted((VALIDATION / "FixtureTilingPreviews").glob("*.png"))
-    if len(previews) != 10:
-        raise ValueError("Expected nine rendered menu views and one contact sheet")
-
     report = {
         "schemaVersion": 1, "completedUtc": result.get("end-time"),
-        "scope": "Square-tile fixture setup, identified complete-batch review and single-use execution admission",
+        "scope": "Fixture geometry and shared batch review, scene and message checks",
         "unityVersion": "6000.0.84f1",
         "editorTests": {key: int(result.get(key)) for key in ("total", "passed", "failed", "skipped")},
         "newFixtureTests": {"total": sum(fixture_counts.values()), "fixtures": dict(sorted(fixture_counts.items()))},
@@ -76,8 +68,6 @@ def main():
                     "cdrFixture": fingerprint(PROJECT / "Assets/Tests/RobotFrames/Resources/FixtureSolutionCdr.json"),
                     "cdrVerification": "Independent ROS Python CDR with polygon, texture, UV and mesh-file extensions; Unity parses fields and reproduces all meaningful bytes with only schema-derived padding normalized",
                     "privateNestedRegistrations": "No global registry hooks; compatible standard messages use connector types"},
-        "menuVisualQa": {"renderedViews": 9, "textOverflowWarnings": 0, "log": fingerprint(menu_log),
-                         "previews": [fingerprint(path) for path in previews]},
         "sources": [fingerprint(path) for path in sources],
         "rosMessageSources": [fingerprint(path) for path in sorted((PROJECT / "Assets/RosMessages").rglob("*.cs"))],
         "tooling": [fingerprint(PROJECT / "Tools/RobotFrames" / name) for name in (

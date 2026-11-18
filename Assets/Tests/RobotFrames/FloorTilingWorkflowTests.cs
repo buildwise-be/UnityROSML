@@ -82,6 +82,8 @@ public sealed class FloorTilingWorkflowTests
             if (capture != null) Call(capture, "OnDestroy");
             var review = (Component)Field(_controller, "_review").GetValue(_controller);
             if (review != null) Call(review, "OnDestroy");
+            var source = (Component)Field(_controller, "_sourcePreview").GetValue(_controller);
+            if (source != null) Call(source, "OnDestroy");
         }
         if (_visualizer != null) Call(_visualizer, "SetTrajectory", new object[] { null });
         foreach (GameObject value in _owned.AsEnumerable().Reverse())
@@ -89,6 +91,17 @@ public sealed class FloorTilingWorkflowTests
         _owned.Clear();
         Assert.That(Resources.FindObjectsOfTypeAll(TypeOf("Unity.Robotics.ROSTCPConnector.ROSConnection")), Is.Empty);
         Assert.That(Resources.FindObjectsOfTypeAll(TypeOf("PickSurfaceGuide")), Is.Empty);
+    }
+
+    [Test]
+    public void ABackendWithoutTheDirectTaskContractReceivesNoNewPlan()
+    {
+        Status("failed");
+        Set(_controller, "TaskVersion", 1L);
+        Call(_controller, "Plan");
+        Assert.That(Field(_controller, "PlanPublishCount").GetValue(_controller), Is.EqualTo(1));
+        Assert.That(Property<bool>(_controller, "IsPlanning"), Is.False);
+        Assert.That(Property<string>(_controller, "StatusText"), Does.Contain("Update ROS"));
     }
 
     [Test]
@@ -142,6 +155,93 @@ public sealed class FloorTilingWorkflowTests
     }
 
     private int ExecuteCount => (int)Field(_controller, "ExecutePublishCount").GetValue(_controller);
+
+    [Test]
+    public void PhysicalCentreAndSupportPointUseTheRegisteredTipAndNeedNoScan()
+    {
+        Ready();
+        Call(_controller, "SetTileSideMeters", .32f);
+        Call(_controller, "SetTileThicknessMeters", .012f);
+        Component registration = Add("Direct capture contact tip", TypeOf("RobotPointRegistration"));
+        Vector3 offset = new Vector3(.012f, -.023f, .041f);
+        Call(registration, "SetTipOffset", offset);
+        Transform tracking = _owned.Single(owner => owner.name == "Tracking space").transform;
+        Quaternion pointerRotation = Quaternion.Euler(24f, -38f, 61f);
+        Vector3 sourceCentre = new Vector3(.2f, .3f, .4f);
+
+        Call(_controller, "BeginSourceCenterCapture");
+        Assert.That(Property<bool>(_controller, "IsCapturingPoint"), Is.True);
+        Assert.That(Call(_controller, "CapturePointerPose", new Pose(sourceCentre - pointerRotation * offset, pointerRotation), tracking), Is.EqualTo(true));
+        object[] source = { Pose.identity, null };
+        Assert.That(Call(_controller, "TryGetSource", source), Is.EqualTo(true));
+        Assert.That(Vector3.Distance(((Pose)source[0]).position, sourceCentre), Is.LessThan(1e-6));
+        Assert.That((Vector3[])source[1], Is.Empty);
+        Assert.That(Property<bool>(_controller, "SourceFromCorners"), Is.False);
+        Assert.That(Property<float>(_controller, "TileSideMeters"), Is.EqualTo(.32f));
+        Assert.That(Property<float>(_controller, "TileThicknessMeters"), Is.EqualTo(.012f));
+
+        Vector3 supportCorner = new Vector3(.5f, 0f, .8f);
+        Call(_controller, "BeginPlacementCapture");
+        Assert.That(Call(_controller, "CapturePointerPose", new Pose(supportCorner - pointerRotation * offset, pointerRotation), tracking), Is.EqualTo(true));
+        object[] anchor = { Pose.identity };
+        Assert.That(Call(_controller, "TryGetAnchorWorldPose", anchor), Is.EqualTo(true));
+        Assert.That(Vector3.Distance(((Pose)anchor[0]).position, supportCorner), Is.LessThan(1e-6), "The anchor is the tile's bottom support surface.");
+        Assert.That(Property<bool>(_controller, "IsScanRequested"), Is.False);
+        Assert.That(Property<bool>(_controller, "CanPlan"), Is.True);
+    }
+
+    [Test]
+    public void ThreeCornerCaptureUsesTheEditedDimensionsAndRetainsRawContacts()
+    {
+        Ready();
+        Call(_controller, "SetTileSideMeters", .32f);
+        Call(_controller, "SetTileThicknessMeters", .012f);
+        Assert.That(Property<bool>(_controller, "IsSourceCurrent"), Is.False);
+        object capture = Property<object>(_controller, "SurfaceCapture");
+        Transform tracking = _owned.Single(owner => owner.name == "Tracking space").transform;
+        var corners = new[] { new Vector3(.16f, .2f, -.16f), new Vector3(.16f, .2f, .16f), new Vector3(-.16f, .2f, .16f) };
+        Call(_controller, "BeginCapture");
+        foreach (Vector3 corner in corners)
+            Assert.That(Call(capture, "CapturePointerPose", new Pose(corner, Quaternion.identity), tracking), Is.EqualTo(true), Property<string>(capture, "StatusText"));
+        object[] source = { Pose.identity, null };
+        Assert.That(Call(_controller, "TryGetSource", source), Is.EqualTo(true));
+        Assert.That(Property<bool>(_controller, "SourceFromCorners"), Is.True);
+        Assert.That(Vector3.Distance(((Pose)source[0]).position, new Vector3(0f, .2f, 0f)), Is.LessThan(1e-5));
+        Vector3[] captured = (Vector3[])source[1];
+        Assert.That(captured.Length, Is.EqualTo(3));
+        for (int index = 0; index < corners.Length; index++)
+            Assert.That(Vector3.Distance(captured[index], corners[index]), Is.LessThan(1e-6));
+    }
+
+    [Test]
+    public void CancellingAnArmedPointPreservesTheAcceptedSourceAndDimensionsRevokeIt()
+    {
+        Ready();
+        Call(_controller, "BeginSourceCenterCapture");
+        Call(_controller, "CancelPointCapture");
+        Assert.That(Property<bool>(_controller, "IsCapturingPoint"), Is.False);
+        Assert.That(Property<bool>(_controller, "IsSourceCurrent"), Is.True);
+        Call(_controller, "SetTileSideMeters", .3f);
+        Assert.That(Property<bool>(_controller, "IsSourceCurrent"), Is.False);
+        Assert.That(Property<bool>(_controller, "CanExecute"), Is.False);
+        Assert.That(ExecuteCount, Is.Zero);
+    }
+
+    [Test]
+    public void PlacementRechecksItsSourceAtTheTriggerAndPreservesThePreviousAnchorOnExpiry()
+    {
+        Ready();
+        Pose previous = (Pose)Read(_controller, "_anchorInTracking");
+        Transform tracking = _owned.Single(owner => owner.name == "Tracking space").transform;
+        Call(_controller, "BeginPlacementCapture");
+        object capture = Property<object>(_controller, "SurfaceCapture");
+        Set(capture, "_surfaceTrackingInvalidated", true);
+        Assert.That(Call(_controller, "CapturePointerPose", new Pose(Vector3.one, Quaternion.identity), tracking), Is.EqualTo(false));
+        Assert.That(Property<bool>(_controller, "IsCapturingPoint"), Is.False);
+        Assert.That(Property<string>(_controller, "StatusText"), Does.Contain("no longer current"));
+        Assert.That(((Pose)Read(_controller, "_anchorInTracking")).position, Is.EqualTo(previous.position));
+        Assert.That(Property<bool>(_controller, "CanExecute"), Is.False);
+    }
     private static bool IsExecutionBusy => (bool)TypeOf("RobotExecutionState").GetProperty("IsBusy").GetValue(null);
 
     private void Ready()

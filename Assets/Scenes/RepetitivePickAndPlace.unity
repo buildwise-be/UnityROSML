@@ -2204,7 +2204,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1029355969}
   - component: {fileID: 1029355968}
-  - component: {fileID: 1900000030}
   m_Layer: 0
   m_Name: URInputManager
   m_TagString: Untagged
@@ -2224,7 +2223,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bde311d50cd1b924699d7756c30dec56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fixtureTilingController: {fileID: 1900000030}
   _workflowMode: 2
   _URInstantiator: {fileID: 821121195}
   _pickPlaceController: {fileID: 0}
@@ -4242,19 +4240,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2109092618}
   m_CullTransparentMesh: 1
---- !u!114 &1900000030
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1029355967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef10e92e596647068f7b0ddc13c5827b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  _visualizer: {fileID: 511627980}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

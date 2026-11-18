@@ -59,17 +59,17 @@ def main():
     sources = [PROJECT / path for path in (
         "Assets/Scripts/V3/RobotAppNavigation.cs", "Assets/Scripts/V3/URInputManager.cs",
         "Assets/Scripts/V3/UI/RobotWelcomeMenu.cs", "Assets/Scripts/V3/UI/ToolSelectionMenu.cs",
-        "Assets/Scripts/V3/UI/ToolSelectionMenu.Fixture.cs", "Assets/Scripts/V3/UI/ToolSelectionMenu.Navigation.cs",
+        "Assets/Scripts/V3/UI/ToolSelectionMenu.Floor.cs", "Assets/Scripts/V3/UI/ToolSelectionMenu.Navigation.cs",
         "Assets/Scripts/V3/ROS/ROSService.cs", "Assets/Scripts/V3/ROS/RobotStateService.cs",
         "Assets/Scripts/V3/ROS/RobotCoordinateService.cs", "Assets/Scripts/V3/ROS/MTCPlansManager.cs",
         "Assets/Tests/RobotFrames/RobotAppSceneTests.cs", "Assets/Tests/RobotFrames/WorkflowMenuTests.cs",
-        "Assets/Tests/RobotFrames/WorkflowServiceLifecycleTests.cs", "Assets/Tests/RobotFrames/FixtureTilingMenuTests.cs",
+        "Assets/Tests/RobotFrames/WorkflowServiceLifecycleTests.cs",
     )]
     for source in sources:
         if source.read_bytes() != (VALIDATION / source.relative_to(PROJECT)).read_bytes():
             raise ValueError("Tested source is stale: " + str(source))
     previews = sorted((VALIDATION / "WorkflowMenuPreviews").rglob("*.png"))
-    if not (VALIDATION / "WorkflowMenuPreviews/Welcome.png").is_file() or len(previews) < 11:
+    if not (VALIDATION / "WorkflowMenuPreviews/Welcome.png").is_file() or len(previews) < 3:
         raise ValueError("Welcome and both dedicated workflow menu previews are required")
     visual_log = VALIDATION / "scene-baseline-tests.log"
     log = visual_log.read_text(encoding="utf-8", errors="replace")

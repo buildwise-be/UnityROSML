@@ -59,6 +59,8 @@ public sealed class OfflineFloorTilingController : FloorTilingController {
     public string ExecutedPlanId;
     protected override bool Connected => true;
     protected override void BindTransport() { }
+    public long TaskVersion = 2;
+    protected override void RequestTaskVersion(System.Action<long> completed) => completed(TaskVersion);
     protected override void PublishPlan(RosMessageTypes.Ur16eInterfaces.TileFloorTaskMsg request) {
         PlanPublishCount++; LastRequest = request;
     }
